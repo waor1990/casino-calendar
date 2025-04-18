@@ -584,6 +584,7 @@ def show_event_modal(clicks, close_clicks, timer_tick):
             return {}, 'modal show', rows, 0, [None] * len(clicks)
     return dash.no_update, dash.no_update, dash.no_update, dash.no_update, [None] * len(clicks)
 
+server = app.server
 # Run the Dash app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8050, debug=False)

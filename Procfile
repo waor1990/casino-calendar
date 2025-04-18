@@ -1,1 +1,1 @@
-web: gunicorn calendar_app:app.server
+web: gunicorn calendar_app:server
