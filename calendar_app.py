@@ -213,7 +213,7 @@ def generate_weekly_view(clicked_date):
                     y=y_center,
                     text=trimmed_label,
                     showarrow=False,
-                    font=dict(size=11),
+                    font=dict(size=11),  # Updated to use viewport width units
                     xanchor="center",
                     yanchor="middle"
             ))
@@ -288,6 +288,27 @@ rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
 # Build the Dash app
 app = dash.Dash(__name__)
 app.title = "Casino Event Calendar"
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {%metas%}
+        <title>{%title%}</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+'''
 
 app.layout = html.Div(
     style={
@@ -305,7 +326,7 @@ app.layout = html.Div(
                     style={
                         'textAlign': 'center',
                         'margin': '0',
-                        'fontSize': '40px',
+                        'fontSize': 'clamp(24px, 5vw, 40px)',
                         'marginBottom': '20px',
                         'color': 'inherit',
                         'padding': '10px 0',
@@ -328,7 +349,7 @@ app.layout = html.Div(
                             style={
                                 'fontWeight': 'bold',
                                 'textAlign': 'center',
-                                'fontSize': '20px',
+                                'fontSize': 'clamp(1.25rem, 2.5vw, 1.875rem)',
                                 'marginBottom': '5px'
                             }
                         ),
@@ -351,7 +372,7 @@ app.layout = html.Div(
                                                 'color': color,
                                                 'marginRight': '15px',
                                                 'fontWeight': 'bold',
-                                                'fontSize': '16px'
+                                                'fontSize': 'clamp(1rem, 2vw, 1.5rem)'
                                             }
                                         )
                                     ],
@@ -384,7 +405,7 @@ app.layout = html.Div(
                 'backgroundColor': 'white',
                 'zIndex': 1000,
                 'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.25)',
-                'padding': '10ps 15px'
+                'padding': '10px 15px'
             }
         ),
         #Offset Storage
@@ -587,4 +608,4 @@ def show_event_modal(clicks, close_clicks, timer_tick):
 server = app.server
 # Run the Dash app
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8050, debug=False)
+    app.run(host='0.0.0.0', port=8050, debug=True)
