@@ -11,7 +11,7 @@ df["StartDate"] = pd.to_datetime(df["StartDate"])
 df["EndDate"] = pd.to_datetime(df["EndDate"])
 
 # Function to generate a weekly view given a clicked date
-def generate_weekly_view(clicked_date):
+def generate_weekly_view(clicked_date, screen_width):
     # Determine the week range (Sunday to Saturday)
     week_start = clicked_date - timedelta(days=(clicked_date.weekday() + 1) % 7)
     week_start = week_start.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -160,9 +160,22 @@ def generate_weekly_view(clicked_date):
             color = color_map.get(row["Casino"], "lightgrey")
             label = f"{row['EventName']}"
             block_width = adjusted_end - adjusted_start
-            CHARS_PER_UNIT = 40
-            max_chars = max(int(block_width * CHARS_PER_UNIT), 0)
 
+            if screen_width < 480:
+                CHARS_PER_UNIT = 10
+                font_size = 10
+            elif screen_width < 768:
+                CHARS_PER_UNIT = 20
+                font_size = 11
+            elif screen_width < 1024:
+                CHARS_PER_UNIT = 30
+                font_size = 12
+            else:
+                CHARS_PER_UNIT = 40
+                font_size = 13
+                
+            max_chars = max(int(block_width * CHARS_PER_UNIT), 0)            
+            
             # Trim the label if it is too long to fit
             if len(label) > max_chars and max_chars > 1:
                 cutoff = label[:max_chars - 1]
@@ -213,7 +226,7 @@ def generate_weekly_view(clicked_date):
                     y=y_center,
                     text=trimmed_label,
                     showarrow=False,
-                    font=dict(size=11),  # Updated to use viewport width units
+                    font=dict(size=font_size),  # Updated to use viewport width units
                     xanchor="center",
                     yanchor="middle"
             ))
@@ -273,8 +286,9 @@ def generate_weekly_view(clicked_date):
 color_map = {
     casino: color for casino, color in zip(
         df["Casino"].unique(),
-        ["lightblue", "lightgreen", "lightpink", "lightsalmon", "khaki", "lightcoral", "lightgray",
-         "lightseagreen", "lightskyblue", "lightgoldenrod", "lightsteelblue", "lightsalmon", "mediumorchid", "thistle", "lightkhaki"]
+        ["Aqua", "Coral", "DodgerBlue", "MediumSpringGreen", "Gold",
+        "Chartreuse", "YellowGreen", "Tomato", "OrangeRed", "Fuchsia",
+        "LemonChiffon", "PapayaWhip", "PeachPuff", "LightYellow"]
     )
 }
 
@@ -309,6 +323,7 @@ app.index_string = '''
     </body>
 </html>
 '''
+server = app.server
 
 app.layout = html.Div(
     style={
@@ -408,10 +423,12 @@ app.layout = html.Div(
                 'padding': '10px 15px'
             }
         ),
-        #Offset Storage
-        dcc.Store(id='week-offset', data=0),
+        #Hidden Storages/Intervals
+        dcc.Store(id='week-offset', data=0), 
+        dcc.Store(id="screen-width", storage_type='session'),
         dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
         dcc.Interval(id='close-timer', interval=600, n_intervals=0, max_intervals=0),
+       
 
         #Main Content Container
         html.Div(id='rolling-weeks', style={
@@ -438,7 +455,25 @@ app.layout = html.Div(
                         'cursor': 'pointer'
                     })
             ])
-        ])
+        ]),
+        
+        #To track the screen width
+        html.Script("""
+            document.addEventListener('DOMContentLoaded', function() {
+                var width = window.innerWidth || document.documentElement.clientWidth;
+                var el = document.querySelector('[data-dash-is-loading="true"]');
+                if (el) {
+                    el.dataset.dashPrivateScreenWidth = width;
+                    window.dash_clientside = Object.assign({}, window.dash_clientside || {}, {
+                        clients: {
+                            setScreenWidth: function() {
+                                return width;
+                            }
+                        }
+                    });
+                }    
+            });
+        """, type='text/javascript')
 ])
 
 @app.callback(
@@ -454,10 +489,11 @@ def update_week_offset(prev_clicks, next_clicks):
 @app.callback(
     Output('rolling-weeks', 'children'),
     Input('week-offset', 'data'),
-    Input('initial-trigger', 'n_intervals')
+    Input('initial-trigger', 'n_intervals'),
+    Input("screen-width", "data")
 )
 
-def render_weeks(week_offset, _):
+def render_weeks(week_offset, _, screen_width):
     # Recalculate weeks and figures based on the current week offset
     today = datetime.today()
     current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
@@ -467,7 +503,7 @@ def render_weeks(week_offset, _):
     weekly_blocks = []
     
     for i, start_date in enumerate(rolling_weeks):
-        fig, overflow_df = generate_weekly_view(start_date)
+        fig, overflow_df = generate_weekly_view(start_date, screen_width)
         
         weekly_blocks_children = [
             html.H3(
@@ -605,7 +641,6 @@ def show_event_modal(clicks, close_clicks, timer_tick):
             return {}, 'modal show', rows, 0, [None] * len(clicks)
     return dash.no_update, dash.no_update, dash.no_update, dash.no_update, [None] * len(clicks)
 
-server = app.server
 # Run the Dash app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8050, debug=True)
