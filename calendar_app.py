@@ -192,7 +192,7 @@ def generate_weekly_view(clicked_date, screen_width=1024):
             arrow_end = 7 - ARROW_OFFSET
 
             # Get the color and label for the event
-            color = get_color(row["Casino"])
+            color = get_color()[row["Casino"]]
             label = f"{row['EventName']}"
             block_width = adjusted_end - adjusted_start
             
@@ -312,40 +312,43 @@ def generate_weekly_view(clicked_date, screen_width=1024):
     )
     return fig, long_spanning
 
+def get_color():
+    # Color map by Casino (can expand if needed)
+    color_map = {
+        "ilani": "#0b3357",
+        "Spirit Mountain Casino": "#a74321",
+        "Lucky Eagle Casino": "#862c8e",
+        "Muckleshoot Casino": "#1e1c29",
+        "Little Creek Casino": "#3086c3",
+        "Red Wind Casino": "#e13332",
+        "Snoqualmie Casino": "#00a9e0",
+        "Angel of the Winds Casino": "#383885",
+        "Lucky Dog Casino": "#f07a22",
+        "Legends Casino": "#ca9a41",
+        "Chinook Winds Casino": "#32373d",
+        "Emerald Queen Casino": "#632834",
+        "Rolling Hills Casino": "#5a1c1d",
+        "Wildhorse Casino": "#d21245",
+        "Seven Feathers Casino": "#41c5de"
+    }
 
-# Color map by Casino (can expand if needed)
-color_map = {
-    "ilani": "#0b3357",
-    "Spirit Mountain Casino": "#a74321",
-    "Lucky Eagle Casino": "#862c8e",
-    "Muckleshoot Casino": "#1e1c29",
-    "Little Creek Casino": "#3086c3",
-    "Red Wind Casino": "#e13332",
-    "Snoqualmie Casino": "#00a9e0",
-    "Angel of the Winds Casino": "#383885",
-    "Lucky Dog Casino": "#f07a22",
-    "Legends Casino Hotel": "#ca9a41",
-    "Chinook Winds Casino": "#32373d",
-    "Emerald Queen Casino": "#632834",
-    "Rolling Hills Casino": "#5a1c1d",
-    "Wildhorse Casino": "#d21245",
-    "Seven Feathers Casino": "#41c5de"
-}
-
-default_colors = {
-    "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff",
-    "#00ffff", "#ff8000", "#800000", "#008000", "#000080",
-    "#800080", "#ffa500", "#808080", "#ff6347", "#ff4500",
-    "#ff00ff", "#008080", "#4b0082", "#008b8b", "#000080",
-    "#4682b4"
-}
-
-def get_color(casino_name):
-    if casino_name in color_map:
-        return color_map[casino_name]
-    else:
-        print(f"No color assigned for casino: {casino_name}.")
-        return random.choice(default_colors)
+    default_colors = {
+        "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff",
+        "#00ffff", "#ff8000", "#800000", "#008000", "#000080",
+        "#800080", "#ffa500", "#808080", "#ff6347", "#ff4500",
+        "#ff00ff", "#008080", "#4b0082", "#008b8b", "#000080",
+        "#4682b4"
+    }
+    
+    result = {}
+    for casino, color in color_map.items():
+        result[casino] = color
+        
+    if not result:
+        print(f"No color assigned for casino: {casino}; using default color.")
+        result.update(dict(zip(range(len(default_colors)), default_colors)))
+        
+    return result
 
 
 today = datetime.today()
