@@ -4,6 +4,8 @@ import plotly.graph_objs as go
 import pandas as pd
 from datetime import datetime, timedelta
 from math import floor
+import random
+import logging
 
 # Load CSV file
 df = pd.read_csv("casino_events.csv")  
@@ -190,7 +192,7 @@ def generate_weekly_view(clicked_date, screen_width=1024):
             arrow_end = 7 - ARROW_OFFSET
 
             # Get the color and label for the event
-            color = color_map.get(row["Casino"], "lightgrey")
+            color = get_color(row["Casino"])
             label = f"{row['EventName']}"
             block_width = adjusted_end - adjusted_start
             
@@ -313,13 +315,37 @@ def generate_weekly_view(clicked_date, screen_width=1024):
 
 # Color map by Casino (can expand if needed)
 color_map = {
-    casino: color for casino, color in zip(
-        df["Casino"].unique(),
-        ["#00FFFF", "#FF7F50", "#1E90FF", "#00FA9A", "#FFD700",
-         "#7FFF00", "#9ACD32", "#FF6347", "#FF4500", "#FF00FF",
-         "#008080", "#4B0082", "#008B8B", "#000080", "#4682B4"]
-)
+    "ilani": "#0b3357",
+    "Spirit Mountain Casino": "#a74321",
+    "Lucky Eagle Casino": "#862c8e",
+    "Muckleshoot Casino": "#1e1c29",
+    "Little Creek Casino": "#3086c3",
+    "Red Wind Casino": "#e13332",
+    "Snoqualmie Casino": "#00a9e0",
+    "Angel of the Winds Casino": "#383885",
+    "Lucky Dog Casino": "#f07a22",
+    "Legends Casino Hotel": "#ca9a41",
+    "Chinook Winds Casino": "#32373d",
+    "Emerald Queen Casino": "#632834",
+    "Rolling Hills Casino": "#5a1c1d",
+    "Wildhorse Casino": "#d21245",
+    "Seven Feathers Casino": "#41c5de"
 }
+
+default_colors = {
+    "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff",
+    "#00ffff", "#ff8000", "#800000", "#008000", "#000080",
+    "#800080", "#ffa500", "#808080", "#ff6347", "#ff4500",
+    "#ff00ff", "#008080", "#4b0082", "#008b8b", "#000080",
+    "#4682b4"
+}
+
+def get_color(casino_name):
+    if casino_name in color_map:
+        return color_map[casino_name]
+    else:
+        print(f"No color assigned for casino: {casino_name}.")
+        return random.choice(default_colors)
 
 
 today = datetime.today()
@@ -439,7 +465,7 @@ app.layout = html.Div(
                                     ],
                                     style={'display': 'inline-block'}
                                 )
-                                for casino, color in color_map.items()
+                                for casino, color in get_color().items()
                             ],
                             style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center' }
                         )
