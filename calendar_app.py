@@ -15,38 +15,54 @@ df["EndDate"] = pd.to_datetime(df["EndDate"])
 # Define default screen width and function to get font sizes
 screen_width = 1024 # fallback if not set dynamically
 
-def get_font_sizes(screen_width):
+def get_dynamic_sizes(screen_width):
     if screen_width < 480:
-        return {
-            "annotation": 9,
+        font_sizes = {
+            "h1": "1.5rem",
             "legend": "1rem",
             "button": "0.85rem",
-            "h1": "1.75rem",
+            "event_block": "0.8rem",
             "overflow": "0.9rem",
-            "padding": "6px"
+        }
+        padding_sizes = {
+            "header_padding": "8px 10px",
+            "week_gap": "10px",
+            "legend_gap": "6px",
+            "section_margin": "10px",
         }
     elif screen_width < 768:
-        return {
-            "annotation": 10,
-            "legend": "1.1rem",
-            "button": "0.95rem",
+        font_sizes = {
             "h1": "2rem",
-            "overflow": "1rem",            
-            "padding": "8px"
+            "legend": "1.2rem",
+            "button": "1rem",
+            "event_block": "0.9rem",
+            "overflow": "1rem",
+        }
+        padding_sizes = {
+            "header_padding": "10px 15px",
+            "week_gap": "15px",
+            "legend_gap": "8px",
+            "section_margin": "15px",
         }
     else:
-        return {
-            "annotation": 11,
-            "legend": "1.25rem",
-            "button": "1rem",
+        font_sizes = {
             "h1": "2.5rem",
-            "overflow": "1.1rem",            
-            "padding": "10px"
+            "legend": "1.5rem",
+            "button": "1.1rem",
+            "event_block": "1rem",
+            "overflow": "1.2rem",
         }
-
+        padding_sizes = {
+            "header_padding": "15px 20px",
+            "week_gap": "20px",
+            "legend_gap": "10px",
+            "section_margin": "20px",
+        }
+    return font_sizes, padding_sizes
+        
 # Function to generate a weekly view given a clicked date
 def generate_weekly_view(clicked_date, screen_width=1024):
-    font_sizes = get_font_sizes(screen_width)
+    font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
     # Determine the week range (Sunday to Saturday)
     week_start = clicked_date - timedelta(days=(clicked_date.weekday() + 1) % 7)
     week_start = week_start.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -142,6 +158,8 @@ def generate_weekly_view(clicked_date, screen_width=1024):
         by=["overflow_sort", "StartDate", "EndDate", "Duration", "Casino"], 
         ascending=[True, True, True, False, True]
     ).copy()
+    
+    casino_colors = get_color()
 
     for priority in sorted(grouped_events["overflow_sort"].unique()):
         group_df = grouped_events[grouped_events["overflow_sort"] == priority]
@@ -192,8 +210,9 @@ def generate_weekly_view(clicked_date, screen_width=1024):
             arrow_end = 7 - ARROW_OFFSET
 
             # Get the color and label for the event
-            color = get_color()[row["Casino"]]
+            color = casino_colors[row["Casino"]]["bg"]
             label = f"{row['EventName']}"
+            text_color = casino_colors[row["Casino"]]["text"]
             block_width = adjusted_end - adjusted_start
             
             #Adjust character-per-unit by screen width
@@ -251,13 +270,21 @@ def generate_weekly_view(clicked_date, screen_width=1024):
                     layer="above"
                 ))
 
+            plotly_font_size = 9
+            try:
+                #Try to pull numeric part from rem values
+                plotly_font_size = float(font_sizes["event_block"].replace("rem", "")) * 16
+            except Exception:
+                pass
+                
+            
             # Add event label annotation
             annotations.append(dict(
                     x=(adjusted_start + adjusted_end) / 2,
                     y=y_center,
                     text=trimmed_label,
                     showarrow=False,
-                    font=dict(size=font_sizes["annotation"]),  # Updated to use viewport width units
+                    font=dict(size=plotly_font_size, color=text_color),  # Use numeric size
                     xanchor="center",
                     yanchor="middle"
             ))
@@ -315,21 +342,21 @@ def generate_weekly_view(clicked_date, screen_width=1024):
 def get_color():
     # Color map by Casino (can expand if needed)
     color_map = {
-        "ilani": "#0b3357",
-        "Spirit Mountain Casino": "#a74321",
-        "Lucky Eagle Casino": "#862c8e",
-        "Muckleshoot Casino": "#1e1c29",
-        "Little Creek Casino": "#3086c3",
-        "Red Wind Casino": "#e13332",
-        "Snoqualmie Casino": "#00a9e0",
-        "Angel of the Winds Casino": "#383885",
-        "Lucky Dog Casino": "#f07a22",
-        "Legends Casino": "#ca9a41",
-        "Chinook Winds Casino": "#32373d",
-        "Emerald Queen Casino": "#632834",
-        "Rolling Hills Casino": "#5a1c1d",
-        "Wildhorse Casino": "#d21245",
-        "Seven Feathers Casino": "#41c5de"
+        "ilani": {"bg": "#0b3357", "text": "#ffffff"},
+        "Spirit Mountain Casino": {"bg": "#a74321", "text": "#ffffff"},
+        "Lucky Eagle Casino": {"bg": "#862c8e", "text": "#ffffff"},
+        "Muckleshoot Casino": {"bg": "#1e1c29", "text": "#ffffff"},
+        "Little Creek Casino": {"bg": "#3086c3", "text": "#ffffff"},
+        "Red Wind Casino": {"bg": "#e13332", "text": "#ffffff"},
+        "Snoqualmie Casino": {"bg": "#00a9e0", "text": "#ffffff"},
+        "Angel of the Winds Casino": {"bg": "#383885", "text": "#ffffff"},
+        "Lucky Dog Casino": {"bg": "#f07a22", "text": "#000000"},
+        "Legends Casino": {"bg": "#ca9a41", "text": "#000000"},
+        "Chinook Winds Casino": {"bg": "#32373d", "text": "#ffffff"},
+        "Emerald Queen Casino": {"bg": "#632834", "text": "#ffffff"},
+        "Rolling Hills Casino": {"bg": "#5a1c1d", "text": "#ffffff"},
+        "Wildhorse Casino": {"bg": "#d21245", "text": "#ffffff"},
+        "Seven Feathers Casino": {"bg": "#41c5de", "text": "#000000"}
     }
 
     default_colors = {
@@ -339,17 +366,44 @@ def get_color():
         "#ff00ff", "#008080", "#4b0082", "#008b8b", "#000080",
         "#4682b4"
     }
-    
+
     result = {}
-    for casino, color in color_map.items():
-        result[casino] = color
-        
+    for casino, colors in color_map.items():
+        result[casino] = colors
+
     if not result:
         print(f"No color assigned for casino: {casino}; using default color.")
-        result.update(dict(zip(range(len(default_colors)), default_colors)))
-        
+        dummy_casinos = [f"Casino {i}" for i in range(len(default_colors))]
+        for casino_name, color in zip(dummy_casinos, default_colors):
+            result[casino_name] = {"bg": color, "text": "#000000"}
+
     return result
 
+def create_legend(font_sizes):
+    legend_items = []
+    for casino, color in get_color().items():
+        if casino in df['Casino'].unique():
+            legend_items.append(html.Div([
+                html.Div(
+                    style={
+                        'backgroundColor': color["bg"],
+                        'width': '20px',
+                        'height': '20px',
+                        'display': 'inline-block',
+                        'marginRight': '6px'
+                    }
+                ),
+                html.Span(
+                    f"{casino}",
+                    style={
+                        'color': color["bg"],
+                        'marginRight': '15px',
+                        'fontWeight': 'bold',
+                        'fontSize': font_sizes['legend']
+                    }
+                )
+            ]))
+    return legend_items
 
 today = datetime.today()
 current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
@@ -358,13 +412,15 @@ start_sunday = current_sunday + timedelta(weeks=week_offset)
 rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
 
 #Determine responsive font sizes based on screen width
-font_sizes = get_font_sizes(screen_width)
+font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
 font_size_small = font_sizes['button']
 font_size_medium = font_sizes['legend']
 font_size_large = font_sizes['h1']    
     
 # Build the Dash app
 app = dash.Dash(__name__)
+
+app.title = "Casino Event Calendar"
 
 app.clientside_callback(
     '''
@@ -375,8 +431,6 @@ app.clientside_callback(
     Output('screen-width', 'data'),
     Input('initial-trigger', 'n_intervals'), State('screen-width', 'data')
 )
-
-app.title = "Casino Event Calendar"
 
 app.index_string = '''
 <!DOCTYPE html>
@@ -419,7 +473,7 @@ app.layout = html.Div(
                         'fontSize': font_sizes['h1'],
                         'marginBottom': '20px',
                         'color': 'inherit',
-                        'padding': '10px 0',
+                        'padding': f"{padding_sizes['header_padding']} 0",
                     }
                 ),
                 #Navigation & Legend
@@ -431,7 +485,8 @@ app.layout = html.Div(
                         id='prev-button',
                         title="Prior 4 Weeks",
                         n_clicks=0,
-                        className='emoji-button'
+                        className='emoji-button',
+                        style={'fontSize': font_sizes['button']}
                     ),
                     html.Div([
                         html.Legend(
@@ -439,38 +494,13 @@ app.layout = html.Div(
                             style={
                                 'fontWeight': 'bold',
                                 'textAlign': 'center',
-                                'fontSize': font_size_large,
+                                'fontSize': font_sizes['legend'],
                                 'marginBottom': '5px'
                             }
                         ),
                         html.Div(
-                            [
-                                html.Div(
-                                    [
-                                        html.Div(
-                                            style={
-                                                'backgroundColor': color,
-                                                'width': '20px',
-                                                'height': '20px',
-                                                'display': 'inline-block',
-                                                'marginRight': '6px'
-                                            }
-                                        ),
-                                        html.Span(
-                                            f"{casino}",
-                                            style={
-                                                'color': color,
-                                                'marginRight': '15px',
-                                                'fontWeight': 'bold',
-                                                'fontSize': font_size_medium
-                                            }
-                                        )
-                                    ],
-                                    style={'display': 'inline-block'}
-                                )
-                                for casino, color in get_color().items()
-                            ],
-                            style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center' }
+                            create_legend(font_sizes),
+                            style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center'}
                         )
                     ], style={'flex': '1', }),
                     html.Button(
@@ -478,7 +508,8 @@ app.layout = html.Div(
                         id='next-button',
                         title="Upcoming 4 Weeks",
                         n_clicks=0,
-                        className='emoji-button'
+                        className='emoji-button',
+                        style={'fontSize': font_sizes['button']}
                     )
                 ],
                     style={
@@ -495,7 +526,7 @@ app.layout = html.Div(
                 'backgroundColor': 'white',
                 'zIndex': 1000,
                 'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.25)',
-                'padding': '10px 15px'
+                'padding': padding_sizes['header_padding']
             }
         ),
         #Offset Storage
@@ -508,8 +539,8 @@ app.layout = html.Div(
         html.Div(id='rolling-weeks', style={
             'display': 'flex',
             'flexDirection': 'column',
-            'gap': '10px',
-            'marginTop': '25px'
+            'gap': padding_sizes['week_gap'],
+            'marginTop': padding_sizes['week_gap']
         }),
         #Modal Popup
         html.Div(id='event-modal', className='modal', children=[
@@ -549,6 +580,7 @@ def update_week_offset(prev_clicks, next_clicks):
 )
 
 def render_weeks(week_offset, _, screen_width):
+    print(f"Screen width received by render_weeks: {screen_width}")
     # Recalculate weeks and figures based on the current week offset
     today = datetime.today()
     current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
@@ -556,7 +588,7 @@ def render_weeks(week_offset, _, screen_width):
 
     rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
     
-    font_sizes = get_font_sizes(screen_width)
+    font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
     font_size_small = font_sizes['button']
     font_size_medium = font_sizes['legend']
     font_size_large = font_sizes['h1'] 
@@ -564,7 +596,7 @@ def render_weeks(week_offset, _, screen_width):
     weekly_blocks = []
     
     for i, start_date in enumerate(rolling_weeks):
-        fig, overflow_df = generate_weekly_view(start_date)
+        fig, overflow_df = generate_weekly_view(start_date, screen_width)
         
         weekly_blocks_children = [
             html.H3(
