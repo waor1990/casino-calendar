@@ -8,7 +8,7 @@ import random
 import logging
 
 # Load CSV file
-df = pd.read_csv("casino_events.csv")  
+df = pd.read_csv("casino_events.csv")
 df["StartDate"] = pd.to_datetime(df["StartDate"])
 df["EndDate"] = pd.to_datetime(df["EndDate"])
 
@@ -19,27 +19,31 @@ def get_dynamic_sizes(screen_width):
     if screen_width < 480:
         font_sizes = {
             "h1": "1.5rem",
+            "legend_title": "1.3rem",
             "legend": "1rem",
-            "button": "0.85rem",
+            "button": "2.5rem",
             "event_block": "0.8rem",
             "overflow": "0.9rem",
         }
         padding_sizes = {
             "header_padding": "8px 10px",
+            "button_padding": "4px 6px",
             "week_gap": "10px",
-            "legend_gap": "6px",
+            "legend_gap": "2px",
             "section_margin": "10px",
         }
     elif screen_width < 768:
         font_sizes = {
             "h1": "2rem",
+            "legend_title": "1.5rem",
             "legend": "1.2rem",
-            "button": "1rem",
+            "button": "2.6rem",
             "event_block": "0.9rem",
             "overflow": "1rem",
         }
         padding_sizes = {
             "header_padding": "10px 15px",
+            "button_padding": "4px 6px",
             "week_gap": "15px",
             "legend_gap": "8px",
             "section_margin": "15px",
@@ -47,19 +51,21 @@ def get_dynamic_sizes(screen_width):
     else:
         font_sizes = {
             "h1": "2.5rem",
+            "legend_title": "1.9rem",
             "legend": "1.5rem",
-            "button": "1.1rem",
+            "button": "2.7rem",
             "event_block": "1rem",
             "overflow": "1.2rem",
         }
         padding_sizes = {
             "header_padding": "15px 20px",
+            "button_padding": "4px 6px",
             "week_gap": "20px",
             "legend_gap": "10px",
             "section_margin": "20px",
         }
     return font_sizes, padding_sizes
-        
+
 # Function to generate a weekly view given a clicked date
 def generate_weekly_view(clicked_date, screen_width=1024):
     font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
@@ -147,24 +153,24 @@ def generate_weekly_view(clicked_date, screen_width=1024):
             y1=temp_base_y_top,
             line=dict(color="black", width=1),
             layer="below"
-        ))   
+        ))
 
     used_rows_by_day = {i: set() for i in range(7)}
     row_nums = []
     current_row = 0
     recurring_rows = {}
-    
+
     grouped_events = events_in_week.sort_values(
-        by=["overflow_sort", "StartDate", "EndDate", "Duration", "Casino"], 
+        by=["overflow_sort", "StartDate", "EndDate", "Duration", "Casino"],
         ascending=[True, True, True, False, True]
     ).copy()
-    
+
     casino_colors = get_color()
 
     for priority in sorted(grouped_events["overflow_sort"].unique()):
         group_df = grouped_events[grouped_events["overflow_sort"] == priority]
         group_df = group_df.sort_values(by=["StartDate", "EndDate", "Duration", "Casino"], ascending=[True, True, False, True])
-        
+
         for idx, row in group_df.iterrows():
             start_delta = (row["StartDate"] - week_start).total_seconds() / (24 * 3600)
             end_delta = (row["EndDate"] - week_start).total_seconds() / (24 * 3600)
@@ -175,27 +181,27 @@ def generate_weekly_view(clicked_date, screen_width=1024):
 
             start_day = max(0, floor(visible_start))
             end_day = min(6, floor(visible_end - 1e-6))
-            
+
             recurring_key = f"{row['EventName']}|{row['Casino']}|{row['StartDate'].time()}|{row['EndDate'].time()}"
             preferred_row = recurring_rows.get(recurring_key)
             row_assigned = False
-            
+
             #First try preferred row
             if preferred_row is not None and all (r not in used_rows_by_day[d] for d in range(start_day, end_day + 1)):
                 assigned_row = preferred_row
                 row_assigned = True
-            else: 
+            else:
                 for r in range(current_row, 100):
                  if all (r not in used_rows_by_day[d] for d in range(start_day, end_day + 1)):
                         assigned_row = r
                         recurring_rows[recurring_key] = r
                         row_assigned = True
                         break
-                
+
             #If not usable, find a new row
             if row_assigned:
                 for d in range(start_day, end_day + 1):
-                    used_rows_by_day[d].add(assigned_row) 
+                    used_rows_by_day[d].add(assigned_row)
                 events_in_week.at[idx, "row_num"] = assigned_row
                 row_nums.append(assigned_row)
 
@@ -214,7 +220,7 @@ def generate_weekly_view(clicked_date, screen_width=1024):
             label = f"{row['EventName']}"
             text_color = casino_colors[row["Casino"]]["text"]
             block_width = adjusted_end - adjusted_start
-            
+
             #Adjust character-per-unit by screen width
             if screen_width < 480:
                 CHARS_PER_UNIT = 10
@@ -270,14 +276,14 @@ def generate_weekly_view(clicked_date, screen_width=1024):
                     layer="above"
                 ))
 
-            plotly_font_size = 9
+            plotly_font_size = 12
             try:
                 #Try to pull numeric part from rem values
-                plotly_font_size = float(font_sizes["event_block"].replace("rem", "")) * 16
+                plotly_font_size = float(font_sizes["event_block"].replace("rem", "")) * 12
             except Exception:
                 pass
-                
-            
+
+
             # Add event label annotation
             annotations.append(dict(
                     x=(adjusted_start + adjusted_end) / 2,
@@ -305,7 +311,7 @@ def generate_weekly_view(clicked_date, screen_width=1024):
             total_rows = max(row_nums) if row_nums else 0
             base_y_top = total_rows * row_unit_height + 0.5
             chart_height = max(int(base_y_top * 40), 120)
-        
+
         #Advance current_row to ensure new groups are visually below previous ones
         current_row = max(row_nums, default=current_row) + 1
 
@@ -342,14 +348,14 @@ def generate_weekly_view(clicked_date, screen_width=1024):
 def get_color():
     # Color map by Casino (can expand if needed)
     color_map = {
-        "ilani": {"bg": "#0b3357", "text": "#ffffff"},
+        "ilani": {"bg": "#2c6f7f", "text": "#ffffff"},
         "Spirit Mountain Casino": {"bg": "#a74321", "text": "#ffffff"},
         "Lucky Eagle Casino": {"bg": "#862c8e", "text": "#ffffff"},
         "Muckleshoot Casino": {"bg": "#1e1c29", "text": "#ffffff"},
         "Little Creek Casino": {"bg": "#3086c3", "text": "#ffffff"},
         "Red Wind Casino": {"bg": "#e13332", "text": "#ffffff"},
         "Snoqualmie Casino": {"bg": "#00a9e0", "text": "#ffffff"},
-        "Angel of the Winds Casino": {"bg": "#383885", "text": "#ffffff"},
+        "Angel of the Winds Casino": {"bg": "#64c7cc", "text": "#ffffff"},
         "Lucky Dog Casino": {"bg": "#f07a22", "text": "#000000"},
         "Legends Casino": {"bg": "#ca9a41", "text": "#000000"},
         "Chinook Winds Casino": {"bg": "#32373d", "text": "#ffffff"},
@@ -379,7 +385,7 @@ def get_color():
 
     return result
 
-def create_legend(font_sizes):
+def create_legend(font_sizes, padding_sizes):
     legend_items = []
     for casino, color in get_color().items():
         if casino in df['Casino'].unique():
@@ -397,12 +403,16 @@ def create_legend(font_sizes):
                     f"{casino}",
                     style={
                         'color': color["bg"],
-                        'marginRight': '15px',
-                        'fontWeight': 'bold',
+                        'marginRight': '4px',
                         'fontSize': font_sizes['legend']
                     }
                 )
-            ]))
+            ], style={
+                'display': 'flex',
+                'alignItems': 'center',
+                'margin': f"0 {padding_sizes['legend_gap']} {padding_sizes['legend_gap']} 0",
+                'flex': '0 1 auto',
+            }))
     return legend_items
 
 today = datetime.today()
@@ -415,8 +425,8 @@ rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
 font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
 font_size_small = font_sizes['button']
 font_size_medium = font_sizes['legend']
-font_size_large = font_sizes['h1']    
-    
+font_size_large = font_sizes['h1']
+
 # Build the Dash app
 app = dash.Dash(__name__)
 
@@ -462,7 +472,14 @@ app.layout = html.Div(
     },
     children=[
         #Header container
-        html.Div(id='sticky-header'),
+        html.Div(id='sticky-header', style={
+            'position': 'sticky',
+            'top': 0,
+            'padding': f"{padding_sizes['header_padding']} 0",
+            'backgroundColor': 'white',
+            'zIndex': 1000,
+            'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.25)'
+        }),
         #Offset Storage
         dcc.Store(id='screen-width', data=1024), #Default screen width fallback
         dcc.Store(id='week-offset', data=0),
@@ -474,7 +491,7 @@ app.layout = html.Div(
             'display': 'flex',
             'flexDirection': 'column',
             'gap': padding_sizes['week_gap'],
-            'marginTop': padding_sizes['week_gap']
+            'marginTop': padding_sizes['section_margin']
         }),
         #Modal Popup
         html.Div(id='event-modal', className='modal', children=[
@@ -504,7 +521,7 @@ app.layout = html.Div(
 
 def sticky_header(screen_width):
     font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
-    
+
     return html.Div([
         html.H1(
             "🎰 Casino Event Calendar 📅",
@@ -527,7 +544,7 @@ def sticky_header(screen_width):
                 title="Prior 4 Weeks",
                 n_clicks=0,
                 className='emoji-button',
-                style={'fontSize': font_sizes['button']}
+                style={'fontSize': font_sizes['button'], 'padding': padding_sizes['button_padding']}
             ),
             html.Div([
                 html.Legend(
@@ -535,13 +552,20 @@ def sticky_header(screen_width):
                     style={
                         'fontWeight': 'bold',
                         'textAlign': 'center',
-                        'fontSize': font_sizes['legend'],
-                        'marginBottom': '5px'
+                        'fontSize': font_sizes['legend_title'],
+                        'marginBottom': padding_sizes['legend_gap']
                     }
                 ),
                 html.Div(
-                    create_legend(font_sizes),
-                    style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center'}
+                    create_legend(font_sizes, padding_sizes),
+                    style={
+                        'display': 'flex',
+                        'flexWrap': 'wrap',
+                        'justifyContent': 'center',
+                        'alignItems': 'flex-start',
+                        'textAlign': 'left',
+                        'gap': f"{int(padding_sizes['legend_gap'].replace('px', '')) // 2}px"
+                    }
                 )
             ], style={'flex': '1', }),
             html.Button(
@@ -550,7 +574,7 @@ def sticky_header(screen_width):
                 title="Upcoming 4 Weeks",
                 n_clicks=0,
                 className='emoji-button',
-                style={'fontSize': font_sizes['button']}
+                style={'fontSize': font_sizes['button'], 'padding': padding_sizes['button_padding']}
             )
         ],
         style={
@@ -560,14 +584,7 @@ def sticky_header(screen_width):
             'paddingBottom': '10px',
         }
         )
-    ], style={
-        'position': 'sticky',
-        'top': 0,
-        'backgroundColor': 'white',
-        'zIndex': 1000,
-        'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.25)',
-        'padding': padding_sizes['header_padding']
-    })
+    ])
 
 @app.callback(
     Output('week-offset', 'data'),
@@ -586,28 +603,24 @@ def update_week_offset(prev_clicks, next_clicks):
 )
 
 def render_weeks(week_offset, _, screen_width):
-    print(f"Screen width received by render_weeks: {screen_width}")
+    #print(f"Screen width received by render_weeks: {screen_width}")
     # Recalculate weeks and figures based on the current week offset
     today = datetime.today()
     current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
     start_sunday = current_sunday + timedelta(weeks=week_offset)
 
     rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
-    
+
     font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
-    font_size_small = font_sizes['button']
-    font_size_medium = font_sizes['legend']
-    font_size_large = font_sizes['h1'] 
-    
     weekly_blocks = []
-    
+
     for i, start_date in enumerate(rolling_weeks):
         fig, overflow_df = generate_weekly_view(start_date, screen_width)
-        
+
         weekly_blocks_children = [
             html.H3(
                 f"Events the Week of {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
-                    style={'textAlign': 'center', 'color': '#6A5ACD'}),
+                    style={'textAlign': 'center', 'color': '#6A5ACD', 'fontSize': font_sizes['legend_title']}),
 
             dcc.Graph(
                 id={'type': 'graph', 'index': i},
@@ -626,16 +639,16 @@ def render_weeks(week_offset, _, screen_width):
                     f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
                     id={'type': 'overflow-toggle', 'index': i},
                     n_clicks=0,
-                    style={'color': '#00008B', 'fontSize': font_size_small},  # Button text dark blue
+                    style={'color': '#00008B', 'fontSize': font_sizes['overflow'], 'paddingBottom': '10px'},  # Added paddingBottom
                     **{'data-start-date': start_date.strftime('%Y-%m-%d')}
                 ),
                 html.Div(
                     id={'type': 'overflow-box', 'index': i},
                     className='overflow-box',
                     children=[
-                        html.Strong("Ongoing Events This Week:", style={'color': '#6A5ACD', 'textWeight': 'bold', 'fontSize': font_size_medium, 'display': 'block', 'marginBottom': '8px'}),
+                        html.Strong("Ongoing Events This Week:", style={'color': '#6A5ACD', 'textWeight': 'bold', 'fontSize': font_sizes['overflow'], 'display': 'block', 'marginBottom': '8px'}),
                         html.Ul([
-                            html.Li(f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}", style={'color': '#00008B', 'fontSize': font_size_small})
+                            html.Li(f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}", style={'color': '#00008B', 'fontSize': font_sizes['overflow']})
                             for _, row in overflow_df.iterrows()
                         ])
                     ],
@@ -650,12 +663,12 @@ def render_weeks(week_offset, _, screen_width):
                     }
                 )
             ])
-        
+
         weekly_blocks.append(
             html.Div(
                 weekly_blocks_children,
                 className= 'slide-in',
-                style={'marginBottom': '40px'},
+                style={'marginBottom': padding_sizes['section_margin']},
                 key=f"week-block-{i}-{start_date.isoformat()}"
             )
         )
@@ -674,16 +687,15 @@ def render_weeks(week_offset, _, screen_width):
 def toggle_overflow(n_clicks, start_date_str):
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
     is_open = n_clicks % 2 == 1
-    
+
     box_class = 'overflow-box show' if is_open else 'overflow-box'
-    
-    
+
     button_text = (
         f"🌀 Hide Ongoing Events for {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}"
-        if is_open 
+        if is_open
         else f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}"
-    )   
-    
+    )
+
     return box_class, button_text
 
 @app.callback(
@@ -700,18 +712,18 @@ def toggle_overflow(n_clicks, start_date_str):
 
 def show_event_modal(clicks, close_clicks, timer_tick):
     ctx = dash.callback_context
-    
+
     if not ctx.triggered:
         return dash.no_update, dash.no_update, dash.no_update, dash.no_update, [None] * len(clicks)
-    
+
     trigger = ctx.triggered[0]['prop_id']
-    
+
     if 'close-timer' in trigger:
         return dash.no_update, '', "", 0, [None] * len(clicks)
 
     if 'close-modal' in trigger:
         return dash.no_update, 'modal closing',  dash.no_update, 1, [None] * len(clicks)
-    
+
     for click in clicks:
         if click and 'points' in click and click['points']:
             data = click['points'][0]['customdata'][0]
@@ -724,15 +736,15 @@ def show_event_modal(clicks, close_clicks, timer_tick):
                             "StartDate": "Event Starts",
                             "EndDate": "Event Ends"
                         }.get(label, label)
-                        
+
                         value = data[label]
-                        
+
                         if label in ["StartDate", "EndDate"]:
                             try:
                                 value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
                             except Exception:
                                 pass
-                                
+
                         rows.append(html.Div([
                             html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
                             html.Span(value)
