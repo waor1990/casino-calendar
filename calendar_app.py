@@ -462,73 +462,7 @@ app.layout = html.Div(
     },
     children=[
         #Header container
-        html.Div(
-            id='sticky-header',
-            children=[
-                html.H1(
-                    "🎰 Casino Event Calendar 📅",
-                    style={
-                        'textAlign': 'center',
-                        'margin': '0',
-                        'fontSize': font_sizes['h1'],
-                        'marginBottom': '20px',
-                        'color': 'inherit',
-                        'padding': f"{padding_sizes['header_padding']} 0",
-                    }
-                ),
-                #Navigation & Legend
-                html.Div(
-                    id='header-container',
-                    children=[
-                    html.Button(
-                        "🎲",
-                        id='prev-button',
-                        title="Prior 4 Weeks",
-                        n_clicks=0,
-                        className='emoji-button',
-                        style={'fontSize': font_sizes['button']}
-                    ),
-                    html.Div([
-                        html.Legend(
-                            "Casino Legend:",
-                            style={
-                                'fontWeight': 'bold',
-                                'textAlign': 'center',
-                                'fontSize': font_sizes['legend'],
-                                'marginBottom': '5px'
-                            }
-                        ),
-                        html.Div(
-                            create_legend(font_sizes),
-                            style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center'}
-                        )
-                    ], style={'flex': '1', }),
-                    html.Button(
-                        "🎰",
-                        id='next-button',
-                        title="Upcoming 4 Weeks",
-                        n_clicks=0,
-                        className='emoji-button',
-                        style={'fontSize': font_sizes['button']}
-                    )
-                ],
-                    style={
-                        'display': 'flex',
-                        'justifyContent': 'space-between',
-                        'gap': '10px',
-                        'paddingBottom': '10px',
-                    }
-                )
-            ],
-            style={
-                'position': 'sticky',
-                'top': 0,
-                'backgroundColor': 'white',
-                'zIndex': 1000,
-                'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.25)',
-                'padding': padding_sizes['header_padding']
-            }
-        ),
+        html.Div(id='sticky-header'),
         #Offset Storage
         dcc.Store(id='screen-width', data=1024), #Default screen width fallback
         dcc.Store(id='week-offset', data=0),
@@ -562,6 +496,78 @@ app.layout = html.Div(
         ])
     ]
     )
+
+@app.callback(
+    Output('sticky-header', 'children'),
+    Input('screen-width', 'data')
+)
+
+def sticky_header(screen_width):
+    font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
+    
+    return html.Div([
+        html.H1(
+            "🎰 Casino Event Calendar 📅",
+            style={
+                'textAlign': 'center',
+                'margin': '0',
+                'fontSize': font_sizes['h1'],
+                'marginBottom': '20px',
+                'color': 'inherit',
+                'padding': f"{padding_sizes['header_padding']} 0",
+            }
+        ),
+        #Navigation & Legend
+        html.Div(
+            id='header-container',
+            children=[
+            html.Button(
+                "🎲",
+                id='prev-button',
+                title="Prior 4 Weeks",
+                n_clicks=0,
+                className='emoji-button',
+                style={'fontSize': font_sizes['button']}
+            ),
+            html.Div([
+                html.Legend(
+                    "Casino Legend:",
+                    style={
+                        'fontWeight': 'bold',
+                        'textAlign': 'center',
+                        'fontSize': font_sizes['legend'],
+                        'marginBottom': '5px'
+                    }
+                ),
+                html.Div(
+                    create_legend(font_sizes),
+                    style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center'}
+                )
+            ], style={'flex': '1', }),
+            html.Button(
+                "🎰",
+                id='next-button',
+                title="Upcoming 4 Weeks",
+                n_clicks=0,
+                className='emoji-button',
+                style={'fontSize': font_sizes['button']}
+            )
+        ],
+        style={
+            'display': 'flex',
+            'justifyContent': 'space-between',
+            'gap': '10px',
+            'paddingBottom': '10px',
+        }
+        )
+    ], style={
+        'position': 'sticky',
+        'top': 0,
+        'backgroundColor': 'white',
+        'zIndex': 1000,
+        'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.25)',
+        'padding': padding_sizes['header_padding']
+    })
 
 @app.callback(
     Output('week-offset', 'data'),
