@@ -279,7 +279,7 @@ def generate_weekly_view(clicked_date, screen_width=1024):
             plotly_font_size = 12
             try:
                 #Try to pull numeric part from rem values
-                plotly_font_size = float(font_sizes["event_block"].replace("rem", "")) * 12
+                plotly_font_size = float(font_sizes["event_block"].replace("rem", "")) * 14
             except Exception:
                 pass
 
@@ -588,13 +588,42 @@ def sticky_header(screen_width):
 
 @app.callback(
     Output('week-offset', 'data'),
+    Output('next-button', 'disabled'),
+    Output('prev-button', 'disabled'),
     Input('prev-button', 'n_clicks'),
-    Input('next-button', 'n_clicks')
+    Input('next-button', 'n_clicks'),
+    State('week-offset', 'data')
 )
 
-def update_week_offset(prev_clicks, next_clicks):
-    # Update the week offset based on button clicks
-    return next_clicks - prev_clicks
+def update_week_offset(prev_clicks, next_clicks, current_offset):
+    desired_offset = next_clicks - prev_clicks
+    
+    #Limit going back no more than 6 weeks
+    if desired_offset < -6:
+        desired_offset = -6
+        
+    #Limit forward navigation if next 4 weeks are empty
+    today = datetime.today()
+    current_sunday = today - timedelta(days=(today.weekday() + 1 ) % 7)
+    start_sunday = current_sunday + timedelta(weeks=desired_offset)
+    rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
+    
+    #Check if there are events in next 4 weeks
+    has_future_events = any(
+        not df[(df['EndDate'] > week_start) & (df['StartDate']
+                                               < week_start + timedelta(days=6))].empty
+        for week_start in rolling_weeks
+    )
+    
+    #Don't allow forward if not future events
+    if not has_future_events and desired_offset > current_offset:
+        desired_offset = current_offset
+        
+    #Disable determination if no events moving forward
+    prev_disabled = desired_offset <= -6
+    next_disabled = not has_future_events
+    
+    return desired_offset, prev_disabled, next_disabled
 
 @app.callback(
     Output('rolling-weeks', 'children'),
@@ -604,6 +633,7 @@ def update_week_offset(prev_clicks, next_clicks):
 
 def render_weeks(week_offset, _, screen_width):
     #print(f"Screen width received by render_weeks: {screen_width}")
+    
     # Recalculate weeks and figures based on the current week offset
     today = datetime.today()
     current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
@@ -616,6 +646,7 @@ def render_weeks(week_offset, _, screen_width):
 
     for i, start_date in enumerate(rolling_weeks):
         fig, overflow_df = generate_weekly_view(start_date, screen_width)
+        overflow_width = '80%' if screen_width < 480 else '60%' if screen_width < 768 else '40%'
 
         weekly_blocks_children = [
             html.H3(
@@ -639,7 +670,15 @@ def render_weeks(week_offset, _, screen_width):
                     f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
                     id={'type': 'overflow-toggle', 'index': i},
                     n_clicks=0,
-                    style={'color': '#00008B', 'fontSize': font_sizes['overflow'], 'paddingBottom': '10px'},  # Added paddingBottom
+                    style={
+                        'color': '#00008B', 
+                        'fontSize': font_sizes['overflow'], 
+                        'padding': '2px 4px', 
+                        'textAlign': 'center',
+                        'display': 'flex',
+                        'alignItems': 'center',
+                        'justifyContent': 'center'
+                    },  # Added paddingBottom
                     **{'data-start-date': start_date.strftime('%Y-%m-%d')}
                 ),
                 html.Div(
@@ -658,7 +697,7 @@ def render_weeks(week_offset, _, screen_width):
                         'border': '2px solid #ccc',
                         'borderRadius': '4px',
                         'margin': '0 auto 10px auto',
-                        'width': '40%',
+                        'width': overflow_width,
                         'textAlign': 'left',
                     }
                 )
