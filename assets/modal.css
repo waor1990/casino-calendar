@@ -31,8 +31,8 @@
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    max-width: 90vw;
-    width: 100%;
+    max-width: 95vw;
+    width: 600px;
     min-width: unset;
     color: #333;
     pointer-events: none;
@@ -40,6 +40,13 @@
     will-change: transform, opacity;
     transform-origin: center center;
     
+}
+
+/*RESPONSIVE: For mobile*/
+@media (max-width: 480px) {
+    .modal-content {
+        width: 80%;
+    }
 }
 
 /*Animate slide-in*/
