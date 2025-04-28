@@ -90,6 +90,12 @@
     transition: transform 0.2s ease;
 }
 
+.emoji-button:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    transition: opacity 0.5s ease;
+}
+
 #prev-button.emoji-button:hover {
     transform: scale(1.5) rotate(-10deg);
 }
