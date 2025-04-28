@@ -609,11 +609,16 @@ def update_week_offset(prev_clicks, next_clicks, current_offset):
     rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
     
     #Check if there are events in next 4 weeks
-    has_future_events = any(
-        not df[(df['EndDate'] > week_start) & (df['StartDate']
-                                               < week_start + timedelta(days=6))].empty
-        for week_start in rolling_weeks
-    )
+    has_future_events = False
+    for start_date in rolling_weeks:
+        week_start = start_date
+        week_end = start_date + timedelta(days=6)
+        events_in_week = df[
+            (df['EndDate'] > week_start) & (df['StartDate'] < week_end)
+        ]
+        if not events_in_week.empty:
+            has_future_events = True
+            break
     
     #Don't allow forward if not future events
     if not has_future_events and desired_offset > current_offset:
