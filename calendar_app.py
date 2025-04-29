@@ -484,7 +484,7 @@ app.layout = html.Div(
         #Main Content Container
         dcc.Loading(
             id='calendar-loading',
-            type='cube',
+            type='circle',
             color= '#6A5ACD',
             children=html.Div(
                 id='rolling-weeks',
@@ -636,17 +636,21 @@ def update_week_offset(prev_clicks, next_clicks, current_offset):
 @app.callback(
     Output('rolling-weeks', 'children'),
     Input('week-offset', 'data'),
-    Input('initial-trigger', 'n_intervals'), State('screen-width', 'data')
+    Input('initial-trigger', 'n_intervals'),
+    State('screen-width', 'data'),
+    prevent_initial_call=True
 )
 
 def render_weeks(week_offset, _, screen_width):
+    if week_offset is None or not isinstance(week_offset, int):
+        week_offset = 0
+        
     #print(f"Screen width received by render_weeks: {screen_width}")
     
     # Recalculate weeks and figures based on the current week offset
     today = datetime.today()
     current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
     start_sunday = current_sunday + timedelta(weeks=week_offset)
-
     rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
 
     font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
@@ -654,74 +658,118 @@ def render_weeks(week_offset, _, screen_width):
 
     for i, start_date in enumerate(rolling_weeks):
         fig, overflow_df = generate_weekly_view(start_date, screen_width)
+        
+        toggle_id = {'type': 'toggle-week', 'index': i}
+        content_id = {'type': 'week-content', 'index': i}
+        store = dcc.Store(id={'type': 'week-toggle', 'index': i}, data=True)
+        
         overflow_width = '80%' if screen_width < 480 else '60%' if screen_width < 768 else '40%'
-
+        
         weekly_blocks_children = [
             html.H3(
-                f"Events the Week of {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
-                    style={'textAlign': 'center', 'color': '#6A5ACD', 'fontSize': font_sizes['legend_title']}),
-
-            dcc.Graph(
-                id={'type': 'graph', 'index': i},
-                figure=fig,
-                config={'displayModeBar': False},
-                style={'width': '99%'}
+                f"▼ Events the Week of {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
+                id=toggle_id, 
+                style={
+                    'fontSize': font_sizes['legend_title'],
+                    'color': '#6A5ACD', 
+                    'fontWeight': 'bold',
+                    'marginBottom': '10px',
+                    'cursor': 'pointer',
+                    'textAlign': 'center', 
+                    'userSelect': 'none'
+                }
+            ),
+            html.Div(
+                id=content_id,
+                children=[
+                    dcc.Graph(
+                        id={'type': 'graph', 'index': i},
+                        figure=fig,
+                        config={'displayModeBar': False},
+                        style={'width': '99%'}
+                    ),
+                    html.Div([
+                        # Collapse Toggle
+                        html.Button(
+                            f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
+                            id={'type': 'overflow-toggle', 'index': i},
+                            n_clicks=0,
+                            style={
+                                'color': '#00008B', 
+                                'fontSize': font_sizes['overflow'], 
+                                'padding': '2px 4px', 
+                                'textAlign': 'center',
+                                'display': 'flex',
+                                'alignItems': 'center',
+                                'justifyContent': 'center'
+                            },  # Added paddingBottom
+                            **{'data-start-date': start_date.strftime('%Y-%m-%d')}
+                        ),
+                        html.Div(
+                            id={'type': 'overflow-box', 'index': i},
+                            className='overflow-box',
+                            children=[
+                                html.Strong("Ongoing Events This Week:", style={'color': '#6A5ACD', 'textWeight': 'bold', 'fontSize': font_sizes['overflow'], 'display': 'block', 'marginBottom': '8px'}),
+                                html.Ul([
+                                    html.Li(f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}", style={'color': '#00008B', 'fontSize': font_sizes['overflow']})
+                                    for _, row in overflow_df.iterrows()
+                                ])
+                            ],
+                            style={
+                                'backgroundColor': '#f5f3fa',  # Overflow-box background
+                                'padding': '12px 20px',
+                                'border': '2px solid #ccc',
+                                'borderRadius': '4px',
+                                'margin': '0 auto 10px auto',
+                                'width': overflow_width,
+                                'textAlign': 'left',
+                            }
+                        )
+                    ]) if not overflow_df.empty else html.Div()
+                ],
+                style={'display': 'block'}
             )
         ]
+            
+        # week_title_button = html.Button(
+            
+        #     id={'type': 'week-title-btn', 'index': i},
+        #     n_clicks=0,
+        #             )
+        
+        
+        
 
-        #Add overflow toggle section
-        if not overflow_df.empty:
-            weekly_blocks_children.extend([
-                dcc.Store(id={'type': 'overflow-date', 'index': i}, data=start_date.strftime('%Y-%m-%d')),
-                # Collapse Toggle
-                html.Button(
-                    f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
-                    id={'type': 'overflow-toggle', 'index': i},
-                    n_clicks=0,
-                    style={
-                        'color': '#00008B', 
-                        'fontSize': font_sizes['overflow'], 
-                        'padding': '2px 4px', 
-                        'textAlign': 'center',
-                        'display': 'flex',
-                        'alignItems': 'center',
-                        'justifyContent': 'center'
-                    },  # Added paddingBottom
-                    **{'data-start-date': start_date.strftime('%Y-%m-%d')}
-                ),
-                html.Div(
-                    id={'type': 'overflow-box', 'index': i},
-                    className='overflow-box',
-                    children=[
-                        html.Strong("Ongoing Events This Week:", style={'color': '#6A5ACD', 'textWeight': 'bold', 'fontSize': font_sizes['overflow'], 'display': 'block', 'marginBottom': '8px'}),
-                        html.Ul([
-                            html.Li(f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}", style={'color': '#00008B', 'fontSize': font_sizes['overflow']})
-                            for _, row in overflow_df.iterrows()
-                        ])
-                    ],
-                    style={
-                        'backgroundColor': '#f5f3fa',  # Overflow-box background
-                        'padding': '12px 20px',
-                        'border': '2px solid #ccc',
-                        'borderRadius': '4px',
-                        'margin': '0 auto 10px auto',
-                        'width': overflow_width,
-                        'textAlign': 'left',
-                    }
-                )
-            ])
-
+        
         weekly_blocks.append(
             html.Div(
                 weekly_blocks_children,
-                className= 'slide-in',
+                className= 'week-block',
                 style={'marginBottom': padding_sizes['section_margin']},
-                key=f"week-block-{i}-{start_date.isoformat()}"
-            )
-        )
-
+                id=f"block-container-{i}"
+                )
+            )      
+    
     # Return a list of figures for the weeks
     return weekly_blocks
+
+@app.callback(
+    Output({'type': 'week-content', 'index': MATCH}, 'style'),
+    Output({'type': 'toggle-week', 'index': MATCH}, 'children'),
+    Output({'type': 'week-toggle', 'index': MATCH}, 'data'),
+    Input({'type': 'toggle-week', 'index': MATCH}, 'n_clicks'),
+    State({'type': 'week-toggle', 'index': MATCH}, 'data'),
+    State({'type': 'toggle-week', 'index': MATCH}, 'children'),
+    prevent_initial_call=True
+)
+
+def toggle_week_content(n_clicks, is_open, current_text):
+    new_is_open = not is_open
+    new_style = {'display': 'block'} if new_is_open else {'display': 'none'}
+    
+    new_text = current_text.replace("▶", "▼") if new_is_open else current_text.replace("▼", "▶")
+    
+    return new_style, new_text, new_is_open
 
 @app.callback(
     Output({'type': 'overflow-box', 'index': MATCH}, 'className'),
