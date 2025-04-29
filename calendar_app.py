@@ -480,19 +480,28 @@ app.layout = html.Div(
             'zIndex': 1000,
             'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.25)'
         }),
+        
+        #Main Content Container
+        dcc.Loading(
+            id='calendar-loading',
+            type='cube',
+            color= '#6A5ACD',
+            children=html.Div(
+                id='rolling-weeks',
+                style={
+                    'display': 'flex',
+                    'flexDirection': 'column',
+                    'gap': padding_sizes['week_gap'],
+                    'marginTop': padding_sizes['section_margin']
+            }),
+        ),
+        
         #Offset Storage
         dcc.Store(id='screen-width', data=1024), #Default screen width fallback
         dcc.Store(id='week-offset', data=0),
         dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
         dcc.Interval(id='close-timer', interval=600, n_intervals=0, max_intervals=0),
-
-        #Main Content Container
-        html.Div(id='rolling-weeks', style={
-            'display': 'flex',
-            'flexDirection': 'column',
-            'gap': padding_sizes['week_gap'],
-            'marginTop': padding_sizes['section_margin']
-        }),
+     
         #Modal Popup
         html.Div(id='event-modal', className='modal', children=[
             html.Div(id='event-modal-content', className='modal-content',children=[
@@ -588,8 +597,8 @@ def sticky_header(screen_width):
 
 @app.callback(
     Output('week-offset', 'data'),
-    Output('next-button', 'disabled'),
     Output('prev-button', 'disabled'),
+    Output('next-button', 'disabled'),
     Input('prev-button', 'n_clicks'),
     Input('next-button', 'n_clicks'),
     State('week-offset', 'data')
@@ -609,16 +618,10 @@ def update_week_offset(prev_clicks, next_clicks, current_offset):
     rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
     
     #Check if there are events in next 4 weeks
-    has_future_events = False
-    for start_date in rolling_weeks:
-        week_start = start_date
-        week_end = start_date + timedelta(days=6)
-        events_in_week = df[
-            (df['EndDate'] > week_start) & (df['StartDate'] < week_end)
-        ]
-        if not events_in_week.empty:
-            has_future_events = True
-            break
+    has_future_events = any(
+        not df[(df['EndDate'] > week) & (df['StartDate'] < week + timedelta(days=6))].empty
+        for week in rolling_weeks
+    )
     
     #Don't allow forward if not future events
     if not has_future_events and desired_offset > current_offset:
