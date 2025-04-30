@@ -764,11 +764,10 @@ def render_weeks(week_offset, _, screen_width):
 )
 
 def toggle_week_content(n_clicks, is_open, current_text):
+    print(f"[toggle_week_content] Clicks: {n_clicks}, Is Open: {is_open}, Text: {current_text}")
     new_is_open = not is_open
     new_style = {'display': 'block'} if new_is_open else {'display': 'none'}
-    
     new_text = current_text.replace("▶", "▼") if new_is_open else current_text.replace("▼", "▶")
-    
     return new_style, new_text, new_is_open
 
 @app.callback(
@@ -780,6 +779,7 @@ def toggle_week_content(n_clicks, is_open, current_text):
 )
 
 def toggle_overflow(n_clicks, start_date_str):
+    print(f"[toggle_overflow] Clicks: {n_clicks}, Date: {start_date_str}")
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
     is_open = n_clicks % 2 == 1
 
