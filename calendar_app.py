@@ -667,6 +667,7 @@ def render_weeks(week_offset, _, screen_width):
         overflow_width = '80%' if screen_width < 480 else '60%' if screen_width < 768 else '40%'
         
         weekly_blocks_children = [
+            store,
             html.H3(
                 f"▼ Events the Week of {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
                 id=toggle_id,
@@ -706,6 +707,10 @@ def render_weeks(week_offset, _, screen_width):
                                 'justifyContent': 'center'
                             },  # Added paddingBottom
                             **{'data-start-date': start_date.strftime('%Y-%m-%d')}
+                        ),
+                        dcc.Store(
+                            id={'type': 'overflow-date', 'index': i},
+                            data=start_date.strftime('%Y-%m-%d')
                         ),
                         html.Div(
                             id={'type': 'overflow-box', 'index': i},
