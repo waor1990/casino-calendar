@@ -1,11 +1,9 @@
 import dash
-from dash import html, dcc, Input, Output, State, MATCH, ALL
+from dash import html, dcc, Input, Output, State, MATCH, ALL, ctx
 import plotly.graph_objs as go
 import pandas as pd
 from datetime import datetime, timedelta
 from math import floor
-import random
-import logging
 
 # Load CSV file
 df = pd.read_csv("casino_events.csv")
@@ -524,6 +522,7 @@ app.layout = html.Div(
     )
 
 @app.callback(
+    # print(f"Triggered by: {ctx.triggered}"),
     Output('sticky-header', 'children'),
     Input('screen-width', 'data')
 )
@@ -596,6 +595,7 @@ def sticky_header(screen_width):
     ])
 
 @app.callback(
+    # print(f"Triggered by: {ctx.triggered}"),
     Output('week-offset', 'data'),
     Output('prev-button', 'disabled'),
     Output('next-button', 'disabled'),
@@ -634,6 +634,7 @@ def update_week_offset(prev_clicks, next_clicks, current_offset):
     return desired_offset, prev_disabled, next_disabled
 
 @app.callback(
+    # print(f"Triggered by: {ctx.triggered}"),
     Output('rolling-weeks', 'children'),
     Input('week-offset', 'data'),
     Input('initial-trigger', 'n_intervals'),
@@ -668,7 +669,8 @@ def render_weeks(week_offset, _, screen_width):
         weekly_blocks_children = [
             html.H3(
                 f"▼ Events the Week of {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
-                id=toggle_id, 
+                id=toggle_id,
+                n_clicks=0,
                 style={
                     'fontSize': font_sizes['legend_title'],
                     'color': '#6A5ACD', 
@@ -754,6 +756,7 @@ def render_weeks(week_offset, _, screen_width):
     return weekly_blocks
 
 @app.callback(
+    # print(f"Triggered by: {ctx.triggered}"),
     Output({'type': 'week-content', 'index': MATCH}, 'style'),
     Output({'type': 'toggle-week', 'index': MATCH}, 'children'),
     Output({'type': 'week-toggle', 'index': MATCH}, 'data'),
@@ -771,6 +774,7 @@ def toggle_week_content(n_clicks, is_open, current_text):
     return new_style, new_text, new_is_open
 
 @app.callback(
+    # print(f"Triggered by: {ctx.triggered}"),
     Output({'type': 'overflow-box', 'index': MATCH}, 'className'),
     Output({'type': 'overflow-toggle', 'index': MATCH}, 'children'),
     Input({'type': 'overflow-toggle', 'index': MATCH}, 'n_clicks'),
@@ -794,6 +798,7 @@ def toggle_overflow(n_clicks, start_date_str):
     return box_class, button_text
 
 @app.callback(
+    # print(f"Triggered by: {ctx.triggered}"),
     Output('event-modal', 'style'),
     Output('event-modal', 'className'),
     Output('event-modal-body', 'children'),
