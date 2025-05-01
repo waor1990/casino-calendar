@@ -77,6 +77,22 @@
     transition-delay: 0.3s, 0.5s;
 }
 
+.week-content {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: max-height 0.5s ease, opacity 0.3s ease;
+    transition-delay: 0s, 0.5s;
+}
+
+.week-content show {
+    max-height: 2000px;
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 0.3s, 0.5s;
+}
+
 /*Slide-in animation class (used for weekly blocks)*/
 .slide-in {
     animation: slideIn 0.5s ease-out forwards;
