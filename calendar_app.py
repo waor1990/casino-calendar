@@ -311,9 +311,11 @@ def generate_weekly_view(clicked_date, screen_width=1024):
             ))
 
             # Ensure at least one row exists and account for single-event case
+            MIN_ROWS = 5
             total_rows = max(row_nums) if row_nums else 0
-            base_y_top = total_rows * row_unit_height + 0.5
-            chart_height = max(int(base_y_top * 40), 120)
+            adjusted_rows = max(MIN_ROWS, total_rows)
+            base_y_top = adjusted_rows * row_unit_height + 0.5
+            chart_height = int(base_y_top * 40)
 
         #Advance current_row to ensure new groups are visually below previous ones
         current_row = max(row_nums, default=current_row) + 1
@@ -362,8 +364,8 @@ def get_color():
         "Lucky Dog Casino": {"bg": "#f07a22", "text": "#000000"},
         "Legends Casino": {"bg": "#ca9a41", "text": "#000000"},
         "Chinook Winds Casino": {"bg": "#32373d", "text": "#ffffff"},
-        "Emerald Queen Casino": {"bg": "#632834", "text": "#ffffff"},
-        "Rolling Hills Casino": {"bg": "#5a1c1d", "text": "#ffffff"},
+        "Emerald Queen Casino": {"bg": "#d62e52", "text": "#ffffff"},
+        "Rolling Hills Casino": {"bg": "#5b1d1e", "text": "#ffffff"},
         "Wildhorse Casino": {"bg": "#d21245", "text": "#ffffff"},
         "Seven Feathers Casino": {"bg": "#41c5de", "text": "#000000"}
     }
@@ -831,43 +833,48 @@ def toggle_overflow(n_clicks, start_date_str):
 def show_event_modal(clicks, close_clicks, timer_tick):
     ctx = dash.callback_context
 
-    if not ctx.triggered:
-        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, [None] * len(clicks)
+    #Make sure clicks is a list
+    if not clicks or not isinstance(clicks, list):
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, []
 
-    trigger = ctx.triggered[0]['prop_id']
-
-    if 'close-timer' in trigger:
+    #Reser modal on timer triggered
+    if ctx.triggered_id == "close-timer":
         return dash.no_update, '', "", 0, [None] * len(clicks)
-
-    if 'close-modal' in trigger:
-        return dash.no_update, 'modal closing',  dash.no_update, 1, [None] * len(clicks)
-
+    
+    #Handle close button click
+    if ctx.triggered_id == "close-modal":
+        return dash.no_update, 'modal closing', dash.no_update, 1, [None] * len(clicks)
+    
+    #Check for valid clickData    
     for click in clicks:
-        if click and 'points' in click and click['points']:
-            data = click['points'][0]['customdata'][0]
-            if data:
-                rows = []
-                for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
-                    if label in data:
-                        display_label = {
-                            "EventName": "Event",
-                            "StartDate": "Event Starts",
-                            "EndDate": "Event Ends"
-                        }.get(label, label)
+        if click and isinstance(click, dict) and 'points' in click and click['points']:
+            data = click['points'][0].get('customdata', [None])[0]
+            if not data:
+                continue
+            
+            rows = []
+            for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
+                if label in data:
+                    display_label = {
+                        "EventName": "Event",
+                        "StartDate": "Event Starts",
+                        "EndDate": "Event Ends"
+                    }.get(label, label)
 
-                        value = data[label]
+                    value = data[label]
 
-                        if label in ["StartDate", "EndDate"]:
-                            try:
-                                value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
-                            except Exception:
-                                pass
+                    if label in ["StartDate", "EndDate"]:
+                        try:
+                            value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
+                        except Exception:
+                            pass
 
-                        rows.append(html.Div([
-                            html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
-                            html.Span(value)
-                        ], style={'marginBottom': '6px'}))
+                    rows.append(html.Div([
+                        html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
+                        html.Span(value)
+                    ], style={'marginBottom': '6px'}))
             return {}, 'modal show', rows, 0, [None] * len(clicks)
+    #If nothing is valid was clicked
     return dash.no_update, dash.no_update, dash.no_update, dash.no_update, [None] * len(clicks)
 
 server = app.server
