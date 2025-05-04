@@ -2,13 +2,18 @@ import dash
 from dash import html, dcc, Input, Output, State, MATCH, ALL, ctx
 import plotly.graph_objs as go
 import pandas as pd
+from pytz import timezone
 from datetime import datetime, timedelta
 from math import floor
 
-# Load CSV file
+PDT = timezone('America/Los_Angeles')
+
+# Load CSV file and localize timestamps
 df = pd.read_csv("casino_events.csv")
-df["StartDate"] = pd.to_datetime(df["StartDate"])
-df["EndDate"] = pd.to_datetime(df["EndDate"])
+df["StartDate"] = pd.to_datetime(df["StartDate"]).dt.tz_localize(PDT)
+df["EndDate"] = pd.to_datetime(df["EndDate"]).dt.tz_localize(PDT)
+
+today = datetime.now(PDT).replace(hour=0, minute=0, second=0, microsecond=0)
 
 # Define default screen width and function to get font sizes
 screen_width = 1024 # fallback if not set dynamically
@@ -413,7 +418,7 @@ def create_legend(font_sizes, padding_sizes):
             }))
     return legend_items
 
-today = datetime.today()
+today = datetime.now(PDT)
 current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
 week_offset = 0
 start_sunday = current_sunday + timedelta(weeks=week_offset)
@@ -613,7 +618,7 @@ def update_week_offset(prev_clicks, next_clicks, current_offset):
         desired_offset = -6
         
     #Limit forward navigation if next 4 weeks are empty
-    today = datetime.today()
+    today = datetime.now(PDT)
     current_sunday = today - timedelta(days=(today.weekday() + 1 ) % 7)
     start_sunday = current_sunday + timedelta(weeks=desired_offset)
     rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
@@ -646,10 +651,12 @@ def render_weeks(week_offset, _, screen_width):
     if week_offset is None or not isinstance(week_offset, int):
         week_offset = 0
         
+    today = datetime.today()
+        
     #print(f"Screen width received by render_weeks: {screen_width}")
     
     # Recalculate weeks and figures based on the current week offset
-    today = datetime.today()
+    today = datetime.now(PDT)
     current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
     start_sunday = current_sunday + timedelta(weeks=week_offset)
     rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
@@ -660,31 +667,30 @@ def render_weeks(week_offset, _, screen_width):
     for i, start_date in enumerate(rolling_weeks):
         fig, overflow_df = generate_weekly_view(start_date, screen_width)
         
+        week_key = f"week-{start_date.strftime('%Y%m%d')}"
+        end_date = start_date + timedelta(days=6)
+        
         toggle_id = {'type': 'toggle-week', 'index': i}
         content_id = {'type': 'week-content', 'index': i}
-        
-        week_toggle_store = dcc.Store(id={'type': 'week-toggle', 'index': i}, data=False)
-        week_date_store = dcc.Store(id={'type': 'toggle-date', 'index': i}, data=start_date.strftime('%Y-%m-%d'))
-        overflow_date_store = dcc.Store(id={'type': 'overflow-date', 'index': i}, data=start_date.strftime('%Y-%m-%d'))
         
         overflow_width = '80%' if screen_width < 480 else '60%' if screen_width < 768 else '40%'
         
         weekly_blocks_children = [
-            week_toggle_store,
-            week_date_store,
-            overflow_date_store,
+            dcc.Store(id={'type': 'week-toggle', 'index': i}, data=False),
+            dcc.Store(id={'type': 'toggle-date', 'index': i}, data=start_date.strftime('%Y-%m-%d')),
+            dcc.Store(id={'type': 'overflow-date', 'index': i}, data=start_date.strftime('%Y-%m-%d')),
             html.H3(
-                f"▶ Events the Week of {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
+                f"▶ Events the Week of {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}",
                 id=toggle_id,
                 className='week-header',
                 n_clicks=0,
                 style={
                     'fontSize': font_sizes['legend_title'],
                     'color': '#6A5ACD',
-                    'fontWeight': 'bold',                  
+                    'fontWeight': 'bold',
                     'cursor': 'pointer',
                     'textAlign': 'center',
-                    'userSelect': 'none', 
+                    'userSelect': 'none',
                     'margin': 0
                 }
             ),
@@ -701,7 +707,7 @@ def render_weeks(week_offset, _, screen_width):
                     html.Div([
                         # Collapse Toggle
                         html.Button(
-                            f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {(start_date + timedelta(days=6)).strftime('%b %d')}",
+                            f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}",
                             id={'type': 'overflow-toggle', 'index': i},
                             n_clicks=0,
                             style={
@@ -712,8 +718,7 @@ def render_weeks(week_offset, _, screen_width):
                                 'display': 'flex',
                                 'alignItems': 'center',
                                 'justifyContent': 'center'
-                            },
-                            **{'data-start-date': start_date.strftime('%Y-%m-%d')}
+                            }
                         ),
                         html.Div(
                             id={'type': 'overflow-box', 'index': i},
@@ -752,9 +757,7 @@ def render_weeks(week_offset, _, screen_width):
         weekly_blocks.append(
             html.Div(
                 weekly_blocks_children,
-                key=f"week-{start_date.strftime('%Y%m%d')}",
-                style={'marginBottom': padding_sizes['section_margin']},
-                id=f"block-container-{i}"
+                style={'marginBottom': padding_sizes['section_margin']}
                 )
             )      
     
