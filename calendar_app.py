@@ -107,12 +107,12 @@ def annotate_events_with_flags(events_df: pd.DataFrame, week_start: datetime, we
     def get_overflow_priority(row):
     #Overflow priority: both arrows -> 0, right only -> 1, none -> 2, left only -> 3
         if row["has_left_arrow"] and row["has_right_arrow"]:
-            return 1
-        if row["has_right_arrow"]:
             return 0
+        if row["has_right_arrow"]:
+            return 1
         if not row["has_left_arrow"] and not row["has_right_arrow"]:
-            return 2
-        return 3
+            return 3
+        return 2
     
     events_df["overflow_sort"] = events_df.apply(get_overflow_priority, axis=1)
     
@@ -266,8 +266,8 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
             label = row["EventName"]
             trimmed_label = (
                 label if len(label) <= max_chars else
-                (label[:max_chars - 1] + "...") if max_chars >= 4 else
-                "" if max_chars < 4 else "..."
+                (label[:max_chars - 2] + "...") if max_chars >= 3 else
+                "" if max_chars < 3 else "..."
             )
 
             color = casino_colors[row["Casino"]]["bg"]
@@ -303,7 +303,7 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
                 ))
 
             try:
-                font_size = float(font_sizes["event_block"].replace("rem", "")) * 14
+                font_size = float(font_sizes["event_block"].replace("rem", "")) * 12
             except:
                 font_size = 12
 
@@ -403,6 +403,8 @@ def get_color():
         "Emerald Queen Casino": {"bg": "#d62e52", "text": "#ffffff"},
         "Rolling Hills Casino": {"bg": "#5b1d1e", "text": "#ffffff"},
         "Wildhorse Casino": {"bg": "#d21245", "text": "#ffffff"},
+        "Tulalip Casino": {"bg": "#155e6d", "text":"#ffffff"},
+        "Quil Ceda Creek Casino": {"bg": "#9a0709", "text": "#ffffff"},
         "Seven Feathers Casino": {"bg": "#41c5de", "text": "#000000"}
     }
 
