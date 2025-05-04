@@ -1,4 +1,4 @@
-EventName,Casino,Location,Offer,StartDate,EndDate
+﻿EventName,Casino,Location,Offer,StartDate,EndDate
 Easter Ham Giveaway,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Complimentary Easter ham for Lucky Star Rewards members,4/12/2025 14:00,4/12/2025 18:00
 Easter Hot Seat Drawings,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Chance to win an electric griddle and $100 in free play every 30 minutes,4/12/2025 16:00,4/12/2025 18:00
 "$250,000 Free Play Giveaway",Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","250 winners of $1,000 in free play; swipe Muckleshoot Rewards card at kiosk to participate",4/1/2025 7:00,4/2/2025 23:59
@@ -107,16 +107,16 @@ Friday Bonus Free Play,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 
 $40 Free Play Offer,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",$40 Free Play,4/19/2025 0:00,4/24/2025 23:59
 Friday Bonus Free Play,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",$40 Free Play,4/25/2025 0:00,4/25/2025 23:59
 $40 Free Play Offer,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",$40 Free Play,4/26/2025 0:00,5/1/2025 23:59
-Stay 'N Play Free Standard Room,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","1 Free Standard Room, Sun-Fri",3/30/2025 0:00,5/2/2025 23:59
-Stay 'N Play Free RV Stay,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",2 Free RV Stays,3/29/2025 0:00,5/2/2025 23:59
-Aztec Print Travel Set - Week 1,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift – Week 1,4/6/2025 10:00,4/6/2025 20:00
-Aztec Print Travel Set - Week 1,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift – Week 1,4/8/2025 10:00,4/8/2025 20:00
-Aztec Print Travel Set - Week 2,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift – Week 2,4/13/2025 10:00,4/13/2025 20:00
-Aztec Print Travel Set - Week 2,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift – Week 2,4/15/2025 10:00,4/15/2025 20:00
-Aztec Print Travel Set - Week 3,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift – Week 3,4/20/2025 10:00,4/20/2025 20:00
-Aztec Print Travel Set - Week 3,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift – Week 3,4/22/2025 10:00,4/22/2025 20:00
-Aztec Print Travel Set - Week 4,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift – Week 4,4/27/2025 10:00,4/27/2025 20:00
-Aztec Print Travel Set - Week 4,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift – Week 4,4/29/2025 10:00,4/29/2025 20:00
+Stay'N Play Free Standard Room,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","1 Free Standard Room, Sun-Fri",3/30/2025 0:00,5/2/2025 23:59
+Stay'N Play Free RV Stay,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",2 Free RV Stays,3/29/2025 0:00,5/2/2025 23:59
+Aztec Print Travel Set - Week 1,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift   Week 1,4/6/2025 10:00,4/6/2025 20:00
+Aztec Print Travel Set - Week 1,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift   Week 1,4/8/2025 10:00,4/8/2025 20:00
+Aztec Print Travel Set - Week 2,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift   Week 2,4/13/2025 10:00,4/13/2025 20:00
+Aztec Print Travel Set - Week 2,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift   Week 2,4/15/2025 10:00,4/15/2025 20:00
+Aztec Print Travel Set - Week 3,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift   Week 3,4/20/2025 10:00,4/20/2025 20:00
+Aztec Print Travel Set - Week 3,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift   Week 3,4/22/2025 10:00,4/22/2025 20:00
+Aztec Print Travel Set - Week 4,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift   Week 4,4/27/2025 10:00,4/27/2025 20:00
+Aztec Print Travel Set - Week 4,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579",Free gift   Week 4,4/29/2025 10:00,4/29/2025 20:00
 Weekly Loyalty Offer,Red Wind Casino,"12819 Yelm Hwy. SE, Olympia, WA 98513",$25 Free Play,4/3/2025 8:00,4/9/2025 23:59
 Weekly Loyalty Offer,Red Wind Casino,"12819 Yelm Hwy. SE, Olympia, WA 98513",$25 Free Play,4/10/2025 8:00,4/16/2025 23:59
 Weekly Loyalty Offer,Red Wind Casino,"12819 Yelm Hwy. SE, Olympia, WA 98513",$25 Free Play,4/17/2025 8:00,4/23/2025 23:59
@@ -141,8 +141,8 @@ Modern Marilyn Purse Collection: Crossbody,Muckleshoot Casino,"3402 Auburn Way S
 Bonus Free Play,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002",Activate your prize at any gaming machine; all participants win free play,4/27/2025 10:00,4/27/2025 18:00
 Walmart Gift Card Giveaway,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002",Claim your Walmart gift card at the Muckleshoot Rewards Center,4/20/2025 10:00,4/20/2025 18:00
 Free Philips Wireless Earbuds,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","Free Philips Wireless Earbuds to first 3,700 guests",4/13/2025 10:00,4/13/2025 19:00
-Mother’s Day Weekend Giveaway,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","100 guests will win the chance to select a designer handbag filled with up to $10,000 Freeplay",5/10/2025 10:00,5/10/2025 22:00
-Mother’s Day Weekend Giveaway,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","100 guests will win the chance to select a designer handbag filled with up to $10,000 Freeplay",5/11/2025 10:00,5/11/2025 22:00
+Mother's Day Weekend Giveaway,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","100 guests will win the chance to select a designer handbag filled with up to $10,000 Freeplay",5/10/2025 10:00,5/10/2025 22:00
+Mother's Day Weekend Giveaway,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","100 guests will win the chance to select a designer handbag filled with up to $10,000 Freeplay",5/11/2025 10:00,5/11/2025 22:00
 500x Entry Multipliers,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","500x drawing entry multipliers to win a designer handbag with up to $10,000 Freeplay",4/18/2025 0:00,4/18/2025 23:59
 500x Entry Multipliers,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","500x drawing entry multipliers to win a designer handbag with up to $10,000 Freeplay",4/20/2025 0:00,4/20/2025 23:59
 500x Entry Multipliers,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","500x drawing entry multipliers to win a designer handbag with up to $10,000 Freeplay",4/25/2025 0:00,4/25/2025 23:59
@@ -155,14 +155,14 @@ Yuan Tree Wednesdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 
 Yuan Tree Wednesdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","Chance to collect over $10,000 Freeplay",4/16/2025 0:00,4/16/2025 23:59
 Yuan Tree Wednesdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","Chance to collect over $10,000 Freeplay",4/23/2025 0:00,4/23/2025 23:59
 Yuan Tree Wednesdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","Chance to collect over $10,000 Freeplay",4/30/2025 0:00,4/30/2025 23:59
-4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am–noon & 10 pm–2 am with Crescent Club card,4/3/2025 8:00,4/3/2025 12:00
-4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am–noon & 10 pm–2 am with Crescent Club card,4/3/2025 22:00,4/4/2025 2:00
-4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am–noon & 10 pm–2 am with Crescent Club card,4/10/2025 8:00,4/10/2025 12:00
-4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am–noon & 10 pm–2 am with Crescent Club card,4/10/2025 22:00,4/11/2025 2:00
-4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am–noon & 10 pm–2 am with Crescent Club card,4/17/2025 8:00,4/17/2025 12:00
-4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am–noon & 10 pm–2 am with Crescent Club card,4/17/2025 22:00,4/18/2025 2:00
-4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am–noon & 10 pm–2 am with Crescent Club card,4/24/2025 8:00,4/24/2025 12:00
-4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am–noon & 10 pm–2 am with Crescent Club card,4/24/2025 22:00,4/25/2025 2:00
+4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am noon & 10 pm 2 am with Crescent Club card,4/3/2025 8:00,4/3/2025 12:00
+4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am noon & 10 pm 2 am with Crescent Club card,4/3/2025 22:00,4/4/2025 2:00
+4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am noon & 10 pm 2 am with Crescent Club card,4/10/2025 8:00,4/10/2025 12:00
+4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am noon & 10 pm 2 am with Crescent Club card,4/10/2025 22:00,4/11/2025 2:00
+4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am noon & 10 pm 2 am with Crescent Club card,4/17/2025 8:00,4/17/2025 12:00
+4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am noon & 10 pm 2 am with Crescent Club card,4/17/2025 22:00,4/18/2025 2:00
+4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am noon & 10 pm 2 am with Crescent Club card,4/24/2025 8:00,4/24/2025 12:00
+4x Points Thursdays,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Earn 4x points 8 am noon & 10 pm 2 am with Crescent Club card,4/24/2025 22:00,4/25/2025 2:00
 Saturday Freeplay Drawings,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Winners drawn every 15 minutes for $200 Freeplay,4/12/2025 0:00,4/12/2025 23:59
 Saturday Freeplay Drawings,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065",Winners drawn every 15 minutes for $200 Freeplay,4/19/2025 0:00,4/19/2025 23:59
 Stanley Cup Giveaway,Snoqualmie Casino,"37500 SE North Bend Way, Snoqualmie, WA 98065","Win one of 40 Stanley Cups with up to $4,000 Freeplay",4/26/2025 0:00,4/26/2025 23:59
@@ -175,7 +175,7 @@ $50K Guaranteed Giveaway,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 9
 $50K Guaranteed Giveaway,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002",,4/12/2025 21:30,4/12/2025 23:59
 Jackpot Celebration,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","Five winners every hour will be called to win up to $5,000 cash",4/22/2025 17:00,4/22/2025 21:00
 "$25,000 Jackpot Win Again",Red Wind Casino,"12819 Yelm Hwy. SE, Olympia, WA 98513","Eligible Club Red members with W2G slot jackpots (Jan 1 to Mar 31, 2025) can win in drawing",4/25/2025 18:00,4/25/2025 21:00
-Payback Drawing,Spirit Mountain Casino,"27100 SW Salmon River Hwy, Grand Ronde, OR 97347","$10,000 cash guaranteed prize pool - 10 winners • $1,000 cash prize",4/18/2025 18:00,4/18/2025 20:00
+Payback Drawing,Spirit Mountain Casino,"27100 SW Salmon River Hwy, Grand Ronde, OR 97347","$10,000 cash guaranteed prize pool - 10 winners '¢ $1,000 cash prize",4/18/2025 18:00,4/18/2025 20:00
 $25 Free Play (Week 1),Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002",$25 free play valid one time,4/1/2025 7:00,4/7/2025 23:59
 $25 Free Play (Week 2),Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002",$25 free play valid one time,4/8/2025 7:00,4/14/2025 23:59
 $25 Free Play (Week 3),Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002",$25 free play valid one time,4/15/2025 7:00,4/21/2025 23:59
@@ -213,11 +213,11 @@ $20 Weekly Free Play,Angel of the Winds Casino,"3438 Stoluckquamish Lane, Arling
 $20 Weekly Free Play,Angel of the Winds Casino,"3438 Stoluckquamish Lane, Arlington, Washington 98223",Valid any day from 6am,4/13/2025 6:00,4/19/2025 23:59
 $20 Weekly Free Play,Angel of the Winds Casino,"3438 Stoluckquamish Lane, Arlington, Washington 98223",Valid any day from 6am,4/20/2025 6:00,4/26/2025 23:59
 Jackpot Celebration,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","$50 in Free Play, hors d'oeuvres, mingling",4/26/2025 12:00,4/26/2025 17:00
-VIP Las Vegas Trip Giveaway,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Invited Club Lucky members have a chance to win a trip to Las Vegas. Exclusive drawing at 8:15pm. One free entry with Club Lucky card; additional entries for every 50 base points earned on 4/19 from 10am–8pm. Cash option available. Exclusive dessert reception 7pm–8pm.,4/19/2025 10:00,4/19/2025 20:00
-Cash & Car Giveaways,Legends Casino,"580 Fort Road, Toppenish, WA","Hourly cash prize drawings with top prize up to $6,000 from 6pm–8pm and $8,000 at 9pm",4/3/2025 18:00,4/3/2025 21:00
-Cash & Car Giveaways,Legends Casino,"580 Fort Road, Toppenish, WA","Hourly cash prize drawings with top prize up to $6,000 from 6pm–8pm and $8,000 at 9pm",4/10/2025 18:00,4/10/2025 21:00
-Cash & Car Giveaways,Legends Casino,"580 Fort Road, Toppenish, WA","Hourly cash prize drawings with top prize up to $6,000 from 6pm–8pm and $8,000 at 9pm",4/17/2025 18:00,4/17/2025 21:00
-Cash & Car Giveaways,Legends Casino,"580 Fort Road, Toppenish, WA","Hourly cash prize drawings with top prize up to $6,000 from 6pm–8pm and $8,000 at 9pm",4/24/2025 18:00,4/24/2025 21:00
+VIP Las Vegas Trip Giveaway,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Invited Club Lucky members have a chance to win a trip to Las Vegas. Exclusive drawing at 8:15pm. One free entry with Club Lucky card; additional entries for every 50 base points earned on 4/19.,4/19/2025 10:00,4/19/2025 20:00
+Cash & Car Giveaways,Legends Casino,"580 Fort Road, Toppenish, WA","Hourly cash prize drawings with top prize up to $6,000 from 6pm 8pm and $8,000 at 9pm",4/3/2025 18:00,4/3/2025 21:00
+Cash & Car Giveaways,Legends Casino,"580 Fort Road, Toppenish, WA","Hourly cash prize drawings with top prize up to $6,000 from 6pm 8pm and $8,000 at 9pm",4/10/2025 18:00,4/10/2025 21:00
+Cash & Car Giveaways,Legends Casino,"580 Fort Road, Toppenish, WA","Hourly cash prize drawings with top prize up to $6,000 from 6pm 8pm and $8,000 at 9pm",4/17/2025 18:00,4/17/2025 21:00
+Cash & Car Giveaways,Legends Casino,"580 Fort Road, Toppenish, WA","Hourly cash prize drawings with top prize up to $6,000 from 6pm 8pm and $8,000 at 9pm",4/24/2025 18:00,4/24/2025 21:00
 2025 Volkswagen Jetta Giveaway,Legends Casino,"580 Fort Road, Toppenish, WA","One grand prize car winner & three cash winners: $4,000, $6,000, $8,000",4/24/2025 21:00,4/24/2025 21:00
 Kia K5 Giveaway Entry Begins,Legends Casino,"580 Fort Road, Toppenish, WA",One free entry every Thursday starting at 6pm when you activate card on slot machine,4/3/2025 18:00,4/3/2025 23:59
 Kia K5 Giveaway Entry Begins,Legends Casino,"580 Fort Road, Toppenish, WA",One free entry every Thursday starting at 6pm when you activate card on slot machine,4/10/2025 18:00,4/10/2025 23:59
@@ -228,9 +228,9 @@ Xtra Rewards Free Play,Legends Casino,"580 Fort Road, Toppenish, WA",$105 Xtra R
 Xtra Rewards Free Play,Legends Casino,"580 Fort Road, Toppenish, WA",$105 Xtra Rewards Free Play added to account,4/20/2025 10:00,4/23/2025 23:59
 Xtra Rewards Free Play,Legends Casino,"580 Fort Road, Toppenish, WA",$105 Xtra Rewards Free Play added to account,4/27/2025 10:00,4/30/2025 23:59
 Hollywood Headphones Giveaway,Legends Casino,"580 Fort Road, Toppenish, WA",Hollywood headphones giveaway,4/8/2025 10:00,4/8/2025 23:59
-"20"" Luggage Giveaway",Legends Casino,"580 Fort Road, Toppenish, WA","20"" luggage giveaway – one per person, while supplies last",4/22/2025 10:00,4/22/2025 23:59
-"$500 or $1,000 Slot Drawings",Legends Casino,"580 Fort Road, Toppenish, WA","Hourly slot machine drawings – win $500 or $1,000",4/20/2025 12:00,4/20/2025 20:00
-10X Points – Full Pink Moon,Legends Casino,"580 Fort Road, Toppenish, WA",Earn 10x points using your rewards card,4/12/2025 18:00,4/12/2025 23:59
+"20"" Luggage Giveaway",Legends Casino,"580 Fort Road, Toppenish, WA","20"" luggage giveaway   one per person, while supplies last",4/22/2025 10:00,4/22/2025 23:59
+"$500 or $1,000 Slot Drawings",Legends Casino,"580 Fort Road, Toppenish, WA","Hourly slot machine drawings   win $500 or $1,000",4/20/2025 12:00,4/20/2025 20:00
+10X Points   Full Pink Moon,Legends Casino,"580 Fort Road, Toppenish, WA",Earn 10x points using your rewards card,4/12/2025 18:00,4/12/2025 23:59
 $75K Guaranteed Giveaway,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","Win up to $35,000 in cash; 5 winners every hour",4/19/2025 15:00,4/19/2025 21:00
 $75K Guaranteed Giveaway Grand Finale,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002",Grand Finale Drawing,4/19/2025 21:30,4/19/2025 21:30
 The Greatest Show,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","Win up to $15,000 in cash; 6 winners every hour",4/2/2025 17:00,4/2/2025 21:00
@@ -256,14 +256,14 @@ Sparkling Hoop Earrings Free Gift,Little Creek Casino,"91 West State Route 108, 
 Sparkling Hoop Earrings Free Gift,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",Redeem sparkling hoop earrings with no point earning needed,5/18/2025 13:00,5/18/2025 21:00
 Sparkling Knot Earrings Free Gift,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",Redeem sparkling knot earrings with no point earning needed,5/22/2025 13:00,5/22/2025 21:00
 Sparkling Knot Earrings Free Gift,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",Redeem sparkling knot earrings with no point earning needed,5/25/2025 13:00,5/25/2025 21:00
-Canvas Tool Tote Set - Week 1,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your player’s club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/4/2025 12:00,5/4/2025 20:00
-Canvas Tool Tote Set - Week 1,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your player’s club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/6/2025 12:00,5/6/2025 20:00
-Canvas Tool Tote Set - Week 2,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your player’s club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/11/2025 12:00,5/11/2025 20:00
-Canvas Tool Tote Set - Week 2,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your player’s club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/13/2025 12:00,5/13/2025 20:00
-Canvas Tool Tote Set - Week 3,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your player’s club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/18/2025 12:00,5/18/2025 20:00
-Canvas Tool Tote Set - Week 3,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your player’s club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/20/2025 12:00,5/20/2025 20:00
-Canvas Tool Tote Set - Week 4,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your player’s club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/25/2025 12:00,5/25/2025 20:00
-Canvas Tool Tote Set - Week 4,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your player’s club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/27/2025 12:00,5/27/2025 20:00
+Canvas Tool Tote Set - Week 1,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your playe's club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/4/2025 12:00,5/4/2025 20:00
+Canvas Tool Tote Set - Week 1,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your playe's club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/6/2025 12:00,5/6/2025 20:00
+Canvas Tool Tote Set - Week 2,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your playe's club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/11/2025 12:00,5/11/2025 20:00
+Canvas Tool Tote Set - Week 2,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your playe's club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/13/2025 12:00,5/13/2025 20:00
+Canvas Tool Tote Set - Week 3,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your playe's club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/18/2025 12:00,5/18/2025 20:00
+Canvas Tool Tote Set - Week 3,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your playe's club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/20/2025 12:00,5/20/2025 20:00
+Canvas Tool Tote Set - Week 4,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your playe's club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/25/2025 12:00,5/25/2025 20:00
+Canvas Tool Tote Set - Week 4,Lucky Eagle Casino,"12888 188th Avenue SW, Rochester, WA 98579","Swipe your playe's club card at a kiosk starting at 10am to claim your voucher, then exchange it for your free gift at the promotions podium from 12pm - 8pm.",5/27/2025 12:00,5/27/2025 20:00
 $25 Mystery Gift Card,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002",Claim your $25 mystery gift card by swiping your Muckleshoot Rewards card at any promotions kiosk and printing your voucher.,4/29/2025 12:00,4/29/2025 20:00
 "$35,000 VIP Slot Tournament",ilani,"1 Cowlitz Way, Ridgefield, WA 98642","$10,000 cash grand prize; prize structure: 2nd place $5,000, 3rd place $3,000, 4th-6th place $2,000, 7th-18th place $1,000",5/17/2025 12:00,5/17/2025 18:00
 Memorial Day Sweepstakes,ilani,"1 Cowlitz Way, Ridgefield, WA 98642","Play throughout May for a chance to win a share of $52,000 in cash & prizes including the $40,000 cash grand prize. Receive a free entry each day with your ilani Forever Rewards account, plus an additional entry per status point earned.",5/1/2025 0:00,5/26/2025 23:59
@@ -274,7 +274,7 @@ Entry Multiplier Thursday,ilani,"1 Cowlitz Way, Ridgefield, WA 98642",Receive mu
 Entry Multiplier Thursday,ilani,"1 Cowlitz Way, Ridgefield, WA 98642",Receive multiple entries for every status point earned.,5/8/2025 0:00,5/8/2025 23:59
 Entry Multiplier Thursday,ilani,"1 Cowlitz Way, Ridgefield, WA 98642",Receive multiple entries for every status point earned.,5/15/2025 0:00,5/15/2025 23:59
 Entry Multiplier Thursday,ilani,"1 Cowlitz Way, Ridgefield, WA 98642",Receive multiple entries for every status point earned.,5/22/2025 0:00,5/22/2025 23:59
-Memorial Day Sweepstakes Grand Finale,ilani,"1 Cowlitz Way, Ridgefield, WA 98642","Entry activation 15:00–19:40, $1,000 Promo Play Hot Seats every 20 minutes from 16:00–19:40, $40,000 Cash Grand Prize at 20:00 at Rock & Brews. Must be present to win.",5/26/2025 15:00,5/26/2025 20:00
+Memorial Day Sweepstakes Grand Finale,ilani,"1 Cowlitz Way, Ridgefield, WA 98642","Entry activation 15:00-19:40, $1,000 Promo Play Hot Seats every 20 minutes from 16:00-19:40, $40,000 Cash Grand Prize at 20:00 at Rock & Brews. Must be present to win.",5/26/2025 15:00,5/26/2025 20:00
 "Dome Backpack, Large Tote Bag, Phone Holder, London Fog Crossbody Bag Collection",ilani,"1 Cowlitz Way, Ridgefield, WA 98642","Gift pickup, valid only for player named, while supplies last",5/6/2025 12:00,5/6/2025 20:00
 "Dome Backpack, Large Tote Bag, Phone Holder, London Fog Crossbody Bag Collection",ilani,"1 Cowlitz Way, Ridgefield, WA 98642","Gift pickup, valid only for player named, while supplies last",5/7/2025 12:00,5/7/2025 20:00
 "Dome Backpack, Large Tote Bag, Phone Holder, London Fog Crossbody Bag Collection",ilani,"1 Cowlitz Way, Ridgefield, WA 98642","Gift pickup, valid only for player named, while supplies last",5/13/2025 12:00,5/13/2025 20:00
@@ -327,8 +327,8 @@ Kiosk Game,Spirit Mountain Casino,"27100 SW Salmon River Hwy, Grand Ronde, OR 97
 "Win up to $5,000 Cash Drawings",Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","6 winners every hour, 5PM-9PM",5/14/2025 17:00,5/14/2025 21:00
 "Win up to $5,000 Cash Drawings",Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","6 winners every hour, 5PM-9PM",5/21/2025 17:00,5/21/2025 21:00
 "Win up to $5,000 Cash Drawings",Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","6 winners every hour, 5PM-9PM",5/28/2025 17:00,5/28/2025 21:00
-Olé! Free Play Drawings,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","$50,000 in Free Play, 100 winners, 5PM-9:30PM",5/9/2025 17:00,5/9/2025 21:30
-Olé! Free Play Drawings,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","$50,000 in Free Play, 100 winners, 5PM-9:30PM",5/30/2025 17:00,5/30/2025 21:30
+OlÃ©! Free Play Drawings,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","$50,000 in Free Play, 100 winners, 5PM-9:30PM",5/9/2025 17:00,5/9/2025 21:30
+OlÃ©! Free Play Drawings,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","$50,000 in Free Play, 100 winners, 5PM-9:30PM",5/30/2025 17:00,5/30/2025 21:30
 Power Points Saturdays,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","11x points, 7AM-10PM",5/3/2025 7:00,5/3/2025 22:00
 Power Points Saturdays,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","11x points, 7AM-10PM",5/10/2025 7:00,5/10/2025 22:00
 Power Points Saturdays,Muckleshoot Casino,"3402 Auburn Way South, Auburn, WA 98002","11x points, 7AM-10PM",5/31/2025 7:00,5/31/2025 22:00
@@ -423,26 +423,26 @@ May Flower Scratcher,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",
 May Flower Scratcher,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Scratch and reveal up to $2,500 cash. Guaranteed win with each scratcher.",5/24/2025 11:00,5/24/2025 21:00
 May Flower Scratcher Second Chance Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","$2,500 cash drawing",5/31/2025 21:30,5/31/2025 21:30
 Cinco de Mayo Food Special,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Pulled pork tacos | $15,5/5/2025 11:00,5/5/2025 21:00
-Mother’s Day Food Special,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",NY strip steak with shrimp scampi | $32 per person,5/11/2025 11:00,5/11/2025 21:00
-Mother’s Day Gift,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Free gift for Club Lucky mothers,5/11/2025 12:00,5/11/2025 18:00
+Mother's Day Food Special,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",NY strip steak with shrimp scampi | $32 per person,5/11/2025 11:00,5/11/2025 21:00
+Mother's Day Gift,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Free gift for Club Lucky mothers,5/11/2025 12:00,5/11/2025 18:00
 Memorial Weekend Food Special,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Build your own bratwurst | $10,5/25/2025 11:00,5/25/2025 21:00
 Spring Spin,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Spin and win up to $2,500",5/4/2025 12:00,5/4/2025 18:00
 Spring Spin,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Spin and win up to $2,500",5/18/2025 12:00,5/18/2025 18:00
 Memorial Weekend Wearable Giveaway,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Free regional tourism wearable; earn 50 points for a second item,5/25/2025 12:00,5/25/2025 18:00
 Memorial Weekend Wearable Giveaway,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Free regional tourism wearable; earn 50 points for a second item,5/26/2025 12:00,5/26/2025 18:00
-Club Lucky Multiplier,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",2x–4x points depending on tier,5/6/2025 10:00,5/6/2025 18:00
-Club Lucky Multiplier,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",2x–4x points depending on tier,5/13/2025 10:00,5/13/2025 18:00
-Club Lucky Multiplier,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",2x–4x points depending on tier,5/20/2025 10:00,5/20/2025 18:00
-Club Lucky Multiplier,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",2x–4x points depending on tier,5/27/2025 10:00,5/27/2025 18:00
+Club Lucky Multiplier,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",2x 4x points depending on tier,5/6/2025 10:00,5/6/2025 18:00
+Club Lucky Multiplier,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",2x 4x points depending on tier,5/13/2025 10:00,5/13/2025 18:00
+Club Lucky Multiplier,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",2x 4x points depending on tier,5/20/2025 10:00,5/20/2025 18:00
+Club Lucky Multiplier,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",2x 4x points depending on tier,5/27/2025 10:00,5/27/2025 18:00
 Relax Awhile Gifting,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Free Freida & Joe spa gift set,5/8/2025 14:00,5/8/2025 20:00
 Relax Awhile Gifting,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Free plush robe,5/15/2025 14:00,5/15/2025 20:00
 Relax Awhile Gifting,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Free massage gun,5/22/2025 14:00,5/22/2025 20:00
 Relax Awhile Gifting,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Free robot vacuum,5/29/2025 14:00,5/29/2025 20:00
-Club Lucky Cash Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Win $500–$1,500 based on tier",5/3/2025 21:00,5/3/2025 21:00
-Club Lucky Cash Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Win $500–$1,500 based on tier",5/10/2025 21:00,5/10/2025 21:00
-Club Lucky Cash Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Win $500–$1,500 based on tier",5/17/2025 21:00,5/17/2025 21:00
-Club Lucky Cash Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Win $500–$1,500 based on tier",5/24/2025 21:00,5/24/2025 21:00
-Club Lucky Cash Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Win $500–$1,500 based on tier",5/31/2025 21:00,5/31/2025 21:00
+Club Lucky Cash Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Win $500-$1,500 based on tier",5/3/2025 21:00,5/3/2025 21:00
+Club Lucky Cash Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Win $500-$1,500 based on tier",5/10/2025 21:00,5/10/2025 21:00
+Club Lucky Cash Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Win $500-$1,500 based on tier",5/17/2025 21:00,5/17/2025 21:00
+Club Lucky Cash Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Win $500-$1,500 based on tier",5/24/2025 21:00,5/24/2025 21:00
+Club Lucky Cash Drawing,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584","Win $500-$1,500 based on tier",5/31/2025 21:00,5/31/2025 21:00
 Wearable Wednesday,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Earn 50 base points for themed wearable,5/7/2025 10:00,5/7/2025 20:00
 Wearable Wednesday,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Earn 50 base points for themed wearable,5/14/2025 10:00,5/14/2025 20:00
 Wearable Wednesday,Lucky Dog Casino,"19330 N US HWY 101, Skokomish, WA 98584",Earn 50 base points for themed wearable,5/21/2025 10:00,5/21/2025 20:00
@@ -462,30 +462,127 @@ $40 Free Play,Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579",$
 Friday Bonus Free Play,Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579",$40 free play,5/23/2025 10:00,5/23/2025 23:59
 $40 Free Play,Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579",$40 free play,5/24/2025 10:00,5/29/2025 23:59
 Friday Bonus Free Play,Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579",$40 free play,5/30/2025 10:00,5/30/2025 23:59
-Stay ‘n Play – 2 Free Standard Rooms,Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579",2 free standard rooms (Sun–Fri only),5/4/2025 0:00,5/30/2025 23:59
-RV Stay – 2 Free Nights,Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579",2 free RV stays,5/3/2025 0:00,5/30/2025 23:59
-"$30,000 Mother’s Day Bingo & Brunch",Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579","Bingo & brunch – $30,000 in prizes",5/11/2025 11:00,5/11/2025 14:00
+Stay '˜n Play   2 Free Standard Rooms,Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579",2 free standard rooms (Sun-Fri only),5/4/2025 0:00,5/30/2025 23:59
+RV Stay   2 Free Nights,Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579",2 free RV stays,5/3/2025 0:00,5/30/2025 23:59
+"$30,000 Mother's Day Bingo & Brunch",Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579","Bingo & brunch $30,000 in prizes",5/11/2025 11:00,5/11/2025 14:00
 Birthday Scratch Tickets,Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579",Scratch ticket promo,5/17/2025 11:00,5/17/2025 19:00
 "$20,000 Wild Flowers",Lucky Eagle Casino," 12888 188th Avenue SW, Rochester, WA 98579",Drawings every 30 minutes. Win cash and an additional gift!,5/31/2025 16:00,5/31/2025 18:00
-Spring Cha Chíng Hot Seats,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Win $500 Free Play every 30 minutes; nearby players get $50 Free Play,5/5/2025 17:00,5/5/2025 20:00
-Spring Cha Chíng Hot Seats,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Win $500 Free Play every 30 minutes; nearby players get $50 Free Play,5/12/2025 17:00,5/12/2025 20:00
-Spring Cha Chíng Hot Seats,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Win $500 Free Play every 30 minutes; nearby players get $50 Free Play,5/19/2025 17:00,5/19/2025 20:00
-Spring Cha Chíng Hot Seats,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Win $500 Free Play every 30 minutes; nearby players get $50 Free Play,5/26/2025 17:00,5/26/2025 20:00
-Bigfoot’s Secret Stash Swipe & Win,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404","Win up to $5,000 Free Play; swipe to unlock prize",5/7/2025 0:00,5/7/2025 23:59
-Bigfoot’s Secret Stash Swipe & Win,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404","Win up to $5,000 Free Play; swipe to unlock prize",5/14/2025 0:00,5/14/2025 23:59
-Bigfoot’s Secret Stash Swipe & Win,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404","Win up to $5,000 Free Play; swipe to unlock prize",5/21/2025 0:00,5/21/2025 23:59
-Bigfoot’s Secret Stash Swipe & Win,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404","Win up to $5,000 Free Play; swipe to unlock prize",5/28/2025 0:00,5/28/2025 23:59
+Spring Cha ChÃ­ng Hot Seats,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Win $500 Free Play every 30 minutes; nearby players get $50 Free Play,5/5/2025 17:00,5/5/2025 20:00
+Spring Cha ChÃ­ng Hot Seats,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Win $500 Free Play every 30 minutes; nearby players get $50 Free Play,5/12/2025 17:00,5/12/2025 20:00
+Spring Cha ChÃ­ng Hot Seats,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Win $500 Free Play every 30 minutes; nearby players get $50 Free Play,5/19/2025 17:00,5/19/2025 20:00
+Spring Cha ChÃ­ng Hot Seats,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Win $500 Free Play every 30 minutes; nearby players get $50 Free Play,5/26/2025 17:00,5/26/2025 20:00
+Bigfoot's Secret Stash Swipe & Win,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404","Win up to $5,000 Free Play; swipe to unlock prize",5/7/2025 0:00,5/7/2025 23:59
+Bigfoot's Secret Stash Swipe & Win,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404","Win up to $5,000 Free Play; swipe to unlock prize",5/14/2025 0:00,5/14/2025 23:59
+Bigfoot's Secret Stash Swipe & Win,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404","Win up to $5,000 Free Play; swipe to unlock prize",5/21/2025 0:00,5/21/2025 23:59
+Bigfoot's Secret Stash Swipe & Win,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404","Win up to $5,000 Free Play; swipe to unlock prize",5/28/2025 0:00,5/28/2025 23:59
 "Totally Tuesday Peace, Love, & Tier Multipliers",Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Earn up to 12x Reward Points (varies by tier),5/6/2025 0:00,5/6/2025 23:59
 "Totally Tuesday Peace, Love, & Tier Multipliers",Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Earn up to 12x Reward Points (varies by tier),5/13/2025 0:00,5/13/2025 23:59
 "Totally Tuesday Peace, Love, & Tier Multipliers",Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Earn up to 12x Reward Points (varies by tier),5/20/2025 0:00,5/20/2025 23:59
 "Totally Tuesday Peace, Love, & Tier Multipliers",Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",Earn up to 12x Reward Points (varies by tier),5/27/2025 0:00,5/27/2025 23:59
 "Stars, Stripes & Swipes",Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404","Swipe to win up to $1,000 Free Play (Knight Players Club only)",5/26/2025 0:00,5/26/2025 23:59
 Memorial Day Bonus Drawings,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404","Win $2,000 Free Play every drawing hour; entries based on age",5/26/2025 16:00,5/26/2025 20:00
-Weekly Free Play or Dining Credit – Week 1,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$20 Free Play or Dining Credit,5/4/2025 0:00,5/10/2025 23:59
-Weekly Free Play or Dining Credit – Week 2,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$20 Free Play or Dining Credit,5/11/2025 0:00,5/17/2025 23:59
-Weekly Free Play or Dining Credit – Week 3,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$20 Free Play or Dining Credit,5/18/2025 0:00,5/24/2025 23:59
-Weekly Free Play or Dining Credit – Week 4,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$20 Free Play or Dining Credit,5/25/2025 0:00,5/31/2025 23:59
+Weekly Free Play or Dining Credit   Week 1,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$20 Free Play or Dining Credit,5/4/2025 0:00,5/10/2025 23:59
+Weekly Free Play or Dining Credit   Week 2,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$20 Free Play or Dining Credit,5/11/2025 0:00,5/17/2025 23:59
+Weekly Free Play or Dining Credit   Week 3,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$20 Free Play or Dining Credit,5/18/2025 0:00,5/24/2025 23:59
+Weekly Free Play or Dining Credit   Week 4,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$20 Free Play or Dining Credit,5/25/2025 0:00,5/31/2025 23:59
 Weekly Bonus Free Play,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$15 Bonus Free Play (expires 24 hours after activation),5/3/2025 0:00,5/9/2025 23:59
 Weekly Bonus Free Play,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$15 Bonus Free Play (expires 24 hours after activation),5/10/2025 0:00,5/16/2025 23:59
 Weekly Bonus Free Play,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$15 Bonus Free Play (expires 24 hours after activation),5/17/2025 0:00,5/23/2025 23:59
 Weekly Bonus Free Play,Emerald Queen Casino," 1820 East 29th Street, Tacoma, WA 98404",$15 Bonus Free Play (expires 24 hours after activation),5/24/2025 0:00,5/30/2025 23:59
+ilani BBQ Fest - Saturday Session One,ilani," 1 Cowlitz Way, Ridgefield, WA 98642",$10 promo play on entry,6/14/2025 12:00,6/14/2025 16:00
+ilani BBQ Fest - Saturday Session Two,ilani," 1 Cowlitz Way, Ridgefield, WA 98642",$10 promo play on entry,6/14/2025 17:00,6/14/2025 21:00
+ilani BBQ Fest - Sunday Session,ilani," 1 Cowlitz Way, Ridgefield, WA 98642",$10 promo play on entry,6/15/2025 12:00,6/15/2025 16:00
+"$68,000 BBQ Fest Giveaway - Saturday",ilani," 1 Cowlitz Way, Ridgefield, WA 98642","$1,000 promo play hot seats every 20 minutes",6/14/2025 15:30,6/14/2025 18:30
+"$68,000 BBQ Fest Giveaway - Sunday",ilani," 1 Cowlitz Way, Ridgefield, WA 98642","$1,000 promo play hot seats every 20 minutes",6/15/2025 15:30,6/15/2025 18:30
+"$25,000 Cash Grand Prize Drawing",ilani," 1 Cowlitz Way, Ridgefield, WA 98642",Grand prize drawing at Rock & Brews,6/15/2025 18:30,6/15/2025 18:30
+Free Purity+ Foot Spa,Muckleshoot Casino," 3402 Auburn Way South, Auburn, WA 98002","Free Purity+ Foot Spa gift, one per guest, while supplies last",5/11/2025 10:00,5/11/2025 20:00
+$105 Xtra Rewards Free Play,Legends Casino," 580 Fort Road, Toppenish, WA",$105 Xtra Rewards Free Play will be added to your account each week,5/4/2025 10:00,5/7/2025 23:59
+$105 Xtra Rewards Free Play,Legends Casino," 580 Fort Road, Toppenish, WA",$105 Xtra Rewards Free Play will be added to your account each week,5/11/2025 10:00,5/14/2025 23:59
+$105 Xtra Rewards Free Play,Legends Casino," 580 Fort Road, Toppenish, WA",$105 Xtra Rewards Free Play will be added to your account each week,5/18/2025 10:00,5/21/2025 23:59
+$105 Xtra Rewards Free Play,Legends Casino," 580 Fort Road, Toppenish, WA",$105 Xtra Rewards Free Play will be added to your account each week,5/25/2025 10:00,5/28/2025 23:59
+10X Points   Full Flower Moon,Legends Casino," 580 Fort Road, Toppenish, WA",Earn 10X points using your rewards card during the full flower moon,5/12/2025 18:00,5/12/2025 23:59
+May Gift   Noire Quilted Shoulder Bag,Legends Casino," 580 Fort Road, Toppenish, WA",One per person while supplies last,5/6/2025 10:00,5/6/2025 23:59
+May Gift   Noire Quilted Tote Bag,Legends Casino," 580 Fort Road, Toppenish, WA",One per person while supplies last,5/13/2025 10:00,5/13/2025 23:59
+May Gift   Noire Quilted Top Handle Bag,Legends Casino," 580 Fort Road, Toppenish, WA",One per person while supplies last,5/20/2025 10:00,5/20/2025 23:59
+May Gift   Noire Envelope Clutch,Legends Casino," 580 Fort Road, Toppenish, WA",One per person while supplies last,5/27/2025 10:00,5/27/2025 23:59
+Buffet Special,Legends Casino," 580 Fort Road, Toppenish, WA","$60 buffet with tenderloin, prime rib, lobster tail, and more",5/5/2025 9:00,5/5/2025 21:00
+Random Rewards,Legends Casino," 580 Fort Road, Toppenish, WA","Every hour win $500 or $1,000; must be gaming with rewards card",5/26/2025 12:00,5/26/2025 20:00
+Kiosk Games   Fridays in May,Legends Casino," 580 Fort Road, Toppenish, WA",Earn points to play kiosk games and win Xtra Rewards,5/2/2025 9:00,5/2/2025 23:59
+Kiosk Games   Fridays in May,Legends Casino," 580 Fort Road, Toppenish, WA",Earn points to play kiosk games and win Xtra Rewards,5/9/2025 9:00,5/9/2025 23:59
+Kiosk Games   Fridays in May,Legends Casino," 580 Fort Road, Toppenish, WA",Earn points to play kiosk games and win Xtra Rewards,5/16/2025 9:00,5/16/2025 23:59
+Kiosk Games   Fridays in May,Legends Casino," 580 Fort Road, Toppenish, WA",Earn points to play kiosk games and win Xtra Rewards,5/23/2025 9:00,5/23/2025 23:59
+Kiosk Games   Fridays in May,Legends Casino," 580 Fort Road, Toppenish, WA",Earn points to play kiosk games and win Xtra Rewards,5/30/2025 9:00,5/30/2025 23:59
+Kiosk Games   Saturdays in May,Legends Casino," 580 Fort Road, Toppenish, WA",Earn points to play kiosk games and win Xtra Rewards,5/3/2025 9:00,5/3/2025 23:59
+Kiosk Games   Saturdays in May,Legends Casino," 580 Fort Road, Toppenish, WA",Earn points to play kiosk games and win Xtra Rewards,5/10/2025 9:00,5/10/2025 23:59
+Kiosk Games   Saturdays in May,Legends Casino," 580 Fort Road, Toppenish, WA",Earn points to play kiosk games and win Xtra Rewards,5/17/2025 9:00,5/17/2025 23:59
+Kiosk Games   Saturdays in May,Legends Casino," 580 Fort Road, Toppenish, WA",Earn points to play kiosk games and win Xtra Rewards,5/24/2025 9:00,5/24/2025 23:59
+Kiosk Games   Saturdays in May,Legends Casino," 580 Fort Road, Toppenish, WA",Earn points to play kiosk games and win Xtra Rewards,5/31/2025 9:00,5/31/2025 23:59
+Cash Prize Drawings,Legends Casino," 580 Fort Road, Toppenish, WA","Hourly cash prize winner draws a lantern for up to $10,000",5/1/2025 18:00,5/1/2025 21:00
+Cash Prize Drawings,Legends Casino," 580 Fort Road, Toppenish, WA","Hourly cash prize winner draws a lantern for up to $10,000",5/8/2025 18:00,5/8/2025 21:00
+Cash Prize Drawings,Legends Casino," 580 Fort Road, Toppenish, WA","Hourly cash prize winner draws a lantern for up to $10,000",5/15/2025 18:00,5/15/2025 21:00
+Cash Prize Drawings,Legends Casino," 580 Fort Road, Toppenish, WA","Hourly cash prize winner draws a lantern for up to $10,000",5/22/2025 18:00,5/22/2025 21:00
+Cash Prize Drawings,Legends Casino," 580 Fort Road, Toppenish, WA","Hourly cash prize winner draws a lantern for up to $10,000",5/29/2025 18:00,5/29/2025 21:00
+Grand Prize Drawing   Kia K5,Legends Casino," 580 Fort Road, Toppenish, WA","Win a Kia K5 or one of three cash prizes: $10,000, $8,000, $4,000",5/29/2025 21:00,5/29/2025 21:00
+$20 Free Play Week 1,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",$20 free play,4/28/2025 0:00,5/4/2025 23:59
+$20 Free Play Week 2,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",$20 free play,5/5/2025 0:00,5/11/2025 23:59
+$20 Free Play Week 3,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",$20 free play,5/12/2025 0:00,5/18/2025 23:59
+$20 Free Play Week 4,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",$20 free play,5/19/2025 0:00,5/25/2025 23:59
+$20 Free Play Week 5,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",$20 free play,5/26/2025 0:00,6/1/2025 23:59
+Deluxe or Premium Room Night 1,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,4/28/2025 0:00,4/28/2025 23:59
+Deluxe or Premium Room Night 2,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,4/29/2025 0:00,4/29/2025 23:59
+Deluxe or Premium Room Night 3,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,4/30/2025 0:00,4/30/2025 23:59
+Deluxe or Premium Room Night 4,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/1/2025 0:00,5/1/2025 23:59
+Deluxe or Premium Room Night 5,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/5/2025 0:00,5/5/2025 23:59
+Deluxe or Premium Room Night 6,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/6/2025 0:00,5/6/2025 23:59
+Deluxe or Premium Room Night 7,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/7/2025 0:00,5/7/2025 23:59
+Deluxe or Premium Room Night 8,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/8/2025 0:00,5/8/2025 23:59
+Deluxe or Premium Room Night 9,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/12/2025 0:00,5/12/2025 23:59
+Deluxe or Premium Room Night 10,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/13/2025 0:00,5/13/2025 23:59
+Deluxe or Premium Room Night 11,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/14/2025 0:00,5/14/2025 23:59
+Deluxe or Premium Room Night 12,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/15/2025 0:00,5/15/2025 23:59
+Deluxe or Premium Room Night 13,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/19/2025 0:00,5/19/2025 23:59
+Deluxe or Premium Room Night 14,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/20/2025 0:00,5/20/2025 23:59
+Deluxe or Premium Room Night 15,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/21/2025 0:00,5/21/2025 23:59
+Deluxe or Premium Room Night 16,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/22/2025 0:00,5/22/2025 23:59
+Deluxe or Premium Room Night 17,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/26/2025 0:00,5/26/2025 23:59
+Deluxe or Premium Room Night 18,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/27/2025 0:00,5/27/2025 23:59
+Deluxe or Premium Room Night 19,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/28/2025 0:00,5/28/2025 23:59
+Deluxe or Premium Room Night 20,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504",1 free deluxe or premium room,5/29/2025 0:00,5/29/2025 23:59
+Fortune Falls Plinko Party,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504","Win up to $2,000 in cash",5/2/2025 16:00,5/2/2025 22:00
+Fortune Falls Plinko Party,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504","Win up to $2,000 in cash",5/9/2025 16:00,5/9/2025 22:00
+Fortune Falls Plinko Party,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504","Win up to $2,000 in cash",5/16/2025 16:00,5/16/2025 22:00
+Fortune Falls Plinko Party,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504","Win up to $2,000 in cash",5/23/2025 16:00,5/23/2025 22:00
+Fortune Falls Plinko Party,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504","Win up to $2,000 in cash",5/30/2025 16:00,5/30/2025 22:00
+Break Cher Saturdays,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504","Win $5,000; hourly drawings 4pm-9pm",5/3/2025 16:00,5/3/2025 21:00
+Break Cher Saturdays,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504","Win $5,000; hourly drawings 4pm-9pm",5/10/2025 16:00,5/10/2025 21:00
+Break Cher Saturdays,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504","Win $5,000; hourly drawings 4pm-9pm",5/17/2025 16:00,5/17/2025 21:00
+Break Cher Saturdays,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504","Win $5,000; hourly drawings 4pm-9pm",5/24/2025 16:00,5/24/2025 21:00
+Break Cher Saturdays,Little Creek Casino,"91 West State Route 108, Shelton, WA 98504","Win $5,000; hourly drawings 4pm-9pm",5/31/2025 16:00,5/31/2025 21:00
+Bonus Free Play,Muckleshoot Casino," 3402 Auburn Way South, Auburn, WA 98002",Qualified participants receive guaranteed bonus free play upon card activation,5/4/2025 9:00,5/4/2025 21:00
+Bonus Free Play,Muckleshoot Casino," 3402 Auburn Way South, Auburn, WA 98002",$30 bonus free play,5/13/2025 7:00,5/13/2025 23:59
+Lowe's Gift Card Giveaway,Red Wind Casino," 12819 Yelm Hwy. SE, Olympia, WA 98513",Pick up your complimentary Lowe's gift card,5/21/2025 14:00,5/21/2025 19:00
+Lowe's Gift Card Giveaway,Red Wind Casino," 12819 Yelm Hwy. SE, Olympia, WA 98513",Pick up your complimentary Lowe's gift card,5/28/2025 14:00,5/28/2025 19:00
+Exclusive VIP Gift Redemption,Red Wind Casino," 12819 Yelm Hwy. SE, Olympia, WA 98513",Swipe VIP card to receive gift code for home delivery,5/14/2025 14:00,5/14/2025 19:00
+Dream Realm VIP Experience,Muckleshoot Casino," 3402 Auburn Way South, Auburn, WA 98002","Win your share of over $20,000 in cash and free play; gourmet appetizers, mocktails, and a theatrical drawing experience",5/23/2025 16:00,5/23/2025 20:30
+Sunday Gifts,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Free weekly gift and entry to $2,500 Sunday drawing",5/4/2025 10:00,5/4/2025 18:00
+Sunday Gifts Drawing,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","$2,500 drawing",5/4/2025 18:30,5/4/2025 18:30
+Friday Gifts,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021",Free weekly gift,5/2/2025 12:00,5/2/2025 20:00
+Fiesta Fun Kiosk Game,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win up to $2,500 Free Slot Play with 250 points",5/5/2025 10:00,5/5/2025 22:00
+Mystery Bucks Kiosk Game,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win up to $2,500 Free Slot Play with 250 points",5/8/2025 10:00,5/8/2025 22:00
+Mystery Bucks Kiosk Game,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win up to $2,500 Free Slot Play with 250 points",5/26/2025 10:00,5/26/2025 22:00
+Taxable Jackpot Entry Drawing,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021",Win again drawing with taxable jackpot entry,5/15/2025 18:30,5/15/2025 20:30
+Taxable Jackpot Entry Drawing,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021",Win again drawing with taxable jackpot entry,5/29/2025 18:30,5/29/2025 20:30
+The Great Outdoors Giveaway,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win share of $500,000 in cash, free play & prizes",5/2/2025 18:00,5/2/2025 22:00
+The Great Outdoors Giveaway,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win share of $500,000 in cash, free play & prizes",5/3/2025 18:00,5/3/2025 22:00
+The Great Outdoors Giveaway,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win share of $500,000 in cash, free play & prizes",5/9/2025 18:00,5/9/2025 22:00
+The Great Outdoors Giveaway,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win share of $500,000 in cash, free play & prizes",5/10/2025 18:00,5/10/2025 22:00
+The Great Outdoors Giveaway,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win share of $500,000 in cash, free play & prizes",5/16/2025 18:00,5/16/2025 22:00
+The Great Outdoors Giveaway,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win share of $500,000 in cash, free play & prizes",5/17/2025 18:00,5/17/2025 22:00
+The Great Outdoors Giveaway,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win share of $500,000 in cash, free play & prizes",5/23/2025 18:00,5/23/2025 22:00
+The Great Outdoors Giveaway,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021","Win share of $500,000 in cash, free play & prizes",5/24/2025 18:00,5/24/2025 22:00
+Grand Prize Drawing,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021",Win a 2025 F-150 XLT & Polaris Ranger,5/31/2025 22:00,5/31/2025 22:00
+Free Slot Play,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021",$60 Free Slot Play,5/6/2025 7:00,5/7/2025 23:59
+Free Slot Play,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021",$60 Free Slot Play,5/9/2025 7:00,5/11/2025 23:59
+Free Slot Play,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021",$60 Free Slot Play,5/12/2025 7:00,5/16/2025 23:59
+Free Slot Play,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021",$60 Free Slot Play,5/19/2025 7:00,5/23/2025 23:59
+Free Slot Play,Rolling Hills Casino,"2655 Everett Freeman Way, Corning, CA 96021",$60 Free Slot Play,5/27/2025 7:00,5/30/2025 23:59
