@@ -626,7 +626,6 @@ def sticky_header(screen_width):
             html.Button(
                 "🎰",
                 id='next-button',
-                title="Upcoming 4 Weeks",
                 n_clicks=0,
                 className='emoji-button',
                 style={'fontSize': font_sizes['button'], 'padding': padding_sizes['button_padding']}
@@ -645,6 +644,7 @@ def sticky_header(screen_width):
     Output('week-offset', 'data'),
     Output('prev-button', 'disabled'),
     Output('next-button', 'disabled'),
+    Output('next-button', 'title'),
     Input('prev-button', 'n_clicks'),
     Input('next-button', 'n_clicks'),
     State('week-offset', 'data')
@@ -654,8 +654,7 @@ def update_week_offset(prev_clicks, next_clicks, current_offset):
     desired_offset = next_clicks - prev_clicks
     
     #Limit going back no more than 6 weeks
-    if desired_offset < -6:
-        desired_offset = -6
+    desired_offset = max(-6, desired_offset)
         
     #Limit forward navigation if next 4 weeks are empty
     today = datetime.now(PDT)
@@ -663,21 +662,28 @@ def update_week_offset(prev_clicks, next_clicks, current_offset):
     start_sunday = current_sunday + timedelta(weeks=desired_offset)
     rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
     
-    #Check if there are events in next 4 weeks
-    has_future_events = any(
-        not df[(df['EndDate'] > week) & (df['StartDate'] < week + timedelta(days=6))].empty
-        for week in rolling_weeks
-    )
+    #Get the furthest week in the next 4-week window
+    final_week_start = rolling_weeks[-1]
+    final_week_end = final_week_start + timedelta(days=6)
+    
+    #Only allow forward if the last (furthest) week has events
+    has_final_week_events = not df[
+        (df['EndDate'] > final_week_start) & 
+        (df['StartDate'] < final_week_end)
+    ].empty
     
     #Don't allow forward if not future events
-    if not has_future_events and desired_offset > current_offset:
+    if not has_final_week_events and desired_offset > current_offset:
         desired_offset = current_offset
         
     #Disable determination if no events moving forward
     prev_disabled = desired_offset <= -6
-    next_disabled = not has_future_events
+    next_disabled = not has_final_week_events
     
-    return desired_offset, prev_disabled, next_disabled
+    #Dynamic tooltip text for forward navigation
+    next_title = "No upcoming events" if next_disabled else "Upcoming 4 Weeks"
+    
+    return desired_offset, prev_disabled, next_disabled, next_title
 
 @app.callback(
     Output('rolling-weeks', 'children'),
