@@ -4,7 +4,6 @@ from .data import load_event_data
 from .plotting import get_color
 
 def create_layout(app): 
-    df = load_event_data()
     screen_width = 1024
     font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
     
@@ -69,6 +68,7 @@ def create_layout(app):
     
 def sticky_header(screen_width):
     font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
+    df = load_event_data()
 
     return html.Div([
         html.H1(
@@ -105,7 +105,7 @@ def sticky_header(screen_width):
                     }
                 ),
                 html.Div(
-                    create_legend(font_sizes, padding_sizes),
+                    create_legend(font_sizes, padding_sizes, df),
                     style={
                         'display': 'flex',
                         'flexWrap': 'wrap',
