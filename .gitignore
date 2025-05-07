@@ -1,0 +1,26 @@
+# .gitignore
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+
+# Logs and artifacts
+*.log
+
+# Render-specific (if any local build artifacts)
+build/
