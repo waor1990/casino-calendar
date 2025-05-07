@@ -1,6 +1,6 @@
 from dash import Dash
-from .calendar.layout import create_layout
-from .calendar.callbacks import register_callbacks
+from app_components.layout import create_layout
+from app_components.callbacks import register_callbacks
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 app.title = "Casino Event Calendar"
