@@ -1,0 +1,4 @@
+/*Make hover regions show a pointer cursor only when hovering over an active marker */
+.js-plotly-plot .hoverlayer .hovertext {
+    cursor: pointer !important;
+}

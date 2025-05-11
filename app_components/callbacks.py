@@ -267,24 +267,26 @@ def register_callbacks(app):
         Input("close-timer", "n_intervals"),
         Input("close-day-modal", "n_clicks"),
         State('week-offset', 'data'),
+        State('screen-width', 'data'),
         prevent_initial_call=True
     )
 
-    def show_event_modal(clicks, close_clicks, timer_tick, close_day_clicks, current_offset):
+    def show_event_modal(clicks, close_clicks, timer_tick, close_day_clicks, current_offset, screen_width):
         ctx = dash.callback_context
-
-        #Make sure clicks is a list
-        if not clicks or not isinstance(clicks, list):
-            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, [], no_update, no_update, no_update
         
+        click_reset = [None] * len(clicks) if isinstance(clicks, list) else []
+
         if ctx.triggered_id == "close-timer":
-            return no_update, '', '', 0, [None]*len(clicks), {'display': 'none'}, '', ''
+            return no_update, '', '', 0, click_reset, {'display': 'none'}, '', ''
 
         if ctx.triggered_id == "close-modal":
-            return no_update, 'modal closing', no_update, 1, [None]*len(clicks), no_update, no_update, no_update
+            return no_update, 'modal closing', no_update, 1, click_reset, no_update, no_update, no_update
         
         if ctx.triggered_id == "close-day-modal":
-            return no_update, no_update, no_update, no_update, no_update, {'display': 'none'}, 'modal closing', ''
+            return no_update, no_update, no_update, no_update, click_reset, {'display': 'none'}, 'modal closing', ''
+        
+        if not clicks or not isinstance(clicks, list):
+            return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
         
         #Check for valid clickData    
         for click in clicks:
@@ -293,6 +295,7 @@ def register_callbacks(app):
                 if not data:
                     continue
                 
+                #Day click                
                 if data.get("type")  == "day_click":
                     day_index = data.get("day_index")
                     today = datetime.now(PDT)
@@ -300,10 +303,11 @@ def register_callbacks(app):
                     start_sunday = current_sunday + timedelta(weeks=current_offset or 0)
                     clicked_day = start_sunday + timedelta(days=day_index)
                     
-                    day_view = generate_day_view_html(df, clicked_day, get_color)
+                    day_view = generate_day_view_html(df, clicked_day, get_color, screen_width)
                     
-                    return no_update, no_update, no_update, no_update, [None]*len(clicks), {'display': 'flex'}, 'modal show', day_view
+                    return no_update, no_update, no_update, no_update, click_reset, {'display': 'flex'}, 'modal show', day_view
                 
+                #Regular event click
                 rows = []
                 for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
                     if label in data:
@@ -325,9 +329,10 @@ def register_callbacks(app):
                             html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
                             html.Span(value)
                         ], style={'marginBottom': '6px'}))
-                return {}, 'modal show', rows, 0, [None]*len(clicks), {'display': 'none'}, '', ''
+                return {}, 'modal show', rows, 0, click_reset, {'display': 'none'}, '', ''
+            
         #If nothing is valid was clicked
-        return no_update, no_update, no_update, no_update, [None]*len(clicks), no_update, no_update, no_update
+        return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
 
 
 
