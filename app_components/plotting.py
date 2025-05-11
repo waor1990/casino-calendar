@@ -332,12 +332,13 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
             y=[base_y_top + 0.5],
             mode="markers",
             marker=dict(size=20, opacity=0, color="rgba(0,0,0,0)"),
-            hoverinfo="skip",
-            showlegend=False,
+            hoverinfo="text",
+            hovertext=["View Day's Events"],
             customdata=[[{
                 "type": "day_click",
                 "day_index": day_index
             }]],
+            showlegend=False,
             name="",
         ))
 
@@ -369,28 +370,33 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
         )
     )
 
-def generate_day_view_html(events_df, clicked_date, get_color_fn):
-    #Time boundaries
+def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1024):
+    """Generate a responsive 24-hour vertical day view with absolutely positioned event blocks."""
+
+    font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
+    hour_height = 40 if screen_width < 480 else 50
+
+    #Set up time boundaries for the clicked day
     day_start = clicked_date.replace(hour=0, minute=0, second=0, microsecond=0)
     day_end = day_start + timedelta(days=1)
-    
+
+    #Filter events that intersect with the day
     events = events_df[
         (events_df["EndDate"] > day_start) & (events_df["StartDate"] < day_end)
     ].copy()
-    
+
     events["StartDate"] = pd.to_datetime(events["StartDate"]).dt.tz_convert(PDT)
     events["EndDate"] = pd.to_datetime(events["EndDate"]).dt.tz_convert(PDT)
     
-    #Time offsets
     events["start_offset_min"] = (events["StartDate"] - day_start).dt.total_seconds() / 60
     events["end_offset_min"] = (events["EndDate"] - day_start).dt.total_seconds() / 60
     events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
     
-    #Overlap layout
+    #Overlap handling
     slot_width = 90
     overlap_tracker = defaultdict(list)
     positions = []
-    
+
     for idx, event in events.iterrows():
         overlap_index = 0
         for used_index in range(5):
@@ -405,7 +411,7 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn):
         positions.append(overlap_index)
         
     events["overlap_index"] = positions
-    
+
     #Grid lines (every hour)
     hour_blocks = []
     for hour in range(24):
@@ -414,30 +420,30 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn):
             label, 
             style={
                 "position": "absolute",
-                "top": f"{hour - 50}px",
+                "top": f"{hour * hour_height}px",
                 "left": "0",
                 "width": "100%",
-                "height": "50px",
+                "height": f"{hour_height}px",
                 "borderBottom": "1px solid #ccc",
-                "fontSize": "0.75rem",
+                "fontSize": font_sizes.get('overflow', '0.75rem'),
                 "color": "#666",
                 "paddingLeft": "5px",
                 "boxSizing": "border-box"
             }
         ))
-        
+
     #Event Blocks
     color_map = get_color_fn()
     event_blocks = []
-    
+
     for _, row in events.iterrows():
-        top_px = row["start_offset_min"] / 60 * 50
-        height_px = max(20, row["duration_min"] / 60 * 50)
+        top_px = row["start_offset_min"] / 60 * hour_height
+        height_px = max(20, row["duration_min"] / 60 * hour_height)
         left_pct = row["overlap_index"] * 10
         width_pct = slot_width / max(1, len(overlap_tracker))
-        
+
         color = color_map.get(row["Casino"], {"bg": "#aaa"})["bg"]
-        
+
         event_blocks.append(html.Div(
             title=row["EventName"],
             style={
@@ -445,8 +451,8 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn):
                 "top": f"{top_px}px",
                 "left": f"{left_pct}%",
                 "width": f"{width_pct}%",
-                "height": f"{height_px}%",
-                "backgroundColor": color, 
+                "height": f"{height_px}px",
+                "backgroundColor": color,
                 "border": "1px solid #444",
                 "borderRadius": "4px",
                 "boxSizing": "border-box",
@@ -454,6 +460,13 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn):
                 "cursor": "pointer"
             }
         ))
-        
-    return hour_blocks + event_blocks 
-    
+
+    return [html.Div(
+        children=hour_blocks + event_blocks,
+        style={
+            "position": "relative",
+            "height": f"{24 * hour_height}px",
+            "width": "100%",
+            "boxSizing": "border-box"
+        }  
+    )]

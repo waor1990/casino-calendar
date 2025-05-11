@@ -48,7 +48,11 @@ def create_layout(app):
         #Modal Popup for event details
         html.Div(id='event-modal', className='modal', children=[
             html.Div(id='event-modal-content', className='modal-content', children=[
-                html.Div(id='event-modal-body'),
+                html.Div(id='event-modal-body', style={
+                    "maxHeight": "80vh", 
+                    "overflow": "scroll",
+                    "padding": "10px"
+                    }),
                 html.Button("Close", id="close-modal", style={
                     'marginTop': '10px',
                     'display': 'block',
@@ -68,6 +72,8 @@ def create_layout(app):
         html.Div(id='day-modal', className='modal', children=[
             html.Div(id='day-modal-content', className='modal-content', children=[
                 html.Div(id='day-modal-body', style={
+                    "position": "relative",
+                    "height": "12000px",
                     "maxHeight": "600px",
                     "overflowY": "scroll",
                     "padding": "10px"
