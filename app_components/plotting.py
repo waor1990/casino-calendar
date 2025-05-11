@@ -1,9 +1,10 @@
 import plotly.graph_objs as go
 import pandas as pd
+from dash import html
 from datetime import datetime, timedelta
 from math import floor
 from collections import defaultdict
-from .utils import get_dynamic_sizes, get_week_range
+from .utils import get_dynamic_sizes, get_week_range, PDT
 
 # Function to generate a weekly view given a clicked date
 def generate_weekly_view(clicked_date, df, screen_width=1024):
@@ -324,6 +325,21 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
     for shape in shapes:
         if shape["type"] == "line":
             shape["y1"] = base_y_top
+            
+    for day_index in range(7):
+        hover_markers.append(go.Scatter(
+            x=[day_index + 0.5],
+            y=[base_y_top + 0.5],
+            mode="markers",
+            marker=dict(size=20, opacity=0, color="rgba(0,0,0,0)"),
+            hoverinfo="skip",
+            showlegend=False,
+            customdata=[[{
+                "type": "day_click",
+                "day_index": day_index
+            }]],
+            name="",
+        ))
 
     return go.Figure(
         data=hover_markers,
@@ -353,4 +369,91 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
         )
     )
 
-
+def generate_day_view_html(events_df, clicked_date, get_color_fn):
+    #Time boundaries
+    day_start = clicked_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    day_end = day_start + timedelta(days=1)
+    
+    events = events_df[
+        (events_df["EndDate"] > day_start) & (events_df["StartDate"] < day_end)
+    ].copy()
+    
+    events["StartDate"] = pd.to_datetime(events["StartDate"]).dt.tz_convert(PDT)
+    events["EndDate"] = pd.to_datetime(events["EndDate"]).dt.tz_convert(PDT)
+    
+    #Time offsets
+    events["start_offset_min"] = (events["StartDate"] - day_start).dt.total_seconds() / 60
+    events["end_offset_min"] = (events["EndDate"] - day_start).dt.total_seconds() / 60
+    events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
+    
+    #Overlap layout
+    slot_width = 90
+    overlap_tracker = defaultdict(list)
+    positions = []
+    
+    for idx, event in events.iterrows():
+        overlap_index = 0
+        for used_index in range(5):
+            if all(
+                not (event["start_offset_min"] < other["end_offset_min"] and
+                     event["end_offset_min"] > other["start_offset_min"])
+                for other in overlap_tracker[used_index]
+            ):
+                overlap_index = used_index
+                break
+        overlap_tracker[overlap_index].append(event)
+        positions.append(overlap_index)
+        
+    events["overlap_index"] = positions
+    
+    #Grid lines (every hour)
+    hour_blocks = []
+    for hour in range(24):
+        label = f"{hour:02d}:00" if hour % 3 == 0 else ""
+        hour_blocks.append(html.Div(
+            label, 
+            style={
+                "position": "absolute",
+                "top": f"{hour - 50}px",
+                "left": "0",
+                "width": "100%",
+                "height": "50px",
+                "borderBottom": "1px solid #ccc",
+                "fontSize": "0.75rem",
+                "color": "#666",
+                "paddingLeft": "5px",
+                "boxSizing": "border-box"
+            }
+        ))
+        
+    #Event Blocks
+    color_map = get_color_fn()
+    event_blocks = []
+    
+    for _, row in events.iterrows():
+        top_px = row["start_offset_min"] / 60 * 50
+        height_px = max(20, row["duration_min"] / 60 * 50)
+        left_pct = row["overlap_index"] * 10
+        width_pct = slot_width / max(1, len(overlap_tracker))
+        
+        color = color_map.get(row["Casino"], {"bg": "#aaa"})["bg"]
+        
+        event_blocks.append(html.Div(
+            title=row["EventName"],
+            style={
+                "position": "absolute",
+                "top": f"{top_px}px",
+                "left": f"{left_pct}%",
+                "width": f"{width_pct}%",
+                "height": f"{height_px}%",
+                "backgroundColor": color, 
+                "border": "1px solid #444",
+                "borderRadius": "4px",
+                "boxSizing": "border-box",
+                "zIndex": 10,
+                "cursor": "pointer"
+            }
+        ))
+        
+    return hour_blocks + event_blocks 
+    

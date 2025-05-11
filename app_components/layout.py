@@ -62,6 +62,29 @@ def create_layout(app):
                     'cursor': 'pointer'
                 })
             ])
+        ]),
+        
+        #Day-Modal Popup for day's events
+        html.Div(id='day-modal', className='modal', children=[
+            html.Div(id='day-modal-content', className='modal-content', children=[
+                html.Div(id='day-modal-body', style={
+                    "maxHeight": "600px",
+                    "overflowY": "scroll",
+                    "padding": "10px"
+                }),
+                html.Button("Close", id="close-day-modal", style={
+                    'marginTop': '10px',
+                    'display': 'block',
+                    'marginLeft': 'auto',
+                    'marginRight': 'auto',
+                    'backgroundColor': '#6A5ACD',
+                    'color': 'white', 
+                    'border': 'none',
+                    'padding': '8px 16px',
+                    'borderRadius': '6px',
+                    'cursor': 'pointer'
+                })
+            ])
         ])
     ]
     )

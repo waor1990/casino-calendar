@@ -1,13 +1,14 @@
 def register_callbacks(app):
     import dash
-    from dash import html, dcc, Input, Output, State, MATCH, ALL, ctx
+    from dash import html, dcc, Input, Output, State, MATCH, ALL, ctx, no_update
     import pandas as pd
     from pytz import timezone
     from datetime import datetime, timedelta
-    from .plotting import generate_weekly_view
-    from .utils import get_dynamic_sizes
+    from .plotting import generate_weekly_view, get_color, generate_day_view_html
+    from .utils import get_dynamic_sizes, PDT
     from .data import load_event_data
     from .layout import sticky_header
+    
     
     PDT = timezone('America/Los_Angeles')
     df = load_event_data()
@@ -258,33 +259,50 @@ def register_callbacks(app):
         Output('event-modal-body', 'children'),
         Output('close-timer', 'n_intervals'),
         Output({'type': 'graph', 'index': ALL}, 'clickData'),
+        Output('day-modal', 'style'),
+        Output('day-modal', 'className'),
+        Output('day-modal-body', 'children'),
         Input({'type': 'graph', 'index': ALL}, 'clickData'),
         Input("close-modal", "n_clicks"),
         Input("close-timer", "n_intervals"),
+        Input("close-day-modal", "n_clicks"),
+        State('week-offset', 'data'),
         prevent_initial_call=True
     )
 
-    def show_event_modal(clicks, close_clicks, timer_tick):
+    def show_event_modal(clicks, close_clicks, timer_tick, close_day_clicks, current_offset):
         ctx = dash.callback_context
 
         #Make sure clicks is a list
         if not clicks or not isinstance(clicks, list):
-            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, []
-
-        #Reser modal on timer triggered
-        if ctx.triggered_id == "close-timer":
-            return dash.no_update, '', "", 0, [None] * len(clicks)
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update, [], no_update, no_update, no_update
         
-        #Handle close button click
+        if ctx.triggered_id == "close-timer":
+            return no_update, '', '', 0, [None]*len(clicks), {'display': 'none'}, '', ''
+
         if ctx.triggered_id == "close-modal":
-            return dash.no_update, 'modal closing', dash.no_update, 1, [None] * len(clicks)
+            return no_update, 'modal closing', no_update, 1, [None]*len(clicks), no_update, no_update, no_update
+        
+        if ctx.triggered_id == "close-day-modal":
+            return no_update, no_update, no_update, no_update, no_update, {'display': 'none'}, 'modal closing', ''
         
         #Check for valid clickData    
         for click in clicks:
-            if click and isinstance(click, dict) and 'points' in click and click['points']:
+            if click and 'points' in click and click['points']:
                 data = click['points'][0].get('customdata', [None])[0]
                 if not data:
                     continue
+                
+                if data.get("type")  == "day_click":
+                    day_index = data.get("day_index")
+                    today = datetime.now(PDT)
+                    current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
+                    start_sunday = current_sunday + timedelta(weeks=current_offset or 0)
+                    clicked_day = start_sunday + timedelta(days=day_index)
+                    
+                    day_view = generate_day_view_html(df, clicked_day, get_color)
+                    
+                    return no_update, no_update, no_update, no_update, [None]*len(clicks), {'display': 'flex'}, 'modal show', day_view
                 
                 rows = []
                 for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
@@ -307,9 +325,9 @@ def register_callbacks(app):
                             html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
                             html.Span(value)
                         ], style={'marginBottom': '6px'}))
-                return {}, 'modal show', rows, 0, [None] * len(clicks)
+                return {}, 'modal show', rows, 0, [None]*len(clicks), {'display': 'none'}, '', ''
         #If nothing is valid was clicked
-        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, [None] * len(clicks)
+        return no_update, no_update, no_update, no_update, [None]*len(clicks), no_update, no_update, no_update
 
 
 
