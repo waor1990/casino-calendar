@@ -42,10 +42,33 @@
     
 }
 
+/*Responsive Day Modal Enhancements*/
+#day-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    #day-modal-content {
+        width: 90% !important;
+        max-width: 95vw;
+    }
+
+    #day-modal-body {
+        max-height: 400px;
+    }
+}
+
 /*RESPONSIVE: For mobile*/
 @media (max-width: 480px) {
     .modal-content {
         width: 80%;
+    }
+
+    #day-modal-body {
+        max-height: 300px;
+        font-size: 0.9rem;
     }
 }
 

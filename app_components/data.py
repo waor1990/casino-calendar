@@ -1,8 +1,7 @@
 import pandas as pd
-from pytz import timezone
+from .utils import PDT
 
 def load_event_data(csv_path="casino_events.csv"):
-    PDT = timezone('America/Los_Angeles')
     df = pd.read_csv(csv_path)
     
     for col in ["StartDate", "EndDate"]:
