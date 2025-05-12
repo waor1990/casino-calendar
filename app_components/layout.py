@@ -72,9 +72,7 @@ def create_layout(app):
         html.Div(id='day-modal', className='modal', children=[
             html.Div(id='day-modal-content', className='modal-content', children=[
                 html.Div(id='day-modal-body', style={
-                    "position": "relative",
-                    "height": "12000px",
-                    "maxHeight": "600px",
+                    "maxHeight": "80vh",
                     "overflowY": "scroll",
                     "padding": "10px"
                 }),
