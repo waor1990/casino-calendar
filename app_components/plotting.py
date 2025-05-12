@@ -6,6 +6,13 @@ from math import floor
 from collections import defaultdict
 from .utils import get_dynamic_sizes, get_week_range, PDT
 
+#Layout config shared across functions
+def get_layout_config(screen_width):
+    font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
+    hour_height = 40 if screen_width < 480 else 50
+    label_column_pct = 10
+    return font_sizes, padding_sizes, hour_height, label_column_pct
+
 # Function to generate a weekly view given a clicked date
 def generate_weekly_view(clicked_date, df, screen_width=1024):
     font_sizes, _ = get_dynamic_sizes(screen_width)
@@ -22,8 +29,8 @@ def generate_weekly_view(clicked_date, df, screen_width=1024):
 
     return fig, long_spanning
 
+#Color map by Casino
 def get_color():
-    # Color map by Casino (can expand if needed)
     color_map = {
         "ilani": {"bg": "#2c6f7f", "text": "#ffffff"},
         "Spirit Mountain Casino": {"bg": "#a74321", "text": "#ffffff"},
@@ -64,6 +71,7 @@ def get_color():
 
     return result
 
+#Add arrow indicators for events that span outside the week
 def annotate_events_with_flags(events_df: pd.DataFrame, week_start: datetime, week_end: datetime) -> pd.DataFrame:
     # Add a duration column for sorting, and sort by: both left and right arrows, only left arrow, fully within week, and only right arrow
     events_df["Duration"] = (events_df["EndDate"] - events_df["StartDate"]).dt.total_seconds()
@@ -86,41 +94,37 @@ def annotate_events_with_flags(events_df: pd.DataFrame, week_start: datetime, we
         by=["overflow_sort", "StartDate", "EndDate", "Duration", "Casino"],
         ascending=[True, True, True, False, True]
     ).reset_index(drop=True)
-    
-def filter_long_spanning_events(events_df: pd.DataFrame, week_start: datetime, week_end: datetime) -> pd.DataFrame:
-    # Seperate long-spanning events that cover the entire week
+
+# Seperate long-spanning events that cover the entire week
+def filter_long_spanning_events(events_df, week_start, week_end):
     return events_df[
         (events_df["StartDate"] < week_start) &
         (events_df["EndDate"] > week_end)
     ].copy()
-    
-def filter_week_events(events_df: pd.DataFrame, week_start: datetime, week_end: datetime) -> pd.DataFrame:
-    # Filter events that overlap with the current week, excluding long_spanning events
+
+# Filter events that overlap with the current week, excluding long_spanning events
+def filter_week_events(events_df, week_start, week_end):
     return events_df[
         (events_df["EndDate"] > week_start) &
         (events_df["StartDate"] < week_end) &
         ~(events_df["StartDate"] == week_end) &
-        ~(
-            (events_df["StartDate"] < week_start) &
-            (events_df["EndDate"] > week_end)
-        )
-    ].copy()   
-    
+        ~((events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end))
+    ].copy()
 
-def assign_event_rows(events_df: pd.DataFrame, week_start: datetime) -> pd.DataFrame:
+def assign_event_rows(events_df, week_start):
     # Layout params
     row_unit_height = 0.575
     used_rows_by_day = {i: set() for i in range(7)}
     recurring_rows = defaultdict(int)
     current_row = 0
     row_nums = []
-    
+
     for priority in sorted(events_df["overflow_sort"].unique()):
         group_df = events_df[events_df['overflow_sort'] == priority].sort_values(
             by=["StartDate", "EndDate", "Duration", "Casino"],
             ascending=[True, True, False, True]
         )
-    
+
         for idx, row in group_df.iterrows():
             row = events_df.loc[idx]
             start_delta = (row["StartDate"] - week_start).total_seconds() / (24 * 3600)
@@ -160,7 +164,7 @@ def assign_event_rows(events_df: pd.DataFrame, week_start: datetime) -> pd.DataF
     
     return events_df
 
-def build_empty_figure() -> go.Figure:
+def build_empty_figure():
     return go.Figure(
         layout=go.Layout(
             title="No Events This Week",
@@ -370,67 +374,96 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
         )
     )
 
+#Generate a responsive 24-hour vertical day view with absolutely positioned event blocks.
 def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1024):
-    """Generate a responsive 24-hour vertical day view with absolutely positioned event blocks."""
+    font_sizes, padding_sizes, hour_height, label_column_pct = get_layout_config(screen_width)
 
-    font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
-    hour_height = 40 if screen_width < 480 else 50
-
-    #Set up time boundaries for the clicked day
-    day_start = clicked_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    #Normalize clicked_date
+    day_start = clicked_date.astimezone(PDT).replace(hour=0, minute=0, second=0, microsecond=0)
     day_end = day_start + timedelta(days=1)
-
-    #Filter events that intersect with the day
-    events = events_df[
-        (events_df["EndDate"] > day_start) & (events_df["StartDate"] < day_end)
-    ].copy()
-
+    
+    #Filter events strictly within the day
+    events = events_df.copy()
     events["StartDate"] = pd.to_datetime(events["StartDate"]).dt.tz_convert(PDT)
     events["EndDate"] = pd.to_datetime(events["EndDate"]).dt.tz_convert(PDT)
+    events = events[
+        (events["StartDate"] >= day_start) & 
+        (events["EndDate"] <= day_end)
+    ]
     
+    day_label = clicked_date.strftime("%A, %B %d")
+    
+    if events.empty:
+        return [html.Div(f"No events scheduled for {day_label}.", style={
+            "textAlign": "center",
+            "padding": padding_sizes.get("base", "1rem"),
+            "fontSize": font_sizes.get("legend_title", "1.1rem")
+        })]
+
+    #Time math
     events["start_offset_min"] = (events["StartDate"] - day_start).dt.total_seconds() / 60
     events["end_offset_min"] = (events["EndDate"] - day_start).dt.total_seconds() / 60
     events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
-    
-    #Overlap handling
-    slot_width = 90
-    overlap_tracker = defaultdict(list)
-    positions = []
+    events = events.sort_values(by=["start_offset_min", "duration_min"])
 
-    for idx, event in events.iterrows():
-        overlap_index = 0
-        for used_index in range(5):
-            if all(
-                not (event["start_offset_min"] < other["end_offset_min"] and
-                     event["end_offset_min"] > other["start_offset_min"])
-                for other in overlap_tracker[used_index]
-            ):
-                overlap_index = used_index
+    #Assign tracks dynamically to avoid overlap
+    tracks = []
+    track_assignments = []
+
+    for _, event in events.iterrows():
+        placed = False
+        for i, track in enumerate(tracks):
+            if all(event["start_offset_min"] >= t[1] or event["end_offset_min"] <= t[0] for t in track):
+                track.append((event["start_offset_min"], event["end_offset_min"]))
+                track_assignments.append(i)
+                placed = True
                 break
-        overlap_tracker[overlap_index].append(event)
-        positions.append(overlap_index)
+        if not placed:
+            tracks.append([(event["start_offset_min"], event["end_offset_min"])])
+            track_assignments.append(len(tracks) - 1)
         
-    events["overlap_index"] = positions
+    events["overlap_index"] = track_assignments
+    n_tracks = len(tracks)
+    width_pct = (100 - label_column_pct) / n_tracks
 
-    #Grid lines (every hour)
+    #Hour grid
     hour_blocks = []
     for hour in range(24):
+        top_px = hour * hour_height
         label = f"{hour:02d}:00" if hour % 3 == 0 else ""
+        
+        #Label on left
         hour_blocks.append(html.Div(
             label, 
             style={
                 "position": "absolute",
-                "top": f"{hour * hour_height}px",
+                "top": f"{top_px}px",
                 "left": "0",
-                "width": "100%",
+                "width": f"{label_column_pct}%",
                 "height": f"{hour_height}px",
-                "borderBottom": "1px solid #ccc",
                 "fontSize": font_sizes.get('overflow', '0.75rem'),
-                "color": "#666",
-                "paddingLeft": "5px",
-                "boxSizing": "border-box"
+                "color": "#6A5ACD",
+                "paddingLeft": padding_sizes.get("small", "6px"),
+                "boxSizing": "border-box",
+                "zIndex": 5,
+                "backgroundColor": "#f5f3fa"
             }
         ))
+        
+    #Full-width grid line
+    hour_blocks.append(html.Div(
+        "",
+        style={
+            "position": "absolute",
+            "top": f"{top_px}px",
+            "left": "0",
+            "width": "100%",
+            "height": "1px",
+            "backgroundColor": "#aaa",
+            "opacity": 0.7,
+            "zIndex": 1,
+        }
+    ))
 
     #Event Blocks
     color_map = get_color_fn()
@@ -439,8 +472,7 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     for _, row in events.iterrows():
         top_px = row["start_offset_min"] / 60 * hour_height
         height_px = max(20, row["duration_min"] / 60 * hour_height)
-        left_pct = row["overlap_index"] * 10
-        width_pct = slot_width / max(1, len(overlap_tracker))
+        left_pct = label_column_pct + row["overlap_index"] * width_pct
 
         color = color_map.get(row["Casino"], {"bg": "#aaa"})["bg"]
 
@@ -454,19 +486,39 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
                 "height": f"{height_px}px",
                 "backgroundColor": color,
                 "border": "1px solid #444",
-                "borderRadius": "4px",
+                "borderRadius": padding_sizes.get("xxs", "4px"),
                 "boxSizing": "border-box",
                 "zIndex": 10,
                 "cursor": "pointer"
             }
         ))
 
-    return [html.Div(
-        children=hour_blocks + event_blocks,
+    #Add day label + scrollable grid container
+    header = html.Div(
+        day_label,
         style={
-            "position": "relative",
-            "height": f"{24 * hour_height}px",
-            "width": "100%",
-            "boxSizing": "border-box"
-        }  
-    )]
+            "fontWeight": "bold",
+            "fontSize": font_sizes.get("legend_title", "1.1rem"),
+            "marginBottom": padding_sizes.get("small", "12px"),
+            "textAlign": "center",
+            "color": "#00008B",
+            "position": "sticky",
+            "top": "0",
+            "zIndex": 15,
+            "backgroundColor": "#f5f3fa",
+            "padding": padding_sizes.get("xxs", "6px")
+        }
+    )
+    
+    return [
+        header,
+        html.Div(
+            children=hour_blocks + event_blocks,
+            style={
+                "position": "relative",
+                "height": f"{24 * hour_height}px",
+                "width": "100%",
+                "boxSizing": "border-box"
+            }
+        )
+    ]

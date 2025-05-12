@@ -48,6 +48,15 @@
     max-width: 800px;
 }
 
+#day-modal-body {
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+#day-modal-body > div {
+    position: relative;
+}
+
 @media (max-width: 768px) {
     #day-modal-content {
         width: 90% !important;
@@ -55,7 +64,7 @@
     }
 
     #day-modal-body {
-        max-height: 400px;
+        max-height: 80vh;
     }
 }
 
@@ -66,7 +75,7 @@
     }
 
     #day-modal-body {
-        max-height: 300px;
+        max-height: 70vh;
         font-size: 0.9rem;
     }
 }

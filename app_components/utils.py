@@ -20,6 +20,9 @@ def get_dynamic_sizes(screen_width):
             "week_gap": "10px",
             "legend_gap": "2px",
             "section_margin": "10px",
+            "small": "8px",
+            "base": "12px", 
+            "xxs": "4px"
         }
     elif screen_width < 768:
         font_sizes = {
@@ -36,6 +39,9 @@ def get_dynamic_sizes(screen_width):
             "week_gap": "15px",
             "legend_gap": "8px",
             "section_margin": "15px",
+            "small": "10px",
+            "base": "16px", 
+            "xxs": "5px"
         }
     else:
         font_sizes = {
@@ -52,6 +58,9 @@ def get_dynamic_sizes(screen_width):
             "week_gap": "20px",
             "legend_gap": "10px",
             "section_margin": "20px",
+            "small": "12px",
+            "base": "20px", 
+            "xxs": "6px"
         }
     return font_sizes, padding_sizes
 
