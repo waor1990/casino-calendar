@@ -28,11 +28,17 @@ def register_callbacks(app):
     #Sticky header with responsive legend
     @app.callback(
         Output('sticky-header', 'children'),
-        Input('screen-width', 'data')
+        Input('screen-width', 'data'),
+        Input('week-offset', 'data')
     )
     
-    def render_sticky_header(screen_width):
-        return sticky_header(screen_width)
+    def render_sticky_header(screen_width, week_offset):
+        today = datetime.now(PDT)
+        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
+        week_start = current_sunday + timedelta(weeks=week_offset)
+        week_label = f"Events for the Week of {week_start.strftime('%B %d')} - {(week_start + timedelta(days=6)).strftime('%B %d, %Y')}",
+        
+        return sticky_header(screen_width, week_label)
 
     #Update week offset on button clicks
     @app.callback(
@@ -95,23 +101,6 @@ def register_callbacks(app):
         
         fig, overflow_df = generate_weekly_view(week_start, df, screen_width)
         font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
-        
-        week_title = html.H3(
-            f"Events for the Week of {week_start.strftime('%B %d')} - {(week_start + timedelta(days=6)).strftime('%B %d, %Y')}",
-            style={
-                'position': 'sticky',
-                'top': '60px',
-                'zIndex': 900,
-                'backgroundColor': 'white',
-                'padding': f"{padding_sizes.get('xxs', '6px')} 0",
-                'textAlign': 'center',
-                'fontSize': font_sizes.get('legend_title', '1.2rem'),
-                'fontWeight': 'bold',
-                'color': '#00008B',
-                'boxShadow': '0 1px 2px rgba(0,0,0,0.1)',
-                'margin': '0 auto'
-            }
-        )
         
         #Overflow content toggle & box
         if not overflow_df.empty:
@@ -181,7 +170,7 @@ def register_callbacks(app):
             'marginBottom': '0'
         })
         
-        return html.Div([week_title, scrollable_content]), week_start.strftime('%Y-%m-%d')
+        return html.Div([scrollable_content]), week_start.strftime('%Y-%m-%d')
 
     @app.callback(
         Output('overflow-box', 'className'),

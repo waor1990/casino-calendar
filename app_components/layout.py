@@ -20,8 +20,7 @@ def create_layout(app):
             'top': 0,
             'padding': f"{padding_sizes['header_padding']} 0",
             'backgroundColor': 'white',
-            'zIndex': 1000,
-            'boxShadow': '0 2px 4px rgba(0, 0, 0, 0.25)'
+            'zIndex': 1000
         }),
         
         #Loading spinner and calendar weeks
@@ -94,7 +93,7 @@ def create_layout(app):
     ]
     )
     
-def sticky_header(screen_width):
+def sticky_header(screen_width, week_start_label=""):
     font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
     df = load_event_data()
 
@@ -158,8 +157,19 @@ def sticky_header(screen_width):
             'gap': '10px',
             'paddingBottom': '10px',
         }
-        )
-    ])
+        ),
+        html.Div(week_start_label, style={
+            'fontSize': font_sizes['legend_title'],
+            'color': '#00008B',
+            'textAlign': 'center',
+            'fontWeight': 'bold',
+            'padding': f"{padding_sizes.get('xxs', '6px')} 0",
+            'backgroundColor': 'white',
+            'boxShadow': '0 -2px 4px rgba(0,0,0,0.15)',
+            'zIndex': 900
+        }),
+    ]
+)
 
 def create_legend(font_sizes, padding_sizes, df):
     df = load_event_data()
