@@ -1,6 +1,6 @@
 import plotly.graph_objs as go
 import pandas as pd
-from dash import html
+from dash import html, dcc
 from datetime import datetime, timedelta
 from math import floor
 from collections import defaultdict
@@ -9,7 +9,7 @@ from .utils import get_dynamic_sizes, get_week_range, PDT
 #Layout config shared across functions
 def get_layout_config(screen_width):
     font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
-    hour_height = 40 if screen_width < 480 else 50
+    hour_height = 20 if screen_width < 480 else 36 if screen_width < 768 else 44
     label_column_pct = 10
     return font_sizes, padding_sizes, hour_height, label_column_pct
 
@@ -296,9 +296,11 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
                 font_size = float(font_sizes["event_block"].replace("rem", "")) * 12
             except:
                 font_size = 12
+            
+            mid_x = min(max((adjusted_start + adjusted_end) / 2, 0), 7)
 
             annotations.append(dict(
-                x=(adjusted_start + adjusted_end) / 2,
+                x=mid_x,
                 y=y_center,
                 text=trimmed_label,
                 showarrow=False,
@@ -307,12 +309,15 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
                 yanchor="middle"
             ))
 
+            if adjusted_end < 0 or adjusted_start > 7:
+                continue
+
             hover_markers.append(go.Scatter(
                 x=[(adjusted_start + adjusted_end) / 2],
                 y=[y_center],
                 text=[label],
                 mode="markers",
-                marker=dict(size=0, color="rgba(0,0,0,0)"),
+                marker=dict(size=30, opacity=0.2),
                 hoverinfo="text",
                 showlegend=False,
                 customdata=[[row.to_dict()]]
@@ -335,7 +340,7 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
             x=[day_index + 0.5],
             y=[base_y_top + 0.5],
             mode="markers",
-            marker=dict(size=20, opacity=0, color="rgba(0,0,0,0)"),
+            marker=dict(size=20, opacity=0.2),
             hoverinfo="text",
             hovertext=["View Day's Events"],
             customdata=[[{
@@ -345,10 +350,12 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
             showlegend=False,
             name="",
         ))
+    
 
     return go.Figure(
         data=hover_markers,
         layout=go.Layout(
+            clickmode='event+select',
             shapes=shapes,
             annotations=annotations,
             xaxis=dict(
@@ -423,11 +430,14 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
             track_assignments.append(len(tracks) - 1)
         
     events["overlap_index"] = track_assignments
-    n_tracks = len(tracks)
+    n_tracks = max(len(tracks), 1)
     width_pct = (100 - label_column_pct) / n_tracks
-
-    #Hour grid
+    
+    color_map = get_color_fn()
     hour_blocks = []
+    event_blocks = []
+    click_markers = []
+
     for hour in range(24):
         top_px = hour * hour_height
         label = f"{hour:02d}:00" if hour % 3 == 0 else ""
@@ -441,7 +451,7 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
                 "left": "0",
                 "width": f"{label_column_pct}%",
                 "height": f"{hour_height}px",
-                "fontSize": font_sizes.get('overflow', '0.75rem'),
+                "fontSize": font_sizes.get('overflow', '0.5rem'),
                 "color": "#6A5ACD",
                 "paddingLeft": padding_sizes.get("small", "6px"),
                 "boxSizing": "border-box",
@@ -449,33 +459,16 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
                 "backgroundColor": "#f5f3fa"
             }
         ))
-        
-    #Full-width grid line
-    hour_blocks.append(html.Div(
-        "",
-        style={
-            "position": "absolute",
-            "top": f"{top_px}px",
-            "left": "0",
-            "width": "100%",
-            "height": "1px",
-            "backgroundColor": "#aaa",
-            "opacity": 0.7,
-            "zIndex": 1,
-        }
-    ))
-
-    #Event Blocks
-    color_map = get_color_fn()
-    event_blocks = []
-
+    
+    #Event blocks + invisible click markers
     for _, row in events.iterrows():
-        top_px = row["start_offset_min"] / 60 * hour_height
-        height_px = max(20, row["duration_min"] / 60 * hour_height)
+        top_px = row["start_offset_min"] / 60 * hour_height 
+        height_px = max(24, row["duration_min"] / 60 * hour_height)
         left_pct = label_column_pct + row["overlap_index"] * width_pct
 
         color = color_map.get(row["Casino"], {"bg": "#aaa"})["bg"]
 
+        #Visible block
         event_blocks.append(html.Div(
             title=row["EventName"],
             style={
@@ -485,15 +478,57 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
                 "width": f"{width_pct}%",
                 "height": f"{height_px}px",
                 "backgroundColor": color,
-                "border": "1px solid #444",
+                "border": "1px solid #333",
                 "borderRadius": padding_sizes.get("xxs", "4px"),
                 "boxSizing": "border-box",
                 "zIndex": 10,
                 "cursor": "pointer"
             }
         ))
+        
+        #Invisible click marker for modal
+        center_y = top_px + height_px / 2
+        center_x = left_pct + width_pct / 2
+        event_data = row[["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]].to_dict()
+        
+        click_markers.append(go.Scatter(
+            x=[center_x / 100],
+            y=[center_y],
+            mode="markers",
+            marker=dict(size=30, opacity=0.001, color="rgba(255,255,255,0.01)"),
+            customdata=[[event_data]],
+            hoverinfo="skip",
+            showlegend=False
+        ))
+    
+    #Clickable overlay graph
+    click_graph = dcc.Graph(
+        id="day-event-catcher",
+        figure=go.Figure(
+            data=click_markers,
+            layout=go.Layout(
+                clickmode='event+select',
+                xaxis=dict(visible=False, range=[0, 1], fixedrange=True),
+                yaxis=dict(visible=False, range=[0, 24 * hour_height], fixedrange=True),
+                margin=dict(l=0, r=0, t=0, b=0),
+                height=24 * hour_height,
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)'
+            )
+        ),
+        config={'displayModeBar': False},
+        style={
+            "position": "absolute",
+            "top": "0",
+            "left": "0",
+            "width": "100%",
+            "height": f"{24 * hour_height}px",
+            "zIndex": 1000,
+            "pointerEvents": "auto"
+        }
+    )
 
-    #Add day label + scrollable grid container
+    #Sticky Add day label + scrollable grid container
     header = html.Div(
         day_label,
         style={
@@ -513,7 +548,7 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     return [
         header,
         html.Div(
-            children=hour_blocks + event_blocks,
+            children=hour_blocks + event_blocks + [click_graph],
             style={
                 "position": "relative",
                 "height": f"{24 * hour_height}px",
