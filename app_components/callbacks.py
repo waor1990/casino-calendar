@@ -1,6 +1,6 @@
 def register_callbacks(app):
     import dash
-    from dash import html, dcc, Input, Output, State, MATCH, ALL, ctx, no_update
+    from dash import html, dcc, Input, Output, State, ctx, no_update
     import pandas as pd
     from pytz import timezone
     from datetime import datetime, timedelta
@@ -13,19 +13,20 @@ def register_callbacks(app):
     PDT = timezone('America/Los_Angeles')
     df = load_event_data()
     
+    #Detect screen width once
     app.clientside_callback(
-    '''
-    function(n_intervals) {
-        return window.innerWidth;
-    }
-    ''',
-    Output('screen-width', 'data'),
-    Input('initial-trigger', 'n_intervals'), 
-    State('screen-width', 'data')
-)
+        '''
+        function(n_intervals) {
+            return window.innerWidth;
+        }
+        ''',
+        Output('screen-width', 'data'),
+        Input('initial-trigger', 'n_intervals'), 
+        State('screen-width', 'data')
+    )
     
+    #Sticky header with responsive legend
     @app.callback(
-        # print(f"Triggered by: {ctx.triggered}"),
         Output('sticky-header', 'children'),
         Input('screen-width', 'data')
     )
@@ -33,6 +34,7 @@ def register_callbacks(app):
     def render_sticky_header(screen_width):
         return sticky_header(screen_width)
 
+    #Update week offset on button clicks
     @app.callback(
         Output('week-offset', 'data'),
         Output('prev-button', 'disabled'),
@@ -51,7 +53,7 @@ def register_callbacks(app):
             
         #Limit forward navigation if next 4 weeks are empty
         today = datetime.now(PDT)
-        current_sunday = today - timedelta(days=(today.weekday() + 1 ) % 7)
+        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         start_sunday = current_sunday + timedelta(weeks=desired_offset)
         rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
         
@@ -74,171 +76,122 @@ def register_callbacks(app):
         next_disabled = not has_final_week_events
         
         #Dynamic tooltip text for forward navigation
-        next_title = "No upcoming events" if next_disabled else "Upcoming 4 Weeks"
+        next_title = "No Upcoming events" if next_disabled else "Upcoming Week"
         
         return desired_offset, prev_disabled, next_disabled, next_title
 
     @app.callback(
-        Output('rolling-weeks', 'children'),
+        Output('week-chart-container', 'children'),
+        Output('overflow-date', 'data'),
         Input('week-offset', 'data'),
-        Input('initial-trigger', 'n_intervals'),
-        State('screen-width', 'data'),
+        Input('screen-width', 'data'),
         prevent_initial_call=True
     )
-
-    def render_weeks(week_offset, _, screen_width):
-        if week_offset is None or not isinstance(week_offset, int):
-            week_offset = 0
-
-        # Recalculate weeks and figures based on the current week offset
+    
+    def render_single_week_chart(week_offset, screen_width):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-        start_sunday = current_sunday + timedelta(weeks=week_offset)
-        rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
-
+        week_start = current_sunday + timedelta(weeks=week_offset)
+        
+        fig, overflow_df = generate_weekly_view(week_start, df, screen_width)
         font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
-        weekly_blocks = []
-
-        for i, start_date in enumerate(rolling_weeks):
-            fig, overflow_df = generate_weekly_view(start_date, df, screen_width)
+        
+        week_title = html.H3(
+            f"Events for the Week of {week_start.strftime('%B %d')} - {(week_start + timedelta(days=6)).strftime('%B %d, %Y')}",
+            style={
+                'position': 'sticky',
+                'top': '60px',
+                'zIndex': 900,
+                'backgroundColor': 'white',
+                'padding': f"{padding_sizes.get('xxs', '6px')} 0",
+                'textAlign': 'center',
+                'fontSize': font_sizes.get('legend_title', '1.2rem'),
+                'fontWeight': 'bold',
+                'color': '#00008B',
+                'boxShadow': '0 1px 2px rgba(0,0,0,0.1)',
+                'margin': '0 auto'
+            }
+        )
+        
+        #Overflow content toggle & box
+        if not overflow_df.empty:
+            end_date = week_start + timedelta(days=6)
             
-            week_key = f"week-{start_date.strftime('%Y%m%d')}"
-            end_date = start_date + timedelta(days=6)
+            overflow_toggle = html.Button(
+                f"🌀 Show Ongoing Events for {week_start.strftime('%b %d')} - {end_date.strftime('%b %d')}",
+                id='overflow-toggle',
+                n_clicks=0,
+                style={
+                    'color': '#00008B',
+                    'fontSize': font_sizes['overflow'],
+                    'padding': '2px 4px',
+                    'textAlign': 'center',
+                    'display': 'flex',
+                    'justifyContent': 'center',
+                    'margin': '10px auto'
+                }
+            )
             
-            toggle_id = {'type': 'toggle-week', 'index': i}
-            content_id = {'type': 'week-content', 'index': i}
-            
-            overflow_width = '80%' if screen_width < 480 else '60%' if screen_width < 768 else '40%'
-            
-            overflow_content = html.Div(
-                id={'type': 'overflow-box', 'index': i},
+            overflow_box = html.Div(
+                id='overflow-box',
                 className='overflow-box',
                 children=[
                     html.Strong("Ongoing Events This Week:", style={
                         'color': '#6A5ACD',
-                        'textWeight': 'bold', 
-                        'fontSize': font_sizes['overflow'], 
-                        'display': 'block', 
+                        'fontSize': font_sizes['overflow'],
+                        'display': 'block',
                         'marginBottom': '8px'
                     }),
                     html.Ul([
                         html.Li(
-                            f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}", 
+                            f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}",
                             style={'color': '#00008B', 'fontSize': font_sizes['overflow']}
                         )
                         for _, row in overflow_df.iterrows()
                     ])
                 ],
                 style={
-                    'backgroundColor': '#f5f3fa',  # Overflow-box background
+                    'backgroundColor': '#f5f3fa',
                     'padding': '12px 20px',
                     'border': '2px solid #ccc',
                     'borderRadius': '4px',
-                    'margin': '0 auto 10px auto',
-                    'width': overflow_width,
+                    'width': '60%' if screen_width < 760 else '40%',
+                    'margin': '10px auto',
                     'textAlign': 'left',
                 }
             )
+        else:
+            overflow_toggle = html.Div()
+            overflow_box = html.Div()
             
-            weekly_blocks_children = [
-                dcc.Store(id={'type': 'week-toggle', 'index': i}, data=False),
-                dcc.Store(id={'type': 'toggle-date', 'index': i}, data=start_date.strftime('%Y-%m-%d')),
-                dcc.Store(id={'type': 'overflow-date', 'index': i}, data=start_date.strftime('%Y-%m-%d')),
-                html.H3(
-                    f"▶ Events the Week of {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}",
-                    id=toggle_id,
-                    className='week-header',
-                    n_clicks=0,
-                    style={
-                        'fontSize': font_sizes['legend_title'],
-                        'color': '#6A5ACD',
-                        'fontWeight': 'bold',
-                        'cursor': 'pointer',
-                        'textAlign': 'center',
-                        'userSelect': 'none',
-                        'margin': 0
-                    }
-                ),
-                html.Div(
-                    id=content_id,
-                    className='week-content',
-                    children=[
-                        dcc.Graph(
-                            id={'type': 'graph', 'index': i},
-                            figure=fig,
-                            config={'displayModeBar': False},
-                            style={'width': '99%'}
-                        ),
-                        html.Div([
-                            # Collapse Toggle
-                            html.Button(
-                                f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}",
-                                id={'type': 'overflow-toggle', 'index': i},
-                                n_clicks=0,
-                                style={
-                                    'color': '#00008B',
-                                    'fontSize': font_sizes['overflow'],
-                                    'padding': '2px 4px',
-                                    'textAlign': 'center',
-                                    'display': 'flex',
-                                    'alignItems': 'center',
-                                    'justifyContent': 'center'
-                                }
-                            ),
-                            overflow_content
-                        ]) if not overflow_df.empty else html.Div()
-                    ]
-                )
-            ]
-                
-            weekly_blocks.append(
-                html.Div(
-                    weekly_blocks_children,
-                    style={'marginBottom': padding_sizes['section_margin']}
-                    )
-                )      
+        #Shared scrollable container for graph + overflow
+        scrollable_content = html.Div([
+            dcc.Graph(
+                id='weekly-graph',
+                figure=fig,
+                config={'displayModeBar': False},
+                style={'width': '100%', 'height': 'auto'}
+            ),
+            overflow_toggle,
+            overflow_box
+        ], style={
+            'maxHeight': '600px',
+            'overflowY': 'auto',
+            'padding': f"0 {padding_sizes.get('small', '12px')}",
+            'marginBottom': '0'
+        })
         
-        # Return a list of figures for the weeks
-        return weekly_blocks
+        return html.Div([week_title, scrollable_content]), week_start.strftime('%Y-%m-%d')
 
     @app.callback(
-        Output({'type': 'week-content', 'index': MATCH}, 'className'),
-        Output({'type': 'week-toggle', 'index': MATCH}, 'data'),
-        Input({'type': 'toggle-week', 'index': MATCH}, 'n_clicks'),
-        State({'type': 'week-toggle', 'index': MATCH}, 'data'),
-        prevent_initial_call=True
-    )
-
-    def toggle_week_content(n_clicks, is_open):
-        new_is_open = not is_open
-        new_class = 'week-content show' if new_is_open else 'week-content'
-        return new_class, new_is_open
-
-    @app.callback(
-        Output({'type': 'toggle-week', 'index': MATCH}, 'children'),
-        Input({'type': 'week-toggle', 'index': MATCH}, 'data'),
-        State({'type': 'toggle-date', 'index': MATCH}, 'data')
-    )
-
-    def update_toggle_title(is_open, start_date_str):
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-        end_date = start_date + timedelta(days=6)
-        return (
-            f"▼ Events the Week of {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
-            if is_open else
-            f"▶ Events the Week of {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
-        )
-
-    @app.callback(
-        Output({'type': 'overflow-box', 'index': MATCH}, 'className'),
-        Output({'type': 'overflow-toggle', 'index': MATCH}, 'children'),
-        Input({'type': 'overflow-toggle', 'index': MATCH}, 'n_clicks'),
-        State({'type': 'overflow-date', 'index': MATCH}, 'data'),
+        Output('overflow-box', 'className'),
+        Output('overflow-toggle', 'children'),
+        Input('overflow-toggle', 'n_clicks'),
+        State('overflow-date', 'data'),
         prevent_initial_call=True
     )
 
     def toggle_overflow(n_clicks, start_date_str):
-        # print(f"[toggle_overflow] Clicks: {n_clicks}, Date: {start_date_str}")
         start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
         end_date = start_date + timedelta(days=6)
         is_open = n_clicks % 2 == 1
@@ -258,11 +211,11 @@ def register_callbacks(app):
         Output('event-modal', 'className'),
         Output('event-modal-body', 'children'),
         Output('close-timer', 'n_intervals'),
-        Output({'type': 'graph', 'index': ALL}, 'clickData'),
+        Output('weekly-graph', 'clickData'),
         Output('day-modal', 'style'),
         Output('day-modal', 'className'),
         Output('day-modal-body', 'children'),
-        Input({'type': 'graph', 'index': ALL}, 'clickData'),
+        Input('weekly-graph', 'clickData'),
         Input("close-modal", "n_clicks"),
         Input("close-timer", "n_intervals"),
         Input("close-day-modal", "n_clicks"),
@@ -270,11 +223,9 @@ def register_callbacks(app):
         State('screen-width', 'data'),
         prevent_initial_call=True
     )
-
-    def show_event_modal(clicks, close_clicks, timer_tick, close_day_clicks, current_offset, screen_width):
+    def show_event_modal(click_data, close_clicks, timer_tick, close_day_clicks, current_offset, screen_width):
         ctx = dash.callback_context
-        
-        click_reset = [None] * len(clicks) if isinstance(clicks, list) else []
+        click_reset = None
 
         if ctx.triggered_id == "close-timer":
             return no_update, '', '', 0, click_reset, {'display': 'none'}, '', ''
@@ -285,54 +236,43 @@ def register_callbacks(app):
         if ctx.triggered_id == "close-day-modal":
             return no_update, no_update, no_update, no_update, click_reset, {'display': 'none'}, 'modal closing', ''
         
-        if not clicks or not isinstance(clicks, list):
+        if not click_data or 'points' not in click_data or not click_data['points']:
             return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
         
-        #Check for valid clickData    
-        for click in clicks:
-            if click and 'points' in click and click['points']:
-                data = click['points'][0].get('customdata', [None])[0]
-                if not data:
-                    continue
-                
-                #Day click                
-                if data.get("type")  == "day_click":
-                    day_index = data.get("day_index")
-                    today = datetime.now(PDT)
-                    current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-                    start_sunday = current_sunday + timedelta(weeks=current_offset or 0)
-                    clicked_day = start_sunday + timedelta(days=day_index)
-                    
-                    day_view = generate_day_view_html(df, clicked_day, get_color, screen_width)
-                    
-                    return no_update, no_update, no_update, no_update, click_reset, {'display': 'flex'}, 'modal show', day_view
-                
-                #Regular event click
-                rows = []
-                for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
-                    if label in data:
-                        display_label = {
-                            "EventName": "Event",
-                            "StartDate": "Event Starts",
-                            "EndDate": "Event Ends"
-                        }.get(label, label)
-
-                        value = data[label]
-
-                        if label in ["StartDate", "EndDate"]:
-                            try:
-                                value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
-                            except Exception:
-                                pass
-
-                        rows.append(html.Div([
-                            html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
-                            html.Span(value)
-                        ], style={'marginBottom': '6px'}))
-                return {}, 'modal show', rows, 0, click_reset, {'display': 'none'}, '', ''
+        data = click_data['points'][0].get('customdata', [None])[0]
+        if not data:
+            return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
+                          
+        if data.get("type")  == "day_click":
+            day_index = data.get("day_index")
+            today = datetime.now(PDT)
+            current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
+            week_start = current_sunday + timedelta(weeks=current_offset or 0)
+            clicked_day = week_start + timedelta(days=day_index)
             
-        #If nothing is valid was clicked
-        return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
+            day_view = generate_day_view_html(df, clicked_day, get_color, screen_width)    
+            return no_update, no_update, no_update, no_update, click_reset, {'display': 'flex'}, 'modal show', day_view
+        
+        #Regular event click
+        rows = []
+        for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
+            if label in data:
+                display_label = {
+                    "EventName": "Event",
+                    "StartDate": "Event Starts",
+                    "EndDate": "Event Ends"
+                }.get(label, label)
 
+                value = data[label]
 
+                if label in ["StartDate", "EndDate"]:
+                    try:
+                        value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
+                    except Exception:
+                        pass
 
+                rows.append(html.Div([
+                    html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
+                    html.Span(value)
+                ], style={'marginBottom': '6px'}))
+        return {}, 'modal show', rows, 0, click_reset, {'display': 'none'}, '', ''
