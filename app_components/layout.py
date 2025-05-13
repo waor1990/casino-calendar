@@ -44,13 +44,14 @@ def create_layout(app):
         dcc.Store(id='overflow-date'),
         dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
         dcc.Interval(id='close-timer', interval=600, n_intervals=0, max_intervals=0),
+        dcc.Graph(id="day-event-catcher", figure={}, style={"display": "none"}),
      
         #Modal Popup for event details
         html.Div(id='event-modal', className='modal', children=[
             html.Div(id='event-modal-content', className='modal-content', children=[
                 html.Div(id='event-modal-body', style={
                     "maxHeight": "80vh", 
-                    "overflow": "scroll",
+                    "overflow": "auto",
                     "padding": "10px"
                     }),
                 html.Button("Close", id="close-modal", style={
@@ -73,7 +74,7 @@ def create_layout(app):
             html.Div(id='day-modal-content', className='modal-content', children=[
                 html.Div(id='day-modal-body', style={
                     "maxHeight": "80vh",
-                    "overflowY": "scroll",
+                    "overflowY": "auto",
                     "padding": "10px"
                 }),
                 html.Button("Close", id="close-day-modal", style={
@@ -91,7 +92,7 @@ def create_layout(app):
             ])
         ])
     ]
-    )
+)
     
 def sticky_header(screen_width, week_start_label=""):
     font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
@@ -165,7 +166,7 @@ def sticky_header(screen_width, week_start_label=""):
             'fontWeight': 'bold',
             'padding': f"{padding_sizes.get('xxs', '6px')} 0",
             'backgroundColor': 'white',
-            'boxShadow': '0 -2px 4px rgba(0,0,0,0.15)',
+            'boxShadow': '0 -2px 4px rgba(0,0,0,0.25)',
             'zIndex': 900
         }),
     ]
