@@ -165,7 +165,7 @@ def sticky_header(screen_width, week_start_label=""):
             'fontWeight': 'bold',
             'padding': f"{padding_sizes.get('xxs', '6px')} 0",
             'backgroundColor': 'white',
-            'boxShadow': '0 -2px 4px rgba(0,0,0,0.15)',
+            'boxShadow': '0 -2px 4px rgba(0,0,0,0.25)',
             'zIndex': 900
         }),
     ]

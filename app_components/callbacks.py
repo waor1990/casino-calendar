@@ -36,7 +36,7 @@ def register_callbacks(app):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
-        week_label = f"Events for the Week of {week_start.strftime('%B %d')} - {(week_start + timedelta(days=6)).strftime('%B %d, %Y')}",
+        week_label = f"Events for the Week of {week_start.strftime('%B %d')} - {(week_start + timedelta(days=6)).strftime('%B %d, %Y')}"
         
         return sticky_header(screen_width, week_label)
 
@@ -52,7 +52,8 @@ def register_callbacks(app):
     )
 
     def update_week_offset(prev_clicks, next_clicks, current_offset):
-        desired_offset = next_clicks - prev_clicks
+        delta = (next_clicks or 0) - (prev_clicks or 0)
+        desired_offset = current_offset + delta
         
         #Limit going back no more than 6 weeks
         desired_offset = max(-6, desired_offset)
@@ -63,23 +64,20 @@ def register_callbacks(app):
         start_sunday = current_sunday + timedelta(weeks=desired_offset)
         rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
         
-        #Get the furthest week in the next 4-week window
-        final_week_start = rolling_weeks[-1]
-        final_week_end = final_week_start + timedelta(days=6)
+        next_week_offset = desired_offset + 1
+        next_week_start = current_sunday + timedelta(weeks=next_week_offset)
+        next_week_end = next_week_start + timedelta(days=6)
         
-        #Only allow forward if the last (furthest) week has events
-        has_final_week_events = not df[
-            (df['EndDate'] > final_week_start) & 
-            (df['StartDate'] < final_week_end)
+        has_next_week_events = not df[
+            (df['EndDate'] > next_week_start) &
+            (df['StartDate'] < next_week_end)
         ].empty
         
-        #Don't allow forward if not future events
-        if not has_final_week_events and desired_offset > current_offset:
+        if not has_next_week_events and desired_offset > current_offset:
             desired_offset = current_offset
             
-        #Disable determination if no events moving forward
         prev_disabled = desired_offset <= -6
-        next_disabled = not has_final_week_events
+        next_disabled = not has_next_week_events
         
         #Dynamic tooltip text for forward navigation
         next_title = "No Upcoming events" if next_disabled else "Upcoming Week"
@@ -205,6 +203,7 @@ def register_callbacks(app):
         Output('day-modal', 'className'),
         Output('day-modal-body', 'children'),
         Input('weekly-graph', 'clickData'),
+        Input("day-event-catcher", "clickData"),
         Input("close-modal", "n_clicks"),
         Input("close-timer", "n_intervals"),
         Input("close-day-modal", "n_clicks"),
@@ -212,7 +211,7 @@ def register_callbacks(app):
         State('screen-width', 'data'),
         prevent_initial_call=True
     )
-    def show_event_modal(click_data, close_clicks, timer_tick, close_day_clicks, current_offset, screen_width):
+    def show_event_modal(weekly_click, day_click, close_clicks, timer_tick, close_day_clicks, week_offset, screen_width):
         ctx = dash.callback_context
         click_reset = None
 
@@ -225,22 +224,23 @@ def register_callbacks(app):
         if ctx.triggered_id == "close-day-modal":
             return no_update, no_update, no_update, no_update, click_reset, {'display': 'none'}, 'modal closing', ''
         
+        click_data = None 
+        if ctx.triggered_id == "weekly-graph":
+            click_data = weekly_click
+        elif ctx.triggered_id == "day-event-catcher":
+            click_data = day_click
+            
+        print("clickData:", click_data)
+        print("Triggered ID:", ctx.triggered_id)
+            
         if not click_data or 'points' not in click_data or not click_data['points']:
             return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
         
         data = click_data['points'][0].get('customdata', [None])[0]
         if not data:
             return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
-                          
-        if data.get("type")  == "day_click":
-            day_index = data.get("day_index")
-            today = datetime.now(PDT)
-            current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-            week_start = current_sunday + timedelta(weeks=current_offset or 0)
-            clicked_day = week_start + timedelta(days=day_index)
-            
-            day_view = generate_day_view_html(df, clicked_day, get_color, screen_width)    
-            return no_update, no_update, no_update, no_update, click_reset, {'display': 'flex'}, 'modal show', day_view
+        
+        
         
         #Regular event click
         rows = []
@@ -264,4 +264,4 @@ def register_callbacks(app):
                     html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
                     html.Span(value)
                 ], style={'marginBottom': '6px'}))
-        return {}, 'modal show', rows, 0, click_reset, {'display': 'none'}, '', ''
+        return {}, 'modal show', rows, 0, None, {'display': 'none'}, '', ''
