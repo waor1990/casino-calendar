@@ -30,7 +30,7 @@ def create_layout(app):
             type='circle',
             color='#6A5ACD',
             children=html.Div(
-                id='rolling-weeks',
+                id='week-chart-container',
                 style={
                     'display': 'flex',
                     'flexDirection': 'column',
@@ -42,6 +42,7 @@ def create_layout(app):
         #State Stores and Timers
         dcc.Store(id='screen-width', data=1024), 
         dcc.Store(id='week-offset', data=0),
+        dcc.Store(id='overflow-date'),
         dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
         dcc.Interval(id='close-timer', interval=600, n_intervals=0, max_intervals=0),
      
@@ -116,7 +117,7 @@ def sticky_header(screen_width):
             html.Button(
                 "🎲",
                 id='prev-button',
-                title="Prior 4 Weeks",
+                title="Prior Week",
                 n_clicks=0,
                 className='emoji-button',
                 style={'fontSize': font_sizes['button'], 'padding': padding_sizes['button_padding']}
