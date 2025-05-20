@@ -1,4 +1,5 @@
 from dash import html, dcc
+import plotly.graph_objs as go
 from .utils import get_dynamic_sizes
 from .data import load_event_data
 from .plotting import get_color
@@ -44,7 +45,15 @@ def create_layout(app):
         dcc.Store(id='overflow-date'),
         dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
         dcc.Interval(id='close-timer', interval=600, n_intervals=0, max_intervals=0),
-        dcc.Graph(id="day-event-catcher", figure={}, style={"display": "none"}),
+        dcc.Graph(
+            id="day-event-catcher", 
+            figure=go.Figure(), 
+            style={
+                "visibility": "hidden",
+                "height": "0px",
+                "pointerEvents": "none"
+            }
+        ),
      
         #Modal Popup for event details
         html.Div(id='event-modal', className='modal', children=[
