@@ -62,7 +62,6 @@ def register_callbacks(app):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         start_sunday = current_sunday + timedelta(weeks=desired_offset)
-        rolling_weeks = [start_sunday + timedelta(weeks=i) for i in range(4)]
         
         next_week_offset = desired_offset + 1
         next_week_start = current_sunday + timedelta(weeks=next_week_offset)
@@ -152,23 +151,27 @@ def register_callbacks(app):
             overflow_box = html.Div()
             
         #Shared scrollable container for graph + overflow
-        scrollable_content = html.Div([
-            dcc.Graph(
-                id='weekly-graph',
-                figure=fig,
-                config={'displayModeBar': False},
-                style={'width': '100%', 'height': 'auto'}
-            ),
-            overflow_toggle,
-            overflow_box
-        ], style={
-            'maxHeight': '600px',
-            'overflowY': 'auto',
-            'padding': f"0 {padding_sizes.get('small', '12px')}",
-            'marginBottom': '0'
-        })
         
-        return html.Div([scrollable_content]), week_start.strftime('%Y-%m-%d')
+        return html.Div(
+            children=[
+                dcc.Graph(
+                    id='weekly-graph',
+                    figure=fig,
+                    config={'displayModeBar': False},
+                    style={'width': '100%', 'height': 'auto'}
+                ),
+                overflow_toggle,
+                overflow_box
+            ],
+            style={
+                'maxHeight': '600px',
+                'overflowY': 'auto',
+                'padding': f"0 {padding_sizes.get('small', '12px')}",
+                'marginBottom': '0'
+            },
+            className='slide-in',
+            key=week_offset
+        ), week_start.strftime('%Y-%m-%d') 
 
     @app.callback(
         Output('overflow-box', 'className'),
@@ -230,8 +233,8 @@ def register_callbacks(app):
         elif ctx.triggered_id == "day-event-catcher":
             click_data = day_click
             
-        print("clickData:", click_data)
-        print("Triggered ID:", ctx.triggered_id)
+        #print("clickData:", click_data)
+        #print("Triggered ID:", ctx.triggered_id)
             
         if not click_data or 'points' not in click_data or not click_data['points']:
             return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update

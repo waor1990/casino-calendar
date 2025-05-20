@@ -2,3 +2,77 @@
 .js-plotly-plot .hoverlayer .hovertext {
     cursor: pointer !important;
 }
+
+/*General button effects*/
+.emoji-button {
+    all: unset;
+    cursor: pointer;
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.emoji-button:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    transition: opacity 0.5s ease;
+}
+
+#prev-button.emoji-button:hover {
+    transform: scale(1.5) rotate(-10deg);
+}
+
+#next-button.emoji-button:hover {
+    transform: scale(1.5) rotate(10deg);
+}
+
+/* Global Animation for Text */
+.fade-text {
+    animation: fadeChange 1.2s ease-in-out;
+}
+
+@keyframes fadeChange {
+    0% {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Slide-in animation class (used for weekly blocks) */
+.slide-in {
+    animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(500px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(500px);
+        opacity: 0;
+    }
+}
+
+/* General Overrides */
+body {
+    overflow: hidden;
+}

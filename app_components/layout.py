@@ -168,7 +168,11 @@ def sticky_header(screen_width, week_start_label=""):
             'paddingBottom': '10px',
         }
         ),
-        html.Div(week_start_label, style={
+        html.Div(
+            week_start_label, 
+            key=week_start_label,
+            className="fade-text",
+            style={
             'fontSize': font_sizes['legend_title'],
             'color': '#00008B',
             'textAlign': 'center',
