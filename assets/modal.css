@@ -1,10 +1,11 @@
+/* Modal Container & Behavior */
 .modal {
     position: fixed;
-    top: 0; 
+    top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,6 +18,7 @@
 .modal.show {
     opacity: 1;
     pointer-events: auto;
+    overflow: hidden;
 }
 
 .modal.closing {
@@ -24,13 +26,14 @@
     pointer-events: none;
 }
 
-/*Base styling for modal cards*/
+/* Base styling for modal cards */
 .modal-content {
     background-color: #f5f3fa;
     border: 2px solid #6A5ACD;
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    max-height: 90vh;
     max-width: 95vw;
     width: 600px;
     min-width: unset;
@@ -39,10 +42,21 @@
     opacity: 0;
     will-change: transform, opacity;
     transform-origin: center center;
-    
+    overflow-y: auto;
+
 }
 
-/*Responsive Day Modal Enhancements*/
+.modal.show .modal-content {
+    animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    pointer-events: auto;
+}
+
+.modal.closing .modal-content {
+    animation: slideOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    pointer-events: none;
+}
+
+/* Responsive Day Modal Enhancements */
 #day-modal-content {
     width: 90%;
     max-width: 800px;
@@ -53,13 +67,13 @@
     padding: 10px;
 }
 
-#day-modal-body > div {
+#day-modal-body>div {
     position: relative;
 }
 
+/* Modal Responsiveness */
 @media (max-width: 768px) {
     #day-modal-content {
-        width: 90% !important;
         max-width: 700px;
     }
 
@@ -68,7 +82,6 @@
     }
 }
 
-/*RESPONSIVE: For mobile*/
 @media (max-width: 480px) {
     #day-modal-content {
         width: 85% !important;
@@ -80,18 +93,7 @@
     }
 }
 
-/*Animate slide-in*/
-.modal.show  .modal-content {
-    animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    pointer-events: auto;
-}
-
-/*Animate slide-out*/
-.modal.closing .modal-content {
-    animation: slideOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    pointer-events: none;
-}
-
+/* Overflow Box & Weekly Expand Section */
 .overflow-box {
     max-height: 0;
     opacity: 0;
@@ -124,42 +126,14 @@
     transition-delay: 0.4s, 0s;
 }
 
-/*Slide-in animation class (used for weekly blocks)*/
-.slide-in {
-    animation: slideIn 0.5s ease-out forwards;
-}
-
-.emoji-button {
-    all: unset;
-    cursor: pointer;
-    font-size: clamp(1.25rem, 3vw, 2rem);
-    line-height: 1;
-    transition: transform 0.2s ease;
-}
-
-.emoji-button:disabled {
-    opacity: 0.2;
-    cursor: not-allowed;
-    transition: opacity 0.5s ease;
-}
-
-#prev-button.emoji-button:hover {
-    transform: scale(1.5) rotate(-10deg);
-}
-
-#next-button.emoji-button:hover {
-    transform: scale(1.5) rotate(10deg);
-}
-
-body {
-    overflow-x: hidden;
-}
+/* Slide-in animation class (used for weekly blocks) */
 
 @keyframes slideIn {
     from {
         transform: translateY(500px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -171,9 +145,9 @@ body {
         transform: translateY(0);
         opacity: 1;
     }
+
     to {
         transform: translateY(500px);
         opacity: 0;
     }
 }
-
