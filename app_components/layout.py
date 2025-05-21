@@ -16,13 +16,17 @@ def create_layout(app):
     },
     children=[
         #Sticky-Header container
-        html.Div(id='sticky-header', style={
-            'position': 'sticky',
-            'top': 0,
-            'padding': f"{padding_sizes['header_padding']} 0",
-            'backgroundColor': 'white',
-            'zIndex': 1000
-        }),
+        html.Div(
+            id='sticky-header', 
+            className='stickt-header',
+            style={
+                'position': 'sticky',
+                'top': 0,
+                'padding': f"{padding_sizes['header_padding']} 0",
+                'backgroundColor': 'white',
+                'zIndex': 1000
+            }
+        ),
         
         #Loading spinner and calendar weeks
         dcc.Loading(

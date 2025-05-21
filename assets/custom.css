@@ -72,6 +72,21 @@
     }
 }
 
+/* Default: sticky */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+}
+
+/* Disable stickiness on mobile */
+@media (max-width: 768px) {
+    .sticky-header {
+        position: static;
+    }
+}
+
 /* General Overrides */
 body {
     overflow: hidden;

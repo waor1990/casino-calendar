@@ -17,12 +17,14 @@ def register_callbacks(app):
     app.clientside_callback(
         '''
         function(n_intervals) {
-            return window.innerWidth;
+            return [window.innerWidth, window.innerHeight];
         }
         ''',
         Output('screen-width', 'data'),
+        Output('screen-height', 'data'),
         Input('initial-trigger', 'n_intervals'), 
-        State('screen-width', 'data')
+        State('screen-width', 'data'),
+        State('screen-height', 'data')
     )
     
     #Sticky header with responsive legend
@@ -88,13 +90,16 @@ def register_callbacks(app):
         Output('overflow-date', 'data'),
         Input('week-offset', 'data'),
         Input('screen-width', 'data'),
+        Input('screen-height', 'data'),
         prevent_initial_call=True
     )
     
-    def render_single_week_chart(week_offset, screen_width):
+    def render_single_week_chart(week_offset, screen_width, screen_height):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
+        usable_height = screen_height - 250
+        usable_height = max(usable_height, 300)
         
         fig, overflow_df = generate_weekly_view(week_start, df, screen_width)
         font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
@@ -111,10 +116,12 @@ def register_callbacks(app):
                     'color': '#00008B',
                     'fontSize': font_sizes['overflow'],
                     'padding': '2px 4px',
+                    'paddingBottom': '20px',
                     'textAlign': 'center',
                     'display': 'flex',
                     'justifyContent': 'center',
-                    'margin': '10px auto'
+                    'margin': '10px auto',
+                    'marginBottom': '40px'
                 }
             )
             
@@ -164,9 +171,9 @@ def register_callbacks(app):
                 overflow_box
             ],
             style={
-                'maxHeight': '600px',
+                'maxHeight': f'{usable_height}px',
                 'overflowY': 'auto',
-                'padding': f"0 {padding_sizes.get('small', '12px')}",
+                'padding': f"0 {padding_sizes.get('small', '12px')} 40px",
                 'marginBottom': '0'
             },
             className='slide-in',
