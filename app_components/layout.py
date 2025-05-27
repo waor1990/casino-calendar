@@ -44,7 +44,8 @@ def create_layout(app):
         ),
         
         #State Stores and Timers
-        dcc.Store(id='screen-width', data=1024), 
+        dcc.Store(id='screen-width', data=1024),
+        dcc.Store(id='screen-height', data=800),
         dcc.Store(id='week-offset', data=0),
         dcc.Store(id='overflow-date'),
         dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
