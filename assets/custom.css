@@ -207,8 +207,54 @@ body {
     overflow: hidden;
 }
 
-/* Utility Classes */
 
+/* Day View Styles */
+.day-label {
+    font-weight: bold;
+    font-size: var(--legend-title, 1.1rem);
+    margin-bottom: var(--padding-small);
+    text-align: center;
+    color: #00008B;
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background-color: #f5f3fa;
+    padding: var(--padding-xxs);
+}
+
+.no-events {
+    text-align: center;
+    padding: var(--padding-base);
+}
+
+.hour-label {
+    position: absolute;
+    left: 0;
+    font-size: var(--overflow-font, 0.7rem);
+    color: #6A5ACD;
+    padding-left: var(--padding-small);
+    box-sizing: border-box;
+    z-index: 5;
+    background-color: #f5f3fa;
+}
+
+.event-block {
+    position: absolute;
+    border: 1px solid #333;
+    border-radius: var(--padding-xxs);
+    box-sizing: border-box;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.day-grid {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* Utility Classes */
 .header-padding {
     padding: var(--padding-header);
 }
