@@ -4,18 +4,16 @@ from dash import html, dcc
 from datetime import datetime, timedelta
 from math import floor
 from collections import defaultdict
-from .utils import get_dynamic_sizes, get_week_range, PDT
+from .utils import get_week_range, PDT
 
 #Layout config shared across functions
 def get_layout_config(screen_width):
-    font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
     hour_height = 20 if screen_width < 480 else 36 if screen_width < 768 else 44
     label_column_pct = 10
-    return font_sizes, padding_sizes, hour_height, label_column_pct
+    return hour_height, label_column_pct
 
 # Function to generate a weekly view given a clicked date
 def generate_weekly_view(clicked_date, df, screen_width=1024):
-    font_sizes, _ = get_dynamic_sizes(screen_width)
     week_start, week_end = get_week_range(clicked_date)
 
     long_spanning = filter_long_spanning_events(df, week_start, week_end)
@@ -25,7 +23,7 @@ def generate_weekly_view(clicked_date, df, screen_width=1024):
         return build_empty_figure(), long_spanning
 
     events_annotated = annotate_events_with_flags(events_filtered, week_start, week_end)
-    fig = build_weekly_figure(events_annotated, font_sizes, screen_width, week_start)
+    fig = build_weekly_figure(events_annotated, screen_width, week_start)
 
     return fig, long_spanning
 
@@ -72,7 +70,7 @@ def get_color():
     return result
 
 #Add arrow indicators for events that span outside the week
-def annotate_events_with_flags(events_df: pd.DataFrame, week_start: datetime, week_end: datetime) -> pd.DataFrame:
+def annotate_events_with_flags(events_df, week_start, week_end):
     # Add a duration column for sorting, and sort by: both left and right arrows, only left arrow, fully within week, and only right arrow
     events_df["Duration"] = (events_df["EndDate"] - events_df["StartDate"]).dt.total_seconds()
     events_df["has_left_arrow"] = events_df["StartDate"] < week_start
@@ -173,7 +171,10 @@ def build_empty_figure():
         )
     )
 
-def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
+def build_weekly_figure(events_df, screen_width, week_start):
+    font_rem = 12 if screen_width < 480 else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
+    event_font_size_px = font_rem * 1
+    
     shapes = []
     annotations = []
     hover_markers = []
@@ -292,26 +293,16 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
                     layer="above"
                 ))
 
-            try:
-                font_size = float(font_sizes["event_block"].replace("rem", "")) * 12
-            except:
-                font_size = 12
-            
-            mid_x = min(max((adjusted_start + adjusted_end) / 2, 0), 7)
-
             annotations.append(dict(
-                x=mid_x,
+                x=(adjusted_start + adjusted_end) / 2,
                 y=y_center,
                 text=trimmed_label,
                 showarrow=False,
-                font=dict(size=font_size, color=text_color),
+                font=dict(size=event_font_size_px, color=text_color),
                 xanchor="center",
                 yanchor="middle"
             ))
-
-            if adjusted_end < 0 or adjusted_start > 7:
-                continue
-
+            
             hover_markers.append(go.Scatter(
                 x=[(adjusted_start + adjusted_end) / 2],
                 y=[y_center],
@@ -362,7 +353,7 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
                 type="linear",
                 tickmode="array",
                 tickvals=[i + 0.5 for i in range(7)],
-                ticktext=[f"<b style='color:#00008B;font-size:{font_sizes['event_block']};'>{label}</b>" for label in tick_labels],
+                ticktext=[f"<b style='color:#00008B;font-size:{event_font_size_px}px'>{label}</b>" for label in tick_labels],
                 side="top",
                 showgrid=True,
                 gridcolor="lightgray",
@@ -383,7 +374,7 @@ def build_weekly_figure(events_df, font_sizes, screen_width, week_start):
 
 #Generate a responsive 24-hour vertical day view with absolutely positioned event blocks.
 def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1024):
-    font_sizes, padding_sizes, hour_height, label_column_pct = get_layout_config(screen_width)
+    hour_height, label_column_pct = get_layout_config(screen_width)
 
     #Normalize clicked_date
     day_start = clicked_date.astimezone(PDT).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -401,11 +392,7 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     day_label = clicked_date.strftime("%A, %B %d")
     
     if events.empty:
-        return [html.Div(f"No events scheduled for {day_label}.", style={
-            "textAlign": "center",
-            "padding": padding_sizes.get("base", "1rem"),
-            "fontSize": font_sizes.get("legend_title", "1.1rem")
-        })]
+        return [html.Div(f"No events scheduled for {day_label}.", className="day-label no-events")]
 
     #Time math
     events["start_offset_min"] = (events["StartDate"] - day_start).dt.total_seconds() / 60
@@ -445,18 +432,11 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
         #Label on left
         hour_blocks.append(html.Div(
             label, 
+            className="hour-label",
             style={
-                "position": "absolute",
                 "top": f"{top_px}px",
-                "left": "0",
-                "width": f"{label_column_pct}%",
                 "height": f"{hour_height}px",
-                "fontSize": font_sizes.get('overflow', '0.5rem'),
-                "color": "#6A5ACD",
-                "paddingLeft": padding_sizes.get("small", "6px"),
-                "boxSizing": "border-box",
-                "zIndex": 5,
-                "backgroundColor": "#f5f3fa"
+                "width": f"{label_column_pct}%",
             }
         ))
     
@@ -471,18 +451,13 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
         #Visible block
         event_blocks.append(html.Div(
             title=row["EventName"],
+            className="event-block",
             style={
-                "position": "absolute",
                 "top": f"{top_px}px",
                 "left": f"{left_pct}%",
                 "width": f"{width_pct}%",
                 "height": f"{height_px}px",
                 "backgroundColor": color,
-                "border": "1px solid #333",
-                "borderRadius": padding_sizes.get("xxs", "4px"),
-                "boxSizing": "border-box",
-                "zIndex": 10,
-                "cursor": "pointer"
             }
         ))
         
@@ -531,29 +506,16 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     #Sticky Add day label + scrollable grid container
     header = html.Div(
         day_label,
-        style={
-            "fontWeight": "bold",
-            "fontSize": font_sizes.get("legend_title", "1.1rem"),
-            "marginBottom": padding_sizes.get("small", "12px"),
-            "textAlign": "center",
-            "color": "#00008B",
-            "position": "sticky",
-            "top": "0",
-            "zIndex": 15,
-            "backgroundColor": "#f5f3fa",
-            "padding": padding_sizes.get("xxs", "6px")
-        }
+        className="day-label",
     )
     
     return [
         header,
         html.Div(
             children=hour_blocks + event_blocks + [click_graph],
+            className="day-grid",
             style={
-                "position": "relative",
                 "height": f"{24 * hour_height}px",
-                "width": "100%",
-                "boxSizing": "border-box"
             }
         )
     ]
