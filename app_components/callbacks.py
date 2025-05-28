@@ -1,30 +1,34 @@
 def register_callbacks(app):
     import dash
-    from dash import html, dcc, Input, Output, State, ctx, no_update
-    import pandas as pd
-    from pytz import timezone
+    from dash import Input, Output, State, ctx, html, dcc, no_update
     from datetime import datetime, timedelta
-    from .plotting import generate_weekly_view, get_color, generate_day_view_html
-    from .utils import get_dynamic_sizes, PDT
+    from pytz import timezone
+    import pandas as pd
     from .data import load_event_data
+    from .plotting import generate_weekly_view, get_color, generate_day_view_html
     from .layout import sticky_header
-    
-    
+
     PDT = timezone('America/Los_Angeles')
     df = load_event_data()
     
-    #Detect screen width once
+       
+    #Screen detection JS (for height + width)
     app.clientside_callback(
         '''
         function(n_intervals) {
-            return [window.innerWidth, window.innerHeight];
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            const header = document.getElementById("app-header");
+            const headerHeight = header ? header.offsetHeight : 100;
+            
+            const usable = Math.max(height - headerHeight - 20, 300);
+            return [width, usable];
         }
         ''',
         Output('screen-width', 'data'),
-        Output('screen-height', 'data'),
-        Input('initial-trigger', 'n_intervals'), 
-        State('screen-width', 'data'),
-        State('screen-height', 'data')
+        Output('usable-height', 'data'),
+        Input('initial-trigger', 'n_intervals'),
     )
     
     #Sticky header with responsive legend
@@ -34,13 +38,13 @@ def register_callbacks(app):
         Input('week-offset', 'data')
     )
     
-    def render_sticky_header(screen_width, week_offset):
+    def render_sticky_header(week_offset):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
         week_label = f"Events for the Week of {week_start.strftime('%B %d')} - {(week_start + timedelta(days=6)).strftime('%B %d, %Y')}"
         
-        return sticky_header(screen_width, week_label)
+        return sticky_header(week_label)
 
     #Update week offset on button clicks
     @app.callback(
@@ -56,10 +60,8 @@ def register_callbacks(app):
     def update_week_offset(prev_clicks, next_clicks, current_offset):
         delta = (next_clicks or 0) - (prev_clicks or 0)
         desired_offset = current_offset + delta
-        
         #Limit going back no more than 6 weeks
         desired_offset = max(-6, desired_offset)
-            
         #Limit forward navigation if next 4 weeks are empty
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
@@ -88,40 +90,34 @@ def register_callbacks(app):
     @app.callback(
         Output('week-chart-container', 'children'),
         Output('overflow-date', 'data'),
+        Input('usable-height', 'data'),
         Input('week-offset', 'data'),
         Input('screen-width', 'data'),
-        Input('screen-height', 'data'),
         prevent_initial_call=True
     )
     
-    def render_single_week_chart(week_offset, screen_width, screen_height):
+    def render_single_week_chart(week_offset, usable_height):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
-        usable_height = screen_height - 250
-        usable_height = max(usable_height, 300)
         
-        fig, overflow_df = generate_weekly_view(week_start, df, screen_width)
-        font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
+        fig, overflow_df = generate_weekly_view(week_start, df)
+        
+        end_date = week_start + timedelta(days=6)
         
         #Overflow content toggle & box
-        if not overflow_df.empty:
-            end_date = week_start + timedelta(days=6)
-            
+        if not overflow_df.empty:            
             overflow_toggle = html.Button(
                 f"🌀 Show Ongoing Events for {week_start.strftime('%b %d')} - {end_date.strftime('%b %d')}",
                 id='overflow-toggle',
                 n_clicks=0,
+                className="section-bottom",
                 style={
                     'color': '#00008B',
-                    'fontSize': font_sizes['overflow'],
-                    'padding': '2px 4px',
-                    'paddingBottom': '20px',
                     'textAlign': 'center',
                     'display': 'flex',
                     'justifyContent': 'center',
-                    'margin': '10px auto',
-                    'marginBottom': '40px'
+                    'margin': '10px auto 40px auto',
                 }
             )
             
@@ -131,14 +127,13 @@ def register_callbacks(app):
                 children=[
                     html.Strong("Ongoing Events This Week:", style={
                         'color': '#6A5ACD',
-                        'fontSize': font_sizes['overflow'],
                         'display': 'block',
                         'marginBottom': '8px'
                     }),
                     html.Ul([
                         html.Li(
                             f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}",
-                            style={'color': '#00008B', 'fontSize': font_sizes['overflow']}
+                            style={'color': '#00008B'}
                         )
                         for _, row in overflow_df.iterrows()
                     ])
@@ -148,7 +143,6 @@ def register_callbacks(app):
                     'padding': '12px 20px',
                     'border': '2px solid #ccc',
                     'borderRadius': '4px',
-                    'width': '60%' if screen_width < 760 else '40%',
                     'margin': '10px auto',
                     'textAlign': 'left',
                 }
@@ -158,8 +152,7 @@ def register_callbacks(app):
             overflow_box = html.Div()
             
         #Shared scrollable container for graph + overflow
-        
-        return html.Div(
+        chart = html.Div(
             children=[
                 dcc.Graph(
                     id='weekly-graph',
@@ -170,15 +163,17 @@ def register_callbacks(app):
                 overflow_toggle,
                 overflow_box
             ],
+            className='slide-in',
             style={
-                'maxHeight': f'{usable_height}px',
+                'height': f'{usable_height}px',
                 'overflowY': 'auto',
-                'padding': f"0 {padding_sizes.get('small', '12px')} 40px",
+                'padding': f"0 var(--padding-small) 40px",
                 'marginBottom': '0'
             },
-            className='slide-in',
             key=week_offset
-        ), week_start.strftime('%Y-%m-%d') 
+        )
+        
+        return chart, week_start.strftime('%Y-%m-%d')
 
     @app.callback(
         Output('overflow-box', 'className'),
@@ -240,9 +235,6 @@ def register_callbacks(app):
         elif ctx.triggered_id == "day-event-catcher":
             click_data = day_click
             
-        #print("clickData:", click_data)
-        #print("Triggered ID:", ctx.triggered_id)
-            
         if not click_data or 'points' not in click_data or not click_data['points']:
             return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
         
@@ -265,7 +257,7 @@ def register_callbacks(app):
             
             return no_update, no_update, no_update, no_update, click_reset, {}, 'modal show', content
         
-        #Regular event click
+        #Normal event click
         rows = []
         for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
             if label in data:

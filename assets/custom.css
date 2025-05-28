@@ -1,17 +1,128 @@
-/*Make hover regions show a pointer cursor only when hovering over an active marker */
-.js-plotly-plot .hoverlayer .hovertext {
-    cursor: pointer !important;
+/* CSS Variables for Responsive Sizing */
+:root {
+    --padding-header: 15px 20px;
+    --padding-button: 4px 6px;
+    --gap-week: 20px;
+    --gap-legend: 10px;
+    --margin-section: 20px;
+    --padding-small: 12px;
+    --padding-base: 20px;
+    --padding-xxs: 6px;
 }
 
-/*General button effects*/
+@media (max-width: 768px) {
+    :root {
+        --padding-header: 10px 15px;
+        --gap-week: 15px;
+        --gap-legend: 8px;
+        --margin-section: 15px;
+        --padding-small: 10px;
+        --padding-base: 16px;
+        --padding-xxs: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --padding-header: 8px 10px;
+        --gap-week: 10px;
+        --gap-legend: 2px;
+        --margin-section: 10px;
+        --padding-small: 8px;
+        --padding-base: 12px;
+        --padding-xxs: 4px;
+    }
+}
+
+
+/* Base styles (mobile-first: <480px) */
+h1,
+.calendar-title {
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.legend-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.legend-text {
+    font-size: 1rem;
+}
+
 .emoji-button {
     all: unset;
     cursor: pointer;
-    font-size: clamp(1.25rem, 3vw, 2rem);
+    font-size: 2.5rem;
     line-height: 1;
+    padding: 4px 6px;
     transition: transform 0.2s ease;
 }
 
+.overflow-box {
+    width: 90%;
+    font-size: 0.9rem;
+    padding: 12px 20px;
+}
+
+/* Tablet Styles (480px-767px) */
+@media (min-width: 480px) {
+
+    h1,
+    .calendar-title {
+        font-size: 2rem;
+    }
+
+    .legend-title {
+        font-size: 1.2rem;
+    }
+
+    .legend-text {
+        font-size: 1.2rem;
+    }
+
+    .emoji-button {
+        font-size: 2.6rem;
+        padding: 4px 6px;
+    }
+
+    .overflow-box {
+        width: 70%;
+        font-size: 1rem;
+    }
+}
+
+/* Desktop Sytles (≥768px) */
+@media (min-width: 768px) {
+
+    h1,
+    .calendar-title {
+        font-size: 2.5rem;
+    }
+
+    .legend-title {
+        font-size: 1.9rem;
+    }
+
+    .legend-text {
+        font-size: 1.5rem;
+    }
+
+    .emoji-button {
+        font-size: 2.7rem;
+        padding: 4px 6px;
+    }
+
+    .overflow-box {
+        width: 40%;
+        font-size: 1.2rem;
+    }
+}
+
+
+/* Hover Effects for Navigation Buttons */
 .emoji-button:disabled {
     opacity: 0.2;
     cursor: not-allowed;
@@ -24,6 +135,11 @@
 
 #next-button.emoji-button:hover {
     transform: scale(1.5) rotate(10deg);
+}
+
+/* Plotly Hover Text Cursor Fix */
+.js-plotly-plot .hoverlayer .hovertext {
+    cursor: pointer !important;
 }
 
 /* Global Animation for Text */
@@ -43,7 +159,6 @@
     }
 }
 
-/* Slide-in animation class (used for weekly blocks) */
 .slide-in {
     animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
@@ -72,7 +187,7 @@
     }
 }
 
-/* Default: sticky */
+/* Sticky Header Behavior */
 .sticky-header {
     position: sticky;
     top: 0;
@@ -90,4 +205,38 @@
 /* General Overrides */
 body {
     overflow: hidden;
+}
+
+/* Utility Classes */
+
+.header-padding {
+    padding: var(--padding-header);
+}
+
+.small-padding {
+    padding: var(--padding-small);
+}
+
+.base-padding {
+    padding: var(--padding-base);
+}
+
+.xxs-padding {
+    padding: var(--padding-xxs);
+}
+
+.week-gap {
+    gap: var(--gap-week);
+}
+
+.legend-gap {
+    gap: var(--gap-legend);
+}
+
+.section-margin {
+    margin-top: var(--margin-section);
+}
+
+.section-bottom {
+    margin-bottom: var(--margin-section);
 }

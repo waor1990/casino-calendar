@@ -1,13 +1,9 @@
 from dash import html, dcc
 import plotly.graph_objs as go
-from .utils import get_dynamic_sizes
 from .data import load_event_data
 from .plotting import get_color
 
-def create_layout(app): 
-    screen_width = 1024
-    font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
-    
+def create_layout(app):
     return html.Div(
     style={
         'fontFamily': 'Segoe UI, sans-serif',
@@ -15,182 +11,160 @@ def create_layout(app):
         'paddingBottom': '40px'
     },
     children=[
-        #Sticky-Header container
-        html.Div(
-            id='sticky-header', 
-            className='stickt-header',
-            style={
-                'position': 'sticky',
-                'top': 0,
-                'padding': f"{padding_sizes['header_padding']} 0",
-                'backgroundColor': 'white',
-                'zIndex': 1000
-            }
-        ),
-        
-        #Loading spinner and calendar weeks
-        dcc.Loading(
-            id='calendar-loading',
-            type='circle',
-            color='#6A5ACD',
-            children=html.Div(
-                id='week-chart-container',
+        #Header section only (wrapped for height calc)
+        html.Div(id="app-header", children=[
+            #Sticky-Header container
+            html.Div(
+                id='sticky-header', 
+                className='sticky-header header-padding',
+            ),
+            #Main calendar area
+            dcc.Loading(
+                id='calendar-loading',
+                type='circle',
+                color='#6A5ACD',
+                children=html.Div(
+                    id='week-chart-container',
+                    className='week-gap section-margin',
+                    style={'display': 'flex', 'flexDirection': 'column'}
+                ),
+            ),
+            #State Stores
+            dcc.Store(id='usable-height', data=600),
+            dcc.Store(id='screen-width', data=1024),
+            dcc.Store(id='week-offset', data=0),
+            dcc.Store(id='overflow-date'),
+            #Interval Triggers
+            dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
+            dcc.Interval(id='close-timer', interval=600, n_intervals=0, max_intervals=0),
+            #Invisible catcher for click events
+            dcc.Graph(
+                id="day-event-catcher", 
+                figure=go.Figure(), 
                 style={
-                    'display': 'flex',
-                    'flexDirection': 'column',
-                    'gap': padding_sizes['week_gap'],
-                    'marginTop': padding_sizes['section_margin']
-            }),
-        ),
+                    "visibility": "hidden",
+                    "height": "0px",
+                    "pointerEvents": "none"
+                }
+            ),
         
-        #State Stores and Timers
-        dcc.Store(id='screen-width', data=1024),
-        dcc.Store(id='screen-height', data=800),
-        dcc.Store(id='week-offset', data=0),
-        dcc.Store(id='overflow-date'),
-        dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
-        dcc.Interval(id='close-timer', interval=600, n_intervals=0, max_intervals=0),
-        dcc.Graph(
-            id="day-event-catcher", 
-            figure=go.Figure(), 
-            style={
-                "visibility": "hidden",
-                "height": "0px",
-                "pointerEvents": "none"
-            }
-        ),
-     
-        #Modal Popup for event details
-        html.Div(id='event-modal', className='modal', children=[
-            html.Div(id='event-modal-content', className='modal-content', children=[
-                html.Div(id='event-modal-body', style={
-                    "maxHeight": "80vh", 
-                    "overflow": "auto",
-                    "padding": "10px"
+            #Event Modal Popup
+            html.Div(id='event-modal', className='modal', children=[
+                html.Div(id='event-modal-content', className='modal-content', children=[
+                    html.Div(id='event-modal-body', className="base-padding", style={
+                        "maxHeight": "80vh", 
+                        "overflow": "auto",
                     }),
-                html.Button("Close", id="close-modal", style={
-                    'marginTop': '10px',
-                    'display': 'block',
-                    'marginLeft': 'auto',
-                    'marginRight': 'auto',
-                    'backgroundColor': '#6A5ACD',
-                    'color': 'white',
-                    'border': 'none',
-                    'padding': '8px 16px',
-                    'borderRadius': '6px',
-                    'cursor': 'pointer'
-                })
-            ])
-        ]),
-        
-        #Day-Modal Popup for day's events
-        html.Div(id='day-modal', className='modal', children=[
-            html.Div(id='day-modal-content', className='modal-content', children=[
-                html.Div(id='day-modal-body', style={
-                    "maxHeight": "80vh",
-                    "overflowY": "auto",
-                    "padding": "10px"
-                }),
-                html.Button("Close", id="close-day-modal", style={
-                    'marginTop': '10px',
-                    'display': 'block',
-                    'marginLeft': 'auto',
-                    'marginRight': 'auto',
-                    'backgroundColor': '#6A5ACD',
-                    'color': 'white', 
-                    'border': 'none',
-                    'padding': '8px 16px',
-                    'borderRadius': '6px',
-                    'cursor': 'pointer'
-                })
+                    html.Button(
+                        "Close",
+                        id="close-modal",
+                        style={
+                            'marginTop': '10px',
+                            'display': 'block',
+                            'marginLeft': 'auto',
+                            'marginRight': 'auto',
+                            'backgroundColor': '#6A5ACD',
+                            'color': 'white',
+                            'border': 'none',
+                            'padding': '8px 16px',
+                            'borderRadius': '6px',
+                            'cursor': 'pointer'
+                        }
+                    )
+                ])
+            ]),
+            
+            #Day Modal Popup
+            html.Div(id='day-modal', className='modal', children=[
+                html.Div(id='day-modal-content', className='modal-content', children=[
+                    html.Div(id='day-modal-body', className='base-padding', style={
+                        "maxHeight": "80vh",
+                        "overflowY": "auto",
+                    }),
+                    html.Button("Close", id="close-day-modal", style={
+                        'marginTop': '10px',
+                        'display': 'block',
+                        'marginLeft': 'auto',
+                        'marginRight': 'auto',
+                        'backgroundColor': '#6A5ACD',
+                        'color': 'white', 
+                        'border': 'none',
+                        'padding': '8px 16px',
+                        'borderRadius': '6px',
+                        'cursor': 'pointer'
+                    })
+                ])
             ])
         ])
     ]
 )
-    
-def sticky_header(screen_width, week_start_label=""):
-    font_sizes, padding_sizes = get_dynamic_sizes(screen_width)
-    df = load_event_data()
 
+    
+def sticky_header(week_start_label=""):
+    df = load_event_data()
     return html.Div([
         html.H1(
             "🎰 Casino Event Calendar 📅",
-            style={
-                'textAlign': 'center',
-                'margin': '0',
-                'fontSize': font_sizes['h1'],
-                'marginBottom': '20px',
-                'color': 'inherit',
-                'padding': f"{padding_sizes['header_padding']} 0",
-            }
+            className="calendar-title",
         ),
         #Navigation & Legend
         html.Div(
             id='header-container',
             children=[
-            html.Button(
-                "🎲",
-                id='prev-button',
-                title="Prior Week",
-                n_clicks=0,
-                className='emoji-button',
-                style={'fontSize': font_sizes['button'], 'padding': padding_sizes['button_padding']}
-            ),
-            html.Div([
-                html.Legend(
-                    "Casino Legend:",
-                    style={
-                        'fontWeight': 'bold',
-                        'textAlign': 'center',
-                        'fontSize': font_sizes['legend_title'],
-                        'marginBottom': padding_sizes['legend_gap']
-                    }
+                html.Button(
+                    "🎲",
+                    id='prev-button',
+                    title="Prior Week",
+                    n_clicks=0,
+                    className='emoji-button',
                 ),
-                html.Div(
-                    create_legend(font_sizes, padding_sizes, df),
-                    style={
-                        'display': 'flex',
-                        'flexWrap': 'wrap',
-                        'justifyContent': 'center',
-                        'alignItems': 'flex-start',
-                        'textAlign': 'left',
-                        'gap': f"{int(padding_sizes['legend_gap'].replace('px', '')) // 2}px"
-                    }
+                html.Div([
+                    html.Legend(
+                        "Casino Legend:",
+                        className="legend-title legend-gap",
+                    ),
+                    html.Div(
+                        create_legend(df),
+                        style={
+                            'display': 'flex',
+                            'flexWrap': 'wrap',
+                            'justifyContent': 'center',
+                            'alignItems': 'flex-start',
+                            'textAlign': 'left',
+                        }
+                    )
+                ], style={'flex': '1', }),
+                html.Button(
+                    "🎰",
+                    id='next-button',
+                    n_clicks=0,
+                    className='emoji-button',
                 )
-            ], style={'flex': '1', }),
-            html.Button(
-                "🎰",
-                id='next-button',
-                n_clicks=0,
-                className='emoji-button',
-                style={'fontSize': font_sizes['button'], 'padding': padding_sizes['button_padding']}
-            )
-        ],
-        style={
-            'display': 'flex',
-            'justifyContent': 'space-between',
-            'gap': '10px',
-            'paddingBottom': '10px',
-        }
+            ],
+            style={
+                'display': 'flex',
+                'justifyContent': 'space-between',
+                'gap': '10px',
+                'paddingBottom': '10px',
+            }
         ),
+        #Week Label
         html.Div(
             week_start_label, 
             key=week_start_label,
-            className="fade-text",
+            className="fade-text calendar-title section-margin",
             style={
-            'fontSize': font_sizes['legend_title'],
             'color': '#00008B',
-            'textAlign': 'center',
             'fontWeight': 'bold',
-            'padding': f"{padding_sizes.get('xxs', '6px')} 0",
             'backgroundColor': 'white',
             'boxShadow': '0 -2px 4px rgba(0,0,0,0.25)',
-            'zIndex': 900
+            'zIndex': 900,
+            'textAlign': 'center',
         }),
     ]
 )
 
-def create_legend(font_sizes, padding_sizes, df):
+def create_legend(df):
     df = load_event_data()
     legend_items = []
     for casino, color in get_color().items():
@@ -207,16 +181,16 @@ def create_legend(font_sizes, padding_sizes, df):
                 ),
                 html.Span(
                     f"{casino}",
+                    className="legend-text",
                     style={
                         'color': color["bg"],
-                        'marginRight': '4px',
-                        'fontSize': font_sizes['legend']
+                        'marginRight': '4px'
                     }
                 )
             ], style={
                 'display': 'flex',
                 'alignItems': 'center',
-                'margin': f"0 {padding_sizes['legend_gap']} {padding_sizes['legend_gap']} 0",
                 'flex': '0 1 auto',
-            }))
+            })
+        )
     return legend_items
