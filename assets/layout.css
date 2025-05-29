@@ -34,7 +34,6 @@
 
 .week-label {
     color: var(--color-primary-dark);
-    font-weight: bold;
     background-color: var(--color-background);
     box-shadow: var(--box-shadow-light);
     z-index: 900;
