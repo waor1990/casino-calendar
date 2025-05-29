@@ -38,7 +38,7 @@ def register_callbacks(app):
         Input('week-offset', 'data')
     )
     
-    def render_sticky_header(week_offset):
+    def render_sticky_header(screen_width, week_offset):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
@@ -96,7 +96,7 @@ def register_callbacks(app):
         prevent_initial_call=True
     )
     
-    def render_single_week_chart(week_offset, usable_height):
+    def render_single_week_chart(usable_height, week_offset, screen_width):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
