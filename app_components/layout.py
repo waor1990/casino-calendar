@@ -181,7 +181,7 @@ def create_legend(df):
                 ),
                 html.Span(
                     f"{casino}",
-                    className="legend-text",
+                    className="legend-text legend-gap",
                     style={
                         'color': color["bg"],
                         'marginRight': '4px'
