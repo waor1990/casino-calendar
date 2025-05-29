@@ -1,0 +1,21 @@
+/* Layout and Structure */
+
+.day-grid {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+}
+
+/* Desktop Adjustment */
+@media (min-width: 768px) {
+    .sticky-header {
+        position: static;
+    }
+}

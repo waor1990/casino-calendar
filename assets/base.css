@@ -1,0 +1,57 @@
+/* CSS Variables for Consistency */
+:root {
+    /* Padding, Margin, and Font Variables */
+    --padding-header: 10px 15px;
+    --padding-button: 4px 6px;
+    --padding-small: 8px;
+    --padding-base: 12px;
+    --padding-xxs: 4px;
+    --gap-week: 10px;
+    --gap-legend: 12px;
+    --margin-section: 10px;
+    --font-xs: 0.7rem;
+    --font-small: 0.9rem;
+    --font-base: 1rem;
+    --font-subtitle: 1.3rem;
+    --font-title: 2.5rem;
+    --font-bold: bold;
+}
+
+/* Padding, Margin, and Font Variables For Tablets*/
+@media (max-width: 480px) {
+    :root {
+
+        --padding-header: 10px 15px;
+        --padding-button: 6px 8px;
+        --padding-small: 10px;
+        --padding-base: 16px;
+        --padding-xxs: 5px;
+        --gap-week: 15px;
+        --gap-legend: 18px;
+        --margin-section: 15px;
+        --font-base: 1.2rem;
+        --font-subtitle: 1.2rem;
+        --font-title: 2rem;
+    }
+}
+
+/* Padding, Margin, and Font Variables for Desktops*/
+@media (max-width: 768px) {
+    :root {
+        --padding-header: 15px 20px;
+        --padding-button: 8px 10px;
+        --padding-small: 12px;
+        --padding-base: 20px;
+        --padding-xxs: 6px;
+        --gap-week: 20px;
+        --gap-legend: 20px;
+        --margin-section: 20px;
+        --font-base: 1.5rem;
+        --font-subtitle: 1.9rem;
+        --font-title: 2.5rem;
+    }
+}
+
+body {
+    overflow: hidden;
+}
