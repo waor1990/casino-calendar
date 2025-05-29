@@ -1,129 +1,143 @@
-/* CSS Variables for Responsive Sizing */
+/* CSS Variables for Consistency */
 :root {
-    --padding-header: 15px 20px;
+    /* Padding, Margin, and Font Variables */
+    --padding-header: 10px 15px;
     --padding-button: 4px 6px;
-    --gap-week: 20px;
-    --gap-legend: 10px;
-    --margin-section: 20px;
-    --padding-small: 12px;
-    --padding-base: 20px;
-    --padding-xxs: 6px;
+    --padding-small: 8px;
+    --padding-base: 12px;
+    --padding-xxs: 4px;
+    --gap-week: 10px;
+    --gap-legend: 12px;
+    --margin-section: 10px;
+    --font-xs: 0.7rem;
+    --font-small: 0.9rem;
+    --font-base: 1rem;
+    --font-subtitle: 1.3rem;
+    --font-title: 2.5rem;
+    --font-bold: bold;
 }
 
-@media (max-width: 768px) {
+/* Padding, Margin, and Font Variables For Tablets*/
+@media (max-width: 480px) {
     :root {
+
         --padding-header: 10px 15px;
-        --gap-week: 15px;
-        --gap-legend: 8px;
-        --margin-section: 15px;
+        --padding-button: 6px 8px;
         --padding-small: 10px;
         --padding-base: 16px;
         --padding-xxs: 5px;
+        --gap-week: 15px;
+        --gap-legend: 18px;
+        --margin-section: 15px;
+        --font-base: 1.2rem;
+        --font-subtitle: 1.2rem;
+        --font-title: 2rem;
     }
 }
 
-@media (max-width: 480px) {
+/* Padding, Margin, and Font Variables for Desktops*/
+@media (max-width: 768px) {
     :root {
-        --padding-header: 8px 10px;
-        --gap-week: 10px;
-        --gap-legend: 2px;
-        --margin-section: 10px;
-        --padding-small: 8px;
-        --padding-base: 12px;
-        --padding-xxs: 4px;
+        --padding-header: 15px 20px;
+        --padding-button: 8px 10px;
+        --padding-small: 12px;
+        --padding-base: 20px;
+        --padding-xxs: 6px;
+        --gap-week: 20px;
+        --gap-legend: 20px;
+        --margin-section: 20px;
+        --font-base: 1.5rem;
+        --font-subtitle: 1.9rem;
+        --font-title: 2.5rem;
     }
 }
 
+/* Utility Classes */
+.p-header {
+    padding: var(--padding-header);
+}
 
-/* Base styles (mobile-first: <480px) */
+.p-small {
+    padding: var(--padding-small);
+}
+
+.p-base {
+    padding: var(--padding-base);
+}
+
+.p-xxs {
+    padding: var(--padding-xxs);
+}
+
+.mt-section {
+    margin-top: var(--margin-section);
+}
+
+.mb-section {
+    margin-bottom: var(--margin-section);
+}
+
+.week-gap {
+    gap: var(--gap-week);
+}
+
+.legend-gap {
+    gap: var(--gap-legend);
+}
+
+.font-xs {
+    font-size: var(--font-xs);
+}
+
+.font-small {
+    font-size: var(--font-small);
+}
+
+.font-base {
+    font-size: var(--font-base);
+}
+
+.font-subtitle {
+    font-size: var(--font-subtitle);
+}
+
+.font-title {
+    font-size: var(--font-title);
+}
+
+.font-bold {
+    font-weight: var(--font-bold);
+}
+
+/* Base Typography */
 h1,
 .calendar-title {
-    font-size: 2.5rem;
+    font-size: var(--font-title);
     text-align: center;
 }
 
 .legend-title {
-    font-size: 1.3rem;
-    font-weight: bold;
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-bold);
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: var(--padding-small);
 }
 
 .legend-text {
-    font-size: 1rem;
+    font-size: var(--font-base);
 }
+
+/* Component Styles */
 
 .emoji-button {
     all: unset;
     cursor: pointer;
-    font-size: 2.5rem;
+    font-size: var(--font-title);
     line-height: 1;
-    padding: 4px 6px;
+    padding: var(--padding-button);
     transition: transform 0.2s ease;
 }
 
-.overflow-box {
-    width: 90%;
-    font-size: 0.9rem;
-    padding: 12px 20px;
-}
-
-/* Tablet Styles (480px-767px) */
-@media (min-width: 480px) {
-
-    h1,
-    .calendar-title {
-        font-size: 2rem;
-    }
-
-    .legend-title {
-        font-size: 1.2rem;
-    }
-
-    .legend-text {
-        font-size: 1.2rem;
-    }
-
-    .emoji-button {
-        font-size: 2.6rem;
-        padding: 4px 6px;
-    }
-
-    .overflow-box {
-        width: 70%;
-        font-size: 1rem;
-    }
-}
-
-/* Desktop Sytles (≥768px) */
-@media (min-width: 768px) {
-
-    h1,
-    .calendar-title {
-        font-size: 2.5rem;
-    }
-
-    .legend-title {
-        font-size: 1.9rem;
-    }
-
-    .legend-text {
-        font-size: 1.5rem;
-    }
-
-    .emoji-button {
-        font-size: 2.7rem;
-        padding: 4px 6px;
-    }
-
-    .overflow-box {
-        width: 40%;
-        font-size: 1.2rem;
-    }
-}
-
-
-/* Hover Effects for Navigation Buttons */
 .emoji-button:disabled {
     opacity: 0.2;
     cursor: not-allowed;
@@ -138,12 +152,77 @@ h1,
     transform: scale(1.5) rotate(10deg);
 }
 
-/* Plotly Hover Text Cursor Fix */
-.js-plotly-plot .hoverlayer .hovertext {
-    cursor: pointer !important;
+.overflow-box {
+    width: 90%;
+    font-size: var(--font-small);
+    padding: var(--padding-base);
 }
 
-/* Global Animation for Text */
+.day-label {
+    font-weight: var(--font-bold);
+    font-size: var(--legend-subtitle);
+    margin-bottom: var(--padding-small);
+    text-align: center;
+    color: #00008B;
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background-color: #f5f3fa;
+    padding: var(--padding-xxs);
+}
+
+.no-events {
+    text-align: center;
+    padding: var(--padding-base);
+}
+
+.hour-label {
+    position: absolute;
+    left: 0;
+    font-size: var(--font-xs);
+    color: #6A5ACD;
+    padding-left: var(--padding-small);
+    box-sizing: border-box;
+    z-index: 5;
+    background-color: #f5f3fa;
+}
+
+.event-block {
+    position: absolute;
+    border: 1px solid #333;
+    border-radius: var(--padding-xxs);
+    box-sizing: border-box;
+    z-index: 10;
+    cursor: pointer;
+}
+
+/* Layout and Structure */
+
+.day-grid {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+}
+
+/* Desktop Sytles (≥768px) */
+@media (min-width: 768px) {
+    .sticky-header {
+        position: static;
+    }
+}
+
+body {
+    overflow: hidden;
+}
+
+/* Animations Keyframes */
 .fade-text {
     animation: fadeChange 1.2s ease-in-out;
 }
@@ -186,104 +265,4 @@ h1,
         transform: translateY(500px);
         opacity: 0;
     }
-}
-
-/* Sticky Header Behavior */
-.sticky-header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background-color: white;
-}
-
-/* Disable stickiness on mobile */
-@media (max-width: 768px) {
-    .sticky-header {
-        position: static;
-    }
-}
-
-/* General Overrides */
-body {
-    overflow: hidden;
-}
-
-
-/* Day View Styles */
-.day-label {
-    font-weight: bold;
-    font-size: var(--legend-title, 1.1rem);
-    margin-bottom: var(--padding-small);
-    text-align: center;
-    color: #00008B;
-    position: sticky;
-    top: 0;
-    z-index: 15;
-    background-color: #f5f3fa;
-    padding: var(--padding-xxs);
-}
-
-.no-events {
-    text-align: center;
-    padding: var(--padding-base);
-}
-
-.hour-label {
-    position: absolute;
-    left: 0;
-    font-size: var(--overflow-font, 0.7rem);
-    color: #6A5ACD;
-    padding-left: var(--padding-small);
-    box-sizing: border-box;
-    z-index: 5;
-    background-color: #f5f3fa;
-}
-
-.event-block {
-    position: absolute;
-    border: 1px solid #333;
-    border-radius: var(--padding-xxs);
-    box-sizing: border-box;
-    z-index: 10;
-    cursor: pointer;
-}
-
-.day-grid {
-    position: relative;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-
-/* Utility Classes */
-.header-padding {
-    padding: var(--padding-header);
-}
-
-.small-padding {
-    padding: var(--padding-small);
-}
-
-.base-padding {
-    padding: var(--padding-base);
-}
-
-.xxs-padding {
-    padding: var(--padding-xxs);
-}
-
-.week-gap {
-    gap: var(--gap-week);
-}
-
-.legend-gap {
-    gap: var(--gap-legend);
-}
-
-.section-margin {
-    margin-top: var(--margin-section);
-}
-
-.section-bottom {
-    margin-bottom: var(--margin-section);
 }
