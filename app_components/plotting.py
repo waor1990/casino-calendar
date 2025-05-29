@@ -479,6 +479,7 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     #Clickable overlay graph
     click_graph = dcc.Graph(
         id="day-event-catcher",
+        className="day-event-catcher",
         figure=go.Figure(
             data=click_markers,
             layout=go.Layout(
@@ -491,16 +492,8 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
                 paper_bgcolor='rgba(0,0,0,0)'
             )
         ),
-        config={'displayModeBar': False},
-        style={
-            "position": "absolute",
-            "top": "0",
-            "left": "0",
-            "width": "100%",
-            "height": f"{24 * hour_height}px",
-            "zIndex": 1000,
-            "pointerEvents": "auto"
-        }
+        style={"height": f"{24 * hour_height}px"},
+        config={'displayModeBar': False}
     )
 
     #Sticky Add day label + scrollable grid container

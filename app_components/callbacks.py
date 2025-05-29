@@ -111,19 +111,12 @@ def register_callbacks(app):
                 f"🌀 Show Ongoing Events for {week_start.strftime('%b %d')} - {end_date.strftime('%b %d')}",
                 id='overflow-toggle',
                 n_clicks=0,
-                className="section-bottom",
-                style={
-                    'color': '#00008B',
-                    'textAlign': 'center',
-                    'display': 'flex',
-                    'justifyContent': 'center',
-                    'margin': '10px auto 40px auto',
-                }
+                className='overflow-toggle',
             )
             
             overflow_box = html.Div(
                 id='overflow-box',
-                className='overflow-box',
+                className='overflow-box-expand',
                 children=[
                     html.Strong("Ongoing Events This Week:", style={
                         'color': '#6A5ACD',
@@ -137,15 +130,7 @@ def register_callbacks(app):
                         )
                         for _, row in overflow_df.iterrows()
                     ])
-                ],
-                style={
-                    'backgroundColor': '#f5f3fa',
-                    'padding': '12px 20px',
-                    'border': '2px solid #ccc',
-                    'borderRadius': '4px',
-                    'margin': '10px auto',
-                    'textAlign': 'left',
-                }
+                ]
             )
         else:
             overflow_toggle = html.Div()
@@ -163,13 +148,8 @@ def register_callbacks(app):
                 overflow_toggle,
                 overflow_box
             ],
-            className='slide-in',
-            style={
-                'height': f'{usable_height}px',
-                'overflowY': 'auto',
-                'padding': f"0 var(--padding-small) 40px",
-                'marginBottom': '0'
-            },
+            className='slide-in week-chart-scroll',
+            style={'height': f'{usable_height}px'},
             key=week_offset
         )
         
@@ -188,7 +168,7 @@ def register_callbacks(app):
         end_date = start_date + timedelta(days=6)
         is_open = n_clicks % 2 == 1
 
-        box_class = 'overflow-box show' if is_open else 'overflow-box'
+        box_class = 'overflow-box-expand show' if is_open else 'overflow-box-expand'
 
         button_text = (
             f"🌀 Hide Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
@@ -275,8 +255,11 @@ def register_callbacks(app):
                     except Exception:
                         pass
 
-                rows.append(html.Div([
-                    html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
-                    html.Span(value)
-                ], style={'marginBottom': '6px'}))
+                rows.append(
+                    html.Div([
+                        html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
+                        html.Span(value)
+                    ], className='event-label')
+                )
+                
         return {}, 'modal show', rows, 0, None, {'display': 'none'}, '', ''

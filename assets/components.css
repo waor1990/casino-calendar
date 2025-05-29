@@ -17,6 +17,21 @@ h1,
     font-size: var(--font-base);
 }
 
+.legend-item {
+    display: flex;
+    align-items: center;
+    flex: 0 1 auto;
+    margin-bottom: var(--padding-xxs);
+}
+
+.legend-color-box {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    border-radius: var(--padding-xxs);
+    margin-right: var(--padding-xxs);
+}
+
 /* Buttons */
 
 .emoji-button {
@@ -44,6 +59,19 @@ h1,
 
 /* Event related UI */
 
+.overflow-toggle {
+    color: var(--color-primary-dark);
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin: var(--margin-section) auto calc(var(--margin-section) * 4) auto;
+    font-size: var(--font-base);
+    padding: var(--padding-small);
+    background: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
 .overflow-box {
     width: 90%;
     font-size: var(--font-small);
@@ -52,14 +80,14 @@ h1,
 
 .day-label {
     font-weight: var(--font-bold);
-    font-size: var(--legend-subtitle);
+    font-size: var(--font-subtitle);
     margin-bottom: var(--padding-small);
     text-align: center;
-    color: #00008B;
+    color: var(--color-primary-dark);
     position: sticky;
     top: 0;
     z-index: 15;
-    background-color: #f5f3fa;
+    background-color: var(--color-background);
     padding: var(--padding-xxs);
 }
 
@@ -67,11 +95,20 @@ h1,
     position: absolute;
     left: 0;
     font-size: var(--font-xs);
-    color: #6A5ACD;
+    color: var(--color-accent);
     padding-left: var(--padding-small);
     box-sizing: border-box;
     z-index: 5;
-    background-color: #f5f3fa;
+    background-color: var(--color-background);
+}
+
+.event-label {
+    margin-bottom: var(--padding-xxs)
+}
+
+.event-label strong {
+    color: var(--color-accent);
+    font-weight: var(--font-bold);
 }
 
 .event-block {
