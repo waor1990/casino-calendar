@@ -9,8 +9,7 @@
     --gap-week: 10px;
     --gap-legend: 12px;
     --margin-section: 10px;
-    --font-xs: 0.7rem;
-    --font-small: 0.9rem;
+    --font-small: 0.5rem;
     --font-base: 1rem;
     --font-subtitle: 1.3rem;
     --font-title: 2.5rem;
@@ -35,6 +34,7 @@
         --gap-week: 15px;
         --gap-legend: 18px;
         --margin-section: 15px;
+        --font-small: 0.75rem;
         --font-base: 1.2rem;
         --font-subtitle: 1.2rem;
         --font-title: 2rem;
@@ -52,6 +52,7 @@
         --gap-week: 20px;
         --gap-legend: 20px;
         --margin-section: 20px;
+        --font-small: 1rem;
         --font-base: 1.5rem;
         --font-subtitle: 1.9rem;
         --font-title: 2.5rem;
