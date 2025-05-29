@@ -1,0 +1,89 @@
+/* Headers */
+
+h1,
+.calendar-title {
+    font-size: var(--font-title);
+    text-align: center;
+}
+
+.legend-title {
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-bold);
+    text-align: center;
+    margin-bottom: var(--padding-small);
+}
+
+.legend-text {
+    font-size: var(--font-base);
+}
+
+/* Buttons */
+
+.emoji-button {
+    all: unset;
+    cursor: pointer;
+    font-size: var(--font-title);
+    line-height: 1;
+    padding: var(--padding-button);
+    transition: transform 0.2s ease;
+}
+
+.emoji-button:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    transition: opacity 0.5s ease;
+}
+
+#prev-button.emoji-button:hover {
+    transform: scale(1.5) rotate(-10deg);
+}
+
+#next-button.emoji-button:hover {
+    transform: scale(1.5) rotate(10deg);
+}
+
+/* Event related UI */
+
+.overflow-box {
+    width: 90%;
+    font-size: var(--font-small);
+    padding: var(--padding-base);
+}
+
+.day-label {
+    font-weight: var(--font-bold);
+    font-size: var(--legend-subtitle);
+    margin-bottom: var(--padding-small);
+    text-align: center;
+    color: #00008B;
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background-color: #f5f3fa;
+    padding: var(--padding-xxs);
+}
+
+.hour-label {
+    position: absolute;
+    left: 0;
+    font-size: var(--font-xs);
+    color: #6A5ACD;
+    padding-left: var(--padding-small);
+    box-sizing: border-box;
+    z-index: 5;
+    background-color: #f5f3fa;
+}
+
+.event-block {
+    position: absolute;
+    border: 1px solid #333;
+    border-radius: var(--padding-xxs);
+    box-sizing: border-box;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.no-events {
+    text-align: center;
+    padding: var(--padding-base);
+}
