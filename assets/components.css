@@ -25,8 +25,8 @@ h1,
 }
 
 .legend-color-box {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
     display: inline-block;
     border-radius: var(--padding-xxs);
     margin-right: var(--padding-xxs);
@@ -79,7 +79,7 @@ h1,
 }
 
 .day-label {
-    font-weight: var(--font-bold);
+    font-weight: normal;
     font-size: var(--font-subtitle);
     margin-bottom: var(--padding-small);
     text-align: center;
@@ -118,6 +118,8 @@ h1,
     box-sizing: border-box;
     z-index: 10;
     cursor: pointer;
+    font-weight: normal;
+    font-size: var(--font-small);
 }
 
 .no-events {
