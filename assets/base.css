@@ -15,6 +15,12 @@
     --font-subtitle: 1.3rem;
     --font-title: 2.5rem;
     --font-bold: bold;
+    --color-primary-dark: #00008B;
+    --color-accent: #6A5ACD;
+    --color-background: #f5f3fa;
+    --border-radius-lg: 10px;
+    --box-shadow-light: 0 -2px 4px var(--color-primary-dark);
+    --box-shadow-modal: 0 0 20px var(--color-primary-dark);
 }
 
 /* Padding, Margin, and Font Variables For Tablets*/

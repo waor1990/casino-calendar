@@ -5,11 +5,7 @@ from .plotting import get_color
 
 def create_layout(app):
     return html.Div(
-    style={
-        'fontFamily': 'Segoe UI, sans-serif',
-        'margin': '0 auto',
-        'paddingBottom': '40px'
-    },
+    className="main-layout",
     children=[
         #Header section only (wrapped for height calc)
         html.Div(id="app-header", children=[
@@ -25,8 +21,7 @@ def create_layout(app):
                 color='#6A5ACD',
                 children=html.Div(
                     id='week-chart-container',
-                    className='week-gap section-margin',
-                    style={'display': 'flex', 'flexDirection': 'column'}
+                    className='week-gap section-margin calendar-content',
                 ),
             ),
             #State Stores
@@ -58,18 +53,7 @@ def create_layout(app):
                     html.Button(
                         "Close",
                         id="close-modal",
-                        style={
-                            'marginTop': '10px',
-                            'display': 'block',
-                            'marginLeft': 'auto',
-                            'marginRight': 'auto',
-                            'backgroundColor': '#6A5ACD',
-                            'color': 'white',
-                            'border': 'none',
-                            'padding': '8px 16px',
-                            'borderRadius': '6px',
-                            'cursor': 'pointer'
-                        }
+                        className="modal-close"
                     )
                 ])
             ]),
@@ -81,18 +65,7 @@ def create_layout(app):
                         "maxHeight": "80vh",
                         "overflowY": "auto",
                     }),
-                    html.Button("Close", id="close-day-modal", style={
-                        'marginTop': '10px',
-                        'display': 'block',
-                        'marginLeft': 'auto',
-                        'marginRight': 'auto',
-                        'backgroundColor': '#6A5ACD',
-                        'color': 'white', 
-                        'border': 'none',
-                        'padding': '8px 16px',
-                        'borderRadius': '6px',
-                        'cursor': 'pointer'
-                    })
+                    html.Button("Close", id="close-day-modal", className="modal-close")
                 ])
             ])
         ])
@@ -125,13 +98,7 @@ def sticky_header(week_start_label=""):
                     ),
                     html.Div(
                         create_legend(df),
-                        style={
-                            'display': 'flex',
-                            'flexWrap': 'wrap',
-                            'justifyContent': 'center',
-                            'alignItems': 'flex-start',
-                            'textAlign': 'left',
-                        }
+                        className="legend-container"
                     )
                 ], style={'flex': '1', }),
                 html.Button(
@@ -152,15 +119,8 @@ def sticky_header(week_start_label=""):
         html.Div(
             week_start_label, 
             key=week_start_label,
-            className="fade-text calendar-title section-margin",
-            style={
-            'color': '#00008B',
-            'fontWeight': 'bold',
-            'backgroundColor': 'white',
-            'boxShadow': '0 -2px 4px rgba(0,0,0,0.25)',
-            'zIndex': 900,
-            'textAlign': 'center',
-        }),
+            className="fade-text calendar-title section-margin week-label",            
+        ),
     ]
 )
 
@@ -169,28 +129,23 @@ def create_legend(df):
     legend_items = []
     for casino, color in get_color().items():
         if casino in df['Casino'].unique():
-            legend_items.append(html.Div([
-                html.Div(
-                    style={
-                        'backgroundColor': color["bg"],
-                        'width': '20px',
-                        'height': '20px',
-                        'display': 'inline-block',
-                        'marginRight': '6px'
-                    }
-                ),
-                html.Span(
-                    f"{casino}",
-                    className="legend-text legend-gap",
-                    style={
-                        'color': color["bg"],
-                        'marginRight': '4px'
-                    }
-                )
-            ], style={
-                'display': 'flex',
-                'alignItems': 'center',
-                'flex': '0 1 auto',
-            })
+            legend_items.append(html.Div(
+                className="legend-item",
+                children=[
+                    html.Div(
+                        className="legend-color-box",
+                        style={
+                            'backgroundColor': color["bg"],
+                        }
+                    ),
+                    html.Span(
+                        f"{casino}",
+                        className="legend-text legend-gap",
+                        style={
+                            'color': color["bg"],
+                            'marginRight': '4px'
+                        }
+                    )
+                ])
         )
     return legend_items
