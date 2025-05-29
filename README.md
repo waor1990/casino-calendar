@@ -17,9 +17,9 @@ A personal-use Dash app that visualizes casino events on a rolling 4-week calend
 
 ## 🧱 Project Structure
 
-.
+casino_calendar/ # Project root
 ├── app.py # Dash entry point
-├── calendar/ # Modular app logic
+├── app_components/ # Modular Dash logic
 │ ├── callbacks.py # All Dash callbacks
 │ ├── data.py # CSV loader with timezone handling
 │ ├── layout.py # Layout + legend/header generation
@@ -27,12 +27,11 @@ A personal-use Dash app that visualizes casino events on a rolling 4-week calend
 │ ├── utils.py # Responsive settings, date logic
 │ └── init.py
 ├── assets/
-│ └── modal.css # Custom modal styling
+│ └── custom.css # Responsive and modular CSS
 ├── casino_events.csv # Event data
 ├── requirements.txt
 ├── Procfile # For Render deployment
 └── README.md
-
 
 ---
 
@@ -42,7 +41,11 @@ A personal-use Dash app that visualizes casino events on a rolling 4-week calend
 pip install -r requirements.txt
 python app.py
 
-🌐 Deploying to Render
+🌐 Deployment (Render)
+This app is deployed at:
+
+🔗 https://casino-calendar.onrender.com
+
 Your Procfile should contain:
 
 procfile
@@ -53,7 +56,3 @@ Push this repo to GitHub and connect it to a Render Web Service.
 
 🧼 License
 MIT — personal use, modify freely.
-
-sql
-Copy
-Edit
