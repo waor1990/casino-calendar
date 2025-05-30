@@ -8,65 +8,90 @@ def create_layout(app):
     className="main-layout",
     children=[
         #Header section only (wrapped for height calc)
-        html.Div(id="app-header", children=[
-            #Sticky-Header container
-            html.Div(
-                id='sticky-header', 
-                className='sticky-header header-padding',
-            ),
-            #Main calendar area
-            dcc.Loading(
-                id='calendar-loading',
-                type='circle',
-                color='#6A5ACD',
-                children=html.Div(
-                    id='week-chart-container',
-                    className='week-gap section-margin calendar-content',
+        html.Div(
+            id="app-header", 
+            children=
+                #Sticky-Header container
+                html.Div(
+                    id='sticky-header', 
+                    className='sticky-header header-padding',
+                )
+        ),
+        #Scrollable Calendar Body
+        html.Div(
+            id="calendar-scroll-body",
+            className="calendar-scroll-body",
+            children=[
+                #Main calendar area
+                dcc.Loading(
+                    id='calendar-loading',
+                    type='circle',
+                    color='#6A5ACD',
+                    children=html.Div(
+                        id='week-chart-container',
+                        className='week-gap section-margin calendar-content',
+                    ),
                 ),
-            ),
-            #State Stores
-            dcc.Store(id='usable-height', data=600),
-            dcc.Store(id='screen-width', data=1024),
-            dcc.Store(id='week-offset', data=0),
-            dcc.Store(id='overflow-date'),
-            #Interval Triggers
-            dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
-            dcc.Interval(id='close-timer', interval=600, n_intervals=0, max_intervals=0),
-            #Invisible catcher for click events
-            dcc.Graph(
-                id="day-event-catcher", 
-                figure=go.Figure(), 
-                style={
-                    "visibility": "hidden",
-                    "height": "0px",
-                    "pointerEvents": "none"
-                }
-            ),
+                #Optional Dev Preview Section
+                html.Div(
+                    id="day-preview-toggle",
+                    children=html.Button(
+                        "Preview Grid Layout",
+                        id="preview-grid-button",
+                        n_clicks=0,
+                        className="emoji-button",
+                    ),
+                    style={"textAlign": "center", "marginBottom": "20px"}
+                ),
+                html.Div(
+                    id="dev-preview-output",
+                    className="calendar-content",
+                ),
+            ]           
+        ),
+                        
+        #State Stores
+        dcc.Store(id='usable-height', data=600),
+        dcc.Store(id='screen-width', data=1024),
+        dcc.Store(id='week-offset', data=0),
+        dcc.Store(id='overflow-date'),
+        #Interval Triggers
+        dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
+        dcc.Interval(id='close-timer', interval=600, n_intervals=0, max_intervals=0),
+        #Invisible catcher for click events
+        dcc.Graph(
+            id="day-event-catcher", 
+            figure=go.Figure(), 
+            style={
+                "visibility": "hidden",
+                "height": "0px",
+                "pointerEvents": "none"
+            }
+        ),
+    
+        #Event Modal Popup
+        html.Div(id='event-modal', className='modal', children=[
+            html.Div(id='event-modal-content', className='modal-content', children=[
+                html.Div(id='event-modal-body', className="base-padding", style={
+                    "maxHeight": "80vh", 
+                    "overflow": "auto",
+                }),
+                html.Button(
+                    "Close",
+                    id="close-modal",
+                    className="modal-close"
+                )
+            ])
+        ]),
         
-            #Event Modal Popup
-            html.Div(id='event-modal', className='modal', children=[
-                html.Div(id='event-modal-content', className='modal-content', children=[
-                    html.Div(id='event-modal-body', className="base-padding", style={
-                        "maxHeight": "80vh", 
-                        "overflow": "auto",
-                    }),
-                    html.Button(
-                        "Close",
-                        id="close-modal",
-                        className="modal-close"
-                    )
-                ])
-            ]),
-            
-            #Day Modal Popup
-            html.Div(id='day-modal', className='modal', children=[
-                html.Div(id='day-modal-content', className='modal-content', children=[
-                    html.Div(id='day-modal-body', className='base-padding', style={
-                        "maxHeight": "80vh",
-                        "overflowY": "auto",
-                    }),
-                    html.Button("Close", id="close-day-modal", className="modal-close")
-                ])
+        #Day Modal Popup
+        html.Div(id='day-modal', className='modal', children=[
+            html.Div(id='day-modal-content', className='modal-content', children=[
+                html.Div(id='day-modal-body', className='base-padding', style={
+                    "maxHeight": "80vh",
+                    "overflowY": "auto",
+                }),
+                html.Button("Close", id="close-day-modal", className="modal-close")
             ])
         ])
     ]

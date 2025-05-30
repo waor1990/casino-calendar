@@ -7,6 +7,7 @@ def register_callbacks(app):
     from .data import load_event_data
     from .plotting import generate_weekly_view, get_color, generate_day_view_html
     from .layout import sticky_header
+    from .week_grid_layout import render_week_grid
 
     PDT = timezone('America/Los_Angeles')
     df = load_event_data()
@@ -86,7 +87,23 @@ def register_callbacks(app):
         next_title = "No Upcoming events" if next_disabled else "Upcoming Week"
         
         return desired_offset, prev_disabled, next_disabled, next_title
-
+    
+    @app.callback(
+        Output('dev-preview-output', 'children'),
+        Input('preview-grid-button', 'n_clicks'),
+        State('week-offset', 'data'),
+        prevent_initial_call=True
+    )
+    def show_dev_preview(n_clicks, week_offset):
+        if not n_clicks:
+            return no_update
+        
+        today = datetime.now(PDT)
+        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
+        week_start = current_sunday + timedelta(weeks=week_offset)
+        
+        return render_week_grid(week_start, df)
+    
     @app.callback(
         Output('week-chart-container', 'children'),
         Output('overflow-date', 'data'),
@@ -148,9 +165,10 @@ def register_callbacks(app):
                 overflow_toggle,
                 overflow_box
             ],
+            id=f"week-chart-{week_offset}",
             className='slide-in week-chart-scroll',
             style={'height': f'{usable_height}px'},
-            key=week_offset
+            **{f"data-week": week_offset}
         )
         
         return chart, week_start.strftime('%Y-%m-%d')

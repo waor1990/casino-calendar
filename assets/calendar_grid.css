@@ -1,0 +1,37 @@
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--gap-week);
+    padding: var(--padding-base);
+    background-color: var(--color-background);
+    border-radius: var(--border-radius-lg);
+    position: relative;
+}
+
+.week-grid-preview-container {
+    border: 2px dashed var(--color-accent);
+    padding: var(--padding-base);
+    background-color: var(--color-background);
+    margin-top: var(--margin-section);
+}
+
+.day-column {
+    position: relative;
+    padding: var(--padding-small);
+    border-left: var(--border-thin);
+    min-height: 300px;
+}
+
+.event-block-grid {
+    position: absolute;
+    background-color: var(--color-background);
+    color: whitesmoke;
+    border-radius: var(--border-radius-sm);
+    padding: var(--padding-xxs);
+    font-size: var(--font-small);
+    cursor: pointer;
+    z-index: 10;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
