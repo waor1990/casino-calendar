@@ -9,15 +9,19 @@
     --gap-week: 10px;
     --gap-legend: 12px;
     --margin-section: 10px;
-    --font-small: 0.5rem;
-    --font-base: 1rem;
-    --font-subtitle: 1.3rem;
-    --font-title: 2.5rem;
+    --font-small: 0.25rem;
+    --font-base: 0.5rem;
+    --font-subtitle: 1rem;
+    --font-title: 1.5rem;
     --font-bold: bold;
+    --font-normal: normal;
     --color-primary-dark: #00008B;
     --color-accent: #6A5ACD;
     --color-background: #f5f3fa;
     --border-radius-lg: 10px;
+    --border-radius-sm: 5px;
+    --border-thin: 1px solid var(--color-primary-dark);
+    --border-thick: 2px solid var(--color-primary-dark);
     --box-shadow-light: 0 -2px 4px var(--color-primary-dark);
     --box-shadow-modal: 0 0 20px var(--color-primary-dark);
 }
@@ -34,9 +38,9 @@
         --gap-week: 15px;
         --gap-legend: 18px;
         --margin-section: 15px;
-        --font-small: 0.75rem;
-        --font-base: 1.2rem;
-        --font-subtitle: 1.2rem;
+        --font-small: 0.5rem;
+        --font-base: 1rem;
+        --font-subtitle: 1.5rem;
         --font-title: 2rem;
     }
 }
@@ -54,7 +58,7 @@
         --margin-section: 20px;
         --font-small: 1rem;
         --font-base: 1.5rem;
-        --font-subtitle: 1.9rem;
+        --font-subtitle: 2rem;
         --font-title: 2.5rem;
     }
 }

@@ -4,12 +4,14 @@ h1,
 .calendar-title {
     font-size: var(--font-title);
     text-align: center;
+    color: var(--color-primary-dark);
 }
 
 .legend-title {
     font-size: var(--font-subtitle);
     font-weight: var(--font-bold);
     text-align: center;
+    color: var(--color-accent);
     margin-bottom: var(--padding-small);
 }
 
@@ -21,7 +23,6 @@ h1,
     display: flex;
     align-items: center;
     flex: 0 1 auto;
-    margin-bottom: var(--padding-xxs);
 }
 
 .legend-color-box {
@@ -61,26 +62,27 @@ h1,
 
 .overflow-toggle {
     color: var(--color-primary-dark);
-    display: flex;
-    justify-content: center;
-    text-align: center;
+    display: inline-block;
+    text-align: left;
     margin: var(--margin-section) auto calc(var(--margin-section) * 4) auto;
     font-size: var(--font-base);
     padding: var(--padding-small);
-    background: none;
+    background-color: var(--color-background);
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .overflow-box {
-    width: 90%;
+    width: 80%;
     font-size: var(--font-small);
     padding: var(--padding-base);
 }
 
 .day-label {
-    font-weight: normal;
-    font-size: var(--font-subtitle);
+    font-weight: var(--font-normal);
+    font-size: var(--font-base);
     margin-bottom: var(--padding-small);
     text-align: center;
     color: var(--color-primary-dark);
@@ -94,7 +96,7 @@ h1,
 .hour-label {
     position: absolute;
     left: 0;
-    font-size: var(--font-xs);
+    font-size: var(--font-small);
     color: var(--color-accent);
     padding-left: var(--padding-small);
     box-sizing: border-box;
@@ -103,7 +105,9 @@ h1,
 }
 
 .event-label {
-    margin-bottom: var(--padding-xxs)
+    margin-bottom: var(--padding-xxs);
+    font-size: var(--font-small);
+    font-weight: var(--font-normal)
 }
 
 .event-label strong {
@@ -112,12 +116,13 @@ h1,
 
 .event-block {
     position: absolute;
-    border: 1px solid #333;
-    border-radius: var(--padding-xxs);
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm);
     box-sizing: border-box;
     z-index: 10;
     cursor: pointer;
     font-size: var(--font-small);
+    font-weight: var(--font-normal);
 }
 
 .no-events {

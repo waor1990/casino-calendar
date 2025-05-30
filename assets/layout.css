@@ -26,6 +26,13 @@
     pointer-events: auto;
 }
 
+.calendar-scroll-body {
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding: var(--padding-base);
+    box-sizing: border-box;
+}
+
 .week-chart-scroll {
     overflow-x: auto;
     padding: 0 var(--padding-small) calc(var(--padding-base) * 3);
@@ -54,7 +61,7 @@
 .sticky-header {
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 100;
     background-color: var(--color-background);
 }
 
