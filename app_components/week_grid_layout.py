@@ -3,58 +3,90 @@ import pandas as pd
 from datetime import datetime, timedelta
 from math import floor
 from .utils import get_week_range, PDT
-from .plotting import get_color
+from .plotting import (
+    filter_long_spanning_events,
+    filter_week_events,
+    annotate_events_with_flags,
+    assign_event_rows,
+    get_color
+)
 
 def render_week_grid(clicked_date, df):
+    #Calculate week bounds
     week_start, week_end = get_week_range(clicked_date)
-    df = df.copy()
-    
-    #Filter events within the week
-    df = df[(df['EndDate'] > week_start) & (df['StartDate'] < week_end)]
-    
-    casino_colors = get_color()
-    events_by_day = {i: [] for i in range(7)}
-    
-    for _, row in df.iterrows():
-        start_day = max(0, min(6, (row["StartDate"].date() - week_start.date()).days))
-        end_day = min(6, (row["EndDate"].date() - week_start.date()).days)
-        duration = end_day - start_day + 1
-        
-        color = casino_colors[row["Casino"]]["bg"]
-        text_color = casino_colors[row["Casino"]]["text"]
-        label = f"{row['EventName']} ({row['Casino']})"
-        
-        block = html.Div(
-            label,
-            className="event-block-grid",
-            style={
-                "top": f"{10 + len(events_by_day[start_day]) * 40}px",
-                "left": "0",
-                "width": f"{duration * 100}%",
-                "backgroundColor": color,
-                "color": text_color,
-            },
-            title=label
+    #Build 7 day-label divs for header row
+    day_labels = []
+    for date in pd.date_range(week_start, periods=7, freq='D'):
+        day_labels.append(
+            html.Div(
+                date.strftime('%a %b %d'),
+                className='day-label'
+            )
         )
         
-        events_by_day[start_day].append(block)
+    #Filer/annotate/assign events 
+    df_week = filter_week_events(df, week_start, week_end)
+    df_annot = annotate_events_with_flags(df_week, week_start, week_end)
+    df_assigned = assign_event_rows(df_annot, week_start)
+    colors = get_color()  
+    
+    # Build CSS--grid event-block divs that are clikcable
+    event_blocks = []
+    for idx, row in df_assigned.iterrows():
+        #start_delta = max(0, (row['StartDate'] - week_start).days)
+        #end_delta = min(7, (row['EndDate'] - week_start).days)
+        raw_start_days = (row['StartDate'] - week_start).total_seconds() / (24 * 3600)
+        raw_end_days = (row['EndDate'] - week_start).total_seconds() / (24 * 3600)
         
-    #Build each day coloumn
-    day_columns = []
-    for i in range(7):
-        date = week_start + timedelta(days=i)
-        day_label = date.strftime("%a %b %d")
+        start_index = max(0, int(raw_start_days))
+        if raw_end_days > 6:
+            end_index = 6
+        else:
+            end_index = max(0, int(raw_end_days))
+            
+        col_start = start_index + 1
+        col_end = end_index + 2
         
-        day_col = html.Div(
-            children=[
-                html.Strong(day_label, style={"display": "block", "marginBottom": "6px"}),
-                *events_by_day[i]
-            ],
-            className="day-column"
+        row_num = row['row_num'] + 2
+        
+        #Trim label if too long
+        label = row['EventName']
+        max_chars = int((col_end - col_start) * 25)
+        text = (label if len(label) <- max_chars else 
+                 label[:max_chars-2] + '...' if max_chars>=3 else
+                 "" if max_chars<1 else "...")
+        
+        #Determine arrow classes
+        cls = ["event-block-grid"]
+        if row["has_left_arrow"]: cls.append("arrow-left")
+        if row["has_right_arrow"]: cls.append("arrow-right")
+        
+        event_blocks.append(
+            html.Button(
+                text,
+                id={"type": "grid-event", "index": idx},
+                n_clicks=0,
+                className=" ".join(cls),
+                style={
+                    "--row": row_num,
+                    "--col-start": col_start,
+                    "--col-end": col_end,
+                    "--bg": colors[row["Casino"]]["bg"],
+                    "--fg": colors[row["Casino"]]["text"]
+                },
+                title=f"{row['EventName']} ({row['Casino']})",
+                **{
+                    "data-eventname": row['EventName'],
+                    "data-casino": row['Casino'],
+                    "data-location": row['Location'],
+                    "data-start": row['StartDate'].strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    "data-end": row['EndDate'].strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    "data-offer": row['Offer'],
+                }
+            )
         )
-        day_columns.append(day_col)
         
-    return html.Div(
-        children=day_columns,
-        className="week-grid"
-    )
+        #4. Render a single grid container: header labels + event blocks
+    children = day_labels + event_blocks
+    return html.Div(children=children, className="week-grid")
+    

@@ -1,37 +1,102 @@
+/* 1. Establish a 7-column grid with a header row +event rows */
 .week-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    width: 100% !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-rows: var(--header-row-height) repeat(auto-fill, var(--event-row-height));
     gap: var(--gap-week);
     padding: var(--padding-base);
-    background-color: var(--color-background);
-    border-radius: var(--border-radius-lg);
-    position: relative;
+    justify-items: stretch !important;
 }
 
-.week-grid-preview-container {
-    border: 2px dashed var(--color-accent);
-    padding: var(--padding-base);
-    background-color: var(--color-background);
-    margin-top: var(--margin-section);
+/* 2. Your day-labels sit in row 1, columns 1-7 */
+.day-label {
+    grid-row: 1;
+    background-color: var(--color-day-header-bg);
+    color: var(--color-day-header-text) !important;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--padding-xxs) var(--padding-small);
+    font-size: var(--font-subtitle) !important;
+    font-weight: var(--font-weight-bold);
+    border-bottom: var(--border-thick) var(--border-color-primary);
+    border-right: var(--border-thin) var(--border-color-primary);
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.day-column {
-    position: relative;
-    padding: var(--padding-small);
-    border-left: var(--border-thin);
-    min-height: 300px;
+/* 3. Place each label into its column */
+.day-label:nth-of-type(1) {
+    grid-column: 1;
 }
 
+.day-label:nth-of-type(2) {
+    grid-column: 2;
+}
+
+.day-label:nth-of-type(3) {
+    grid-column: 3;
+}
+
+.day-label:nth-of-type(4) {
+    grid-column: 4;
+}
+
+.day-label:nth-of-type(5) {
+    grid-column: 5;
+}
+
+.day-label:nth-of-type(6) {
+    grid-column: 6;
+}
+
+.day-label:nth-of-type(7) {
+    grid-column: 7;
+}
+
+/* 4. Your events now start on row 2 automatically */
 .event-block-grid {
-    position: absolute;
-    background-color: var(--color-background);
-    color: whitesmoke;
-    border-radius: var(--border-radius-sm);
+    position: relative;
+    overflow: visible;
+    box-sizing: border-box;
+    height: var(--event-row-height);
+    grid-row-start: var(--row);
+    grid-row-end: calc(var(--row) + 1);
+    grid-column-start: var(--col-start);
+    grid-column-end: var(--col-end);
+    background-color: var(--bg);
+    color: var(--fg);
     padding: var(--padding-xxs);
-    font-size: var(--font-small);
-    cursor: pointer;
-    z-index: 10;
-    overflow: hidden;
+    border: var(--border-thick) var(--border-color-accent);
+    border-radius: var(--border-radius-xs);
     text-overflow: ellipsis;
     white-space: nowrap;
+    cursor: pointer;
+}
+
+/* 5. Left/Right overflow arrows */
+.event-block-grid.arrow-left::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: calc(-1 * var(--arrow-width));
+    width: 0;
+    height: 0;
+    border-top: calc(var(--event-row-height) / 2) solid transparent;
+    border-bottom: calc(var(--event-row-height) / 2) solid transparent;
+    border-right: var(--arrow-width) solid var(--border-color-primary);
+}
+
+.event-block-grid.arrow-right::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: calc(-1 * var(--arrow-width));
+    width: 0;
+    height: 0;
+    border-top: calc(var(--event-row-height) / 2) solid transparent;
+    border-bottom: calc(var(--event-row-height) / 2) solid transparent;
+    border-left: var(--arrow-width) solid var(--border-color-primary);
 }
