@@ -1,9 +1,10 @@
 def register_callbacks(app):
     import dash
-    from dash import Input, Output, State, ctx, html, dcc, no_update
+    from dash import Input, Output, State, ALL, ctx, html, dcc, no_update
     from datetime import datetime, timedelta
     from pytz import timezone
     import pandas as pd
+    import json
     from .data import load_event_data
     from .plotting import generate_weekly_view, get_color, generate_day_view_html
     from .layout import sticky_header
@@ -34,18 +35,16 @@ def register_callbacks(app):
     
     #Sticky header with responsive legend
     @app.callback(
-        Output('sticky-header', 'children'),
-        Input('screen-width', 'data'),
+        Output('week-label', 'children'),
         Input('week-offset', 'data')
     )
     
-    def render_sticky_header(screen_width, week_offset):
+    def update_week_label(week_offset):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
-        week_label = f"Events for the Week of {week_start.strftime('%B %d')} - {(week_start + timedelta(days=6)).strftime('%B %d, %Y')}"
         
-        return sticky_header(week_label)
+        return f"Events for the Week of {week_start.strftime('%B %d')} - {(week_start + timedelta(days=6)).strftime('%B %d, %Y')}"
 
     #Update week offset on button clicks
     @app.callback(
@@ -210,74 +209,121 @@ def register_callbacks(app):
         Input("close-modal", "n_clicks"),
         Input("close-timer", "n_intervals"),
         Input("close-day-modal", "n_clicks"),
+        Input({'type': 'grid-event', 'index': ALL}, 'n_clicks'),
         State('week-offset', 'data'),
         State('screen-width', 'data'),
-        prevent_initial_call=True
+        prevent_initial_call=True,
     )
-    def show_event_modal(weekly_click, day_click, close_clicks, timer_tick, close_day_clicks, week_offset, screen_width):
+    def show_event_modal(weekly_click, day_click, close_clicks, timer_tick, close_day_clicks, grid_clicks, week_offset, screen_width):
         ctx = dash.callback_context
-        click_reset = None
+        triggered_id = ctx.triggered_id
 
-        if ctx.triggered_id == "close-timer":
-            return no_update, '', '', 0, click_reset, {'display': 'none'}, '', ''
+        if triggered_id == "close-timer":
+            return no_update, '', '', 0, None, {'display': 'none'}, '', ''
 
-        if ctx.triggered_id == "close-modal":
-            return no_update, 'modal closing', no_update, 1, click_reset, no_update, no_update, no_update
+        if triggered_id == "close-modal":
+            return no_update, 'modal closing', no_update, 1, None, no_update, no_update, no_update
         
-        if ctx.triggered_id == "close-day-modal":
-            return no_update, no_update, no_update, no_update, click_reset, {'display': 'none'}, 'modal closing', ''
+        if triggered_id == "close-day-modal":
+            return no_update, no_update, no_update, no_update, None, {'display': 'none'}, 'modal closing', ''
         
-        click_data = None 
-        if ctx.triggered_id == "weekly-graph":
-            click_data = weekly_click
-        elif ctx.triggered_id == "day-event-catcher":
-            click_data = day_click
+        if isinstance(triggered_id, str) and "grid-event" in triggered_id:
+            try: 
+                #Grid event click
+                triggered_json = json.loads(triggered_id)
+                idx = triggered_json.get("index", None)
+            except Exception:
+                idx = None
+                
+            if idx is None: 
+                return no_update, no_update, no_update, no_update, None, no_update, no_update, no_update
             
-        if not click_data or 'points' not in click_data or not click_data['points']:
-            return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
-        
-        data = click_data['points'][0].get('customdata', [None])[0]
-        if not data:
-            return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
-        
-        #Handle day modal clicks
-        if data.get("type") == "day_click":
-            day_index = data.get("day_index")
-            if day_index is None:
-                return no_update, no_update, no_update, no_update, click_reset, no_update, no_update, no_update
-            
+            df2 = load_event_data()
+            from .plotting import filter_week_events, annotate_events_with_flags, assign_event_rows
             today = datetime.now(PDT)
             current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
             week_start = current_sunday + timedelta(weeks=week_offset)
-            clicked_date = week_start + timedelta(days=day_index)
             
-            content = generate_day_view_html(df, clicked_date, get_color, screen_width)
+            df_week = filter_week_events(df2, week_start, week_start + timedelta(days=7))
+            df_annot = annotate_events_with_flags(df_week, week_start, week_start + timedelta(days=7))
+            df_assigned = assign_event_rows(df_annot, week_start)
             
-            return no_update, no_update, no_update, no_update, click_reset, {}, 'modal show', content
+            if idx not in df_assigned.index:
+                return no_update, no_update, no_update, no_update, None, no_update, no_update, no_update
+            
+            row = df_assigned.loc[idx]
+            
+            rows = []
+            for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
+                if label in row:
+                    display_label = {
+                        "EventName": "Event",
+                        "StartDate": "Event Starts",
+                        "EndDate": "Event Ends"
+                    }.get(label, label)
+
+                    value = row[label]
+
+                    if label in ["StartDate", "EndDate"]:
+                        try:
+                            value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
+                        except Exception:
+                            pass
+
+                    rows.append(
+                        html.Div([
+                            html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
+                            html.Span(value)
+                        ], className='event-label')
+                    )
+            return ({}, 'modal show', rows, 0, None, {'display': 'none'}, '', '')
         
-        #Normal event click
-        rows = []
-        for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
-            if label in data:
-                display_label = {
-                    "EventName": "Event",
-                    "StartDate": "Event Starts",
-                    "EndDate": "Event Ends"
-                }.get(label, label)
-
-                value = data[label]
-
-                if label in ["StartDate", "EndDate"]:
-                    try:
-                        value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
-                    except Exception:
-                        pass
-
-                rows.append(
-                    html.Div([
-                        html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
-                        html.Span(value)
-                    ], className='event-label')
-                )
+        click_data = None 
+        if triggered_id == "weekly-graph":
+            click_data = weekly_click
+        elif triggered_id == "day-event-catcher":
+            click_data = day_click
+            
+        if click_data and 'points' in click_data and click_data['points']:
+            data = click_data['points'][0].get('customdata', [None])[0]
+            if data and data.get("type") == "day_click":
+                day_index = data.get("day_index")
+                if day_index is None:
+                    return no_update, no_update, no_update, no_update, None, no_update, no_update, no_update
+            
+                today = datetime.now(PDT)
+                current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
+                week_start = current_sunday + timedelta(weeks=week_offset)
+                clicked_date = week_start + timedelta(days=day_index)                
+                content = generate_day_view_html(df, clicked_date, get_color, screen_width)
                 
-        return {}, 'modal show', rows, 0, None, {'display': 'none'}, '', ''
+                return (no_update, no_update, no_update, no_update, None, {}, 'modal show', content)
+            
+            if data and all(k in data for k in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]):
+                #Normal event click
+                rows = []
+                for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
+                    if label in data:
+                        display_label = {
+                            "EventName": "Event",
+                            "StartDate": "Event Starts",
+                            "EndDate": "Event Ends"
+                        }.get(label, label)
+
+                        value = data[label]
+
+                        if label in ["StartDate", "EndDate"]:
+                            try:
+                                value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
+                            except Exception:
+                                pass
+
+                        rows.append(
+                            html.Div([
+                                html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
+                                html.Span(value)
+                            ], className='event-label')
+                        )
+                return ({}, 'modal show', rows, 0, None, {'display': 'none'}, '', '')
+            
+        raise dash.exceptions.PreventUpdate

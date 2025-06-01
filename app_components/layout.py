@@ -10,27 +10,24 @@ def create_layout(app):
         #Header section only (wrapped for height calc)
         html.Div(
             id="app-header", 
-            children=
-                #Sticky-Header container
-                html.Div(
-                    id='sticky-header', 
-                    className='sticky-header header-padding',
-                )
-        ),
-        #Scrollable Calendar Body
-        html.Div(
-            id="calendar-scroll-body",
-            className="calendar-scroll-body",
             children=[
-                #Main calendar area
-                dcc.Loading(
-                    id='calendar-loading',
-                    type='circle',
-                    color='#6A5ACD',
-                    children=html.Div(
-                        id='week-chart-container',
-                        className='week-gap section-margin calendar-content',
-                    ),
+                sticky_header(),
+                #Scrollable Calendar Body
+                html.Div(
+                    id="calendar-scroll-body",
+                    className="calendar-scroll-body",
+                    children=[
+                        #Main calendar area
+                        dcc.Loading(
+                            id='calendar-loading',
+                            type='circle',
+                            color='#6A5ACD',
+                            children=html.Div(
+                                id='week-chart-container',
+                                className='week-gap section-margin calendar-content',
+                            ),
+                        ),
+                    ]           
                 ),
                 #Optional Dev Preview Section
                 html.Div(
@@ -44,10 +41,10 @@ def create_layout(app):
                     style={"textAlign": "center", "marginBottom": "20px"}
                 ),
                 html.Div(
-                    id="dev-preview-output",
-                    className="calendar-content",
-                ),
-            ]           
+                            id="dev-preview-output",
+                            className="calendar-content",
+                        ),
+            ]
         ),
                         
         #State Stores
@@ -98,7 +95,7 @@ def create_layout(app):
 )
 
     
-def sticky_header(week_start_label=""):
+def sticky_header():
     df = load_event_data()
     return html.Div([
         html.H1(
@@ -108,6 +105,7 @@ def sticky_header(week_start_label=""):
         #Navigation & Legend
         html.Div(
             id='header-container',
+            className='legend-container',
             children=[
                 html.Button(
                     "🎲",
@@ -142,9 +140,9 @@ def sticky_header(week_start_label=""):
         ),
         #Week Label
         html.Div(
-            week_start_label, 
-            key=week_start_label,
-            className="fade-text calendar-title section-margin week-label",            
+            id="week-label",
+            className="fade-text week-label",
+            children=""
         ),
     ]
 )
