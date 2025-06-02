@@ -24,18 +24,19 @@
     --color-accent: #6A5ACD;
     --color-background: #f5f3fa;
 
-    /* Day Header Colors */
+    /* Day Header & Week Grid Colors */
     --color-day-header-text: var(--color-primary-dark);
     --color-day-header-bg: var(--color-background);
+    --color-border-grid: #606E8C;
 
     /* Borders and shadows */
     --border-radius-lg: 10px;
     --border-radius-sm: 5px;
     --border-radius-xs: 2px;
     --border-color-primary: var(--color-primary-dark);
-    --border-thin: 2px;
+    --border-thin: 1px;
     --border-color-accent: var(--color-accent);
-    --border-thick: 8px;
+    --border-thick: 2px;
     --box-shadow-light: 0 -2px 4px var(--color-primary-dark);
     --box-shadow-modal: 0 0 20px var(--color-primary-dark);
 
