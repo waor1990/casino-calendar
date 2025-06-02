@@ -20,9 +20,46 @@ def render_week_grid(clicked_date, df):
         day_labels.append(
             html.Div(
                 date.strftime('%a %b %d'),
-                className='day-label'
+                className='day-label-grid'
             )
         )
+        
+    #Build 7 "column separator" divs for grid layout
+    col_separators = []
+    col_separators.append(
+        html.Div(
+            "",
+            className="col-separator",
+            style={
+                'gridColumn': '1',
+                'gridRow': '2 / -1',
+            }
+        )
+    )
+    for col in range(2, 8):
+        col_separators.append(
+            html.Div(
+                "",
+                className="col-separator",
+                style={
+                    'gridColumn': f"{col}",
+                    'gridRow': "2 / -1",
+                    'transform': 'translateX(calc(100% - 7.5px))'
+                }
+            )
+        )
+    
+    col_separators.append(
+        html.Div(
+            "",
+            className="col-separator",
+            style={
+                'gridColumn': '8',
+                'gridRow': '2 / -1',
+                'transform': 'translateX(-10px)',
+            }
+        )
+    )
         
     #Filer/annotate/assign events 
     df_week = filter_week_events(df, week_start, week_end)
@@ -87,6 +124,6 @@ def render_week_grid(clicked_date, df):
         )
         
         #4. Render a single grid container: header labels + event blocks
-    children = day_labels + event_blocks
+    children = day_labels + col_separators + event_blocks
     return html.Div(children=children, className="week-grid")
     
