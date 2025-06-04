@@ -5,47 +5,52 @@ from .plotting import get_color
 
 def create_layout(app):
     return html.Div(
-    className="main-layout",
-    children=[
-        #Header section only (wrapped for height calc)
-        html.Div(
-            id="app-header", 
-            children=[
-                sticky_header(),
-                #Scrollable Calendar Body
-                html.Div(
-                    id="calendar-scroll-body",
-                    className="calendar-scroll-body",
-                    children=[
-                        #Main calendar area
-                        dcc.Loading(
-                            id='calendar-loading',
-                            type='circle',
-                            color='#6A5ACD',
-                            children=html.Div(
-                                id='week-chart-container',
-                                className='week-gap section-margin calendar-content',
+        className="main-layout",
+        children=[
+            #Header section only (wrapped for height calc)
+            html.Div(
+                id="app-header",
+                children=[
+                    sticky_header(),
+                    #Scrollable Calendar Body
+                    html.Div(
+                        id="calendar-scroll-body",
+                        className="calendar-scroll-body",
+                        children=[
+                            #Main calendar area
+                            dcc.Loading(
+                                id='calendar-loading',
+                                type='circle',
+                                color='#6A5ACD',
+                                children=html.Div(
+                                    id='week-chart-container',
+                                    className='week-gap section-margin calendar-content',
+                                ),
                             ),
-                        ),
-                    ]           
-                ),
-                #Optional Dev Preview Section
-                html.Div(
-                    id="day-preview-toggle",
-                    children=html.Button(
-                        "Preview Grid Layout",
-                        id="preview-grid-button",
-                        n_clicks=0,
-                        className="emoji-button",
+                        ]
                     ),
-                    style={"textAlign": "center", "marginBottom": "20px"}
-                ),
-                html.Div(
+                    #Optional Dev Preview Section
+                    html.Div(
+                        id="day-preview-toggle",
+                        children=html.Button(
+                            "Preview Grid Layout",
+                            id="preview-grid-button",
+                            n_clicks=0,
+                            className="emoji-button",
+                        ),
+                        style={"textAlign": "center", "marginBottom": "20px"}
+                    ),
+                    dcc.Loading(
+                        id='day-preview-loading',
+                        type='circle',
+                        color='#6A5ACD',
+                        children=html.Div(
                             id="dev-preview-output",
                             className="calendar-content",
                         ),
-            ]
-        ),
+                    )
+                ]
+            ),
                         
         #State Stores
         dcc.Store(id='usable-height', data=600),
