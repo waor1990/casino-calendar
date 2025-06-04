@@ -2,10 +2,17 @@
 .week-grid {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    grid-template-rows: var(--header-row-height) repeat(30, var(--event-row-height));
-    position: relative;
-    gap: var(--gap-week);
+    gap: 0;
     padding: var(--padding-base);
+    position: relative;
+    min-height: calc(var(--event-row-height) * 5 + var(--header-row-height));
+}
+
+.grid-filler-cell {
+    border-left: 1px solid var(--color-border-grid);
+    border-right: 1px solid var(--color-border-grid);
+    box-sizing: border-box;
+    min-height: var(--event-row-height);
 }
 
 /* 2. Your day-labels sit in row 1, columns 1-7 */
@@ -19,11 +26,10 @@
     justify-content: center;
     font-size: var(--font-subtitle) !important;
     font-weight: var(--font-weight-bold);
-    border-bottom: var(--border-thick) solid var(--border-color-primary);
-    border-left: var(--border-thin) solid var(--border-color-primary);
-    border-right: var(--border-thin) solid var(--border-color-primary);
-    border-top: var(--border-thin) solid var(--border-color-primary);
-    width: 100%;
+    border-left: 1px solid var(--color-border-grid);
+    border-right: 1px solid var(--color-border-grid);
+    border-top: var(--border-thick) solid var(--color-border-primary);
+    border-bottom: var(--border-thick) solid var(--color-border-primary);
     box-sizing: border-box;
 }
 
@@ -56,17 +62,6 @@
     grid-column: 7;
 }
 
-.col-separator {
-    grid-row: 2 / -1;
-    align-self: stretch;
-    justify-self: stretch;
-    width: 0;
-    border-left: 2px solid var(--color-border-grid);
-    z-index: 1;
-    pointer-events: none;
-    position: relative;
-}
-
 /* 4. Your events now start on row 2 automatically */
 .event-block-grid {
     position: relative;
@@ -79,10 +74,14 @@
     grid-column-end: var(--col-end);
     background-color: var(--bg);
     color: var(--fg);
+    font-size: var(--font-base);
     padding: var(--padding-xxs);
-    border: none;
+    border-left: 1px solid var(--color-border-grid);
+    border-right: 1px solid var(--color-border-grid);
     border-radius: var(--border-radius-xs);
-    text-overflow: ellipsis;
+    border-top: none;
+    border-bottom: none;
+    text-overflow: ellipsis !important;
     white-space: nowrap;
     cursor: pointer;
     z-index: 10;
@@ -98,7 +97,7 @@
     height: 0;
     border-top: calc(var(--event-row-height) / 2) solid transparent;
     border-bottom: calc(var(--event-row-height) / 2) solid transparent;
-    border-right: var(--arrow-width) solid var(--border-color-primary);
+    border-right: var(--arrow-width) solid var(--color-border-primary);
 }
 
 .event-block-grid.arrow-right::after {
@@ -110,5 +109,38 @@
     height: 0;
     border-top: calc(var(--event-row-height) / 2) solid transparent;
     border-bottom: calc(var(--event-row-height) / 2) solid transparent;
-    border-left: var(--arrow-width) solid var(--border-color-primary);
+    border-left: var(--arrow-width) solid var(--color-border-primary);
+}
+
+/* 6. Rounded off grid edges */
+.week-grid>.day-label-grid:nth-child(1) {
+    border-left: 2px solid var(--color-border-primary);
+}
+
+.week-grid>.day-label-grid:nth-child(2) {
+    border-left: 2px solid var(--color-border-primary);
+}
+
+.week-grid>.day-label-grid:nth-child(3) {
+    border-left: 2px solid var(--color-border-primary);
+}
+
+.week-grid>.day-label-grid:nth-child(4) {
+    border-left: 2px solid var(--color-border-primary);
+}
+
+.week-grid>.day-label-grid:nth-child(5) {
+    border-left: 2px solid var(--color-border-primary);
+}
+
+.week-grid>.day-label-grid:nth-child(6) {
+    border-left: 2px solid var(--color-border-primary);
+}
+
+.week-grid>.day-label-grid:nth-child(7) {
+    border-left: 2px solid var(--color-border-primary);
+}
+
+.week-grid>.day-label-grid:nth-child(7) {
+    border-right: 2px solid var(--color-border-primary);
 }

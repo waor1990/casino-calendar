@@ -90,7 +90,7 @@ def register_callbacks(app):
     @app.callback(
         Output('dev-preview-output', 'children'),
         Input('preview-grid-button', 'n_clicks'),
-        State('week-offset', 'data'),
+        Input('week-offset', 'data'),
         prevent_initial_call=True
     )
     def show_dev_preview(n_clicks, week_offset):

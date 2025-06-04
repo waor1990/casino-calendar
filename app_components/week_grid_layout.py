@@ -15,51 +15,14 @@ def render_week_grid(clicked_date, df):
     #Calculate week bounds
     week_start, week_end = get_week_range(clicked_date)
     #Build 7 day-label divs for header row
-    day_labels = []
-    for date in pd.date_range(week_start, periods=7, freq='D'):
-        day_labels.append(
-            html.Div(
-                date.strftime('%a %b %d'),
-                className='day-label-grid'
-            )
-        )
-        
-    #Build 7 "column separator" divs for grid layout
-    col_separators = []
-    col_separators.append(
+    day_labels = [
         html.Div(
-            "",
-            className="col-separator",
-            style={
-                'gridColumn': '1',
-                'gridRow': '2 / -1',
-            }
+            date.strftime('%a %b %d'),
+            className='day-label-grid',
+            style={'gridColumn': f'{i + 1}'},    
         )
-    )
-    for col in range(2, 8):
-        col_separators.append(
-            html.Div(
-                "",
-                className="col-separator",
-                style={
-                    'gridColumn': f"{col}",
-                    'gridRow': "2 / -1",
-                    'transform': 'translateX(calc(100% - 7.5px))'
-                }
-            )
-        )
-    
-    col_separators.append(
-        html.Div(
-            "",
-            className="col-separator",
-            style={
-                'gridColumn': '8',
-                'gridRow': '2 / -1',
-                'transform': 'translateX(-10px)',
-            }
-        )
-    )
+        for i, date in enumerate(pd.date_range(week_start, periods=7))
+    ]
         
     #Filer/annotate/assign events 
     df_week = filter_week_events(df, week_start, week_end)
@@ -67,19 +30,25 @@ def render_week_grid(clicked_date, df):
     df_assigned = assign_event_rows(df_annot, week_start)
     colors = get_color()  
     
+    if df_assigned.empty:
+        event_rows = 5 
+    else: 
+        max_row = df_assigned['row_num'].max()
+        event_rows = int(max_row) + 1
+        
+    total_rows = event_rows + 1
+    
     # Build CSS--grid event-block divs that are clikcable
     event_blocks = []
     for idx, row in df_assigned.iterrows():
-        #start_delta = max(0, (row['StartDate'] - week_start).days)
-        #end_delta = min(7, (row['EndDate'] - week_start).days)
         raw_start_days = (row['StartDate'] - week_start).total_seconds() / (24 * 3600)
+        if raw_start_days >= 7 - 1e-6:  # Allow for floating point precision issues
+            start_index = 6
+        else: 
+            start_index = max(0, int(floor(raw_start_days)))
         raw_end_days = (row['EndDate'] - week_start).total_seconds() / (24 * 3600)
         
-        start_index = max(0, int(raw_start_days))
-        if raw_end_days > 6:
-            end_index = 6
-        else:
-            end_index = max(0, int(raw_end_days))
+        end_index = min(6, int(raw_end_days)) if raw_end_days <= 6 else 6
             
         col_start = start_index + 1
         col_end = end_index + 2
@@ -88,10 +57,10 @@ def render_week_grid(clicked_date, df):
         
         #Trim label if too long
         label = row['EventName']
-        max_chars = int((col_end - col_start) * 25)
-        text = (label if len(label) <- max_chars else 
+        max_chars = int((col_end - col_start) * 30)
+        text = (label if len(label) < max_chars else 
                  label[:max_chars-2] + '...' if max_chars>=3 else
-                 "" if max_chars<1 else "...")
+                 "...")
         
         #Determine arrow classes
         cls = ["event-block-grid"]
@@ -123,7 +92,22 @@ def render_week_grid(clicked_date, df):
             )
         )
         
-        #4. Render a single grid container: header labels + event blocks
-    children = day_labels + col_separators + event_blocks
-    return html.Div(children=children, className="week-grid")
+    grid_fillers = [
+        html.Div(
+            className="grid-filler-cell",
+            style={
+                "gridRow": str(row + 2),
+                "gridColumn": f"{col}"
+            }
+        )
+        for row in range(event_rows)
+        for col in range(1, 8)
+    ]
+        
+    #4. Render a single grid container: header labels + event blocks
+    return html.Div(
+        children=day_labels + event_blocks + grid_fillers,
+        className="week-grid", 
+        style={"gridTemplateRows": f"var(--header-row-height) repeat({event_rows}, var(--event-row-height))"}
+    )
     

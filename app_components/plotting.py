@@ -158,7 +158,7 @@ def assign_event_rows(events_df, week_start):
                 events_df.at[idx, "row_num"] = assigned_row
                 row_nums.append(assigned_row)
             
-            current_row = max(row_nums, default=current_row) + 1
+        current_row = max(row_nums, default=current_row) + 1
     
     return events_df
 

@@ -30,8 +30,8 @@ h1,
     width: 12px;
     height: 12px;
     display: inline-block;
-    border-radius: var(--padding-xxs);
-    margin-right: var(--padding-xxs);
+    border-radius: var(--padding-xs);
+    margin-right: var(--padding-xs);
 }
 
 /* Buttons */
