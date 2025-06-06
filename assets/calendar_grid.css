@@ -2,10 +2,12 @@
 .week-grid {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-rows: var(--header-row-height) auto;
+    grid-auto-rows: minmax(var(--event-row-height), auto);
     gap: 0;
     padding: var(--padding-base);
     position: relative;
-    min-height: calc(var(--event-row-height) * 5 + var(--header-row-height));
+    /* min-height: calc(var(--event-row-height) * 5 + var(--header-row-height)); */
 }
 
 .grid-filler-cell {
@@ -19,18 +21,24 @@
 .day-label-grid {
     grid-row: 1;
     background-color: var(--color-day-header-bg);
-    color: var(--color-day-header-text) !important;
+    color: var(--color-day-header-text);
     text-align: center;
     display: flex;
+    flex-direction: column;
+    gap: 0.2em;
     align-items: center;
     justify-content: center;
-    font-size: var(--font-subtitle) !important;
+    line-height: .8;
+    font-size: var(--font-subtitle);
     font-weight: var(--font-weight-bold);
-    border-left: 1px solid var(--color-border-grid);
-    border-right: 1px solid var(--color-border-grid);
     border-top: var(--border-thick) solid var(--color-border-primary);
     border-bottom: var(--border-thick) solid var(--color-border-primary);
     box-sizing: border-box;
+}
+
+.day-label-grid>div {
+    margin: 0;
+    line-height: .8;
 }
 
 /* 3. Place each label into its column */
@@ -67,7 +75,8 @@
     position: relative;
     overflow: visible;
     box-sizing: border-box;
-    height: var(--event-row-height);
+    min-height: var(--event-row-height);
+    padding-bottom: var(--gap-week);
     grid-row-start: var(--row);
     grid-row-end: calc(var(--row) + 1);
     grid-column-start: var(--col-start);
@@ -75,7 +84,8 @@
     background-color: var(--bg);
     color: var(--fg);
     font-size: var(--font-base);
-    padding: var(--padding-xxs);
+    padding: var(--padding-small);
+    margin-bottom: var(--gap-week);
     border-left: 1px solid var(--color-border-grid);
     border-right: 1px solid var(--color-border-grid);
     border-radius: var(--border-radius-xs);
@@ -87,17 +97,21 @@
     z-index: 10;
 }
 
+
 /* 5. Left/Right overflow arrows */
 .event-block-grid.arrow-left::before {
     content: "";
     position: absolute;
     top: 0;
     left: calc(-1 * var(--arrow-width));
-    width: 0;
-    height: 0;
-    border-top: calc(var(--event-row-height) / 2) solid transparent;
-    border-bottom: calc(var(--event-row-height) / 2) solid transparent;
-    border-right: var(--arrow-width) solid var(--color-border-primary);
+    width: var(--arrow-width);
+    height: 100%;
+    background-color: var(--color-border-primary);
+    clip-path: polygon(0 50%,
+            100% 0,
+            100% 100%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .event-block-grid.arrow-right::after {
@@ -105,11 +119,14 @@
     position: absolute;
     top: 0;
     right: calc(-1 * var(--arrow-width));
-    width: 0;
-    height: 0;
-    border-top: calc(var(--event-row-height) / 2) solid transparent;
-    border-bottom: calc(var(--event-row-height) / 2) solid transparent;
-    border-left: var(--arrow-width) solid var(--color-border-primary);
+    width: var(--arrow-width);
+    height: 100%;
+    background-color: var(--color-border-primary);
+    clip-path: polygon(100% 50%,
+            0 0,
+            0 100%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 /* 6. Rounded off grid edges */
