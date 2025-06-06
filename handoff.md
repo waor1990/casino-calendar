@@ -1,95 +1,84 @@
 # 🎰 Casino Calendar App — Developer Handoff
 
 ## 📌 Overview
-
-A responsive Dash web application that visualizes casino events in a calendar-style layout. Built with Plotly + Dash and deployed to Render.com.
+A responsive Dash web application that visualizes casino events in a calendar layout. Built with Plotly Dash and deployed on Render.
 
 ---
 
 ## ✅ Current Features
-
 - 📆 Weekly event chart with labeled time blocks
-- 📊 Preview calendar using CSS Grid layout
-- 📱 Responsive design for mobile/tablet/desktop
-- 🖼️ Custom CSS with variables, modular utilities, and layout controls
-- 🧠 Modal views for detailed day/event info
+- 📊 Optional grid calendar preview using CSS Grid
+- 🧠 Modal views for detailed day and event info
+- 🌀 Toggle to display long-spanning events
+- 📱 Responsive design across mobile, tablet and desktop
+- 🖼️ Custom CSS variables and layout utilities
 
 ---
 
 ## 📁 Project Structure Highlights
-
+```
 casino_calendar/
-│
 ├── app_components/
-│   ├── layout.py            # Layout structure: sticky header, modals, containers
-│   ├── callbacks.py         # All Dash callbacks
+│   ├── layout.py            # Sticky header, modals, containers
+│   ├── callbacks.py         # Dash callbacks
 │   ├── data.py              # CSV loader with timezone handling
-│   ├── plotting.py          # Plotly charting logic (week/day)
-│   ├── utils.py             # Responsive calculations and constants
-│   ├── week_grid_layout.py  # Preview grid layout using pure CSS
-│
+│   ├── plotting.py          # Plotly charting logic
+│   ├── utils.py             # Responsive calculations
+│   └── week_grid_layout.py  # Pure CSS grid preview
 ├── assets/
-│   ├── base.css             # Root variables and resets
-│   ├── layout.css           # Scrollable containers and page structure
-│   ├── components.css       # Event blocks, buttons, utility classes
-│   ├── calendar_grid.css    # Week grid preview CSS layout
-│   └── typography.css       # Font styling and text sizes
-│
+│   ├── base.css             # Variables and resets
+│   ├── layout.css           # Page structure
+│   ├── components.css       # Event blocks and utilities
+│   ├── calendar_grid.css    # Grid layout styles
+│   └── typography.css       # Fonts and text sizes
 ├── casino_events.csv
 ├── requirements.txt
 ├── app.py                   # Dash entry point
 ├── Procfile                 # Render deployment file
 └── README.md
+```
 
 ---
 
 ## 🧠 Recent Refactors
+### CSS Modularization
+- Split former `custom.css` into `base.css`, `layout.css`, `components.css`, `calendar_grid.css` and `typography.css`
 
-### ✅ CSS Modularization
+### Grid Layout Preview
+- `week_grid_layout.py` renders a grid-style week calendar
+- Injected into `dev-preview-output` and toggled via `preview-grid-button`
 
-- `custom.css` split into:
-  - `base.css`: color palette, spacing variables
-  - `layout.css`: scroll containers, `.main-layout`, `.calendar-content`, etc.
-  - `components.css`: modals, buttons, overflow boxes
-  - `calendar_grid.css`: `.week-grid`, `.event-block-grid`, `.day-column`, etc.
-  - `typography.css`: font size classes, utility text styles
-
-### ✅ Grid Layout Preview
-
-- `week_grid_layout.py` builds a grid-style week calendar
-- Injected via Dash into `dev-preview-output` below the weekly chart
-- Toggle via `preview-grid-button`
-
-### ✅ Scrollable Body
-
-- `.calendar-scroll-body` allows chart/grid content to scroll below header
-- Keeps `sticky-header` + week label fixed at the top
+### Scrollable Body
+- `.calendar-scroll-body` scrolls content beneath the sticky header
 
 ---
 
 ## 🛠️ Work in Progress / Next Steps
-
-- 🔄 Convert more layout blocks from Plotly to pure CSS/Grid
-- 📱 Polish mobile responsiveness of preview layout
-- ♿ Improve accessibility: tab order, ARIA roles
-- ✨ Animate modal and overflow transitions more smoothly
+- Convert more layout blocks from Plotly to pure CSS/Grid
+- Polish mobile responsiveness
+- Improve accessibility: tab order and ARIA roles
+- Smooth modal and overflow transitions
 
 ---
 
 ## 🧪 Testing / Known Fixes
-
-- `KeyError: 7` in grid layout was resolved by clamping day indices between 0–6 ✅
-- Week charts now height-responsive based on `usable-height` from window innerHeight ✅
-- Scroll logic uses `calendar-scroll-body` height via `100vh - 150px` ✅
+- `KeyError: 7` fixed by clamping day indices when building grid layout
+- Week charts adjust height based on `usable-height`
+- Scroll logic uses `calendar-scroll-body` height via `100vh - 150px`
 
 ---
 
 ## 🚀 Deployment
-
 - Platform: [Render.com](https://render.com)
 - URL: [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
-- Python 3.11 / Dash 2.0+
-- Gunicorn used in `Procfile`:  
+- Python 3.11 / Dash 2.x
+- Gunicorn command in `Procfile`:
 
-  ```txt
-  web: gunicorn app:server
+```txt
+web: gunicorn app:server
+```
+
+---
+
+## 🧼 License
+Released under [The Unlicense](https://unlicense.org).
