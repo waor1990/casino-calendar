@@ -43,7 +43,7 @@ def render_week_grid(clicked_date, df):
 
     total_rows = event_rows + 1
 
-    # Build CSS--grid event-block divs that are clikcable
+    # Build CSS--grid event-block divs that are clickable
     event_blocks = []
     for idx, row in df_assigned.iterrows():
         raw_start_days = (row['StartDate'] - week_start).total_seconds() / (24 * 3600)
