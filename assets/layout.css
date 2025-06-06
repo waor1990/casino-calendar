@@ -29,7 +29,7 @@
 }
 
 .calendar-scroll-body {
-    height: calc(100vh - 200px);
+
     overflow-y: auto;
     padding: var(--padding-base);
     box-sizing: border-box;

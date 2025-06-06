@@ -81,10 +81,11 @@ def annotate_events_with_flags(events_df, week_start, week_end):
         if row["has_left_arrow"] and row["has_right_arrow"]:
             return 0
         if row["has_right_arrow"]:
-            return 1
-        if not row["has_left_arrow"] and not row["has_right_arrow"]:
             return 3
-        return 2
+        if not row["has_left_arrow"] and not row["has_right_arrow"]:
+            return 2
+        return 1  # left only
+    
     
     events_df["overflow_sort"] = events_df.apply(get_overflow_priority, axis=1)
     
