@@ -1,69 +1,55 @@
 # 🎰 Casino Event Calendar
 
-A personal-use Dash app that visualizes casino events on a responsive calendar. Weekly and day views with interactive modals, customizable layout, and preview mode.
+A personal Dash application that displays casino events on a responsive calendar. Weekly and daily views include interactive modals and an optional CSS grid preview.
 
 ---
 
 ## 🚀 Features
 
-- View casino events in weekly blocks
-- Click to open modal with details or daily breakdown
-- Optional preview: grid-based layout using CSS
-- Responsive to screen size (desktop/mobile/tablet)
-- Color-coded by casino with auto-generated legend
+- Weekly calendar view with color‑coded event blocks
+- Modal windows for detailed event and day information
+- Optional grid layout preview built with pure CSS
+- Responsive design for desktop, tablet and mobile
 - Time zone normalized to Pacific Time (PDT)
+- Toggle to show ongoing events that span the week
 
 ---
 
 ## 📁 Project Layout
-
 ```text
-casino_calendar/
-├── app.py                   # Main Dash entry
-├── app_components/          # Core logic modules
-│   ├── callbacks.py         # Dash callbacks
-│   ├── data.py              # Event data handling
-│   ├── layout.py            # Main layout + header + modals
-│   ├── plotting.py          # Plotly figure generation
-│   ├── utils.py             # Layout utilities, time zones
-│   └── week_grid_layout.py  # Grid layout preview using HTML/CSS
-│
-├── assets/                  # All stylesheets (auto-loaded)
-│   ├── base.css
-│   ├── layout.css
-│   ├── components.css
-│   ├── calendar_grid.css
-│   └── typography.css
-│
-├── casino_events.csv        # Event data
-├── requirements.txt         # Pip dependencies
-├── Procfile                 # Render deployment
-└── README.md
+app.py                   # Dash entry point
+app_components/          # Core logic modules
+  callbacks.py           # Dash callbacks
+  data.py                # Event data handling
+  layout.py              # Layout and modals
+  plotting.py            # Plotly figure generation
+  utils.py               # Helpers and time zone utilities
+  week_grid_layout.py    # Grid layout preview using HTML/CSS
+assets/                  # Stylesheets (auto-loaded)
+  base.css
+  layout.css
+  components.css
+  calendar_grid.css
+  typography.css
+casino_events.csv        # Event data
+requirements.txt         # Python dependencies
+Procfile                 # Render deployment
+README.md
+```
 
 ## 🧪 Try It Locally
-bash
-Copy
-Edit
+```bash
 pip install -r requirements.txt
 python app.py
+```
 
 ## 🌍 Deployment
+Hosted at [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
 
-Hosted on Render:
-
-🔗 https://casino-calendar.onrender.com
-
-Procfile:
-
-txt
-Copy
-Edit
+`Procfile`:
+```txt
 web: gunicorn app:server
+```
 
 ## 🧼 License
-
-MIT — free for personal use and modification.
-
-vbnet
-Copy
-Edit
+Released under [The Unlicense](https://unlicense.org).
