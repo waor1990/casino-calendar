@@ -260,10 +260,8 @@ def register_callbacks(app):
         prevent_initial_call=True,
     )
     def show_event_modal(weekly_click, day_click, close_clicks, timer_tick, close_day_clicks, grid_clicks, week_offset, screen_width):
-        from typing import Any, cast
-
         ctx = dash.callback_context
-        triggered_id = cast(Any, ctx.triggered_id)
+        triggered_id = ctx.triggered_id
 
         if triggered_id == "close-timer":
             return no_update, '', '', 0, None, {'display': 'none'}, '', ''
