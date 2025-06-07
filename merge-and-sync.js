@@ -30,7 +30,7 @@ async function mergeAndSync(prNumber) {
     console.log('PR #${prNumber} merged:', mergeRes.data.merge_commit_sha);
 
     //2. Check out the target branch
-    await git.checkout(TAGET_BRANCH);
+    await git.checkout(TARGET_BRANCH);
     console.log(`Checked out &{TARGET_BRANCH}`);
 
     //3. Pull the latest changes
