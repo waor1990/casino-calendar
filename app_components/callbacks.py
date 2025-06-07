@@ -88,14 +88,31 @@ def register_callbacks(app):
         return desired_offset, prev_disabled, next_disabled, next_title
     
     @app.callback(
-        Output('dev-preview-output', 'children'),
+        Output('show-css-grid', 'data'),
+        Output('preview-grid-button', 'children'),
         Input('preview-grid-button', 'n_clicks'),
+        State('show-css-grid', 'data'),
+        prevent_initial_call=True  
+    )
+    
+    def toggle_css_grid(n_clicks, current_state):
+        if n_clicks is None:
+            raise dash.exceptions.PreventUpdate
+        
+        new_state = not current_state
+        label = "Hide CSS Layout" if new_state else "Show CSS Layout"
+        return new_state, label
+        
+    @app.callback(  
+        Output('dev-preview-output', 'children'),  
         Input('week-offset', 'data'),
+        Input('show-css-grid', 'data'),
         prevent_initial_call=True
     )
-    def show_dev_preview(n_clicks, week_offset):
-        if not n_clicks:
-            return no_update
+    
+    def show_dev_preview(week_offset, show_grid):
+        if not show_grid:
+            return html.Div()
         
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
@@ -104,15 +121,43 @@ def register_callbacks(app):
         return render_week_grid(week_start, df)
     
     @app.callback(
+        Output('show-plotly-grid', 'data'),
+        Output('plotly-grid-button', 'children'),
+        Input('plotly-grid-button', 'n_clicks'),
+        State('show-plotly-grid', 'data'),
+        prevent_initial_call=True
+    )
+    
+    @app.callback(
+        Output('show-plotly-grid', 'data'),
+        Output('plotly-grid-button', 'children'),
+        Input('plotly-grid-button', 'n_clicks'),
+        State('show-plotly-grid', 'data'),
+        prevent_initial_call=True
+    )
+    
+    def toggle_plotly_grid(n_clicks, current_state):
+        if n_clicks is None:
+            raise dash.exceptions.PreventUpdate
+        
+        new_state = not current_state
+        button_label = "Hide Plotly Layout" if new_state else "Show Plotly Layout"
+        return new_state, button_label
+    
+    @app.callback(
         Output('week-chart-container', 'children'),
         Output('overflow-date', 'data'),
         Input('usable-height', 'data'),
         Input('week-offset', 'data'),
         Input('screen-width', 'data'),
+        Input('show-plotly-grid', 'data'),
         prevent_initial_call=True
     )
     
-    def render_single_week_chart(usable_height, week_offset, screen_width):
+    def render_single_week_chart(usable_height, week_offset, screen_width, show_chart):
+        if not show_chart:
+            return html.Div(), dash.no_update
+        
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)

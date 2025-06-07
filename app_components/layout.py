@@ -17,6 +17,17 @@ def create_layout(app):
                         id="calendar-scroll-body",
                         className="calendar-scroll-body",
                         children=[
+                            #Toggle plotly chart
+                            html.Div(
+                                id="plotly-preview-toggle",
+                                children=html.Button(
+                                    "Hide Plotly Layout",
+                                    id="plotly-grid-button",
+                                    n_clicks=0,
+                                    className="emoji-button",
+                                ),
+                                style={"textAlign": "center", "marginBottom": "20px"}
+                            ),
                             #Main calendar area
                             dcc.Loading(
                                 id='calendar-loading',
@@ -33,7 +44,7 @@ def create_layout(app):
                     html.Div(
                         id="day-preview-toggle",
                         children=html.Button(
-                            "Preview Grid Layout",
+                            "Show CSS Layout",
                             id="preview-grid-button",
                             n_clicks=0,
                             className="emoji-button",
@@ -57,6 +68,8 @@ def create_layout(app):
         dcc.Store(id='screen-width', data=1024),
         dcc.Store(id='week-offset', data=0),
         dcc.Store(id='overflow-date'),
+        dcc.Store(id='show-plotly-grid', data=True),
+        dcc.Store(id='show-css-grid', data=False),
         #Interval Triggers
         dcc.Interval(id='initial-trigger', interval=1, max_intervals=1),
         dcc.Interval(id='close-timer', interval=600, n_intervals=0, max_intervals=0),
@@ -153,7 +166,6 @@ def sticky_header():
 )
 
 def create_legend(df):
-    df = load_event_data()
     legend_items = []
     for casino, color in get_color().items():
         if casino in df['Casino'].unique():
