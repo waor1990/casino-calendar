@@ -32,7 +32,6 @@ assets/                  # Stylesheets (auto-loaded)
   layout.css
   components.css
   calendar_grid.css
-  typography.css
 casino_events.csv        # Event data
 requirements.txt         # Python dependencies
 Procfile                 # Render deployment
