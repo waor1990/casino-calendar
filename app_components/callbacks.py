@@ -128,14 +128,6 @@ def register_callbacks(app):
         prevent_initial_call=True
     )
     
-    @app.callback(
-        Output('show-plotly-grid', 'data'),
-        Output('plotly-grid-button', 'children'),
-        Input('plotly-grid-button', 'n_clicks'),
-        State('show-plotly-grid', 'data'),
-        prevent_initial_call=True
-    )
-    
     def toggle_plotly_grid(n_clicks, current_state):
         if n_clicks is None:
             raise dash.exceptions.PreventUpdate
