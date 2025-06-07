@@ -1,16 +1,20 @@
-import plotly.graph_objs as go
-import pandas as pd
-from dash import html, dcc
+from collections import defaultdict
 from datetime import datetime, timedelta
 from math import floor
-from collections import defaultdict
-from .utils import get_week_range, PDT
 
-#Layout config shared across functions
+import pandas as pd
+import plotly.graph_objs as go
+from dash import dcc, html
+
+from .utils import PDT, get_week_range
+
+
+# Layout config shared across functions
 def get_layout_config(screen_width):
     hour_height = 20 if screen_width < 480 else 36 if screen_width < 768 else 44
     label_column_pct = 10
     return hour_height, label_column_pct
+
 
 # Function to generate a weekly view given a clicked date
 def generate_weekly_view(clicked_date, df, screen_width=1024):
@@ -27,7 +31,8 @@ def generate_weekly_view(clicked_date, df, screen_width=1024):
 
     return fig, long_spanning
 
-#Color map by Casino
+
+# Color map by Casino
 def get_color():
     color_map = {
         "ilani": {"bg": "#2c6f7f", "text": "#ffffff"},
@@ -44,17 +49,33 @@ def get_color():
         "Emerald Queen Casino": {"bg": "#d62e52", "text": "#ffffff"},
         "Rolling Hills Casino": {"bg": "#5b1d1e", "text": "#ffffff"},
         "Wildhorse Casino": {"bg": "#d21245", "text": "#ffffff"},
-        "Tulalip Casino": {"bg": "#155e6d", "text":"#ffffff"},
+        "Tulalip Casino": {"bg": "#155e6d", "text": "#ffffff"},
         "Quil Ceda Creek Casino": {"bg": "#9a0709", "text": "#ffffff"},
-        "Seven Feathers Casino": {"bg": "#41c5de", "text": "#000000"}
+        "Seven Feathers Casino": {"bg": "#41c5de", "text": "#000000"},
     }
 
     default_colors = {
-        "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff",
-        "#00ffff", "#ff8000", "#800000", "#008000", "#000080",
-        "#800080", "#ffa500", "#808080", "#ff6347", "#ff4500",
-        "#ff00ff", "#008080", "#4b0082", "#008b8b", "#000080",
-        "#4682b4"
+        "#ff0000",
+        "#00ff00",
+        "#0000ff",
+        "#ffff00",
+        "#ff00ff",
+        "#00ffff",
+        "#ff8000",
+        "#800000",
+        "#008000",
+        "#000080",
+        "#800080",
+        "#ffa500",
+        "#808080",
+        "#ff6347",
+        "#ff4500",
+        "#ff00ff",
+        "#008080",
+        "#4b0082",
+        "#008b8b",
+        "#000080",
+        "#4682b4",
     }
 
     result = {}
@@ -69,15 +90,18 @@ def get_color():
 
     return result
 
-#Add arrow indicators for events that span outside the week
+
+# Add arrow indicators for events that span outside the week
 def annotate_events_with_flags(events_df, week_start, week_end):
     # Add a duration column for sorting, and sort by: both left and right arrows, only left arrow, fully within week, and only right arrow
-    events_df["Duration"] = (events_df["EndDate"] - events_df["StartDate"]).dt.total_seconds()
+    events_df["Duration"] = (
+        events_df["EndDate"] - events_df["StartDate"]
+    ).dt.total_seconds()
     events_df["has_left_arrow"] = events_df["StartDate"] < week_start
     events_df["has_right_arrow"] = events_df["EndDate"] > week_end
-    
+
     def get_overflow_priority(row):
-    #Overflow priority: both arrows -> 0, right only -> 1, none -> 2, left only -> 3
+        # Overflow priority: both arrows -> 0, right only -> 1, none -> 2, left only -> 3
         if row["has_left_arrow"] and row["has_right_arrow"]:
             return 0
         if row["has_right_arrow"]:
@@ -85,30 +109,31 @@ def annotate_events_with_flags(events_df, week_start, week_end):
         if not row["has_left_arrow"] and not row["has_right_arrow"]:
             return 2
         return 1  # left only
-    
-    
+
     events_df["overflow_sort"] = events_df.apply(get_overflow_priority, axis=1)
-    
+
     return events_df.sort_values(
         by=["overflow_sort", "StartDate", "EndDate", "Duration", "Casino"],
-        ascending=[True, True, True, False, True]
+        ascending=[True, True, True, False, True],
     ).reset_index(drop=True)
+
 
 # Seperate long-spanning events that cover the entire week
 def filter_long_spanning_events(events_df, week_start, week_end):
     return events_df[
-        (events_df["StartDate"] < week_start) &
-        (events_df["EndDate"] > week_end)
+        (events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end)
     ].copy()
+
 
 # Filter events that overlap with the current week, excluding long_spanning events
 def filter_week_events(events_df, week_start, week_end):
     return events_df[
-        (events_df["EndDate"] > week_start) &
-        (events_df["StartDate"] < week_end) &
-        ~(events_df["StartDate"] == week_end) &
-        ~((events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end))
+        (events_df["EndDate"] > week_start)
+        & (events_df["StartDate"] < week_end)
+        & ~(events_df["StartDate"] == week_end)
+        & ~((events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end))
     ].copy()
+
 
 def assign_event_rows(events_df, week_start):
     # Layout params
@@ -119,9 +144,9 @@ def assign_event_rows(events_df, week_start):
     row_nums = []
 
     for priority in sorted(events_df["overflow_sort"].unique()):
-        group_df = events_df[events_df['overflow_sort'] == priority].sort_values(
+        group_df = events_df[events_df["overflow_sort"] == priority].sort_values(
             by=["StartDate", "EndDate", "Duration", "Casino"],
-            ascending=[True, True, False, True]
+            ascending=[True, True, False, True],
         )
 
         for idx, row in group_df.iterrows():
@@ -140,42 +165,54 @@ def assign_event_rows(events_df, week_start):
             preferred_row = recurring_rows.get(recurring_key)
             row_assigned = False
 
-            #First try preferred row
-            if preferred_row is not None and all(preferred_row not in used_rows_by_day[d] for d in range(start_day, end_day + 1)):
+            # First try preferred row
+            if preferred_row is not None and all(
+                preferred_row not in used_rows_by_day[d]
+                for d in range(start_day, end_day + 1)
+            ):
                 assigned_row = preferred_row
                 row_assigned = True
             else:
                 for r in range(current_row, 100):
-                    if all(r not in used_rows_by_day[d] for d in range(start_day, end_day + 1)):
+                    if all(
+                        r not in used_rows_by_day[d]
+                        for d in range(start_day, end_day + 1)
+                    ):
                         assigned_row = r
                         recurring_rows[recurring_key] = r
                         row_assigned = True
                         break
 
-            #If not usable, find a new row
+            # If not usable, find a new row
             if row_assigned:
                 for d in range(start_day, end_day + 1):
                     used_rows_by_day[d].add(assigned_row)
                 events_df.at[idx, "row_num"] = assigned_row
                 row_nums.append(assigned_row)
-            
+
         current_row = max(row_nums, default=current_row) + 1
-    
+
     return events_df
+
 
 def build_empty_figure():
     return go.Figure(
         layout=go.Layout(
             title="No Events This Week",
             xaxis=dict(visible=False),
-            yaxis=dict(visible=False)
+            yaxis=dict(visible=False),
         )
     )
 
+
 def build_weekly_figure(events_df, screen_width, week_start):
-    font_rem = 12 if screen_width < 480 else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
+    font_rem = (
+        12
+        if screen_width < 480
+        else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
+    )
     event_font_size_px = font_rem * 1
-    
+
     shapes = []
     annotations = []
     hover_markers = []
@@ -193,19 +230,24 @@ def build_weekly_figure(events_df, screen_width, week_start):
     current_row = 0
 
     tick_labels = [
-        (week_start + timedelta(days=i)).strftime('%a') + '<br>' +
-        (week_start + timedelta(days=i)).strftime('%b %d') for i in range(7)
+        (week_start + timedelta(days=i)).strftime("%a")
+        + "<br>"
+        + (week_start + timedelta(days=i)).strftime("%b %d")
+        for i in range(7)
     ]
 
     for i in range(1, 7):
-        shapes.append(dict(
-            type="line",
-            x0=i, x1=i,
-            y0=-0.5,
-            y1=100,  # placeholder; replaced later
-            line=dict(color="black", width=1),
-            layer="below"
-        ))
+        shapes.append(
+            dict(
+                type="line",
+                x0=i,
+                x1=i,
+                y0=-0.5,
+                y1=100,  # placeholder; replaced later
+                line=dict(color="black", width=1),
+                layer="below",
+            )
+        )
 
     grouped = events_df.copy()
 
@@ -213,7 +255,10 @@ def build_weekly_figure(events_df, screen_width, week_start):
 
     for priority in sorted(grouped["overflow_sort"].unique()):
         group_df = grouped[grouped["overflow_sort"] == priority]
-        group_df = group_df.sort_values(by=["StartDate", "EndDate", "Duration", "Casino"], ascending=[True, True, False, True])
+        group_df = group_df.sort_values(
+            by=["StartDate", "EndDate", "Duration", "Casino"],
+            ascending=[True, True, False, True],
+        )
 
         for idx, row in group_df.iterrows():
             start_delta = (row["StartDate"] - week_start).total_seconds() / (24 * 3600)
@@ -228,12 +273,18 @@ def build_weekly_figure(events_df, screen_width, week_start):
             preferred_row = recurring_rows.get(recurring_key)
             row_assigned = False
 
-            if preferred_row is not None and all(preferred_row not in used_rows_by_day[d] for d in range(start_day, end_day + 1)):
+            if preferred_row is not None and all(
+                preferred_row not in used_rows_by_day[d]
+                for d in range(start_day, end_day + 1)
+            ):
                 assigned_row = preferred_row
                 row_assigned = True
             else:
                 for r in range(current_row, 100):
-                    if all(r not in used_rows_by_day[d] for d in range(start_day, end_day + 1)):
+                    if all(
+                        r not in used_rows_by_day[d]
+                        for d in range(start_day, end_day + 1)
+                    ):
                         assigned_row = r
                         recurring_rows[recurring_key] = r
                         row_assigned = True
@@ -252,68 +303,86 @@ def build_weekly_figure(events_df, screen_width, week_start):
             block_width = adjusted_end - adjusted_start
 
             # Font and trimming
-            CHARS_PER_UNIT = 10 if screen_width < 480 else 20 if screen_width < 768 else 30 if screen_width < 1024 else 40
+            CHARS_PER_UNIT = (
+                10
+                if screen_width < 480
+                else 20 if screen_width < 768 else 30 if screen_width < 1024 else 40
+            )
             max_chars = max(int(block_width * CHARS_PER_UNIT), 0)
 
             label = row["EventName"]
             trimmed_label = (
-                label if len(label) <= max_chars else
-                (label[:max_chars - 2] + "...") if max_chars >= 3 else
-                "" if max_chars < 3 else "..."
+                label
+                if len(label) <= max_chars
+                else (
+                    (label[: max_chars - 2] + "...")
+                    if max_chars >= 3
+                    else "" if max_chars < 3 else "..."
+                )
             )
 
             color = casino_colors[row["Casino"]]["bg"]
             text_color = casino_colors[row["Casino"]]["text"]
 
-            shapes.append(dict(
-                type="rect",
-                x0=adjusted_start,
-                x1=adjusted_end,
-                y0=y_center - slot_height / 2,
-                y1=y_center + slot_height / 2,
-                fillcolor=color,
-                line=dict(color="black", width=1),
-                layer="above"
-            ))
+            shapes.append(
+                dict(
+                    type="rect",
+                    x0=adjusted_start,
+                    x1=adjusted_end,
+                    y0=y_center - slot_height / 2,
+                    y1=y_center + slot_height / 2,
+                    fillcolor=color,
+                    line=dict(color="black", width=1),
+                    layer="above",
+                )
+            )
 
             if row["has_left_arrow"]:
-                shapes.append(dict(
-                    type="path",
-                    path=f"M 0,{y_center} L{ARROW_OFFSET},{y_center + 0.2} L{ARROW_OFFSET},{y_center - 0.2} Z",
-                    fillcolor="black",
-                    line=dict(color="black", width=1),
-                    layer="above"
-                ))
+                shapes.append(
+                    dict(
+                        type="path",
+                        path=f"M 0,{y_center} L{ARROW_OFFSET},{y_center + 0.2} L{ARROW_OFFSET},{y_center - 0.2} Z",
+                        fillcolor="black",
+                        line=dict(color="black", width=1),
+                        layer="above",
+                    )
+                )
 
             if row["has_right_arrow"]:
-                shapes.append(dict(
-                    type="path",
-                    path=f"M 7,{y_center} L{7 - ARROW_OFFSET},{y_center + 0.2} L{7 - ARROW_OFFSET},{y_center - 0.2} Z",
-                    fillcolor="black",
-                    line=dict(color="black", width=1),
-                    layer="above"
-                ))
+                shapes.append(
+                    dict(
+                        type="path",
+                        path=f"M 7,{y_center} L{7 - ARROW_OFFSET},{y_center + 0.2} L{7 - ARROW_OFFSET},{y_center - 0.2} Z",
+                        fillcolor="black",
+                        line=dict(color="black", width=1),
+                        layer="above",
+                    )
+                )
 
-            annotations.append(dict(
-                x=(adjusted_start + adjusted_end) / 2,
-                y=y_center,
-                text=trimmed_label,
-                showarrow=False,
-                font=dict(size=event_font_size_px, color=text_color),
-                xanchor="center",
-                yanchor="middle"
-            ))
-            
-            hover_markers.append(go.Scatter(
-                x=[(adjusted_start + adjusted_end) / 2],
-                y=[y_center],
-                text=[label],
-                mode="markers",
-                marker=dict(size=30, opacity=0.2),
-                hoverinfo="text",
-                showlegend=False,
-                customdata=[[row.to_dict()]]
-            ))
+            annotations.append(
+                dict(
+                    x=(adjusted_start + adjusted_end) / 2,
+                    y=y_center,
+                    text=trimmed_label,
+                    showarrow=False,
+                    font=dict(size=event_font_size_px, color=text_color),
+                    xanchor="center",
+                    yanchor="middle",
+                )
+            )
+
+            hover_markers.append(
+                go.Scatter(
+                    x=[(adjusted_start + adjusted_end) / 2],
+                    y=[y_center],
+                    text=[label],
+                    mode="markers",
+                    marker=dict(size=30, opacity=0.2),
+                    hoverinfo="text",
+                    showlegend=False,
+                    customdata=[[row.to_dict()]],
+                )
+            )
 
         current_row = max(row_nums, default=current_row) + 1
 
@@ -326,89 +395,99 @@ def build_weekly_figure(events_df, screen_width, week_start):
     for shape in shapes:
         if shape["type"] == "line":
             shape["y1"] = base_y_top
-            
+
     for day_index in range(7):
-        hover_markers.append(go.Scatter(
-            x=[day_index + 0.5],
-            y=[base_y_top + 0.5],
-            mode="markers",
-            marker=dict(size=20, opacity=0.2),
-            hoverinfo="text",
-            hovertext=["View Day's Events"],
-            customdata=[[{
-                "type": "day_click",
-                "day_index": day_index
-            }]],
-            showlegend=False,
-            name="",
-        ))
-    
+        hover_markers.append(
+            go.Scatter(
+                x=[day_index + 0.5],
+                y=[base_y_top + 0.5],
+                mode="markers",
+                marker=dict(size=20, opacity=0.2),
+                hoverinfo="text",
+                hovertext=["View Day's Events"],
+                customdata=[[{"type": "day_click", "day_index": day_index}]],
+                showlegend=False,
+                name="",
+            )
+        )
 
     return go.Figure(
         data=hover_markers,
         layout=go.Layout(
-            clickmode='event+select',
+            clickmode="event+select",
             shapes=shapes,
             annotations=annotations,
             xaxis=dict(
                 type="linear",
                 tickmode="array",
                 tickvals=[i + 0.5 for i in range(7)],
-                ticktext=[f"<b style='color:#00008B;font-size:{event_font_size_px}px'>{label}</b>" for label in tick_labels],
+                ticktext=[
+                    f"<b style='color:#00008B;font-size:{event_font_size_px}px'>{label}</b>"
+                    for label in tick_labels
+                ],
                 side="top",
                 showgrid=True,
                 gridcolor="lightgray",
                 zeroline=False,
                 range=[0, 7],
-                fixedrange=True
+                fixedrange=True,
             ),
             yaxis=dict(
                 range=[-0.5, base_y_top + 0.5],
                 showgrid=False,
                 visible=False,
-                fixedrange=True
+                fixedrange=True,
             ),
             height=chart_height,
-            margin=dict(t=40, b=20, l=20, r=20)
-        )
+            margin=dict(t=40, b=20, l=20, r=20),
+        ),
     )
 
-#Generate a responsive 24-hour vertical day view with absolutely positioned event blocks.
+
+# Generate a responsive 24-hour vertical day view with absolutely positioned event blocks.
 def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1024):
     hour_height, label_column_pct = get_layout_config(screen_width)
 
-    #Normalize clicked_date
-    day_start = clicked_date.astimezone(PDT).replace(hour=0, minute=0, second=0, microsecond=0)
+    # Normalize clicked_date
+    day_start = clicked_date.astimezone(PDT).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
     day_end = day_start + timedelta(days=1)
-    
-    #Filter events strictly within the day
+
+    # Filter events strictly within the day
     events = events_df.copy()
     events["StartDate"] = pd.to_datetime(events["StartDate"]).dt.tz_convert(PDT)
     events["EndDate"] = pd.to_datetime(events["EndDate"]).dt.tz_convert(PDT)
-    events = events[
-        (events["StartDate"] >= day_start) & 
-        (events["EndDate"] <= day_end)
-    ]
-    
-    day_label = clicked_date.strftime("%A, %B %d")
-    
-    if events.empty:
-        return [html.Div(f"No events scheduled for {day_label}.", className="day-label no-events")]
+    events = events[(events["StartDate"] >= day_start) & (events["EndDate"] <= day_end)]
 
-    #Time math
-    events["start_offset_min"] = (events["StartDate"] - day_start).dt.total_seconds() / 60
+    day_label = clicked_date.strftime("%A, %B %d")
+
+    if events.empty:
+        return [
+            html.Div(
+                f"No events scheduled for {day_label}.", className="day-label no-events"
+            )
+        ]
+
+    # Time math
+    events["start_offset_min"] = (
+        events["StartDate"] - day_start
+    ).dt.total_seconds() / 60
     events["end_offset_min"] = (events["EndDate"] - day_start).dt.total_seconds() / 60
     events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
     events = events.sort_values(by=["start_offset_min", "duration_min"])
 
-    #Assign tracks dynamically to avoid overlap
+    # Assign tracks dynamically to avoid overlap
     tracks = []
     track_assignments = []
 
     for _, event in events.iterrows():
         placed = False
         for i, track in enumerate(tracks):
-            if all(event["start_offset_min"] >= t[1] or event["end_offset_min"] <= t[0] for t in track):
+            if all(
+                event["start_offset_min"] >= t[1] or event["end_offset_min"] <= t[0]
+                for t in track
+            ):
                 track.append((event["start_offset_min"], event["end_offset_min"]))
                 track_assignments.append(i)
                 placed = True
@@ -416,11 +495,11 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
         if not placed:
             tracks.append([(event["start_offset_min"], event["end_offset_min"])])
             track_assignments.append(len(tracks) - 1)
-        
+
     events["overlap_index"] = track_assignments
     n_tracks = max(len(tracks), 1)
     width_pct = (100 - label_column_pct) / n_tracks
-    
+
     color_map = get_color_fn()
     hour_blocks = []
     event_blocks = []
@@ -429,80 +508,88 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     for hour in range(24):
         top_px = hour * hour_height
         label = f"{hour:02d}:00" if hour % 3 == 0 else ""
-        
-        #Label on left
-        hour_blocks.append(html.Div(
-            label, 
-            className="hour-label",
-            style={
-                "top": f"{top_px}px",
-                "height": f"{hour_height}px",
-                "width": f"{label_column_pct}%",
-            }
-        ))
-    
-    #Event blocks + invisible click markers
+
+        # Label on left
+        hour_blocks.append(
+            html.Div(
+                label,
+                className="hour-label",
+                style={
+                    "top": f"{top_px}px",
+                    "height": f"{hour_height}px",
+                    "width": f"{label_column_pct}%",
+                },
+            )
+        )
+
+    # Event blocks + invisible click markers
     for _, row in events.iterrows():
-        top_px = row["start_offset_min"] / 60 * hour_height 
+        top_px = row["start_offset_min"] / 60 * hour_height
         height_px = max(24, row["duration_min"] / 60 * hour_height)
         left_pct = label_column_pct + row["overlap_index"] * width_pct
 
         color = color_map.get(row["Casino"], {"bg": "#aaa"})["bg"]
 
-        #Visible block
-        event_blocks.append(html.Div(
-            title=row["EventName"],
-            className="event-block",
-            style={
-                "top": f"{top_px}px",
-                "left": f"{left_pct}%",
-                "width": f"{width_pct}%",
-                "height": f"{height_px}px",
-                "backgroundColor": color,
-            }
-        ))
-        
-        #Invisible click marker for modal
+        # Visible block
+        event_blocks.append(
+            html.Div(
+                title=row["EventName"],
+                className="event-block",
+                style={
+                    "top": f"{top_px}px",
+                    "left": f"{left_pct}%",
+                    "width": f"{width_pct}%",
+                    "height": f"{height_px}px",
+                    "backgroundColor": color,
+                },
+            )
+        )
+
+        # Invisible click marker for modal
         center_y = top_px + height_px / 2
         center_x = left_pct + width_pct / 2
-        event_data = row[["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]].to_dict()
-        
-        click_markers.append(go.Scatter(
-            x=[center_x / 100],
-            y=[center_y],
-            mode="markers",
-            marker=dict(size=30, opacity=0.001, color="rgba(255,255,255,0.01)"),
-            customdata=[[event_data]],
-            hoverinfo="skip",
-            showlegend=False
-        ))
-    
-    #Clickable overlay graph
+        event_data = row[
+            ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]
+        ].to_dict()
+
+        click_markers.append(
+            go.Scatter(
+                x=[center_x / 100],
+                y=[center_y],
+                mode="markers",
+                marker=dict(size=30, opacity=0.001, color="rgba(255,255,255,0.01)"),
+                customdata=[[event_data]],
+                hoverinfo="skip",
+                showlegend=False,
+            )
+        )
+
+    # Clickable overlay graph
     click_graph = dcc.Graph(
         id="day-event-catcher",
         className="day-event-catcher",
         figure=go.Figure(
             data=click_markers,
             layout=go.Layout(
-                clickmode='event+select',
+                clickmode="event+select",
                 xaxis=dict(visible=False, range=[0, 1], fixedrange=True),
                 yaxis=dict(visible=False, range=[0, 24 * hour_height], fixedrange=True),
                 margin=dict(l=0, r=0, t=0, b=0),
                 height=24 * hour_height,
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)'
-            )
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+            ),
         ),
         style={"height": f"{24 * hour_height}px"},
-        config={'displayModeBar': False}
+        config={"displayModeBar": False},
     )
 
-    #Sticky Add day label + scrollable grid container
+    # Sticky Add day label + scrollable grid container
     header = html.Div(
         day_label,
         className="day-label",
     )
-    
+
     return [
         header,
         html.Div(
@@ -510,6 +597,6 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
             className="day-grid",
             style={
                 "height": f"{24 * hour_height}px",
-            }
-        )
+            },
+        ),
     ]

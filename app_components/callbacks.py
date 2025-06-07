@@ -1,22 +1,23 @@
 def register_callbacks(app):
-    import dash
-    from dash import Input, Output, State, ALL, ctx, html, dcc, no_update
-    from datetime import datetime, timedelta
-    from pytz import timezone
-    import pandas as pd
     import json
+    from datetime import datetime, timedelta
+
+    import dash
+    import pandas as pd
+    from dash import ALL, Input, Output, State, ctx, dcc, html, no_update
+    from pytz import timezone
+
     from .data import load_event_data
-    from .plotting import generate_weekly_view, get_color, generate_day_view_html
     from .layout import sticky_header
+    from .plotting import generate_day_view_html, generate_weekly_view, get_color
     from .week_grid_layout import render_week_grid
 
-    PDT = timezone('America/Los_Angeles')
+    PDT = timezone("America/Los_Angeles")
     df = load_event_data()
-    
-       
-    #Screen detection JS (for height + width)
+
+    # Screen detection JS (for height + width)
     app.clientside_callback(
-        '''
+        """
         function(n_intervals) {
             const width = window.innerWidth;
             const height = window.innerHeight;
@@ -27,348 +28,453 @@ def register_callbacks(app):
             const usable = Math.max(height - headerHeight - 20, 300);
             return [width, usable];
         }
-        ''',
-        Output('screen-width', 'data'),
-        Output('usable-height', 'data'),
-        Input('initial-trigger', 'n_intervals'),
+        """,
+        Output("screen-width", "data"),
+        Output("usable-height", "data"),
+        Input("initial-trigger", "n_intervals"),
     )
-    
-    #Sticky header with responsive legend
-    @app.callback(
-        Output('week-label', 'children'),
-        Input('week-offset', 'data')
-    )
-    
+
+    # Sticky header with responsive legend
+    @app.callback(Output("week-label", "children"), Input("week-offset", "data"))
     def update_week_label(week_offset):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
-        
+
         return f"Events for the Week of {week_start.strftime('%B %d')} - {(week_start + timedelta(days=6)).strftime('%B %d, %Y')}"
 
-    #Update week offset on button clicks
+    # Update week offset on button clicks
     @app.callback(
-        Output('week-offset', 'data'),
-        Output('prev-button', 'disabled'),
-        Output('next-button', 'disabled'),
-        Output('next-button', 'title'),
-        Input('prev-button', 'n_clicks'),
-        Input('next-button', 'n_clicks'),
-        State('week-offset', 'data')
+        Output("week-offset", "data"),
+        Output("prev-button", "disabled"),
+        Output("next-button", "disabled"),
+        Output("next-button", "title"),
+        Input("prev-button", "n_clicks"),
+        Input("next-button", "n_clicks"),
+        State("week-offset", "data"),
     )
-
     def update_week_offset(prev_clicks, next_clicks, current_offset):
         delta = (next_clicks or 0) - (prev_clicks or 0)
         desired_offset = current_offset + delta
-        #Limit going back no more than 6 weeks
+        # Limit going back no more than 6 weeks
         desired_offset = max(-6, desired_offset)
-        #Limit forward navigation if next 4 weeks are empty
+        # Limit forward navigation if next 4 weeks are empty
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         start_sunday = current_sunday + timedelta(weeks=desired_offset)
-        
+
         next_week_offset = desired_offset + 1
         next_week_start = current_sunday + timedelta(weeks=next_week_offset)
         next_week_end = next_week_start + timedelta(days=6)
-        
+
         has_next_week_events = not df[
-            (df['EndDate'] > next_week_start) &
-            (df['StartDate'] < next_week_end)
+            (df["EndDate"] > next_week_start) & (df["StartDate"] < next_week_end)
         ].empty
-        
+
         if not has_next_week_events and desired_offset > current_offset:
             desired_offset = current_offset
-            
+
         prev_disabled = desired_offset <= -6
         next_disabled = not has_next_week_events
-        
-        #Dynamic tooltip text for forward navigation
+
+        # Dynamic tooltip text for forward navigation
         next_title = "No Upcoming events" if next_disabled else "Upcoming Week"
-        
+
         return desired_offset, prev_disabled, next_disabled, next_title
-    
+
     @app.callback(
-        Output('show-css-grid', 'data'),
-        Output('preview-grid-button', 'children'),
-        Input('preview-grid-button', 'n_clicks'),
-        State('show-css-grid', 'data'),
-        prevent_initial_call=True  
+        Output("show-css-grid", "data"),
+        Output("preview-grid-button", "children"),
+        Input("preview-grid-button", "n_clicks"),
+        State("show-css-grid", "data"),
+        prevent_initial_call=True,
     )
-    
     def toggle_css_grid(n_clicks, current_state):
         if n_clicks is None:
             raise dash.exceptions.PreventUpdate
-        
+
         new_state = not current_state
         label = "Hide CSS Layout" if new_state else "Show CSS Layout"
         return new_state, label
-        
-    @app.callback(  
-        Output('dev-preview-output', 'children'),  
-        Input('week-offset', 'data'),
-        Input('show-css-grid', 'data'),
-        prevent_initial_call=True
+
+    @app.callback(
+        Output("dev-preview-output", "children"),
+        Input("week-offset", "data"),
+        Input("show-css-grid", "data"),
+        prevent_initial_call=True,
     )
-    
     def show_dev_preview(week_offset, show_grid):
         if not show_grid:
             return html.Div()
-        
+
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
-        
+
         return render_week_grid(week_start, df)
-    
+
     @app.callback(
-        Output('show-plotly-grid', 'data'),
-        Output('plotly-grid-button', 'children'),
-        Input('plotly-grid-button', 'n_clicks'),
-        State('show-plotly-grid', 'data'),
-        prevent_initial_call=True
+        Output("show-plotly-grid", "data"),
+        Output("plotly-grid-button", "children"),
+        Input("plotly-grid-button", "n_clicks"),
+        State("show-plotly-grid", "data"),
+        prevent_initial_call=True,
     )
-    
     @app.callback(
-        Output('show-plotly-grid', 'data'),
-        Output('plotly-grid-button', 'children'),
-        Input('plotly-grid-button', 'n_clicks'),
-        State('show-plotly-grid', 'data'),
-        prevent_initial_call=True
+        Output("show-plotly-grid", "data"),
+        Output("plotly-grid-button", "children"),
+        Input("plotly-grid-button", "n_clicks"),
+        State("show-plotly-grid", "data"),
+        prevent_initial_call=True,
     )
-    
     def toggle_plotly_grid(n_clicks, current_state):
         if n_clicks is None:
             raise dash.exceptions.PreventUpdate
-        
+
         new_state = not current_state
         button_label = "Hide Plotly Layout" if new_state else "Show Plotly Layout"
         return new_state, button_label
-    
+
     @app.callback(
-        Output('week-chart-container', 'children'),
-        Output('overflow-date', 'data'),
-        Input('usable-height', 'data'),
-        Input('week-offset', 'data'),
-        Input('screen-width', 'data'),
-        Input('show-plotly-grid', 'data'),
-        prevent_initial_call=True
+        Output("week-chart-container", "children"),
+        Output("overflow-date", "data"),
+        Input("usable-height", "data"),
+        Input("week-offset", "data"),
+        Input("screen-width", "data"),
+        Input("show-plotly-grid", "data"),
+        prevent_initial_call=True,
     )
-    
     def render_single_week_chart(usable_height, week_offset, screen_width, show_chart):
         if not show_chart:
             return html.Div(), dash.no_update
-        
+
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
-        
+
         fig, overflow_df = generate_weekly_view(week_start, df)
-        
+
         end_date = week_start + timedelta(days=6)
-        
-        #Overflow content toggle & box
-        if not overflow_df.empty:            
+
+        # Overflow content toggle & box
+        if not overflow_df.empty:
             overflow_toggle = html.Button(
                 f"🌀 Show Ongoing Events for {week_start.strftime('%b %d')} - {end_date.strftime('%b %d')}",
-                id='overflow-toggle',
+                id="overflow-toggle",
                 n_clicks=0,
-                className='overflow-toggle',
+                className="overflow-toggle",
             )
-            
+
             overflow_box = html.Div(
-                id='overflow-box',
-                className='overflow-box-expand',
+                id="overflow-box",
+                className="overflow-box-expand",
                 children=[
-                    html.Strong("Ongoing Events This Week:", style={
-                        'color': '#6A5ACD',
-                        'display': 'block',
-                        'marginBottom': '8px'
-                    }),
-                    html.Ul([
-                        html.Li(
-                            f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}",
-                            style={'color': '#00008B'}
-                        )
-                        for _, row in overflow_df.iterrows()
-                    ])
-                ]
+                    html.Strong(
+                        "Ongoing Events This Week:",
+                        style={
+                            "color": "#6A5ACD",
+                            "display": "block",
+                            "marginBottom": "8px",
+                        },
+                    ),
+                    html.Ul(
+                        [
+                            html.Li(
+                                f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}",
+                                style={"color": "#00008B"},
+                            )
+                            for _, row in overflow_df.iterrows()
+                        ]
+                    ),
+                ],
             )
         else:
             overflow_toggle = html.Div()
             overflow_box = html.Div()
-            
-        #Shared scrollable container for graph + overflow
+
+        # Shared scrollable container for graph + overflow
         chart = html.Div(
             children=[
                 dcc.Graph(
-                    id='weekly-graph',
+                    id="weekly-graph",
                     figure=fig,
-                    config={'displayModeBar': False},
-                    style={'width': '100%', 'height': 'auto'}
+                    config={"displayModeBar": False},
+                    style={"width": "100%", "height": "auto"},
                 ),
                 overflow_toggle,
-                overflow_box
+                overflow_box,
             ],
             id=f"week-chart-{week_offset}",
-            className='slide-in week-chart-scroll',
-            style={'height': f'{usable_height}px'},
-            **{f"data-week": week_offset}
+            className="slide-in week-chart-scroll",
+            style={"height": f"{usable_height}px"},
+            **{f"data-week": week_offset},
         )
-        
-        return chart, week_start.strftime('%Y-%m-%d')
+
+        return chart, week_start.strftime("%Y-%m-%d")
 
     @app.callback(
-        Output('overflow-box', 'className'),
-        Output('overflow-toggle', 'children'),
-        Input('overflow-toggle', 'n_clicks'),
-        State('overflow-date', 'data'),
-        prevent_initial_call=True
+        Output("overflow-box", "className"),
+        Output("overflow-toggle", "children"),
+        Input("overflow-toggle", "n_clicks"),
+        State("overflow-date", "data"),
+        prevent_initial_call=True,
     )
-
     def toggle_overflow(n_clicks, start_date_str):
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
         end_date = start_date + timedelta(days=6)
         is_open = n_clicks % 2 == 1
 
-        box_class = 'overflow-box-expand show' if is_open else 'overflow-box-expand'
+        box_class = "overflow-box-expand show" if is_open else "overflow-box-expand"
 
         button_text = (
             f"🌀 Hide Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
-            if is_open else 
-            f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+            if is_open
+            else f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
         )
 
         return box_class, button_text
 
     @app.callback(
-        Output('event-modal', 'style'),
-        Output('event-modal', 'className'),
-        Output('event-modal-body', 'children'),
-        Output('close-timer', 'n_intervals'),
-        Output('weekly-graph', 'clickData'),
-        Output('day-modal', 'style'),
-        Output('day-modal', 'className'),
-        Output('day-modal-body', 'children'),
-        Input('weekly-graph', 'clickData'),
+        Output("event-modal", "style"),
+        Output("event-modal", "className"),
+        Output("event-modal-body", "children"),
+        Output("close-timer", "n_intervals"),
+        Output("weekly-graph", "clickData"),
+        Output("day-modal", "style"),
+        Output("day-modal", "className"),
+        Output("day-modal-body", "children"),
+        Input("weekly-graph", "clickData"),
         Input("day-event-catcher", "clickData"),
         Input("close-modal", "n_clicks"),
         Input("close-timer", "n_intervals"),
         Input("close-day-modal", "n_clicks"),
-        Input({'type': 'grid-event', 'index': ALL}, 'n_clicks'),
-        State('week-offset', 'data'),
-        State('screen-width', 'data'),
+        Input({"type": "grid-event", "index": ALL}, "n_clicks"),
+        State("week-offset", "data"),
+        State("screen-width", "data"),
         prevent_initial_call=True,
     )
-    def show_event_modal(weekly_click, day_click, close_clicks, timer_tick, close_day_clicks, grid_clicks, week_offset, screen_width):
+    def show_event_modal(
+        weekly_click,
+        day_click,
+        close_clicks,
+        timer_tick,
+        close_day_clicks,
+        grid_clicks,
+        week_offset,
+        screen_width,
+    ):
         ctx = dash.callback_context
         triggered_id = ctx.triggered_id
 
         if triggered_id == "close-timer":
-            return no_update, '', '', 0, None, {'display': 'none'}, '', ''
+            return no_update, "", "", 0, None, {"display": "none"}, "", ""
 
         if triggered_id == "close-modal":
-            return no_update, 'modal closing', no_update, 1, None, no_update, no_update, no_update
-        
+            return (
+                no_update,
+                "modal closing",
+                no_update,
+                1,
+                None,
+                no_update,
+                no_update,
+                no_update,
+            )
+
         if triggered_id == "close-day-modal":
-            return no_update, no_update, no_update, no_update, None, {'display': 'none'}, 'modal closing', ''
-        
+            return (
+                no_update,
+                no_update,
+                no_update,
+                no_update,
+                None,
+                {"display": "none"},
+                "modal closing",
+                "",
+            )
+
         if isinstance(triggered_id, str) and "grid-event" in triggered_id:
-            try: 
-                #Grid event click
+            try:
+                # Grid event click
                 triggered_json = json.loads(triggered_id)
                 idx = triggered_json.get("index", None)
             except Exception:
                 idx = None
-                
-            if idx is None: 
-                return no_update, no_update, no_update, no_update, None, no_update, no_update, no_update
-            
+
+            if idx is None:
+                return (
+                    no_update,
+                    no_update,
+                    no_update,
+                    no_update,
+                    None,
+                    no_update,
+                    no_update,
+                    no_update,
+                )
+
             df2 = load_event_data()
-            from .plotting import filter_week_events, annotate_events_with_flags, assign_event_rows
+            from .plotting import (
+                annotate_events_with_flags,
+                assign_event_rows,
+                filter_week_events,
+            )
+
             today = datetime.now(PDT)
             current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
             week_start = current_sunday + timedelta(weeks=week_offset)
-            
-            df_week = filter_week_events(df2, week_start, week_start + timedelta(days=7))
-            df_annot = annotate_events_with_flags(df_week, week_start, week_start + timedelta(days=7))
+
+            df_week = filter_week_events(
+                df2, week_start, week_start + timedelta(days=7)
+            )
+            df_annot = annotate_events_with_flags(
+                df_week, week_start, week_start + timedelta(days=7)
+            )
             df_assigned = assign_event_rows(df_annot, week_start)
-            
+
             if idx not in df_assigned.index:
-                return no_update, no_update, no_update, no_update, None, no_update, no_update, no_update
-            
+                return (
+                    no_update,
+                    no_update,
+                    no_update,
+                    no_update,
+                    None,
+                    no_update,
+                    no_update,
+                    no_update,
+                )
+
             row = df_assigned.loc[idx]
-            
+
             rows = []
-            for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
+            for label in [
+                "EventName",
+                "Casino",
+                "Location",
+                "StartDate",
+                "EndDate",
+                "Offer",
+            ]:
                 if label in row:
                     display_label = {
                         "EventName": "Event",
                         "StartDate": "Event Starts",
-                        "EndDate": "Event Ends"
+                        "EndDate": "Event Ends",
                     }.get(label, label)
 
                     value = row[label]
 
                     if label in ["StartDate", "EndDate"]:
                         try:
-                            value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
+                            value = pd.to_datetime(value).strftime(
+                                "%b %d, %Y @ %I:%M %p"
+                            )
                         except Exception:
                             pass
 
                     rows.append(
-                        html.Div([
-                            html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
-                            html.Span(value)
-                        ], className='event-label')
+                        html.Div(
+                            [
+                                html.Strong(
+                                    f"{display_label}: ", style={"color": "#6A5ACD"}
+                                ),
+                                html.Span(value),
+                            ],
+                            className="event-label",
+                        )
                     )
-            return ({}, 'modal show', rows, 0, None, {'display': 'none'}, '', '')
-        
-        click_data = None 
+            return ({}, "modal show", rows, 0, None, {"display": "none"}, "", "")
+
+        click_data = None
         if triggered_id == "weekly-graph":
             click_data = weekly_click
         elif triggered_id == "day-event-catcher":
             click_data = day_click
-            
-        if click_data and 'points' in click_data and click_data['points']:
-            data = click_data['points'][0].get('customdata', [None])[0]
+
+        if click_data and "points" in click_data and click_data["points"]:
+            data = click_data["points"][0].get("customdata", [None])[0]
             if data and data.get("type") == "day_click":
                 day_index = data.get("day_index")
                 if day_index is None:
-                    return no_update, no_update, no_update, no_update, None, no_update, no_update, no_update
-            
+                    return (
+                        no_update,
+                        no_update,
+                        no_update,
+                        no_update,
+                        None,
+                        no_update,
+                        no_update,
+                        no_update,
+                    )
+
                 today = datetime.now(PDT)
                 current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
                 week_start = current_sunday + timedelta(weeks=week_offset)
-                clicked_date = week_start + timedelta(days=day_index)                
-                content = generate_day_view_html(df, clicked_date, get_color, screen_width)
-                
-                return (no_update, no_update, no_update, no_update, None, {}, 'modal show', content)
-            
-            if data and all(k in data for k in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]):
-                #Normal event click
+                clicked_date = week_start + timedelta(days=day_index)
+                content = generate_day_view_html(
+                    df, clicked_date, get_color, screen_width
+                )
+
+                return (
+                    no_update,
+                    no_update,
+                    no_update,
+                    no_update,
+                    None,
+                    {},
+                    "modal show",
+                    content,
+                )
+
+            if data and all(
+                k in data
+                for k in [
+                    "EventName",
+                    "Casino",
+                    "Location",
+                    "StartDate",
+                    "EndDate",
+                    "Offer",
+                ]
+            ):
+                # Normal event click
                 rows = []
-                for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
+                for label in [
+                    "EventName",
+                    "Casino",
+                    "Location",
+                    "StartDate",
+                    "EndDate",
+                    "Offer",
+                ]:
                     if label in data:
                         display_label = {
                             "EventName": "Event",
                             "StartDate": "Event Starts",
-                            "EndDate": "Event Ends"
+                            "EndDate": "Event Ends",
                         }.get(label, label)
 
                         value = data[label]
 
                         if label in ["StartDate", "EndDate"]:
                             try:
-                                value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
+                                value = pd.to_datetime(value).strftime(
+                                    "%b %d, %Y @ %I:%M %p"
+                                )
                             except Exception:
                                 pass
 
                         rows.append(
-                            html.Div([
-                                html.Strong(f"{display_label}: ", style={'color': '#6A5ACD'}),
-                                html.Span(value)
-                            ], className='event-label')
+                            html.Div(
+                                [
+                                    html.Strong(
+                                        f"{display_label}: ", style={"color": "#6A5ACD"}
+                                    ),
+                                    html.Span(value),
+                                ],
+                                className="event-label",
+                            )
                         )
-                return ({}, 'modal show', rows, 0, None, {'display': 'none'}, '', '')
-            
+                return ({}, "modal show", rows, 0, None, {"display": "none"}, "", "")
+
         raise dash.exceptions.PreventUpdate
