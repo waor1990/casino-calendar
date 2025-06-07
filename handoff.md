@@ -1,21 +1,25 @@
 # 🎰 Casino Calendar App — Developer Handoff
 
 ## 📌 Overview
+
 A responsive Dash web application that visualizes casino events in a calendar layout. Built with Plotly Dash and deployed on Render.
 
 ---
 
 ## ✅ Current Features
+
 - 📆 Weekly event chart with labeled time blocks
-- 📊 Optional grid calendar preview using CSS Grid
+- 📊 Toggleable grid calendar preview using CSS Grid
+- 🔄 Toggle to hide or show the Plotly weekly grid
 - 🧠 Modal views for detailed day and event info
 - 🌀 Toggle to display long-spanning events
 - 📱 Responsive design across mobile, tablet and desktop
-- 🖼️ Custom CSS variables and layout utilities
+- 🖼️ Custom CSS variables and layout utilitiess
 
 ---
 
 ## 📁 Project Structure Highlights
+
 ```
 casino_calendar/
 ├── app_components/
@@ -41,19 +45,24 @@ casino_calendar/
 ---
 
 ## 🧠 Recent Refactors
+
 ### CSS Modularization
+
 - Split former `custom.css` into `base.css`, `layout.css`, `components.css`, `calendar_grid.css` and `typography.css`
 
 ### Grid Layout Preview
+
 - `week_grid_layout.py` renders a grid-style week calendar
 - Injected into `dev-preview-output` and toggled via `preview-grid-button`
 
 ### Scrollable Body
+
 - `.calendar-scroll-body` scrolls content beneath the sticky header
 
 ---
 
 ## 🛠️ Work in Progress / Next Steps
+
 - Convert more layout blocks from Plotly to pure CSS/Grid
 - Polish mobile responsiveness
 - Improve accessibility: tab order and ARIA roles
@@ -62,6 +71,7 @@ casino_calendar/
 ---
 
 ## 🧪 Testing / Known Fixes
+
 - `KeyError: 7` fixed by clamping day indices when building grid layout
 - Week charts adjust height based on `usable-height`
 - Scroll logic uses `calendar-scroll-body` height via `100vh - 150px`
@@ -69,6 +79,7 @@ casino_calendar/
 ---
 
 ## 🚀 Deployment
+
 - Platform: [Render.com](https://render.com)
 - URL: [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
 - Python 3.11 / Dash 2.x
@@ -81,4 +92,5 @@ web: gunicorn app:server
 ---
 
 ## 🧼 License
+
 Released under [The Unlicense](https://unlicense.org).
