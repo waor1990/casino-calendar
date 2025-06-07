@@ -20,7 +20,7 @@ A responsive Dash web application that visualizes casino events in a calendar la
 
 ## 📁 Project Structure Highlights
 
-```
+yaml
 casino_calendar/
 ├── app_components/
 │   ├── layout.py            # Sticky header, modals, containers
@@ -40,7 +40,6 @@ casino_calendar/
 ├── app.py                   # Dash entry point
 ├── Procfile                 # Render deployment file
 └── README.md
-```
 
 ---
 
