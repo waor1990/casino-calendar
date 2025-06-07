@@ -27,7 +27,7 @@ async function mergeAndSync(prNumber) {
         repo: REPO,
         pull_number: prNumber,
     });
-    console.log('PR #&{prNumber} merged:', mergeRes.data.merge_commit_sha);
+    console.log('PR #${prNumber} merged:', mergeRes.data.merge_commit_sha);
 
     //2. Check out the target branch
     await git.checkout(TAGET_BRANCH);
