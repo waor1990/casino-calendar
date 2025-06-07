@@ -112,14 +112,7 @@ def register_callbacks(app):
         week_start = current_sunday + timedelta(weeks=week_offset)
 
         return render_week_grid(week_start, df)
-
-    @app.callback(
-        Output("show-plotly-grid", "data"),
-        Output("plotly-grid-button", "children"),
-        Input("plotly-grid-button", "n_clicks"),
-        State("show-plotly-grid", "data"),
-        prevent_initial_call=True,
-    )
+    
     @app.callback(
         Output("show-plotly-grid", "data"),
         Output("plotly-grid-button", "children"),
