@@ -107,8 +107,12 @@ h1,
 
 .event-label {
     margin-bottom: var(--padding-xxs);
-    font-size: var(--font-small);
-    font-weight: var(--font-weight-normal)
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-normal);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: var(--padding-xs);
+    align-items: start;
 }
 
 .event-label strong {

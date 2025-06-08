@@ -39,6 +39,10 @@
     --box-shadow-light: 0 -2px 4px var(--color-primary-dark);
     --box-shadow-modal: 0 0 20px var(--color-primary-dark);
 
+    /* Modal sizing */
+    --modal-max-width: 600px;
+    --modal-max-height: 80vh;
+
     /* Row heights */
     --header-row-height: 3.5rem;
     --event-row-height: 30px;

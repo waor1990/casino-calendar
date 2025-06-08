@@ -73,6 +73,13 @@
     pointer-events: none;
 }
 
+/* Dynamic sizing for event modal */
+#event-modal-content {
+    width: 90%;
+    max-width: var(--modal-max-width);
+    max-height: var(--modal-max-height);
+}
+
 /* Responsive Day Modal Enhancements */
 #day-modal-content {
     width: 90%;
@@ -90,6 +97,10 @@
 
 /* Modal Responsiveness */
 @media (max-width: 768px) {
+    #event-modal-content {
+        max-width: 500px;
+    }
+
     #day-modal-content {
         max-width: 700px;
     }
@@ -100,6 +111,10 @@
 }
 
 @media (max-width: 480px) {
+    #event-modal-content {
+        width: 85% !important;
+    }
+
     #day-modal-content {
         width: 85% !important;
     }
