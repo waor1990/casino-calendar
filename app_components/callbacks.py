@@ -7,7 +7,7 @@ def register_callbacks(app):
 
     import dash
     import pandas as pd
-    from dash import ALL, Input, Output, State, ctx, dcc, html, no_update
+    from dash import ALL, Input, Output, State, dcc, html, no_update
     from pytz import timezone
 
     from .data import load_event_data
@@ -57,8 +57,14 @@ def register_callbacks(app):
         State("week-offset", "data"),
     )
     def update_week_offset(prev_clicks, next_clicks, current_offset):
-        delta = (next_clicks or 0) - (prev_clicks or 0)
-        desired_offset = current_offset + delta
+        ctx = dash.callback_context
+        desired_offset = current_offset
+
+        if ctx.triggered_id == "prev-button":
+            desired_offset -= 1
+        elif ctx.triggered_id == "next-button":
+            desired_offset += 1
+
         # Limit going back no more than 6 weeks
         desired_offset = max(-6, desired_offset)
         # Limit forward navigation if next 4 weeks are empty
