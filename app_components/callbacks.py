@@ -1,3 +1,6 @@
+# isort:skip_file
+
+
 def register_callbacks(app):
     from datetime import datetime, timedelta
     from typing import Any, List
@@ -9,8 +12,7 @@ def register_callbacks(app):
 
     from .data import load_event_data
     from .layout import sticky_header
-    from .plotting import (generate_day_view_html, generate_weekly_view,
-                           get_color)
+    from .plotting import generate_day_view_html, generate_weekly_view, get_color
     from .week_grid_layout import render_week_grid
 
     PDT = timezone("America/Los_Angeles")
@@ -138,6 +140,7 @@ def register_callbacks(app):
     @app.callback(
         Output("week-chart-container", "children"),
         Output("overflow-date", "data"),
+        Output("animation-refresh", "data"),
         Input("usable-height", "data"),
         Input("week-offset", "data"),
         Input("screen-width", "data"),
@@ -160,7 +163,9 @@ def register_callbacks(app):
                 id=f"week-chart-{week_offset}",
                 style={"display": "none"},
             )
-            return container, week_start.strftime("%Y-%m-%d")
+            from uuid import uuid4
+
+            return container, week_start.strftime("%Y-%m-%d"), str(uuid4())
 
         fig, overflow_df = generate_weekly_view(week_start, df)
 
@@ -220,7 +225,9 @@ def register_callbacks(app):
             **{f"data-week": week_offset},
         )
 
-        return chart, week_start.strftime("%Y-%m-%d")
+        from uuid import uuid4
+
+        return chart, week_start.strftime("%Y-%m-%d"), str(uuid4())
 
     @app.callback(
         Output("overflow-box", "className"),
@@ -323,8 +330,11 @@ def register_callbacks(app):
                 )
 
             df2 = load_event_data()
-            from .plotting import (annotate_events_with_flags,
-                                   assign_event_rows, filter_week_events)
+            from .plotting import (
+                annotate_events_with_flags,
+                assign_event_rows,
+                filter_week_events,
+            )
 
             today = datetime.now(PDT)
             current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
@@ -487,3 +497,23 @@ def register_callbacks(app):
                 return ({}, "modal show", rows, 0, None, {"display": "none"}, "", "")
 
         raise dash.exceptions.PreventUpdate
+
+    # Re-trigger slide-in animation when week content is rendered
+    app.clientside_callback(
+        """
+        function(refresh) {
+            setTimeout(function() {
+                const container = document.getElementById('week-chart-container');
+                if (!container) { return; }
+                const chart = container.querySelector('.week-chart-scroll');
+                if (!chart) { return; }
+                chart.classList.remove('slide-in');
+                void chart.offsetWidth;
+                chart.classList.add('slide-in');
+            }, 0);
+            return '';
+        }
+        """,
+        Output("animation-dummy", "children"),
+        Input("animation-refresh", "data"),
+    )
