@@ -9,7 +9,8 @@ def register_callbacks(app):
 
     from .data import load_event_data
     from .layout import sticky_header
-    from .plotting import generate_day_view_html, generate_weekly_view, get_color
+    from .plotting import (generate_day_view_html, generate_weekly_view,
+                           get_color)
     from .week_grid_layout import render_week_grid
 
     PDT = timezone("America/Los_Angeles")
@@ -111,7 +112,13 @@ def register_callbacks(app):
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
 
-        return render_week_grid(week_start, df)
+        grid = render_week_grid(week_start, df)
+
+        return html.Div(
+            grid,
+            id=f"week-grid-{week_offset}",
+            className="slide-in week-chart-scroll",
+        )
 
     @app.callback(
         Output("show-plotly-grid", "data"),
@@ -300,7 +307,7 @@ def register_callbacks(app):
             triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
             if not triggered_n:
                 raise dash.exceptions.PreventUpdate
-            
+
             idx = triggered_id.get("index")
 
             if idx is None:
@@ -316,11 +323,8 @@ def register_callbacks(app):
                 )
 
             df2 = load_event_data()
-            from .plotting import (
-                annotate_events_with_flags,
-                assign_event_rows,
-                filter_week_events,
-            )
+            from .plotting import (annotate_events_with_flags,
+                                   assign_event_rows, filter_week_events)
 
             today = datetime.now(PDT)
             current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
