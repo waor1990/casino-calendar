@@ -1,11 +1,12 @@
 from dash import Dash
-from app_components.layout import create_layout
+
 from app_components.callbacks import register_callbacks
+from app_components.layout import create_layout
 
 app = Dash(__name__, suppress_callback_exceptions=True)
 app.title = "Casino Event Calendar"
 
-app.index_string = '''
+app.index_string = """
 <!DOCTYPE html>
 <html>
     <head>
@@ -25,7 +26,7 @@ app.index_string = '''
         </footer>
     </body>
 </html>
-'''
+"""
 
 app.layout = create_layout(app)
 register_callbacks(app)
@@ -33,5 +34,5 @@ register_callbacks(app)
 server = app.server
 
 # Run the Dash app
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
