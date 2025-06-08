@@ -1,6 +1,0 @@
-{
-    "type": "module",
-    "scripts": {
-        "merge": "node merge-and-sync.js"
-    }
-}
