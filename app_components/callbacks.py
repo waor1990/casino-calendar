@@ -138,12 +138,22 @@ def register_callbacks(app):
         prevent_initial_call=True,
     )
     def render_single_week_chart(usable_height, week_offset, screen_width, show_chart):
-        if not show_chart:
-            return html.Div(), dash.no_update
-
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
+
+        if not show_chart:
+            hidden_graph = dcc.Graph(
+                id="weekly-graph",
+                figure={},
+                style={"display": "none"},
+            )
+            container = html.Div(
+                hidden_graph,
+                id=f"week-chart-{week_offset}",
+                style={"display": "none"},
+            )
+            return container, week_start.strftime("%Y-%m-%d")
 
         fig, overflow_df = generate_weekly_view(week_start, df)
 
@@ -287,6 +297,10 @@ def register_callbacks(app):
             )
 
         if isinstance(triggered_id, dict) and triggered_id.get("type") == "grid-event":
+            triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
+            if not triggered_n:
+                raise dash.exceptions.PreventUpdate
+            
             idx = triggered_id.get("index")
 
             if idx is None:
