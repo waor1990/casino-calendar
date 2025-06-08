@@ -1,5 +1,4 @@
 def register_callbacks(app):
-    import json
     from datetime import datetime, timedelta
     from typing import Any, List
 
@@ -287,13 +286,8 @@ def register_callbacks(app):
                 "",
             )
 
-        if isinstance(triggered_id, str) and "grid-event" in triggered_id:
-            try:
-                # Grid event click
-                triggered_json = json.loads(triggered_id)
-                idx = triggered_json.get("index", None)
-            except Exception:
-                idx = None
+        if isinstance(triggered_id, dict) and triggered_id.get("type") == "grid-event":
+            idx = triggered_id.get("index")
 
             if idx is None:
                 return (
