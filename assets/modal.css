@@ -1,14 +1,15 @@
 /* Modal Container & Behavior */
 .modal {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: auto;
     height: auto;
-    background-color: var(--color-primary-dark);
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: var(--font-base);
     z-index: 2000;
     opacity: 0;
     pointer-events: none;
@@ -27,13 +28,12 @@
 }
 
 .modal-close {
-    margin-top: var(--padding-small);
+    margin-top: var(--padding-base);
     display: block;
     margin-left: auto;
     margin-right: auto;
     background-color: var(--color-accent);
     color: var(--color-background);
-    font-weight: var(--font-weight-bold);
     font-size: var(--font-base);
     border: none;
     padding: var(--padding-button);
@@ -53,7 +53,7 @@
     min-height: 300px;
     width: 600px;
     min-width: unset;
-    color: #333;
+    color: black;
     font-size: var(--font-base);
     pointer-events: none;
     opacity: 0;
