@@ -1,14 +1,16 @@
 /* Modal Container & Behavior */
 .modal {
     position: fixed;
-    top: 50%;
+    /* top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    */
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: auto;
     height: auto;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
     border-radius: var(--border-radius-lg);
     font-size: var(--font-base);
     z-index: 2000;
@@ -23,16 +25,30 @@
     overflow: hidden;
 }
 
+.modal.show::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.25);
+    z-index: -1;
+    pointer-events: none;
+}
+
 .modal.closing {
     opacity: 0;
     pointer-events: none;
 }
 
 .modal-close {
-    margin-top: var(--padding-small);
     display: block;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: var(--padding-small);
     background-color: var(--color-accent);
     color: var(--color-background);
     font-size: var(--font-base);
@@ -79,6 +95,15 @@
     width: 90%;
     max-width: var(--modal-max-width);
     max-height: var(--modal-max-height);
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+}
+
+#event-modal-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: var(--padding-small);
 }
 
 /* Responsive Day Modal Enhancements */
