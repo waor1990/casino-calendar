@@ -354,9 +354,9 @@ def register_callbacks(app):
             ]:
                 if label in row:
                     display_label = {
-                        "EventName": "Event",
-                        "StartDate": "Event Starts",
-                        "EndDate": "Event Ends",
+                        "EventName": "Name of Event",
+                        "StartDate": "Start of Event",
+                        "EndDate": "End of Event",
                     }.get(label, label)
 
                     value = row[label]
@@ -446,9 +446,9 @@ def register_callbacks(app):
                 ]:
                     if label in data:
                         display_label = {
-                            "EventName": "Event",
-                            "StartDate": "Event Starts",
-                            "EndDate": "Event Ends",
+                            "EventName": "Name of Event",
+                            "StartDate": "Start of Event",
+                            "EndDate": "End of Event",
                         }.get(label, label)
 
                         value = data[label]
