@@ -41,9 +41,11 @@ README.md
 ## 🧪 Try It Locally
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt  # installs black, isort and flake8
+black . && isort . && flake8 .
 python app.py
 ```
+
 
 ## 🌍 Deployment
 

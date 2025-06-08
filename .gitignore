@@ -25,5 +25,4 @@ Thumbs.db
 # Render-specific (if any local build artifacts)
 build/
 
-# Node.js
-package-lock.json
+
