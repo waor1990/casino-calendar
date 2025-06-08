@@ -105,12 +105,12 @@ h1,
     background-color: var(--color-background);
 }
 
-.event-label-body .event-label-title {
+.event-label-title {
     font-size: var(--font-subtitle);
     font-weight: var(--font-weight-bold);
     color: var(--color-accent);
     margin-bottom: var(--padding-small);
-    text-align: center;
+    text-align: center !important;
 }
 
 .event-label {
