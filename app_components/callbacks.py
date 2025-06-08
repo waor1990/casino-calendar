@@ -3,6 +3,7 @@ def register_callbacks(app):
     from dash import Input, Output, State, ALL, ctx, html, dcc, no_update
     from datetime import datetime, timedelta
     from pytz import timezone
+    from typing import Any, List
     import pandas as pd
     import json
     from .data import load_event_data
@@ -265,32 +266,37 @@ def register_callbacks(app):
             return no_update, no_update, no_update, no_update, None, {'display': 'none'}, 'modal closing', ''
         
         if isinstance(triggered_id, str) and "grid-event" in triggered_id:
-            try: 
+            try:
                 #Grid event click
                 triggered_json = json.loads(triggered_id)
                 idx = triggered_json.get("index", None)
             except Exception:
                 idx = None
-                
-            if idx is None: 
+
+            if idx is None:
                 return no_update, no_update, no_update, no_update, None, no_update, no_update, no_update
-            
+
             df2 = load_event_data()
             from .plotting import filter_week_events, annotate_events_with_flags, assign_event_rows
             today = datetime.now(PDT)
             current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
             week_start = current_sunday + timedelta(weeks=week_offset)
-            
+
             df_week = filter_week_events(df2, week_start, week_start + timedelta(days=7))
             df_annot = annotate_events_with_flags(df_week, week_start, week_start + timedelta(days=7))
             df_assigned = assign_event_rows(df_annot, week_start)
-            
+
             if idx not in df_assigned.index:
                 return no_update, no_update, no_update, no_update, None, no_update, no_update, no_update
-            
+
             row = df_assigned.loc[idx]
-            
-            rows = []
+
+            rows: List[Any] = []
+            #title 
+            rows.append(
+                html.H2("Event Details", className='event-label-title')
+            )
+
             for label in ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]:
                 if label in row:
                     display_label = {

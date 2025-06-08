@@ -105,6 +105,14 @@ h1,
     background-color: var(--color-background);
 }
 
+.event-label-body .event-label-title {
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent);
+    margin-bottom: var(--padding-small);
+    text-align: center;
+}
+
 .event-label {
     margin-bottom: var(--padding-xxs);
     font-size: var(--font-base);
