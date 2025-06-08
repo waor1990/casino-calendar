@@ -8,23 +8,25 @@ application.
 ### Python
 
 - Follow PEP 8.
-- If available, format using [Black](https://github.com/psf/black):
+- Format using [Black](https://github.com/psf/black):
 
   ```bash
   black .
   ```
 
-- Optionally sort imports with [isort](https://pycqa.github.io/isort/):
+- Sort imports with [isort](https://pycqa.github.io/isort/):
 
   ```bash
   isort .
   ```
 
-- Optionally lint with [flake8](https://flake8.pycqa.org):
+- Lint with [flake8](https://flake8.pycqa.org):
 
   ```bash
   flake8 .
   ```
+
+These tools are installed via `requirements.txt`.
 
 ### CSS
 
@@ -110,6 +112,12 @@ git fetch --prune
 
 ```bash
 pip install -r requirements.txt
+```
+
+Run the formatters and linter:
+
+```bash
+black . && isort . && flake8 .
 ```
 
 ### Start in development mode
