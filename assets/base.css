@@ -5,6 +5,7 @@
     --padding-button: 4px 6px;
     --padding-small: 8px;
     --padding-base: 12px;
+    --padding-large: 16px;
     --padding-xs: 4px;
     --gap-week: 4px;
     --gap-legend: 12px;
@@ -58,6 +59,7 @@
         --padding-button: 6px 8px;
         --padding-small: 10px;
         --padding-base: 16px;
+        --padding-large: 20px;
         --padding-xxs: 5px;
         --gap-week: 15px;
         --gap-legend: 18px;
@@ -76,6 +78,7 @@
         --padding-button: 8px 10px;
         --padding-small: 12px;
         --padding-base: 20px;
+        --padding-large: 24px;
         --padding-xxs: 6px;
         --gap-week: 20px;
         --gap-legend: 20px;
