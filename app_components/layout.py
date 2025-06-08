@@ -87,10 +87,7 @@ def create_layout(app):
         #Event Modal Popup
         html.Div(id='event-modal', className='modal', children=[
             html.Div(id='event-modal-content', className='modal-content', children=[
-                html.Div(id='event-modal-body', className="base-padding", style={
-                    "maxHeight": "80vh", 
-                    "overflow": "auto",
-                }),
+                html.Div(id='event-modal-body', className="base-padding"),
                 html.Button(
                     "Close",
                     id="close-modal",
