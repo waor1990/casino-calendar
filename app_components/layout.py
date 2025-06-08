@@ -71,8 +71,6 @@ def create_layout(app):
             dcc.Store(id="overflow-date"),
             dcc.Store(id="show-plotly-grid", data=True),
             dcc.Store(id="show-css-grid", data=False),
-            dcc.Store(id="animation-refresh"),
-            html.Div(id="animation-dummy", style={"display": "none"}),
             # Interval Triggers
             dcc.Interval(id="initial-trigger", interval=1, max_intervals=1),
             dcc.Interval(
