@@ -56,11 +56,11 @@
 /* Font and spacing adjustments for mobile */
 @media (max-width: 480px) {
     :root {
-        --font-xs: 0.5rem;
-        --font-small: 0.625rem;
-        --font-base: 0.75rem;
-        --font-subtitle: 0.875rem;
-        --font-title: 1rem;
+        --font-xs: 0.45rem;
+        --font-small: 0.55rem;
+        --font-base: 0.7rem;
+        --font-subtitle: 0.85rem;
+        --font-title: 0.9rem;
     }
 }
 
