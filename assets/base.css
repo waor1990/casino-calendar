@@ -12,10 +12,12 @@
     --margin-section: 10px;
 
     /* Font sizes and weights */
-    --font-small: 0.75rem;
+    --font-xs: 0.625rem;
+    --font-small: 0.875rem;
     --font-base: 1rem;
     --font-subtitle: 1.25rem;
     --font-title: 1.75rem;
+    --font-bold: bold;
     --font-weight-bold: bold;
     --font-weight-normal: normal;
 
@@ -51,42 +53,25 @@
     --arrow-width: 12px;
 }
 
-/* Padding, Margin, and Font Variables For Tablets*/
+/* Font and spacing adjustments for mobile */
 @media (max-width: 480px) {
     :root {
-
-        --padding-header: 10px 15px;
-        --padding-button: 6px 8px;
-        --padding-small: 10px;
-        --padding-base: 16px;
-        --padding-large: 20px;
-        --padding-xxs: 5px;
-        --gap-week: 15px;
-        --gap-legend: 18px;
-        --margin-section: 15px;
-        --font-small: 1rem;
-        --font-base: 1.5rem;
-        --font-subtitle: 1.75rem;
-        --font-title: 2.25rem;
+        --font-xs: 0.5rem;
+        --font-small: 0.625rem;
+        --font-base: 0.75rem;
+        --font-subtitle: 0.875rem;
+        --font-title: 1rem;
     }
 }
 
-/* Padding, Margin, and Font Variables for Desktops*/
+/* Font and spacing adjustments for tablets */
 @media (max-width: 768px) {
     :root {
-        --padding-header: 15px 20px;
-        --padding-button: 8px 10px;
-        --padding-small: 12px;
-        --padding-base: 20px;
-        --padding-large: 24px;
-        --padding-xxs: 6px;
-        --gap-week: 20px;
-        --gap-legend: 20px;
-        --margin-section: 20px;
-        --font-small: 1.5rem;
-        --font-base: 2rem;
-        --font-subtitle: 2.25rem;
-        --font-title: 2.75rem;
+        --font-xs: 0.55rem;
+        --font-small: 0.75rem;
+        --font-base: 0.875rem;
+        --font-subtitle: 1rem;
+        --font-title: 1.25rem;
     }
 }
 
