@@ -353,6 +353,7 @@ def register_callbacks(app):
                 df_week, week_start, week_start + timedelta(days=7)
             )
             df_assigned = assign_event_rows(df_annot, week_start)
+            df_assigned = df_assigned.set_index("orig_index")
 
             if idx not in df_assigned.index:
                 return (

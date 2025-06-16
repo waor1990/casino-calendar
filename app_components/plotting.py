@@ -93,6 +93,10 @@ def get_color():
 
 # Add arrow indicators for events that span outside the week
 def annotate_events_with_flags(events_df, week_start, week_end):
+    events_df = events_df.copy()
+    # Preserve the original index so CSS grid clicks can reference the global row
+    events_df["orig_index"] = events_df.index
+
     # Add a duration column for sorting, and sort by: both left and right arrows, only left arrow, fully within week, and only right arrow
     events_df["Duration"] = (
         events_df["EndDate"] - events_df["StartDate"]
@@ -112,6 +116,7 @@ def annotate_events_with_flags(events_df, week_start, week_end):
 
     events_df["overflow_sort"] = events_df.apply(get_overflow_priority, axis=1)
 
+    # Sort events and drop the previous index, but keep the preserved orig_index column
     return events_df.sort_values(
         by=["overflow_sort", "StartDate", "EndDate", "Duration", "Casino"],
         ascending=[True, True, True, False, True],
