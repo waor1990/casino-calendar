@@ -14,34 +14,6 @@ def create_layout(app):
                 id="app-header",
                 children=[
                     sticky_header(),
-                    # Scrollable Calendar Body
-                    html.Div(
-                        id="calendar-scroll-body",
-                        className="calendar-scroll-body",
-                        children=[
-                            # Toggle plotly chart
-                            html.Div(
-                                id="plotly-preview-toggle",
-                                children=html.Button(
-                                    "Hide Plotly Layout",
-                                    id="plotly-grid-button",
-                                    n_clicks=0,
-                                    className="emoji-button",
-                                ),
-                                style={"textAlign": "center", "marginBottom": "20px"},
-                            ),
-                            # Main calendar area
-                            dcc.Loading(
-                                id="calendar-loading",
-                                type="circle",
-                                color="#6A5ACD",
-                                children=html.Div(
-                                    id="week-chart-container",
-                                    className="week-gap section-margin calendar-content",
-                                ),
-                            ),
-                        ],
-                    ),
                     # Optional Dev Preview Section
                     html.Div(
                         id="day-preview-toggle",
@@ -62,6 +34,34 @@ def create_layout(app):
                             className="calendar-content",
                         ),
                     ),
+                    # Scrollable Calendar Body
+                    html.Div(
+                        id="calendar-scroll-body",
+                        className="calendar-scroll-body",
+                        children=[
+                            # Toggle plotly chart
+                            html.Div(
+                                id="plotly-preview-toggle",
+                                children=html.Button(
+                                    "Show Plotly Layout",
+                                    id="plotly-grid-button",
+                                    n_clicks=0,
+                                    className="emoji-button",
+                                ),
+                                style={"textAlign": "center", "marginBottom": "20px"},
+                            ),
+                            # Main calendar area
+                            dcc.Loading(
+                                id="calendar-loading",
+                                type="circle",
+                                color="#6A5ACD",
+                                children=html.Div(
+                                    id="week-chart-container",
+                                    className="week-gap section-margin calendar-content",
+                                ),
+                            ),
+                        ],
+                    ),
                 ],
             ),
             # State Stores
@@ -69,7 +69,7 @@ def create_layout(app):
             dcc.Store(id="screen-width", data=1024),
             dcc.Store(id="week-offset", data=0),
             dcc.Store(id="overflow-date"),
-            dcc.Store(id="show-plotly-grid", data=True),
+            dcc.Store(id="show-plotly-grid", data=False),
             dcc.Store(id="show-css-grid", data=False),
             dcc.Store(id="animation-refresh"),
             html.Div(id="animation-dummy", style={"display": "none"}),

@@ -28,3 +28,15 @@ def get_week_range(clicked_date: datetime) -> Tuple[datetime, datetime]:
     week_end = tz.normalize(week_start + timedelta(days=7))
 
     return week_start, week_end
+
+
+def trim_label(label: str, max_chars: int) -> str:
+    """Return ``label`` truncated to ``max_chars`` with an ellipsis if needed."""
+
+    if len(label) <= max_chars:
+        return label
+
+    if max_chars < 4:
+        return "..."
+
+    return label[: max_chars - 3] + "..."
