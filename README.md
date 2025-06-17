@@ -41,8 +41,11 @@ README.md
 ## 🧪 Try It Locally
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate  # use .\.venv\Scripts\activate on Windows
 pip install -r requirements.txt  # installs black, isort and flake8
-black . && isort . && flake8 .
+pre-commit install
+pre-commit run --all-files
 python app.py
 ```
 
