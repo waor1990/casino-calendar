@@ -11,7 +11,6 @@ def register_callbacks(app):
     from pytz import timezone
 
     from .data import load_event_data
-    from .layout import sticky_header
     from .plotting import generate_day_view_html, generate_weekly_view, get_color
     from .week_grid_layout import render_week_grid
 
@@ -24,10 +23,10 @@ def register_callbacks(app):
         function(n_intervals) {
             const width = window.innerWidth;
             const height = window.innerHeight;
-            
+
             const header = document.getElementById("app-header");
             const headerHeight = header ? header.offsetHeight : 100;
-            
+
             const usable = Math.max(height - headerHeight - 20, 300);
             return [width, usable];
         }
@@ -70,7 +69,6 @@ def register_callbacks(app):
         # Limit forward navigation if next 4 weeks are empty
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-        start_sunday = current_sunday + timedelta(weeks=desired_offset)
 
         next_week_offset = desired_offset + 1
         next_week_start = current_sunday + timedelta(weeks=next_week_offset)
@@ -228,7 +226,7 @@ def register_callbacks(app):
             id=f"week-chart-{week_offset}",
             className="slide-in week-chart-scroll",
             style={"height": f"{usable_height}px"},
-            **{f"data-week": week_offset},
+            **{"data-week": week_offset},
         )
 
         from uuid import uuid4

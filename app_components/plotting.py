@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import timedelta
 from math import floor
 
 import pandas as pd
@@ -142,7 +142,6 @@ def filter_week_events(events_df, week_start, week_end):
 
 def assign_event_rows(events_df, week_start):
     # Layout params
-    row_unit_height = 0.575
     used_rows_by_day = {i: set() for i in range(7)}
     recurring_rows = defaultdict(int)
     current_row = 0
