@@ -108,6 +108,13 @@ git fetch --prune
 
 ## Running locally
 
+### Create a virtual environment
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate  # on Windows use .\.venv\Scripts\activate
+```
+
 ### Install requirements
 
 ```bash
@@ -118,6 +125,14 @@ Run the formatters and linter:
 
 ```bash
 black . && isort . && flake8 .
+```
+
+### Enable pre-commit hooks
+
+```bash
+pip install pre-commit
+pre-commit install
+pre-commit run --all-files
 ```
 
 ### Start in development mode

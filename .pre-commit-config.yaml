@@ -12,11 +12,11 @@ repos:
         args: ["--profile", "black"]
 
   - repo: https://github.com/pycqa/flake8
-    rev: 3.1.0
+    rev: 6.1.0
     hooks: 
       - id: flake8
 
   - id: python-check
     name: py_compile
-    entry: python -m py_compile app.py app_componenets/*.py
+    entry: python -m py_compile app.py app_components/*.py
     language: python

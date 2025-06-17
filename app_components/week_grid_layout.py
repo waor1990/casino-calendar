@@ -1,8 +1,12 @@
 import pandas as pd
 from dash import html
 
-from .plotting import (annotate_events_with_flags, assign_event_rows,
-                       filter_week_events, get_color)
+from .plotting import (
+    annotate_events_with_flags,
+    assign_event_rows,
+    filter_week_events,
+    get_color,
+)
 from .utils import get_week_range
 
 
