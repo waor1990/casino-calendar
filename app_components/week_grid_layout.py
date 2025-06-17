@@ -1,5 +1,3 @@
-from math import floor
-
 import pandas as pd
 from dash import html
 
@@ -49,17 +47,15 @@ def render_week_grid(clicked_date, df):
         visible_start = max(start_delta, 0)
         visible_end = min(end_delta, 7)
 
-        start_index = max(0, int(floor(visible_start)))
-        end_index = min(6, int(floor(visible_end - 1e-6)))
-
-        col_start = start_index + 1
-        col_end = end_index + 2
-
         row_num = row["row_num"] + 2
 
-        # Trim label if too long
+        # Percentage offsets for fractional placement
+        left_pct = (visible_start / 7) * 100
+        width_pct = ((visible_end - visible_start) / 7) * 100
+
+        # Trim label based on span width
         label = row["EventName"]
-        max_chars = int((col_end - col_start) * 30)
+        max_chars = int((visible_end - visible_start) * 30)
         text = (
             label
             if len(label) < max_chars
@@ -81,8 +77,8 @@ def render_week_grid(clicked_date, df):
                 className=" ".join(cls),
                 style={
                     "--row": row_num,
-                    "--col-start": col_start,
-                    "--col-end": col_end,
+                    "--left": f"{left_pct:.2f}%",
+                    "--width": f"{width_pct:.2f}%",
                     "--bg": colors[row["Casino"]]["bg"],
                     "--fg": colors[row["Casino"]]["text"],
                 },
