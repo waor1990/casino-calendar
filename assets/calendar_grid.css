@@ -15,6 +15,7 @@
     border-right: 1px solid var(--color-border-grid);
     box-sizing: border-box;
     min-height: var(--event-row-height);
+    pointer-events: none;
 }
 
 /* 2. Your day-labels sit in row 1, columns 1-7 */

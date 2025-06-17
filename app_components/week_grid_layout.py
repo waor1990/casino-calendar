@@ -1,3 +1,4 @@
+# isort:skip_file
 from datetime import datetime, timedelta
 from math import floor
 
