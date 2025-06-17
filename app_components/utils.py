@@ -31,7 +31,7 @@ def get_week_range(clicked_date: datetime) -> Tuple[datetime, datetime]:
 
 
 def trim_label(label: str, max_chars: int) -> str:
-    """Return ``label`` truncated to ``max_chars`` with an ellipsis if needed."""
+    """Return ``label`` truncated to ``max_chars`` on whole words."""
 
     if len(label) <= max_chars:
         return label
@@ -39,4 +39,16 @@ def trim_label(label: str, max_chars: int) -> str:
     if max_chars < 4:
         return "..."
 
-    return label[: max_chars - 3] + "..."
+    allowed = max_chars - 3
+    words = label.split()
+    trimmed = ""
+    for word in words:
+        candidate = f"{trimmed} {word}".strip()
+        if len(candidate) > allowed:
+            break
+        trimmed = candidate
+
+    if not trimmed:
+        return "..."
+
+    return f"{trimmed}..."
