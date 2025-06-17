@@ -1,17 +1,11 @@
-from datetime import datetime, timedelta
 from math import floor
 
 import pandas as pd
 from dash import html
 
-from .plotting import (
-    annotate_events_with_flags,
-    assign_event_rows,
-    filter_long_spanning_events,
-    filter_week_events,
-    get_color,
-)
-from .utils import PDT, get_week_range
+from .plotting import (annotate_events_with_flags, assign_event_rows,
+                       filter_week_events, get_color)
+from .utils import get_week_range
 
 
 def render_week_grid(clicked_date, df):
@@ -44,19 +38,19 @@ def render_week_grid(clicked_date, df):
         max_row = df_assigned["row_num"].max()
         event_rows = int(max_row) + 1
 
-    total_rows = event_rows + 1
-
     # Build CSS--grid event-block divs that are clickable
     event_blocks = []
     for idx, row in df_assigned.iterrows():
-        raw_start_days = (row["StartDate"] - week_start).total_seconds() / (24 * 3600)
-        if raw_start_days >= 7 - 1e-6:  # Allow for floating point precision issues
-            start_index = 6
-        else:
-            start_index = max(0, int(floor(raw_start_days)))
-        raw_end_days = (row["EndDate"] - week_start).total_seconds() / (24 * 3600)
+        delta_start = row["StartDate"] - week_start
+        delta_end = row["EndDate"] - week_start
+        start_delta = delta_start.total_seconds() / (24 * 3600)
+        end_delta = delta_end.total_seconds() / (24 * 3600)
 
-        end_index = min(6, int(raw_end_days)) if raw_end_days <= 6 else 6
+        visible_start = max(start_delta, 0)
+        visible_end = min(end_delta, 7)
+
+        start_index = max(0, int(floor(visible_start)))
+        end_index = min(6, int(floor(visible_end - 1e-6)))
 
         col_start = start_index + 1
         col_end = end_index + 2
@@ -97,7 +91,9 @@ def render_week_grid(clicked_date, df):
                     "data-eventname": row["EventName"],
                     "data-casino": row["Casino"],
                     "data-location": row["Location"],
-                    "data-start": row["StartDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "data-start": row["StartDate"].strftime(
+                        "%Y-%m-%dT%H:%M:%SZ"
+                    ),  # noqa: E501
                     "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "data-offer": row["Offer"],
                 },
@@ -117,5 +113,5 @@ def render_week_grid(clicked_date, df):
     return html.Div(
         children=day_labels + event_blocks + grid_fillers,
         className="week-grid",
-        style={"gridTemplateRows": f"var(--header-row-height) auto"},
+        style={"gridTemplateRows": "var(--header-row-height) auto"},
     )
