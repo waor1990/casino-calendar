@@ -1,0 +1,23 @@
+name: Lint
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Check style
+        run: |
+          black --check .
+          isort --check-only .
+          flake8 .
+          python -m py_compile app.py app_components/*.py
