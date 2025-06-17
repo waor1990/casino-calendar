@@ -7,10 +7,10 @@ from .plotting import (
     filter_week_events,
     get_color,
 )
-from .utils import get_week_range
+from .utils import get_week_range, trim_label
 
 
-def render_week_grid(clicked_date, df):
+def render_week_grid(clicked_date, df, screen_width=1024):
     # Calculate week bounds
     week_start, week_end = get_week_range(clicked_date)
     dates = pd.date_range(week_start, periods=7)
@@ -57,14 +57,17 @@ def render_week_grid(clicked_date, df):
         left_pct = (visible_start / 7) * 100
         width_pct = ((visible_end - visible_start) / 7) * 100
 
-        # Trim label based on span width
+        # Trim label based on span width and screen size
         label = row["EventName"]
-        max_chars = int((visible_end - visible_start) * 30)
-        text = (
-            label
-            if len(label) < max_chars
-            else label[: max_chars - 2] + "..." if max_chars >= 3 else "..."
+        font_px = (
+            12
+            if screen_width < 480
+            else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
         )
+        approx_char_px = font_px * 0.6
+        block_px = screen_width * ((visible_end - visible_start) / 7) * 0.95
+        max_chars = max(int(block_px / approx_char_px), 0)
+        text = trim_label(label, max_chars)
 
         # Determine arrow classes
         cls = ["event-block-grid"]

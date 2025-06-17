@@ -28,3 +28,27 @@ def get_week_range(clicked_date: datetime) -> Tuple[datetime, datetime]:
     week_end = tz.normalize(week_start + timedelta(days=7))
 
     return week_start, week_end
+
+
+def trim_label(label: str, max_chars: int) -> str:
+    """Return ``label`` truncated to ``max_chars`` on whole words."""
+
+    if len(label) <= max_chars:
+        return label
+
+    if max_chars < 4:
+        return "..."
+
+    allowed = max_chars - 3
+    words = label.split()
+    trimmed = ""
+    for word in words:
+        candidate = f"{trimmed} {word}".strip()
+        if len(candidate) > allowed:
+            break
+        trimmed = candidate
+
+    if not trimmed:
+        return "..."
+
+    return f"{trimmed}..."

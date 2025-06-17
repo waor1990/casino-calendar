@@ -108,9 +108,10 @@ def register_callbacks(app):
         Output("dev-preview-output", "children"),
         Input("week-offset", "data"),
         Input("show-css-grid", "data"),
+        Input("screen-width", "data"),
         prevent_initial_call=True,
     )
-    def show_dev_preview(week_offset, show_grid):
+    def show_dev_preview(week_offset, show_grid, screen_width):
         if not show_grid:
             return html.Div()
 
@@ -118,7 +119,7 @@ def register_callbacks(app):
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
 
-        grid = render_week_grid(week_start, df)
+        grid = render_week_grid(week_start, df, screen_width)
 
         return html.Div(
             grid,
@@ -171,7 +172,7 @@ def register_callbacks(app):
 
             return container, week_start.strftime("%Y-%m-%d"), str(uuid4())
 
-        fig, overflow_df = generate_weekly_view(week_start, df)
+        fig, overflow_df = generate_weekly_view(week_start, df, screen_width)
 
         end_date = week_start + timedelta(days=6)
 

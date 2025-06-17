@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.graph_objs as go
 from dash import dcc, html
 
-from .utils import PDT, get_week_range
+from .utils import PDT, get_week_range, trim_label
 
 
 # Layout config shared across functions
@@ -307,23 +307,14 @@ def build_weekly_figure(events_df, screen_width, week_start):
             block_width = adjusted_end - adjusted_start
 
             # Font and trimming
-            CHARS_PER_UNIT = (
-                10
-                if screen_width < 480
-                else 20 if screen_width < 768 else 30 if screen_width < 1024 else 40
-            )
-            max_chars = max(int(block_width * CHARS_PER_UNIT), 0)
+
+            # Dynamically trim label based on available pixel width
+            approx_char_px = event_font_size_px * 0.6
+            block_px = screen_width * (block_width / 7) * 0.95
+            max_chars = max(int(block_px / approx_char_px), 0)
 
             label = row["EventName"]
-            trimmed_label = (
-                label
-                if len(label) <= max_chars
-                else (
-                    (label[: max_chars - 2] + "...")
-                    if max_chars >= 3
-                    else "" if max_chars < 3 else "..."
-                )
-            )
+            trimmed_label = trim_label(label, max_chars)
 
             color = casino_colors[row["Casino"]]["bg"]
             text_color = casino_colors[row["Casino"]]["text"]
