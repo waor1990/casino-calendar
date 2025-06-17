@@ -80,8 +80,9 @@
     padding-bottom: var(--gap-week);
     grid-row-start: var(--row);
     grid-row-end: calc(var(--row) + 1);
-    grid-column-start: var(--col-start);
-    grid-column-end: var(--col-end);
+    grid-column: 1 / -1;
+    margin-left: var(--left, 0%);
+    width: var(--width, 100%);
     background-color: var(--bg);
     color: var(--fg);
     font-size: var(--font-base);
