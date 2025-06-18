@@ -53,9 +53,11 @@ def render_week_grid(clicked_date, df, screen_width=1024):
 
         row_num = row["row_num"] + 2
 
+        duration_days = visible_end - visible_start
+
         # Percentage offsets for fractional placement
         left_pct = (visible_start / 7) * 100
-        width_pct = ((visible_end - visible_start) / 7) * 100
+        width_pct = (duration_days / 7) * 100
 
         # Trim label based on span width and screen size
         label = row["EventName"]
@@ -75,6 +77,10 @@ def render_week_grid(clicked_date, df, screen_width=1024):
             cls.append("arrow-left")
         if row["has_right_arrow"]:
             cls.append("arrow-right")
+
+        # Tighten padding for short events on small screens
+        if duration_days < 0.5 and screen_width < 480:
+            cls.append("short-span")
 
         event_blocks.append(
             html.Button(
