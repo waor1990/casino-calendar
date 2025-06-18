@@ -158,10 +158,21 @@ def register_callbacks(app):
         week_start = current_sunday + timedelta(weeks=week_offset)
 
         if not show_chart:
+            import plotly.graph_objs as go
+
+            hidden_graph = dcc.Graph(
+                id="weekly-graph",
+                figure=go.Figure(),
+                config={"displayModeBar": False},
+                style={"display": "none"},
+            )
+
             container = html.Div(
+                children=[hidden_graph],
                 id=f"week-chart-{week_offset}",
                 style={"display": "none"},
             )
+
             from uuid import uuid4
 
             return container, week_start.strftime("%Y-%m-%d"), str(uuid4())
