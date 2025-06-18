@@ -121,8 +121,45 @@ def register_callbacks(app):
 
         grid = render_week_grid(week_start, df, screen_width)
 
+        _, overflow_df = generate_weekly_view(week_start, df, screen_width)
+        end_date = week_start + timedelta(days=6)
+
+        if not overflow_df.empty:
+            overflow_toggle = html.Button(
+                f"🌀 Show Ongoing Events for {week_start.strftime('%b %d')} - {end_date.strftime('%b %d')}",
+                id="overflow-toggle",
+                n_clicks=0,
+                className="overflow-toggle",
+            )
+            overflow_box = html.Div(
+                id="overflow-box",
+                className="overflow-box-expand",
+                children=[
+                    html.Strong(
+                        "Ongoing Events This Week:",
+                        style={
+                            "color": "#6A5ACD",
+                            "display": "block",
+                            "marginBottom": "8px",
+                        },
+                    ),
+                    html.Ul(
+                        [
+                            html.Li(
+                                f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}",
+                                style={"color": "#00008B"},
+                            )
+                            for _, row in overflow_df.iterrows()
+                        ]
+                    ),
+                ],
+            )
+        else:
+            overflow_toggle = html.Div()
+            overflow_box = html.Div()
+
         return html.Div(
-            grid,
+            [grid, overflow_toggle, overflow_box],
             id=f"week-grid-{week_offset}",
             className="slide-in week-chart-scroll",
         )
@@ -177,47 +214,9 @@ def register_callbacks(app):
 
             return container, week_start.strftime("%Y-%m-%d"), str(uuid4())
 
-        fig, overflow_df = generate_weekly_view(week_start, df, screen_width)
+        fig, _ = generate_weekly_view(week_start, df, screen_width)
 
-        end_date = week_start + timedelta(days=6)
-
-        # Overflow content toggle & box
-        if not overflow_df.empty:
-            overflow_toggle = html.Button(
-                f"🌀 Show Ongoing Events for {week_start.strftime('%b %d')} - {end_date.strftime('%b %d')}",
-                id="overflow-toggle",
-                n_clicks=0,
-                className="overflow-toggle",
-            )
-
-            overflow_box = html.Div(
-                id="overflow-box",
-                className="overflow-box-expand",
-                children=[
-                    html.Strong(
-                        "Ongoing Events This Week:",
-                        style={
-                            "color": "#6A5ACD",
-                            "display": "block",
-                            "marginBottom": "8px",
-                        },
-                    ),
-                    html.Ul(
-                        [
-                            html.Li(
-                                f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}",
-                                style={"color": "#00008B"},
-                            )
-                            for _, row in overflow_df.iterrows()
-                        ]
-                    ),
-                ],
-            )
-        else:
-            overflow_toggle = html.Div()
-            overflow_box = html.Div()
-
-        # Shared scrollable container for graph + overflow
+        # Shared scrollable container for graph only
         chart = html.Div(
             children=[
                 dcc.Graph(
@@ -226,8 +225,6 @@ def register_callbacks(app):
                     config={"displayModeBar": False},
                     style={"width": "100%", "height": "auto"},
                 ),
-                overflow_toggle,
-                overflow_box,
             ],
             id=f"week-chart-{week_offset}",
             className="slide-in week-chart-scroll",
