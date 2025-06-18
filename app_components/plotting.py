@@ -544,7 +544,15 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
         center_y = top_px + height_px / 2
         center_x = left_pct + width_pct / 2
         event_data = row[
-            ["EventName", "Casino", "Location", "StartDate", "EndDate", "Offer"]
+            [
+                "EventName",
+                "Casino",
+                "Location",
+                "StartDate",
+                "EndDate",
+                "Offer",
+                "OfferType",
+            ]
         ].to_dict()
 
         click_markers.append(
