@@ -158,13 +158,7 @@ def register_callbacks(app):
         week_start = current_sunday + timedelta(weeks=week_offset)
 
         if not show_chart:
-            hidden_graph = dcc.Graph(
-                id="weekly-graph",
-                figure={},
-                style={"display": "none"},
-            )
             container = html.Div(
-                hidden_graph,
                 id=f"week-chart-{week_offset}",
                 style={"display": "none"},
             )
