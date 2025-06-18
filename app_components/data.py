@@ -5,13 +5,13 @@ import pandas as pd
 from .utils import PDT
 
 
-def categorize_offer_type(offer_text: str) -> str:
-    """Return a normalized offer category for ``offer_text``."""
+def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
+    """Return a normalized offer category for ``offer_text`` or ``event_name``."""
 
-    if not isinstance(offer_text, str):
+    if not isinstance(offer_text, str) and not isinstance(event_name, str):
         return "Unknown"
 
-    text = offer_text.lower()
+    text = f"{offer_text} {event_name}".lower()
 
     free_play_keywords = [
         "free play",
@@ -21,6 +21,7 @@ def categorize_offer_type(offer_text: str) -> str:
         "slot play",
         "bonus play",
         "bucks",
+
     ]
     if any(keyword in text for keyword in free_play_keywords):
         return "Free-Play"
@@ -68,6 +69,10 @@ def load_event_data(csv_path="casino_events.csv"):
         else:
             df[col] = df[col].dt.tz_convert(PDT)
 
-    df["OfferType"] = df["Offer"].apply(categorize_offer_type)
+
+    df["OfferType"] = df.apply(
+        lambda row: categorize_offer_type(row.get("Offer"), row.get("EventName")),
+        axis=1,
+    )
 
     return df
