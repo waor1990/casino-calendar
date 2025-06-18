@@ -49,7 +49,6 @@ pre-commit run --all-files
 python app.py
 ```
 
-
 ## 🌍 Deployment
 
 Hosted at [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
