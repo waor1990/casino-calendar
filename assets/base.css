@@ -21,6 +21,10 @@
     --font-weight-bold: bold;
     --font-weight-normal: normal;
 
+    /* Larger screen font sizes */
+    --font-title-lg: 2.25rem;
+    --font-subtitle-lg: 1.75rem;
+
     /* Colors */
     --color-primary-dark: #00008B;
     --color-accent: #6A5ACD;

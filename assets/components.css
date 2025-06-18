@@ -143,3 +143,20 @@ h1,
     text-align: center;
     padding: var(--padding-base);
 }
+
+/* Larger screen adjustments for sticky header */
+@media (min-width: 1024px) {
+    .sticky-header .calendar-title {
+        font-size: var(--font-title-lg);
+    }
+
+    .sticky-header .legend-title,
+    .sticky-header .legend-text,
+    .sticky-header .week-label {
+        font-size: var(--font-subtitle-lg);
+    }
+
+    .sticky-header .emoji-button {
+        font-size: var(--font-title-lg);
+    }
+}
