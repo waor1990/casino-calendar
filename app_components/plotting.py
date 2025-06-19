@@ -314,7 +314,7 @@ def build_weekly_figure(events_df, screen_width, week_start):
             max_chars = max(int(block_px / approx_char_px), 0)
 
             label = row["EventName"]
-            trimmed_label = trim_label(label, max_chars)
+            trimmed_label = trim_label(label, max_chars, row.get("OfferType", ""))
 
             color = casino_colors[row["Casino"]]["bg"]
             text_color = casino_colors[row["Casino"]]["text"]
