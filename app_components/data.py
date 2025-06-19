@@ -9,7 +9,7 @@ def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
     """Return a normalized offer category for ``offer_text`` or ``event_name``."""
 
     if not isinstance(offer_text, str) and not isinstance(event_name, str):
-        return "Unknown"
+        return "Offer"
 
     text = f"{offer_text} {event_name}".lower()
 
@@ -29,10 +29,13 @@ def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
         "hot seat",
         "drawing",
         "cash giveaway",
+        "every half hour",
         "swipe & win",
         "swipe and win",
     ]
     if any(keyword in text for keyword in drawing_keywords):
+        return "Drawings"
+    if re.search(r"\bevery\s+\d+\s+\w+", text):
         return "Drawings"
 
     if re.search(r"\b\d+x(?:\s+\w+){0,2}\s*points\b", text) or "multiplier" in text:
@@ -53,11 +56,12 @@ def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
         "gas card",
         "gas giveaway",
         "voucher",
+        "free for",
     ]
     if any(keyword in text for keyword in giveaway_keywords):
         return "Giveaways"
 
-    return "Unknown"
+    return "Offer"
 
 
 def load_event_data(csv_path="casino_events.csv"):
