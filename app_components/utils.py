@@ -8,6 +8,7 @@ OFFER_TYPE_EMOJIS = {
     "Drawings": "🎟️🎲",
     "Point-Based": "📈💯",
     "Giveaways": "🎁🏨",
+    "Offer": "🎁❓",
 }
 
 
