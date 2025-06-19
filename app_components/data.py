@@ -21,7 +21,6 @@ def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
         "slot play",
         "bonus play",
         "bucks",
-
     ]
     if any(keyword in text for keyword in free_play_keywords):
         return "Free-Play"
@@ -70,7 +69,6 @@ def load_event_data(csv_path="casino_events.csv"):
             df[col] = df[col].dt.tz_localize(PDT)
         else:
             df[col] = df[col].dt.tz_convert(PDT)
-
 
     df["OfferType"] = df.apply(
         lambda row: categorize_offer_type(row.get("Offer"), row.get("EventName")),

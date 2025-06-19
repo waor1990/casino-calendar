@@ -69,7 +69,7 @@ def render_week_grid(clicked_date, df, screen_width=1024):
         approx_char_px = font_px * 0.6
         block_px = screen_width * ((visible_end - visible_start) / 7) * 0.95
         max_chars = max(int(block_px / approx_char_px), 0)
-        text = trim_label(label, max_chars)
+        text = trim_label(label, max_chars, row.get("OfferType", ""))
 
         # Determine arrow classes
         cls = ["event-block-grid"]
