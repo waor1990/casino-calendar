@@ -36,7 +36,7 @@ def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
     if any(keyword in text for keyword in drawing_keywords):
         return "Drawings"
 
-    if re.search(r"\b\d+x\s*points\b", text) or "multiplier" in text:
+    if re.search(r"\b\d+x(?:\s+\w+){0,2}\s*points\b", text) or "multiplier" in text:
         return "Point-Based"
     if "tier credit" in text or "earn & get" in text or "earn and get" in text:
         return "Point-Based"
@@ -46,11 +46,13 @@ def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
     giveaway_keywords = [
         "gift giveaway",
         "gift",
+        "item",
         "pickup",
         "hotel stay",
         "hotel room",
         "dining credit",
         "gas card",
+        "gas giveaway",
         "voucher",
     ]
     if any(keyword in text for keyword in giveaway_keywords):
