@@ -8,7 +8,7 @@ A personal Dash application that displays casino events on a responsive calendar
 
 - Weekly calendar view with color‑coded event blocks
 - Modal windows for detailed event and day information
-- Toggle to show or hide a CSS grid layout preview
+- Built-in CSS grid layout preview
 - Toggle to show or hide the Plotly weekly grid
 - Responsive design for desktop, tablet and mobile
 - Time zone normalized to Pacific Time (PDT)

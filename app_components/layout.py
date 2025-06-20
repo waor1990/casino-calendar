@@ -14,17 +14,6 @@ def create_layout(app):
                 id="app-header",
                 children=[
                     sticky_header(),
-                    # Optional Dev Preview Section
-                    html.Div(
-                        id="day-preview-toggle",
-                        children=html.Button(
-                            "Show CSS Layout",
-                            id="preview-grid-button",
-                            n_clicks=0,
-                            className="emoji-button",
-                        ),
-                        style={"textAlign": "center", "marginBottom": "20px"},
-                    ),
                     dcc.Loading(
                         id="day-preview-loading",
                         type="circle",
@@ -70,7 +59,6 @@ def create_layout(app):
             dcc.Store(id="week-offset", data=0),
             dcc.Store(id="overflow-date"),
             dcc.Store(id="show-plotly-grid", data=False),
-            dcc.Store(id="show-css-grid", data=False),
             dcc.Store(id="animation-refresh"),
             html.Div(id="animation-dummy", style={"display": "none"}),
             # Interval Triggers
@@ -181,7 +169,8 @@ def sticky_header():
             ),
             # Week Label
             html.Div(id="week-label", className="fade-text week-label", children=""),
-        ]
+        ],
+        className="sticky-header",
     )
 
 
