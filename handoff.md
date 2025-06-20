@@ -52,7 +52,7 @@ casino_calendar/
 ### Grid Layout Preview
 
 - `week_grid_layout.py` renders a grid-style week calendar
-- Injected into `dev-preview-output` and toggled via `preview-grid-button`
+- Injected into `dev-preview-output` and always visible
 
 ### Scrollable Body
 
