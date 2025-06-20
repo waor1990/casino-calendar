@@ -90,30 +90,12 @@ def register_callbacks(app):
         return desired_offset, prev_disabled, next_disabled, next_title
 
     @app.callback(
-        Output("show-css-grid", "data"),
-        Output("preview-grid-button", "children"),
-        Input("preview-grid-button", "n_clicks"),
-        State("show-css-grid", "data"),
-        prevent_initial_call=True,
-    )
-    def toggle_css_grid(n_clicks, current_state):
-        if n_clicks is None:
-            raise dash.exceptions.PreventUpdate
-
-        new_state = not current_state
-        label = "Hide CSS Layout" if new_state else "Show CSS Layout"
-        return new_state, label
-
-    @app.callback(
         Output("dev-preview-output", "children"),
         Input("week-offset", "data"),
-        Input("show-css-grid", "data"),
         Input("screen-width", "data"),
         prevent_initial_call=True,
     )
-    def show_dev_preview(week_offset, show_grid, screen_width):
-        if not show_grid:
-            return html.Div()
+    def show_dev_preview(week_offset, screen_width):
 
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
