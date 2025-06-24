@@ -12,6 +12,7 @@ def register_callbacks(app):
 
     from .data import load_event_data
     from .plotting import generate_day_view_html, generate_weekly_view, get_color
+    from .utils import offer_type_emoji
     from .week_grid_layout import render_week_grid
 
     PDT = timezone("America/Los_Angeles")
@@ -353,8 +354,10 @@ def register_callbacks(app):
             row = df_assigned.loc[idx]
 
             rows: List[Any] = []
-            # title
-            rows.append(html.H2("Event Details", className="event-label-title"))
+            emoji = offer_type_emoji(row.get("OfferType", ""))
+            rows.append(
+                html.H2(f"{emoji} Event Details {emoji}", className="event-label-title")
+                )
 
             for label in [
                 "EventName",
@@ -450,7 +453,13 @@ def register_callbacks(app):
                 ]
             ):
                 # Normal event click
-                rows = [html.H2("Event Details", className="event-label-title")]
+                emoji = offer_type_emoji(data.get("OfferType", ""))
+                rows = [
+                    html.H2(
+                        f"{emoji} Event Details {emoji}", 
+                        className="event-label-title"
+                    )
+                ]
                 for label in [
                     "EventName",
                     "Casino",
