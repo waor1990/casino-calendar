@@ -83,7 +83,6 @@ def get_color():
         result[casino] = colors
 
     if not result:
-        print(f"No color assigned for casino: {casino}; using default color.")
         dummy_casinos = [f"Casino {i}" for i in range(len(default_colors))]
         for casino_name, color in zip(dummy_casinos, default_colors):
             result[casino_name] = {"bg": color, "text": "#000000"}
