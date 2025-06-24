@@ -102,7 +102,6 @@ def render_week_grid(clicked_date, df, screen_width=1024):
                 **{
                     "data-eventname": row["EventName"],
                     "data-casino": row["Casino"],
-        children=[header_row] + event_blocks + grid_fillers,
                     "data-start": row["StartDate"].strftime(
                         "%Y-%m-%dT%H:%M:%SZ"
                     ),  # noqa: E501
@@ -123,7 +122,7 @@ def render_week_grid(clicked_date, df, screen_width=1024):
 
     # 4. Render a single grid container: header labels + event blocks
     return html.Div(
-        children=day_labels + event_blocks + grid_fillers,
+        children=[header_row] + event_blocks + grid_fillers,
         className="week-grid",
         style={"gridTemplateRows": "var(--header-row-height) auto"},
     )
