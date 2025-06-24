@@ -175,3 +175,8 @@
         border-right: none;
     }
 }
+
+.event-block-grid.short-span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
