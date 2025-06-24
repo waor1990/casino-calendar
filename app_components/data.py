@@ -36,7 +36,7 @@ def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
     ]
     if any(keyword in text for keyword in drawing_keywords):
         return "Drawings"
-    
+
     number_or_word_pattern = (
         r"(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten"
         r"eleven|twelve|thirteen|fourteen|fifteen|sixteen"
@@ -60,7 +60,7 @@ def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
     ):  # Looks for patterns like '3 winners' or 'three winners'
         return "Drawings"
 
-    if ( 
+    if (
         re.search(rf"\b\d+x(?:\s+\w+){0,2}\s*points\b", text) or "multiplier" in text
     ):  # Looks for patterns like '2x points' or checks for 'multiplier'
         return "Point-Based"
@@ -68,8 +68,8 @@ def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
         "tier credit" in text or "earn & get" in text or "earn and get" in text
     ):  # Checks for specific phrases related to points
         return "Point-Based"
-    if (
-        re.search(r"earn.*\d+.*points", text)
+    if re.search(
+        r"earn.*\d+.*points", text
     ):  # Looks for patterns where points are mentioned in the context of earning
         return "Point-Based"
 

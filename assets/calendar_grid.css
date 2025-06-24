@@ -21,6 +21,9 @@
 /* 2. Your day-labels sit in row 1, columns 1-7 */
 .day-label-grid {
     grid-row: 1;
+    position: sticky;
+    top: 0;
+    z-index: 1100;
     background-color: var(--color-day-header-bg);
     color: var(--color-day-header-text);
     text-align: center;
