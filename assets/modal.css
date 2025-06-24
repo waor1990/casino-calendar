@@ -55,7 +55,7 @@
     border: none;
     padding: var(--padding-button);
     border-radius: var(--border-radius-sm);
-    cursor: pointer
+    cursor: pointer;
 }
 
 /* Base styling for modal cards */

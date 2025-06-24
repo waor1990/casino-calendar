@@ -46,7 +46,7 @@
     color: var(--color-accent);
     background-color: var(--color-background);
     box-shadow: var(--box-shadow-light);
-    border-radius: var(--border-radius-);
+    border-radius: var(--border-radius-sm);
     z-index: 900;
     text-align: center;
     font-size: var(--font-subtitle);

@@ -1,7 +1,7 @@
 # isort:skip_file
 
 
-def register_callbacks(app):
+def register_callbacks(app, df):
     from datetime import datetime, timedelta
     from typing import Any, List
 
@@ -10,13 +10,11 @@ def register_callbacks(app):
     from dash import ALL, Input, Output, State, dcc, html, no_update
     from pytz import timezone
 
-    from .data import load_event_data
     from .plotting import generate_day_view_html, generate_weekly_view, get_color
     from .utils import offer_type_emoji
     from .week_grid_layout import render_week_grid
 
     PDT = timezone("America/Los_Angeles")
-    df = load_event_data()
 
     # Screen detection JS (for height + width)
     app.clientside_callback(
@@ -319,7 +317,6 @@ def register_callbacks(app):
                     no_update,
                 )
 
-            df2 = load_event_data()
             from .plotting import (
                 annotate_events_with_flags,
                 assign_event_rows,
@@ -330,9 +327,7 @@ def register_callbacks(app):
             current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
             week_start = current_sunday + timedelta(weeks=week_offset)
 
-            df_week = filter_week_events(
-                df2, week_start, week_start + timedelta(days=7)
-            )
+            df_week = filter_week_events(df, week_start, week_start + timedelta(days=7))
             df_annot = annotate_events_with_flags(
                 df_week, week_start, week_start + timedelta(days=7)
             )

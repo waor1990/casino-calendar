@@ -1,6 +1,7 @@
 from dash import Dash
 
 from app_components.callbacks import register_callbacks
+from app_components.data import load_event_data
 from app_components.layout import create_layout
 
 app = Dash(__name__, suppress_callback_exceptions=True)
@@ -28,8 +29,10 @@ app.index_string = """
 </html>
 """
 
-app.layout = create_layout(app)
-register_callbacks(app)
+df_events = load_event_data()
+
+app.layout = create_layout(app, df_events)
+register_callbacks(app, df_events)
 
 server = app.server
 

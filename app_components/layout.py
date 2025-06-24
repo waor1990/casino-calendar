@@ -1,11 +1,10 @@
 import plotly.graph_objs as go
 from dash import dcc, html
 
-from .data import load_event_data
 from .plotting import get_color
 
 
-def create_layout(app):
+def create_layout(app, df):
     return html.Div(
         className="main-layout",
         children=[
@@ -13,7 +12,7 @@ def create_layout(app):
             html.Div(
                 id="app-header",
                 children=[
-                    sticky_header(),
+                    sticky_header(df),
                     dcc.Loading(
                         id="day-preview-loading",
                         type="circle",
@@ -121,8 +120,7 @@ def create_layout(app):
     )
 
 
-def sticky_header():
-    df = load_event_data()
+def sticky_header(df):
     return html.Div(
         [
             html.H1(
