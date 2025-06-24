@@ -13,6 +13,7 @@ A personal Dash application that displays casino events on a responsive calendar
 - Responsive design for desktop, tablet and mobile
 - Time zone normalized to Pacific Time (PDT)
 - Toggle to show ongoing events that span the week
+- Auto-categorizes offer types (Free-Play, Drawings, Giveaways)
 
 ---
 
@@ -46,6 +47,7 @@ source .venv/bin/activate  # use .\.venv\Scripts\activate on Windows
 pip install -r requirements.txt  # installs black, isort and flake8
 pre-commit install
 pre-commit run --all-files
+python -m py_compile app.py app_components/*.py
 python app.py
 ```
 

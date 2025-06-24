@@ -37,22 +37,40 @@ def categorize_offer_type(offer_text: str, event_name: str = "") -> str:
     if any(keyword in text for keyword in drawing_keywords):
         return "Drawings"
     
-    number_or_word_pattern = r"(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)"
+    number_or_word_pattern = (
+        r"(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten"
+        r"eleven|twelve|thirteen|fourteen|fifteen|sixteen"
+        r"seventeen|eighteen|nineteen|twenty)"
+    )
 
-    if re.search(rf"\bevery\s+{number_or_word_pattern}\s+\w+", text):  # Looks for patterns like 'every 2 hours' or 'every two hours'
+    if re.search(
+        rf"\bevery\s+{number_or_word_pattern}\s+\w+", text
+    ):  # Looks for patterns like 'every 2 hours' or 'every two hours'
         return "Drawings"
-    if re.search(rf"\b{number_or_word_pattern}\s+cash\b", text):  # Looks for patterns like '50 cash' or 'fifty cash'
+    if re.search(
+        rf"\b{number_or_word_pattern}\s+cash\b", text
+    ):  # Looks for patterns like '50 cash' or 'fifty cash'
         return "Drawings"
-    if re.search(rf"\b{number_or_word_pattern}\s+prize\b", text):  # Looks for patterns like '1st prize' or 'first prize'
+    if re.search(
+        rf"\b{number_or_word_pattern}\s+prize\b", text
+    ):  # Looks for patterns like '1st prize' or 'first prize'
         return "Drawings"
-    if re.search(rf"\b{number_or_word_pattern}\s+winners\b", text):  # Looks for patterns like '3 winners' or 'three winners'
+    if re.search(
+        rf"\b{number_or_word_pattern}\s+winners\b", text
+    ):  # Looks for patterns like '3 winners' or 'three winners'
         return "Drawings"
 
-    if re.search(rf"\b\d+x(?:\s+\w+){0,2}\s*points\b", text) or "multiplier" in text:  # Looks for patterns like '2x points' or checks for 'multiplier'
+    if ( 
+        re.search(rf"\b\d+x(?:\s+\w+){0,2}\s*points\b", text) or "multiplier" in text
+    ):  # Looks for patterns like '2x points' or checks for 'multiplier'
         return "Point-Based"
-    if "tier credit" in text or "earn & get" in text or "earn and get" in text:  # Checks for specific phrases related to points
+    if (
+        "tier credit" in text or "earn & get" in text or "earn and get" in text
+    ):  # Checks for specific phrases related to points
         return "Point-Based"
-    if re.search(r"earn.*\d+.*points", text):  # Looks for patterns where points are mentioned in the context of earning
+    if (
+        re.search(r"earn.*\d+.*points", text)
+    ):  # Looks for patterns where points are mentioned in the context of earning
         return "Point-Based"
 
     giveaway_keywords = [
