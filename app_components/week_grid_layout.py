@@ -99,7 +99,7 @@ def render_week_grid(clicked_date, df, screen_width=1024):
                 **{
                     "data-eventname": row["EventName"],
                     "data-casino": row["Casino"],
-                    "data-location": row["Location"],
+                    "data-offerType": row["OfferType"],
                     "data-start": row["StartDate"].strftime(
                         "%Y-%m-%dT%H:%M:%SZ"
                     ),  # noqa: E501

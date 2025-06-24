@@ -356,17 +356,16 @@ def register_callbacks(app):
             rows: List[Any] = []
             emoji = offer_type_emoji(row.get("OfferType", ""))
             rows.append(
-                html.H2(f"{emoji} Event Details {emoji}", className="event-label-title")
+                html.H2(f"{emoji} Promo Info {emoji}", className="event-label-title")
                 )
 
             for label in [
                 "EventName",
                 "Casino",
-                "Location",
+                "OfferType",
                 "StartDate",
                 "EndDate",
                 "Offer",
-                "OfferType",
             ]:
                 if label in row:
                     display_label = {
@@ -445,29 +444,27 @@ def register_callbacks(app):
                 for k in [
                     "EventName",
                     "Casino",
-                    "Location",
+                    "OfferType",
                     "StartDate",
                     "EndDate",
                     "Offer",
-                    "OfferType",
                 ]
             ):
                 # Normal event click
                 emoji = offer_type_emoji(data.get("OfferType", ""))
                 rows = [
                     html.H2(
-                        f"{emoji} Event Details {emoji}", 
+                        f"{emoji} Promo Info {emoji}", 
                         className="event-label-title"
                     )
                 ]
                 for label in [
                     "EventName",
                     "Casino",
-                    "Location",
+                    "OfferType",
                     "StartDate",
                     "EndDate",
                     "Offer",
-                    "OfferType",
                 ]:
                     if label in data:
                         display_label = {

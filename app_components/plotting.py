@@ -547,11 +547,10 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
             [
                 "EventName",
                 "Casino",
-                "Location",
+                "OfferType",
                 "StartDate",
                 "EndDate",
                 "Offer",
-                "OfferType",
             ]
         ].to_dict()
 
