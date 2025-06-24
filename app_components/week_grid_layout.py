@@ -28,6 +28,9 @@ def render_week_grid(clicked_date, df, screen_width=1024):
             )
         )
 
+    # Wrap the labels so the entire row can be sticky
+    header_row = html.Div(day_labels, className="day-label-wrapper")
+
     # Filer/annotate/assign events
     df_week = filter_week_events(df, week_start, week_end)
     df_annot = annotate_events_with_flags(df_week, week_start, week_end)
@@ -99,7 +102,7 @@ def render_week_grid(clicked_date, df, screen_width=1024):
                 **{
                     "data-eventname": row["EventName"],
                     "data-casino": row["Casino"],
-                    "data-offertype": row["OfferType"],
+        children=[header_row] + event_blocks + grid_fillers,
                     "data-start": row["StartDate"].strftime(
                         "%Y-%m-%dT%H:%M:%SZ"
                     ),  # noqa: E501
