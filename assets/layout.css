@@ -71,8 +71,8 @@
     background-color: var(--color-background);
 }
 
-/* Desktop Adjustment */
-@media (min-width: 768px) {
+/* Mobile Adjustment */
+@media (max-width: 767px) {
     .sticky-header {
         position: static;
     }
