@@ -78,8 +78,8 @@ def render_week_grid(clicked_date, df, screen_width=1024):
         if row["has_right_arrow"]:
             cls.append("arrow-right")
 
-        # Tighten padding for short events on small screens
-        if duration_days < 0.5 and screen_width < 480:
+        # Mark short events for additional styling
+        if duration_days < 0.5:
             cls.append("short-span")
 
         event_blocks.append(
