@@ -357,7 +357,7 @@ def register_callbacks(app):
             emoji = offer_type_emoji(row.get("OfferType", ""))
             rows.append(
                 html.H2(f"{emoji} Promo Info {emoji}", className="event-label-title")
-                )
+            )
 
             for label in [
                 "EventName",
@@ -454,8 +454,7 @@ def register_callbacks(app):
                 emoji = offer_type_emoji(data.get("OfferType", ""))
                 rows = [
                     html.H2(
-                        f"{emoji} Promo Info {emoji}", 
-                        className="event-label-title"
+                        f"{emoji} Promo Info {emoji}", className="event-label-title"
                     )
                 ]
                 for label in [

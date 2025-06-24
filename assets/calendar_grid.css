@@ -19,13 +19,20 @@
 }
 
 /* 2. Your day-labels sit in row 1, columns 1-7 */
-.day-label-grid {
+.day-label-wrapper {
     grid-row: 1;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     position: sticky;
     top: 0;
-    z-index: 20;
+    z-index: 1100;
     background-color: var(--color-day-header-bg);
-    color: var(--color-day-header-text);
+    border-top: var(--border-thick) solid var(--color-border-primary);
+    border-bottom: var(--border-thick) solid var(--color-border-primary);
+}
+
+.day-label-grid {
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -35,9 +42,11 @@
     line-height: .8;
     font-size: var(--font-subtitle);
     font-weight: var(--font-weight-bold);
-    border-top: var(--border-thick) solid var(--color-border-primary);
-    border-bottom: var(--border-thick) solid var(--color-border-primary);
+    color: var(--color-day-header-text);
     box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    z-index: 1200;
 }
 
 .day-label-grid>div {
@@ -134,35 +143,20 @@
 }
 
 /* 6. Rounded off grid edges */
-.week-grid>.day-label-grid:nth-child(1) {
+.day-label-wrapper > .day-label-grid:nth-child(1) {
     border-left: 2px solid var(--color-border-primary);
 }
 
-.week-grid>.day-label-grid:nth-child(2) {
+.day-label-wrapper > .day-label-grid:nth-child(2),
+.day-label-wrapper > .day-label-grid:nth-child(3),
+.day-label-wrapper > .day-label-grid:nth-child(4),
+.day-label-wrapper > .day-label-grid:nth-child(5),
+.day-label-wrapper > .day-label-grid:nth-child(6),
+.day-label-wrapper > .day-label-grid:nth-child(7) {
     border-left: 2px solid var(--color-border-primary);
 }
 
-.week-grid>.day-label-grid:nth-child(3) {
-    border-left: 2px solid var(--color-border-primary);
-}
-
-.week-grid>.day-label-grid:nth-child(4) {
-    border-left: 2px solid var(--color-border-primary);
-}
-
-.week-grid>.day-label-grid:nth-child(5) {
-    border-left: 2px solid var(--color-border-primary);
-}
-
-.week-grid>.day-label-grid:nth-child(6) {
-    border-left: 2px solid var(--color-border-primary);
-}
-
-.week-grid>.day-label-grid:nth-child(7) {
-    border-left: 2px solid var(--color-border-primary);
-}
-
-.week-grid>.day-label-grid:nth-child(7) {
+.day-label-wrapper > .day-label-grid:last-child {
     border-right: 2px solid var(--color-border-primary);
 }
 
