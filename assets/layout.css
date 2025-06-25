@@ -43,7 +43,7 @@
 }
 
 .week-label {
-    color: var(--color-accent);
+    color: var(--color-primary-dark);
     background-color: var(--color-background);
     box-shadow: var(--box-shadow-light);
     border-radius: var(--border-radius-sm);
