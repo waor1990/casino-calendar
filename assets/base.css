@@ -29,10 +29,11 @@
     /* Colors */
     --color-primary-dark: #00008B;
     --color-accent: #6A5ACD;
+    --color-accent-dark: #483D8B;
     --color-background: #f5f3fa;
 
     /* Day Header & Week Grid Colors */
-    --color-day-header-text: var(--color-primary-dark);
+    --color-day-header-text: var(--color-accent-dark);
     --color-day-header-bg: var(--color-background);
     --color-border-primary: var(--color-primary-dark);
     --color-border-accent: var(--color-accent);

@@ -18,7 +18,7 @@ h1,
 }
 
 .legend-text {
-    font-size: var(--font-subtitle);
+    font-size: var(--font-base);
 }
 
 .legend-item {
@@ -63,11 +63,13 @@ h1,
 /* Event related UI */
 
 .overflow-toggle {
-    color: var(--color-primary-dark);
+    color: var(--color-accent-dark);
     display: inline-block;
     text-align: left;
     margin: var(--margin-section) auto calc(var(--margin-section) * 4) auto;
-    font-size: var(--font-base);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-weight-bold);
     padding: var(--padding-small);
     background-color: var(--color-background);
     border: var(--border-thin);
@@ -78,7 +80,7 @@ h1,
 
 .overflow-box {
     width: 80%;
-    font-size: var(--font-small);
+    font-size: var(--font-base);
     padding: var(--padding-base);
 }
 
@@ -145,7 +147,7 @@ h1,
 }
 
 /* Larger screen adjustments for sticky header */
-@media (min-width: 1024px) {
+/* @media (min-width: 1024px) {
     .sticky-header .calendar-title {
         font-size: var(--font-title-lg);
     }
@@ -159,4 +161,4 @@ h1,
     .sticky-header .emoji-button {
         font-size: var(--font-title-lg);
     }
-}
+} */
