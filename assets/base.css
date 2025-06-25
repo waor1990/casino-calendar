@@ -17,6 +17,7 @@
     --font-small: 0.875rem;
     --font-base: 1rem;
     --font-subtitle: 1.25rem;
+    --font-header: 1.5rem;
     --font-title: 1.75rem;
     --font-bold: bold;
     --font-weight-bold: bold;
@@ -66,6 +67,7 @@
         --font-small: 0.55rem;
         --font-base: 0.7rem;
         --font-subtitle: 0.85rem;
+        --font-header: 0.875rem;
         --font-title: 0.9rem;
     }
 }
@@ -77,6 +79,7 @@
         --font-small: 0.75rem;
         --font-base: 0.875rem;
         --font-subtitle: 1rem;
+        --font-header: 1.125rem;
         --font-title: 1.25rem;
     }
 }

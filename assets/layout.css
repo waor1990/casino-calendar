@@ -49,7 +49,7 @@
     border-radius: var(--border-radius-sm);
     z-index: 900;
     text-align: center;
-    font-size: var(--font-subtitle);
+    font-size: var(--font-header);
     font-weight: var(--font-weight-bold);
     padding: var(--padding-small);
 }
