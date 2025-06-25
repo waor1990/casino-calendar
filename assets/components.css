@@ -8,7 +8,7 @@ h1,
 }
 
 .legend-title {
-    font-size: var(--font-subtitle);
+    font-size: var(--font-header);
     font-weight: var(--font-weight-bold);
     text-align: center;
     color: var(--color-accent);
@@ -40,7 +40,7 @@ h1,
 .emoji-button {
     all: unset;
     cursor: pointer;
-    font-size: var(--font-title);
+    font-size: var(--font-title-lg);
     line-height: 1;
     padding: var(--padding-button);
     transition: transform 0.2s ease;
