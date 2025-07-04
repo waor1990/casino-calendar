@@ -10,7 +10,7 @@
 }
 
 .overflow-box-expand.show {
-    max-height: 500px;
+    max-height: var(--overflow-expand-max-height);
     opacity: 1;
     pointer-events: auto;
     transition-delay: 0.4s, 0.8s;
@@ -26,7 +26,7 @@
 }
 
 .week-content.show {
-    max-height: 1500px;
+    max-height: var(--week-content-max-height);
     opacity: 1;
     pointer-events: auto;
     transition-delay: 0.4s, 0s;
@@ -55,7 +55,7 @@
 
 @keyframes slideIn {
     from {
-        transform: translateY(500px);
+        transform: translateY(var(--slide-distance));
         opacity: 0;
     }
 
@@ -72,7 +72,7 @@
     }
 
     to {
-        transform: translateY(500px);
+        transform: translateY(var(--slide-distance));
         opacity: 0;
     }
 }

@@ -53,6 +53,20 @@
     /* Modal sizing */
     --modal-max-width: 600px;
     --modal-max-height: 80vh;
+    --modal-min-height: 300px;
+    --modal-width: 90%;
+    --modal-width-mobile: 85%;
+    --day-modal-max-height: 800px;
+    --modal-max-height-mobile: 70vh;
+    --event-modal-max-width-tablet: 500px;
+    --day-modal-max-width-tablet: 700px;
+    --modal-overlay-color: rgba(0, 0, 0, 0.25);
+    --modal-overlay-blur: 4px;
+
+    /* Animation distances */
+    --slide-distance: 500px;
+    --overflow-expand-max-height: 500px;
+    --week-content-max-height: 1500px;
 
     /* Row heights */
     --header-row-height: 3.5rem;
