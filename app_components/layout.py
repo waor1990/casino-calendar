@@ -161,9 +161,7 @@ def sticky_header(df):
                 style={
                     "display": "flex",
                     "justifyContent": "space-between",
-                    
                     "paddingBottom": "10px",
-                    
                 },
             ),
             # Week Label
