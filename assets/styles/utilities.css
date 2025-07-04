@@ -1,32 +1,16 @@
 /* Utility Classes */
 
-/* Padding */
-.p-header {
-    padding: var(--padding-header);
-}
-
-.p-small {
-    padding: var(--padding-small);
-}
-
-.p-base {
+/* Core padding utility used across the app */
+.base-padding {
     padding: var(--padding-base);
 }
 
-.p-xxs {
-    padding: var(--padding-xxs);
-}
-
-/* Margin */
-.mt-section {
-    margin-top: var(--margin-section);
-}
-
-.mb-section {
+/* Section margin used by week charts */
+.section-margin {
     margin-bottom: var(--margin-section);
 }
 
-/* Gaps */
+/* Grid spacing helpers */
 .week-gap {
     gap: var(--gap-week);
 }
@@ -35,27 +19,10 @@
     gap: var(--gap-legend);
 }
 
-.font-xs {
-    font-size: var(--font-xs);
-}
+/* Legacy utilities moved to legacy.css
+   - p-header, p-small, p-base, p-xxs
+   - mt-section, mb-section
+   - font-xs, font-small, font-base, font-subtitle,
+     font-title, font-bold
+*/
 
-/* Font sizes and weights */
-.font-small {
-    font-size: var(--font-small);
-}
-
-.font-base {
-    font-size: var(--font-base);
-}
-
-.font-subtitle {
-    font-size: var(--font-subtitle);
-}
-
-.font-title {
-    font-size: var(--font-title);
-}
-
-.font-bold {
-    font-weight: var(--font-bold);
-}
