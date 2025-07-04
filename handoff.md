@@ -31,10 +31,13 @@ casino_calendar/
 │   └── week_grid_layout.py  # Pure CSS grid preview
 ├── assets/
 │   ├── base.css             # Variables and resets
-│   ├── layout.css           # Page structure
-│   ├── components.css       # Event blocks and utilities
-│   ├── calendar_grid.css    # Grid layout styles
-│   └── typography.css       # Fonts and text sizes
+│   └── styles/
+│       ├── animations.css     # Keyframes and transitions
+│       ├── calendar_grid.css  # Grid layout styles
+│       ├── components.css     # Event blocks and utilities
+│       ├── layout.css         # Page structure
+│       ├── modal.css          # Modal windows
+│       └── utilities.css      # Helper classes
 ├── casino_events.csv
 ├── requirements.txt
 ├── app.py                   # Dash entry point
@@ -47,7 +50,7 @@ casino_calendar/
 
 ### CSS Modularization
 
-- Split former `custom.css` into `base.css`, `layout.css`, `components.css`, `calendar_grid.css` and `typography.css`
+- Styles moved into `assets/styles/` with `base.css` at the root
 
 ### Grid Layout Preview
 
