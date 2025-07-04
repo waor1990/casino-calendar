@@ -28,11 +28,15 @@ app_components/          # Core logic modules
   plotting.py            # Plotly figure generation
   utils.py               # Helpers and time zone utilities
   week_grid_layout.py    # Grid layout preview using HTML/CSS
-assets/                  # Stylesheets (auto-loaded)
+assets/                  # Static assets auto-loaded by Dash
   base.css
-  layout.css
-  components.css
-  calendar_grid.css
+  styles/
+    animations.css
+    calendar_grid.css
+    components.css
+    layout.css
+    modal.css
+    utilities.css
 casino_events.csv        # Event data
 requirements.txt         # Python dependencies
 Procfile                 # Render deployment
