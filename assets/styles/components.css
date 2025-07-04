@@ -2,7 +2,7 @@
 
 h1,
 .calendar-title {
-    font-size: var(--font-title);
+    font-size: clamp(var(--font-header), 4vw, var(--font-title-lg));
     text-align: center;
     color: var(--color-primary-dark);
     background-color: var(--color-background);
@@ -14,7 +14,7 @@ h1,
 }
 
 .legend-title {
-    font-size: var(--font-header);
+    font-size: clamp(var(--font-base), 2.5vw, var(--font-header));
     font-weight: var(--font-weight-bold);
     text-align: center;
     color: var(--color-accent);
