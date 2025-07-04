@@ -8,9 +8,10 @@ h1,
     background-color: var(--color-background);
     box-shadow: var(--box-shadow-light);
     border-radius: var(--border-radius-sm);
-    padding: var(--padding-small);
-    margin: 0 auto;
-    display: inline-block;
+    display: block;
+    align-items: center;
+    width: 100%;
+    min-height: var(--header-row-height);
 }
 
 .legend-title {
@@ -31,7 +32,6 @@ h1,
     display: flex;
     align-items: center;
     flex: 0 1 auto;
-    background-color: var(--color-background);
     box-shadow: var(--box-shadow-subtle);
     border-radius: var(--border-radius-xs);
     padding: var(--padding-xxs) var(--padding-small);
