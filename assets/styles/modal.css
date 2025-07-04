@@ -61,7 +61,7 @@
 /* Base styling for modal cards */
 .modal-content {
     background-color: var(--color-background);
-    border: 2px solid var(--color-accent);
+    border: var(--border-thick) solid var(--color-accent);
     border-radius: var(--border-radius-lg, 10px);
     padding: var(--padding-base);
     box-shadow: var(--box-shadow-modal);
@@ -148,5 +148,23 @@
     #day-modal-body {
         max-height: var(--modal-max-height-mobile);
         font-size: var(--font-small);
+    }
+}
+
+@media (min-width: 1024px) {
+    #event-modal-content {
+        max-width: 40rem;
+    }
+    #day-modal-content {
+        max-width: 52rem;
+    }
+}
+
+@media (min-width: 1440px) {
+    #event-modal-content {
+        max-width: 45rem;
+    }
+    #day-modal-content {
+        max-width: 60rem;
     }
 }
