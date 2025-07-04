@@ -46,7 +46,8 @@
     --border-radius-xs: 2px;
     --border-thin: 1px;
     --border-thick: 2px;
-    --box-shadow-light: 0 -2px 4px var(--color-primary-dark);
+    --box-shadow-light: 0 -2px 2px var(--color-primary-dark);
+    --box-shadow-subtle: 0 -1px 4px var(--color-accent);
     --box-shadow-modal: 0 0 20px var(--color-primary-dark);
 
     /* Modal sizing */
