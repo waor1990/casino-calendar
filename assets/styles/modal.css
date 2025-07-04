@@ -32,9 +32,9 @@
     left: 0;
     right: 0;
     bottom: 0;
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
-    background-color: rgba(0, 0, 0, 0.25);
+    -webkit-backdrop-filter: blur(var(--modal-overlay-blur));
+    backdrop-filter: blur(var(--modal-overlay-blur));
+    background-color: var(--modal-overlay-color);
     z-index: -1;
     pointer-events: none;
 }
@@ -67,8 +67,8 @@
     box-shadow: var(--box-shadow-modal);
     max-height: auto;
     max-width: auto;
-    min-height: 300px;
-    width: 600px;
+    min-height: var(--modal-min-height);
+    width: var(--modal-max-width);
     min-width: unset;
     color: black;
     font-size: var(--font-base);
@@ -92,7 +92,7 @@
 
 /* Dynamic sizing for event modal */
 #event-modal-content {
-    width: 90%;
+    width: var(--modal-width);
     max-width: var(--modal-max-width);
     max-height: var(--modal-max-height);
     display: flex;
@@ -108,8 +108,8 @@
 
 /* Responsive Day Modal Enhancements */
 #day-modal-content {
-    width: 90%;
-    max-height: 800px;
+    width: var(--modal-width);
+    max-height: var(--day-modal-max-height);
 }
 
 #day-modal-body {
@@ -124,29 +124,29 @@
 /* Modal Responsiveness */
 @media (max-width: 768px) {
     #event-modal-content {
-        max-width: 500px;
+        max-width: var(--event-modal-max-width-tablet);
     }
 
     #day-modal-content {
-        max-width: 700px;
+        max-width: var(--day-modal-max-width-tablet);
     }
 
     #day-modal-body {
-        max-height: 80vh;
+        max-height: var(--modal-max-height);
     }
 }
 
 @media (max-width: 480px) {
     #event-modal-content {
-        width: 85% !important;
+        width: var(--modal-width-mobile) !important;
     }
 
     #day-modal-content {
-        width: 85% !important;
+        width: var(--modal-width-mobile) !important;
     }
 
     #day-modal-body {
-        max-height: 70vh;
+        max-height: var(--modal-max-height-mobile);
         font-size: var(--font-small);
     }
 }

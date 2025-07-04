@@ -37,8 +37,8 @@ h1,
 }
 
 .legend-color-box {
-    width: 12px;
-    height: 12px;
+    width: var(--arrow-width);
+    height: var(--arrow-width);
     display: inline-block;
     border-radius: var(--padding-xs);
     margin-right: var(--padding-xs);
