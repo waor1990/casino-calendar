@@ -47,6 +47,7 @@
     --border-thin: 1px;
     --border-thick: 2px;
     --box-shadow-light: 0 -2px 4px var(--color-primary-dark);
+    --box-shadow-subtle: 0 0 2px var(--color-primary-dark);
     --box-shadow-modal: 0 0 20px var(--color-primary-dark);
 
     /* Modal sizing */
