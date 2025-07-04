@@ -49,16 +49,16 @@
     border-radius: var(--border-radius-sm);
     z-index: 900;
     text-align: center;
-    font-size: var(--font-header);
+    font-size: clamp(var(--font-small), 2vw, var(--font-header));
     font-weight: var(--font-weight-bold);
     padding: var(--padding-small);
 }
 
 .legend-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+    justify-items: center;
+    align-items: start;
     text-align: left;
     gap: var(--gap-legend);
     padding: var(--padding-small);
