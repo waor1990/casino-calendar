@@ -3,22 +3,55 @@
 */
 
 /* Padding helpers */
-.p-header { padding: var(--padding-header); }
-.p-small { padding: var(--padding-small); }
-.p-base { padding: var(--padding-base); }
-.p-xxs { padding: var(--padding-xxs); }
+.p-header {
+    padding: var(--padding-header);
+}
+
+.p-small {
+    padding: var(--padding-small);
+}
+
+.p-base {
+    padding: var(--padding-base);
+}
+
+.p-xxs {
+    padding: var(--padding-xxs);
+}
 
 /* Margin helpers */
-.mt-section { margin-top: var(--margin-section); }
-.mb-section { margin-bottom: var(--margin-section); }
+.mt-section {
+    margin-top: var(--margin-section);
+}
+
+.mb-section {
+    margin-bottom: var(--margin-section);
+}
 
 /* Font utility classes */
-.font-xs { font-size: var(--font-xs); }
-.font-small { font-size: var(--font-small); }
-.font-base { font-size: var(--font-base); }
-.font-subtitle { font-size: var(--font-subtitle); }
-.font-title { font-size: var(--font-title); }
-.font-bold { font-weight: var(--font-bold); }
+.font-xs {
+    font-size: var(--font-xs);
+}
+
+.font-small {
+    font-size: var(--font-small);
+}
+
+.font-base {
+    font-size: var(--font-base);
+}
+
+.font-subtitle {
+    font-size: var(--font-subtitle);
+}
+
+.font-title {
+    font-size: var(--font-title);
+}
+
+.font-bold {
+    font-weight: var(--font-bold);
+}
 
 /* Week content animation - not currently used */
 .week-content {
@@ -44,9 +77,13 @@
     }
 
     .sticky-header .legend-title,
-    .sticky-header .legend-text,
     .sticky-header .week-label {
         font-size: var(--font-subtitle-lg);
+    }
+
+    .sticky-header .legend-text {
+        font-size: var(--font-base);
+        white-space: nowrap;
     }
 
     .sticky-header .emoji-button {
