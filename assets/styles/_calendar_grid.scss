@@ -86,7 +86,7 @@
 /* 4. Your events now start on row 2 automatically */
 .event-block-grid {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     box-sizing: border-box;
     min-height: var(--event-row-height);
     padding-bottom: var(--gap-week);
@@ -170,6 +170,12 @@
         padding-right: 0;
         border-left: none;
         border-right: none;
+    }
+}
+
+@include desktop {
+    .day-label-grid {
+        font-size: var(--font-base);
     }
 }
 
