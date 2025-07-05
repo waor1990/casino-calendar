@@ -47,22 +47,19 @@ git log --oneline --graph --decorate --all
 ## Creating & Switching Branches
 
 ```bash
-# 1. Switch to main and pull the latest changes
-git checkout main
-git pull origin main
+# 1. Create & switch in one go
+git checkout -b my-new-branch
 
-# 2. Create & switch to a new branch based on main, and set its upstream
-git checkout -b my-new-branch main
-git push -u origin my-new-branch
+# 2. Switch to an existing branch
+git checkout other-branch
+# —or—
+git switch other-branch
 
-# 3. Switch to an existing branch
-git switch other-branch    # or `git checkout other-branch`
-
-# 4. List all local branches
+# 3. List all local branches
 git branch
-````
+```
 
-✔️ **Use when:** you want to start new work from the up-to-date main branch or switch between contexts.
+✔️ **Use when:** you need to start a new line of work or jump between contexts.
 
 ---
 
