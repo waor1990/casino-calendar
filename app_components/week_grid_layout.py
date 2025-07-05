@@ -124,5 +124,4 @@ def render_week_grid(clicked_date, df, screen_width=1024):
     return html.Div(
         children=[header_row] + event_blocks + grid_fillers,
         className="week-grid",
-        style={"gridTemplateRows": "var(--header-row-height) auto"},
     )

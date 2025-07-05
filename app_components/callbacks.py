@@ -118,10 +118,10 @@ def register_callbacks(app, df):
                 children=[
                     html.Strong(
                         "Ongoing Events This Week:",
+                        className="font-bold mb-section",
                         style={
                             "color": "#6A5ACD",
                             "display": "block",
-                            "marginBottom": "8px",
                         },
                     ),
                     html.Ul(
@@ -383,9 +383,7 @@ def register_callbacks(app, df):
                     rows.append(
                         html.Div(
                             [
-                                html.Strong(
-                                    f"{display_label}: ", style={"color": "#6A5ACD"}
-                                ),
+                                html.Strong(f"{display_label}: "),
                                 html.Span(value),
                             ],
                             className="event-label",
@@ -481,9 +479,7 @@ def register_callbacks(app, df):
                         rows.append(
                             html.Div(
                                 [
-                                    html.Strong(
-                                        f"{display_label}: ", style={"color": "#6A5ACD"}
-                                    ),
+                                    html.Strong(f"{display_label}: "),
                                     html.Span(value),
                                 ],
                                 className="event-label",
