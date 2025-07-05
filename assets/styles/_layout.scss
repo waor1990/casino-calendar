@@ -69,11 +69,8 @@
     top: 0;
     z-index: 100;
     background-color: var(--color-background);
-}
 
-/* Mobile Adjustment */
-@media (max-width: 767px) {
-    .sticky-header {
+    @include tablet {
         position: static;
     }
 }

@@ -160,7 +160,7 @@
     border-right: var(--border-thick) solid var(--color-border-primary);
 }
 
-@media (max-width: 480px) {
+@include mobile {
     .day-label-grid {
         font-size: var(--font-small);
     }
