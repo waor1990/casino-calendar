@@ -73,15 +73,12 @@
     }
 }
 
-<<<<<<< HEAD
 @media (max-width: 1023px) and (orientation: landscape) {
     .sticky-header {
         position: static;
     }
 }
 
-=======
->>>>>>> 8a4d46566347ad967d340e559d5bb0ac1baeb641
 /* Headers */
 h1,
 .calendar-title {
@@ -394,11 +391,7 @@ h1,
 }
 
 @media (max-width: 480px),
-<<<<<<< HEAD
-(max-width: 1023px) and (orientation: landscape) {
-=======
 (max-width: 896px) and (orientation: landscape) {
->>>>>>> 8a4d46566347ad967d340e559d5bb0ac1baeb641
     .day-label-grid {
         font-size: var(--font-small);
     }
@@ -560,11 +553,7 @@ h1,
 }
 
 @media (max-width: 480px),
-<<<<<<< HEAD
-(max-width: 1023px) and (orientation: landscape) {
-=======
 (max-width: 896px) and (orientation: landscape) {
->>>>>>> 8a4d46566347ad967d340e559d5bb0ac1baeb641
     #event-modal-content {
         width: var(--modal-width-mobile) !important;
     }

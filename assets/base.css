@@ -68,11 +68,7 @@
 
 /* Font and spacing adjustments for mobile */
 @media (max-width: 480px),
-<<<<<<< HEAD
-(max-width: 1023px) and (orientation: landscape) {
-=======
 (max-width: 896px) and (orientation: landscape) {
->>>>>>> 8a4d46566347ad967d340e559d5bb0ac1baeb641
     :root {
         --font-xs: 0.45rem;
         --font-small: 0.55rem;
