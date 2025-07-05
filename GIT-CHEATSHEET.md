@@ -8,21 +8,22 @@
 4. [Switch Back to `main` Without Merging](#switch-back-to-main-without-merging)  
 5. [Pull (Update Your Local Branch)](#pull-update-your-local-branch)  
 6. [Commit Your Changes on the Current Branch](#commit-your-changes-on-the-current-branch)  
-7. [Fix the Previous Commit (Minor Changes)](#fix-the-previous-commit-minor-changes)  
-8. [Stash Changes](#stash-changes)  
-9. [Run the Dash App on a Checked-Out Branch](#run-the-dash-app-on-a-checked-out-branch)  
-10. [View a Past Commit (Detached HEAD)](#view-a-past-commit-detached-head)  
-11. [Reset Your Branch to a Specific Commit](#reset-your-branch-to-a-specific-commit)  
-12. [Point Your Branch at a Specific Commit](#point-your-branch-at-a-specific-commit)  
-13. [Revert a Merged PR & Clean Up Its Branch](#revert-a-merged-pr--clean-up-its-branch)  
-14. [Delete a Merged Branch](#delete-a-merged-branch)  
-15. [Update Your Local Directory After a Branch Has Been Merged & Deleted](#update-your-local-directory-after-a-branch-has-been-merged--deleted)  
-16. [Handling Merge Conflicts](#handling-merge-conflicts)  
-17. [Interactive Rebase & History Cleanup](#interactive-rebase--history-cleanup)  
-18. [Cherry-Pick a Commit](#cherry-pick-a-commit)  
-19. [Tagging Releases](#tagging-releases)  
-20. [Remote Management](#remote-management)  
-21. [Config & Help](#config--help)  
+7. [Merge a Feature Branch into `main`](#merge-a-feature-branch-into-main)  
+8. [Fix the Previous Commit (Minor Changes)](#fix-the-previous-commit-minor-changes)  
+9. [Stash Changes](#stash-changes)  
+10. [Run the Dash App on a Checked-Out Branch](#run-the-dash-app-on-a-checked-out-branch)  
+11. [View a Past Commit (Detached HEAD)](#view-a-past-commit-detached-head)  
+12. [Reset Your Branch to a Specific Commit](#reset-your-branch-to-a-specific-commit)  
+13. [Point Your Branch at a Specific Commit](#point-your-branch-at-a-specific-commit)  
+14. [Revert a Merged PR & Clean Up Its Branch](#revert-a-merged-pr--clean-up-its-branch)  
+15. [Delete a Merged Branch](#delete-a-merged-branch)  
+16. [Update Your Local Directory After a Branch Has Been Merged & Deleted](#update-your-local-directory-after-a-branch-has-been-merged--deleted)  
+17. [Handling Merge Conflicts](#handling-merge-conflicts)  
+18. [Interactive Rebase & History Cleanup](#interactive-rebase--history-cleanup)  
+19. [Cherry-Pick a Commit](#cherry-pick-a-commit)  
+20. [Tagging Releases](#tagging-releases)  
+21. [Remote Management](#remote-management)  
+22. [Config & Help](#config--help)  
 
 ---
 
@@ -142,6 +143,37 @@ git push
 ```
 
 ✔️ **Use when:** you’ve made edits on your feature branch and want to save them.
+
+---
+
+## Merge a Feature Branch into `main`
+
+```bash
+# 1. Switch to main & update
+git checkout main
+git pull origin main
+
+# 2. Merge your feature branch
+git merge feature-branch
+
+# 3. If there are conflicts:
+#    a. Open each conflicted file and resolve the <<<< / >>>> markers.
+#    b. Stage the resolved files:
+git add [fixed-files]
+#    c. Complete the merge:
+git commit
+
+# 4. Push the updated main
+git push origin main
+
+# 5. (Optional) Delete the merged branch locally
+git branch -d feature-branch
+
+# 6. (Optional) Delete it on the remote
+git push origin --delete feature-branch
+```
+
+✔️ **Use when:** your feature is ready and you want to integrate it into `main`; follow conflict-resolution steps if needed.
 
 ---
 
