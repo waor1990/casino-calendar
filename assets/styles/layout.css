@@ -55,10 +55,10 @@
 }
 
 .legend-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
-    justify-items: center;
-    align-items: start;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
     text-align: left;
     gap: var(--gap-legend);
     padding: var(--padding-small);

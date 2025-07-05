@@ -14,7 +14,7 @@ h1,
 }
 
 .legend-title {
-    font-size: clamp(var(--font-base), 2.5vw, var(--font-header));
+    font-size: clamp(var(--font-subtitle), 2.5vw, var(--font-header));
     font-weight: var(--font-weight-bold);
     text-align: center;
     color: var(--color-accent);
@@ -25,6 +25,7 @@ h1,
 
 .legend-text {
     font-size: var(--font-base);
+    white-space: nowrap;
 }
 
 .legend-item {
