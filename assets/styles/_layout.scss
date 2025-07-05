@@ -9,14 +9,12 @@
 .calendar-content {
     display: flex;
     flex-direction: column;
-
 }
 
 .day-grid {
     position: relative;
     width: 100%;
     box-sizing: border-box;
-
 }
 
 .day-event-catcher {
@@ -29,7 +27,6 @@
 }
 
 .calendar-scroll-body {
-
     overflow-y: auto;
     padding: var(--padding-base);
     box-sizing: border-box;
@@ -69,11 +66,8 @@
     top: 0;
     z-index: 100;
     background-color: var(--color-background);
-}
 
-/* Mobile Adjustment */
-@media (max-width: 767px) {
-    .sticky-header {
+    @include tablet {
         position: static;
     }
 }

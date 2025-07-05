@@ -1,0 +1,19 @@
+/* Utility Classes */
+
+.base-padding {
+    padding: var(--padding-base);
+}
+
+.section-margin {
+    margin-bottom: var(--margin-section);
+}
+
+.week-gap {
+    gap: var(--gap-week);
+}
+
+.legend-gap {
+    gap: var(--gap-legend);
+}
+
+/* Legacy utilities moved to legacy.scss */

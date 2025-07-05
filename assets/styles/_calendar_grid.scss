@@ -1,0 +1,144 @@
+/* Calendar grid layout */
+
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-rows: var(--header-row-height) auto;
+    grid-auto-rows: minmax(var(--event-row-height), auto);
+    gap: 0;
+    padding: var(--padding-base);
+    position: relative;
+}
+
+.grid-filler-cell {
+    border-left: var(--border-thin) solid var(--color-border-grid);
+    border-right: var(--border-thin) solid var(--color-border-grid);
+    box-sizing: border-box;
+    min-height: var(--event-row-height);
+    pointer-events: none;
+}
+
+.day-label-wrapper {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    position: sticky;
+    top: 0;
+    z-index: 1100;
+    background-color: var(--color-day-header-bg);
+    border-top: var(--border-thick) solid var(--color-border-primary);
+    border-bottom: var(--border-thick) solid var(--color-border-primary);
+
+    > .day-label-grid {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2em;
+        align-items: center;
+        justify-content: center;
+        line-height: 0.8;
+        font-size: var(--font-subtitle);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-day-header-text);
+        box-sizing: border-box;
+        position: sticky;
+        top: 0;
+        z-index: 1200;
+
+        > div {
+            margin: 0;
+            line-height: 0.8;
+        }
+
+        &:nth-of-type(1) { grid-column: 1; }
+        &:nth-of-type(2) { grid-column: 2; }
+        &:nth-of-type(3) { grid-column: 3; }
+        &:nth-of-type(4) { grid-column: 4; }
+        &:nth-of-type(5) { grid-column: 5; }
+        &:nth-of-type(6) { grid-column: 6; }
+        &:nth-of-type(7) { grid-column: 7; }
+    }
+
+    > .day-label-grid:first-child {
+        border-left: var(--border-thick) solid var(--color-border-primary);
+    }
+
+    > .day-label-grid:last-child {
+        border-right: var(--border-thick) solid var(--color-border-primary);
+    }
+
+    > .day-label-grid:nth-child(n + 2) {
+        border-left: var(--border-thick) solid var(--color-border-primary);
+    }
+}
+
+.event-block-grid {
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    min-height: var(--event-row-height);
+    padding-bottom: var(--gap-week);
+    grid-row-start: var(--row);
+    grid-row-end: calc(var(--row) + 1);
+    grid-column: 1 / -1;
+    margin-left: var(--left, 0%);
+    width: var(--width, 100%);
+    background-color: var(--bg);
+    color: var(--fg);
+    font-size: var(--font-base);
+    padding: var(--padding-small);
+    margin-bottom: var(--gap-week);
+    border-left: var(--border-thin) solid var(--color-border-grid);
+    border-right: var(--border-thin) solid var(--color-border-grid);
+    border-radius: var(--border-radius-xs);
+    border-top: none;
+    border-bottom: none;
+    white-space: nowrap;
+    cursor: pointer;
+    z-index: 10;
+
+    &.arrow-left::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: calc(-1 * var(--arrow-width));
+        width: var(--arrow-width);
+        height: 100%;
+        background-color: var(--color-border-primary);
+        clip-path: polygon(0 50%, 100% 0, 100% 100%);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    &.arrow-right::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: calc(-1 * var(--arrow-width));
+        width: var(--arrow-width);
+        height: 100%;
+        background-color: var(--color-border-primary);
+        clip-path: polygon(100% 50%, 0 0, 0 100%);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    &.short-span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        @include phone {
+            padding-left: 0;
+            padding-right: 0;
+            border-left: none;
+            border-right: none;
+        }
+    }
+}
+
+@include phone {
+    .day-label-wrapper > .day-label-grid {
+        font-size: var(--font-small);
+    }
+}
