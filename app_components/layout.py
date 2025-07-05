@@ -36,7 +36,8 @@ def create_layout(app, df):
                                     n_clicks=0,
                                     className="emoji-button",
                                 ),
-                                style={"textAlign": "center", "marginBottom": "20px"},
+                                className="mb-section",
+                                style={"textAlign": "center"},
                             ),
                             # Main calendar area
                             dcc.Loading(
@@ -104,10 +105,6 @@ def create_layout(app, df):
                             html.Div(
                                 id="day-modal-body",
                                 className="base-padding",
-                                style={
-                                    "maxHeight": "80vh",
-                                    "overflowY": "auto",
-                                },
                             ),
                             html.Button(
                                 "Close", id="close-day-modal", className="modal-close"
