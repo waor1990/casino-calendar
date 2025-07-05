@@ -75,8 +75,7 @@
     }
 
     // Disable sticky header for landscape phones //
-    @media (max-width: 1023px) and (orientation: landscape) {
+    @media (max-width: 896px) and (orientation: landscape) {
         position: static;
     }
 }
-
