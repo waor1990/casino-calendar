@@ -22,12 +22,9 @@ def register_callbacks(app, df):
         function(n_intervals) {
             const width = window.innerWidth;
             const height = window.innerHeight;
-
             const header = document.getElementById("app-header");
             const headerHeight = header ? header.offsetHeight : 100;
-
             const usable = Math.max(height - headerHeight - 20, 300);
-            console.log("Screen Width:", width, "Usable height:", usable)
             return [width, usable];
         }
         """,
@@ -96,7 +93,7 @@ def register_callbacks(app, df):
         prevent_initial_call=True,
     )
     def show_dev_preview(week_offset, screen_width):
-
+        print(f"Screen-width reported: {screen_width}")
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
