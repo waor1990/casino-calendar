@@ -73,4 +73,10 @@
     @include tablet {
         position: static;
     }
+
+    // Disable sticky header for landscape phones //
+    @media (max-width: 1023px) and (orientation: landscape) {
+        position: static;
+    }
 }
+
