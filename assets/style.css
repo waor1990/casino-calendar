@@ -60,6 +60,9 @@
   @media (max-width: 768px) {
     .sticky-header {
       position: static; } }
+  @media (max-width: 896px) and (orientation: landscape) {
+    .sticky-header {
+      position: static; } }
 /* Headers */
 h1,
 .calendar-title {
@@ -335,7 +338,7 @@ h1,
 .day-label-wrapper > .day-label-grid:last-child {
   border-right: var(--border-thick) solid var(--color-border-primary); }
 
-@media (max-width: 480px) {
+@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
   .day-label-grid {
     font-size: var(--font-small); }
   .event-block-grid.short-span {
@@ -466,7 +469,7 @@ h1,
   #day-modal-body {
     max-height: var(--modal-max-height); } }
 
-@media (max-width: 480px) {
+@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
   #event-modal-content {
     width: var(--modal-width-mobile) !important; }
   #day-modal-content {

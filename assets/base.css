@@ -66,7 +66,7 @@
   --arrow-width: 0.75rem; }
 
 /* Font and spacing adjustments for mobile */
-@media (max-width: 480px) {
+@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
   :root {
     --font-xs: 0.45rem;
     --font-small: 0.55rem;
