@@ -27,7 +27,7 @@ def register_callbacks(app, df):
             const headerHeight = header ? header.offsetHeight : 100;
 
             const usable = Math.max(height - headerHeight - 20, 300);
-            
+            console.log("Screen Width:", width, "Usable height:", usable)
             return [width, usable];
         }
         """,
