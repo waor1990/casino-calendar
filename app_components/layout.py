@@ -13,32 +13,11 @@ def create_layout(app, df):
                 id="app-header",
                 children=[
                     sticky_header(df),
-                    dcc.Loading(
-                        id="day-preview-loading",
-                        type="circle",
-                        color="#6A5ACD",
-                        children=html.Div(
-                            id="dev-preview-output",
-                            className="calendar-content",
-                        ),
-                    ),
                     # Scrollable Calendar Body
                     html.Div(
                         id="calendar-scroll-body",
                         className="calendar-scroll-body",
                         children=[
-                            # Toggle plotly chart
-                            html.Div(
-                                id="plotly-preview-toggle",
-                                children=html.Button(
-                                    "Show Plotly Layout",
-                                    id="plotly-grid-button",
-                                    n_clicks=0,
-                                    className="emoji-button",
-                                ),
-                                className="mb-section",
-                                style={"textAlign": "center"},
-                            ),
                             # Main calendar area
                             dcc.Loading(
                                 id="calendar-loading",
@@ -57,8 +36,6 @@ def create_layout(app, df):
             dcc.Store(id="usable-height", data=600),
             dcc.Store(id="screen-width", data=1024),
             dcc.Store(id="week-offset", data=0),
-            dcc.Store(id="overflow-date"),
-            dcc.Store(id="show-plotly-grid", data=False),
             dcc.Store(id="animation-refresh"),
             html.Div(id="animation-dummy", style={"display": "none"}),
             # Interval Triggers
