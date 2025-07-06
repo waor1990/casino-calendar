@@ -34,7 +34,7 @@ body {
 
 .week-chart-scroll {
   overflow-x: visible;
-  overflow-y: auto;
+  /* scrolling handled by parent container */
   padding: 0 var(--padding-small) calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
   margin-bottom: 0; }
 
