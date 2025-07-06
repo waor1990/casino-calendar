@@ -152,7 +152,7 @@ h1,
   text-align: left;
   margin: var(--margin-section) auto calc(var(--margin-section) * 4) auto;
   font-family: 'Segoe UI', sans-serif;
-  font-size: var(--font-subtitle);
+  font-size: clamp(var(--font-small), 4vw, var(--font-subtitle));
   font-weight: var(--font-weight-bold);
   padding: var(--padding-small);
   background-color: var(--color-background);
@@ -163,7 +163,7 @@ h1,
 
 .overflow-box {
   width: 80%;
-  font-size: var(--font-base);
+  font-size: clamp(var(--font-xs), 3.5vw, var(--font-base));
   padding: var(--padding-base); }
 
 .day-label {
