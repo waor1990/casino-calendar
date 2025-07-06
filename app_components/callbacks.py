@@ -25,7 +25,7 @@ def register_callbacks(app, df):
             const header = document.getElementById("app-header");
             const headerHeight = header ? header.offsetHeight : 100;
             const usable = Math.max(height - headerHeight - 20, 300);
-            
+
             return [width, usable];
         }
         """,
