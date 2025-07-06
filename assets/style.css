@@ -27,10 +27,6 @@
   box-sizing: border-box;
   background-color: var(--color-background); }
 
-@media (min-width: 1024px) {
-  .calendar-scroll-body {
-    overflow-y: visible; } }
-
 .week-chart-scroll {
   overflow-x: visible;
   overflow-y: auto;
