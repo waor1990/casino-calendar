@@ -54,6 +54,12 @@
     padding: var(--padding-small);
 }
 
+@include mobile {
+    .week-label {
+        font-size: var(--font-small);
+    }
+}
+
 .legend-container {
     display: flex;
     flex-wrap: wrap;

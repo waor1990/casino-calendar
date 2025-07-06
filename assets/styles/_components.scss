@@ -11,6 +11,10 @@ h1,
     padding: var(--padding-base);
     display: block;
     align-items: center;
+
+    @include mobile {
+        font-size: var(--font-header);
+    }
 }
 
 .legend-title {
@@ -21,6 +25,10 @@ h1,
     gap: var(--gap-legend);
     margin-bottom: var(--padding-small);
     width: 100%;
+
+    @include mobile {
+        font-size: var(--font-subtitle);
+    }
 }
 
 .legend-text {

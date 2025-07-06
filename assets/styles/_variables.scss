@@ -77,8 +77,8 @@
     --arrow-width: 0.75rem;
 }
 
-/* Font and spacing adjustments for mobile */
-@include mobile {
+/* Font and spacing adjustments for small screens */
+@media (max-width: 480px) {
     :root {
         --font-xs: 0.45rem;
         --font-small: 0.55rem;
@@ -86,6 +86,18 @@
         --font-subtitle: 0.85rem;
         --font-header: 0.875rem;
         --font-title: 0.9rem;
+    }
+}
+
+/* Slightly larger fonts for landscape phones */
+@media (max-width: 896px) and (orientation: landscape) {
+    :root {
+        --font-xs: 0.55rem;
+        --font-small: 0.75rem;
+        --font-base: 0.875rem;
+        --font-subtitle: 1rem;
+        --font-header: 1.125rem;
+        --font-title: 1.25rem;
     }
 }
 
