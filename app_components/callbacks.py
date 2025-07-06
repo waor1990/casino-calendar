@@ -94,7 +94,6 @@ def register_callbacks(app, df):
         prevent_initial_call=True,
     )
     def show_dev_preview(week_offset, screen_width):
-        print(f"Screen-width reported: {screen_width}")
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
