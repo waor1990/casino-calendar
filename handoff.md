@@ -10,7 +10,6 @@ A responsive Dash web application that visualizes casino events in a calendar la
 
 - 📆 Weekly event chart with labeled time blocks
 - 🗂️ Built-in grid calendar view using CSS Grid
-- 🔄 Toggle to hide or show the Plotly weekly grid
 - 🧠 Modal views for detailed day and event info
 - 🌀 Toggle to display long-spanning events
 - 📱 Responsive design across mobile, tablet and desktop
@@ -52,10 +51,9 @@ casino_calendar/
 
 - Styles moved into `assets/styles/` with `base.css` at the root
 
-### Grid Layout Preview
+### Week Grid Layout
 
-- `week_grid_layout.py` renders a grid-style week calendar
-- Injected into `dev-preview-output` and always visible
+- `week_grid_layout.py` renders the default CSS grid calendar
 
 ### Scrollable Body
 
