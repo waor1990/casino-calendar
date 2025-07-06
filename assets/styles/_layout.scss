@@ -6,6 +6,15 @@ body {
     overflow: hidden;
 }
 
+@include mobile {
+
+    html,
+    body {
+        height: auto;
+        overflow: auto;
+    }
+}
+
 .main-layout {
     font-family: 'Segoe UI', sans-serif;
     margin: 0 auto;
@@ -45,8 +54,7 @@ body {
 .week-chart-scroll {
     overflow-x: visible;
     /* scrolling handled by parent container */
-    padding: 0 var(--padding-small)
-        calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
+    padding: 0 var(--padding-small) calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
     margin-bottom: 0;
 }
 

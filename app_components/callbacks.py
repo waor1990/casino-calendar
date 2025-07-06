@@ -148,11 +148,17 @@ def register_callbacks(app, df):
 
         from uuid import uuid4
 
+        style = (
+            {"height": f"{usable_height}px"}
+            if screen_width >= 768
+            else {"minHeight": f"{usable_height}px"}
+        )
+
         return (
             chart,
             week_start.strftime("%Y-%m-%d"),
             str(uuid4()),
-            {"height": f"{usable_height}px"},
+            style,
         )
 
     @app.callback(
