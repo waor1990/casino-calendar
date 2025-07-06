@@ -29,6 +29,7 @@
 
 .week-chart-scroll {
   overflow-x: visible;
+  overflow-y: auto;
   padding: 0 var(--padding-small) calc(var(--padding-base) * 3);
   margin-bottom: 0; }
 
