@@ -152,7 +152,7 @@ def register_callbacks(app, df):
             chart,
             week_start.strftime("%Y-%m-%d"),
             str(uuid4()),
-            {"height": f"{usable_height}px"},
+            {"minHeight": f"{usable_height}px"},
         )
 
     @app.callback(
