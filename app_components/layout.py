@@ -36,6 +36,7 @@ def create_layout(app, df):
             dcc.Store(id="usable-height", data=600),
             dcc.Store(id="screen-width", data=1024),
             dcc.Store(id="week-offset", data=0),
+            dcc.Store(id="overflow-date"),
             dcc.Store(id="animation-refresh"),
             html.Div(id="animation-dummy", style={"display": "none"}),
             # Interval Triggers

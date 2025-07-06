@@ -11,6 +11,7 @@ def register_callbacks(app, df):
     from pytz import timezone
 
     from .plotting import generate_day_view_html, get_color
+    from .legacy import filter_long_spanning_events
     from .utils import offer_type_emoji
     from .week_grid_layout import render_week_grid
 
@@ -89,6 +90,7 @@ def register_callbacks(app, df):
 
     @app.callback(
         Output("week-chart-container", "children"),
+        Output("overflow-date", "data"),
         Output("animation-refresh", "data"),
         Input("usable-height", "data"),
         Input("week-offset", "data"),
@@ -102,8 +104,42 @@ def register_callbacks(app, df):
 
         grid = render_week_grid(week_start, df, screen_width)
 
+        week_end = week_start + timedelta(days=6)
+        overflow_df = filter_long_spanning_events(df, week_start, week_end)
+
+        if not overflow_df.empty:
+            overflow_toggle = html.Button(
+                f"🌀 Show Ongoing Events for {week_start.strftime('%b %d')} - {week_end.strftime('%b %d')}",
+                id="overflow-toggle",
+                n_clicks=0,
+                className="overflow-toggle",
+            )
+            overflow_box = html.Div(
+                id="overflow-box",
+                className="overflow-box-expand",
+                children=[
+                    html.Strong(
+                        "Ongoing Events This Week:",
+                        className="font-bold mb-section",
+                        style={"color": "#6A5ACD", "display": "block"},
+                    ),
+                    html.Ul(
+                        [
+                            html.Li(
+                                f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}",
+                                style={"color": "#00008B"},
+                            )
+                            for _, row in overflow_df.iterrows()
+                        ]
+                    ),
+                ],
+            )
+        else:
+            overflow_toggle = html.Div()
+            overflow_box = html.Div()
+
         chart = html.Div(
-            children=[grid],
+            children=[grid, overflow_toggle, overflow_box],
             id=f"week-chart-{week_offset}",
             className="slide-in week-chart-scroll",
             style={"height": f"{usable_height}px"},
@@ -112,7 +148,29 @@ def register_callbacks(app, df):
 
         from uuid import uuid4
 
-        return chart, str(uuid4())
+        return chart, week_start.strftime("%Y-%m-%d"), str(uuid4())
+
+    @app.callback(
+        Output("overflow-box", "className"),
+        Output("overflow-toggle", "children"),
+        Input("overflow-toggle", "n_clicks"),
+        State("overflow-date", "data"),
+        prevent_initial_call=True,
+    )
+    def toggle_overflow(n_clicks, start_date_str):
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+        end_date = start_date + timedelta(days=6)
+        is_open = n_clicks % 2 == 1
+
+        box_class = "overflow-box-expand show" if is_open else "overflow-box-expand"
+
+        button_text = (
+            f"🌀 Hide Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+            if is_open
+            else f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+        )
+
+        return box_class, button_text
 
     @app.callback(
         Output("event-modal", "style"),
