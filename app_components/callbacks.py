@@ -92,6 +92,7 @@ def register_callbacks(app, df):
         Output("week-chart-container", "children"),
         Output("overflow-date", "data"),
         Output("animation-refresh", "data"),
+        Output("calendar-scroll-body", "style"),
         Input("usable-height", "data"),
         Input("week-offset", "data"),
         Input("screen-width", "data"),
@@ -142,13 +143,17 @@ def register_callbacks(app, df):
             children=[grid, overflow_toggle, overflow_box],
             id=f"week-chart-{week_offset}",
             className="slide-in week-chart-scroll",
-            style={"height": f"{usable_height}px"},
             **{"data-week": week_offset},
         )
 
         from uuid import uuid4
 
-        return chart, week_start.strftime("%Y-%m-%d"), str(uuid4())
+        return (
+            chart,
+            week_start.strftime("%Y-%m-%d"),
+            str(uuid4()),
+            {"height": f"{usable_height}px"},
+        )
 
     @app.callback(
         Output("overflow-box", "className"),
