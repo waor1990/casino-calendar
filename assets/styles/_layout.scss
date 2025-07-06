@@ -1,5 +1,11 @@
 /* Layout and Structure */
 
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
 .main-layout {
     font-family: 'Segoe UI', sans-serif;
     margin: 0 auto;
