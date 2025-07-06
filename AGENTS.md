@@ -1,7 +1,11 @@
 # AGENTS Instructions for Casino Event Calendar
 
 These guidelines outline how to format code and validate changes for this Dash
-application.
+application. See the **Contributing** section in `README.md` for workflow tips
+and a link to the project's Git cheat‑sheet.
+
+Directory-specific instructions can be found in
+`app_components/AGENTS.md` and `assets/styles/AGENTS.md`.
 
 ## Code style
 

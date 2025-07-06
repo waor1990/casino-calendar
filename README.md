@@ -65,6 +65,12 @@ Hosted at [https://casino-calendar.onrender.com](https://casino-calendar.onrende
 web: gunicorn app:server
 ```
 
+## 🤝 Contributing
+
+Please follow the development guidelines in `AGENTS.md` when proposing
+changes. Run the formatters and linters before committing and see
+`GIT-CHEATSHEET.md` for handy Git commands.
+
 ## 🧼 License
 
 Released under [The Unlicense](https://unlicense.org).
