@@ -7,10 +7,11 @@ def register_callbacks(app, df):
 
     import dash
     import pandas as pd
-    from dash import ALL, Input, Output, State, dcc, html, no_update
+    from dash import ALL, Input, Output, State, html, no_update
     from pytz import timezone
 
-    from .plotting import generate_day_view_html, generate_weekly_view, get_color
+    from .plotting import generate_day_view_html, get_color
+    from .legacy import filter_long_spanning_events
     from .utils import offer_type_emoji
     from .week_grid_layout import render_week_grid
 
@@ -100,7 +101,9 @@ def register_callbacks(app, df):
 
         grid = render_week_grid(week_start, df, screen_width)
 
-        _, overflow_df = generate_weekly_view(week_start, df, screen_width)
+        overflow_df = filter_long_spanning_events(
+            df, week_start, week_start + timedelta(days=7)
+        )
         end_date = week_start + timedelta(days=6)
 
         if not overflow_df.empty:
@@ -144,67 +147,23 @@ def register_callbacks(app, df):
         )
 
     @app.callback(
-        Output("show-plotly-grid", "data"),
-        Output("plotly-grid-button", "children"),
-        Input("plotly-grid-button", "n_clicks"),
-        State("show-plotly-grid", "data"),
-        prevent_initial_call=True,
-    )
-    def toggle_plotly_grid(n_clicks, current_state):
-        if n_clicks is None:
-            raise dash.exceptions.PreventUpdate
-
-        new_state = not current_state
-        button_label = "Hide Plotly Layout" if new_state else "Show Plotly Layout"
-        return new_state, button_label
-
-    @app.callback(
         Output("week-chart-container", "children"),
         Output("overflow-date", "data"),
         Output("animation-refresh", "data"),
         Input("usable-height", "data"),
         Input("week-offset", "data"),
         Input("screen-width", "data"),
-        Input("show-plotly-grid", "data"),
         prevent_initial_call=True,
     )
-    def render_single_week_chart(usable_height, week_offset, screen_width, show_chart):
+    def render_single_week_chart(usable_height, week_offset, screen_width):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
 
-        if not show_chart:
-            import plotly.graph_objs as go
+        grid = render_week_grid(week_start, df, screen_width)
 
-            hidden_graph = dcc.Graph(
-                id="weekly-graph",
-                figure=go.Figure(),
-                config={"displayModeBar": False},
-                style={"display": "none"},
-            )
-
-            container = html.Div(
-                children=[hidden_graph],
-                id=f"week-chart-{week_offset}",
-                style={"display": "none"},
-            )
-
-            from uuid import uuid4
-
-            return container, week_start.strftime("%Y-%m-%d"), str(uuid4())
-
-        fig, _ = generate_weekly_view(week_start, df, screen_width)
-
-        # Shared scrollable container for graph only
         chart = html.Div(
-            children=[
-                dcc.Graph(
-                    id="weekly-graph",
-                    figure=fig,
-                    config={"displayModeBar": False},
-                    style={"width": "100%", "height": "auto"},
-                ),
-            ],
+            children=[grid],
             id=f"week-chart-{week_offset}",
             className="slide-in week-chart-scroll",
             style={"height": f"{usable_height}px"},
