@@ -7,10 +7,11 @@ def register_callbacks(app, df):
 
     import dash
     import pandas as pd
-    from dash import ALL, Input, Output, State, dcc, html, no_update
+    from dash import ALL, Input, Output, State, html, no_update
     from pytz import timezone
 
-    from .plotting import generate_day_view_html, generate_weekly_view, get_color
+    from .plotting import generate_day_view_html, get_color
+    from .legacy import filter_long_spanning_events
     from .utils import offer_type_emoji
     from .week_grid_layout import render_week_grid
 
@@ -88,24 +89,28 @@ def register_callbacks(app, df):
         return desired_offset, prev_disabled, next_disabled, next_title
 
     @app.callback(
-        Output("dev-preview-output", "children"),
+        Output("week-chart-container", "children"),
+        Output("overflow-date", "data"),
+        Output("animation-refresh", "data"),
+        Output("calendar-scroll-body", "style"),
+        Input("usable-height", "data"),
         Input("week-offset", "data"),
         Input("screen-width", "data"),
         prevent_initial_call=True,
     )
-    def show_dev_preview(week_offset, screen_width):
+    def render_single_week_chart(usable_height, week_offset, screen_width):
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
 
         grid = render_week_grid(week_start, df, screen_width)
 
-        _, overflow_df = generate_weekly_view(week_start, df, screen_width)
-        end_date = week_start + timedelta(days=6)
+        week_end = week_start + timedelta(days=6)
+        overflow_df = filter_long_spanning_events(df, week_start, week_end)
 
         if not overflow_df.empty:
             overflow_toggle = html.Button(
-                f"🌀 Show Ongoing Events for {week_start.strftime('%b %d')} - {end_date.strftime('%b %d')}",
+                f"🌀 Show Ongoing Events for {week_start.strftime('%b %d')} - {week_end.strftime('%b %d')}",
                 id="overflow-toggle",
                 n_clicks=0,
                 className="overflow-toggle",
@@ -117,10 +122,7 @@ def register_callbacks(app, df):
                     html.Strong(
                         "Ongoing Events This Week:",
                         className="font-bold mb-section",
-                        style={
-                            "color": "#6A5ACD",
-                            "display": "block",
-                        },
+                        style={"color": "#6A5ACD", "display": "block"},
                     ),
                     html.Ul(
                         [
@@ -137,83 +139,21 @@ def register_callbacks(app, df):
             overflow_toggle = html.Div()
             overflow_box = html.Div()
 
-        return html.Div(
-            [grid, overflow_toggle, overflow_box],
-            id=f"week-grid-{week_offset}",
-            className="slide-in week-chart-scroll",
-        )
-
-    @app.callback(
-        Output("show-plotly-grid", "data"),
-        Output("plotly-grid-button", "children"),
-        Input("plotly-grid-button", "n_clicks"),
-        State("show-plotly-grid", "data"),
-        prevent_initial_call=True,
-    )
-    def toggle_plotly_grid(n_clicks, current_state):
-        if n_clicks is None:
-            raise dash.exceptions.PreventUpdate
-
-        new_state = not current_state
-        button_label = "Hide Plotly Layout" if new_state else "Show Plotly Layout"
-        return new_state, button_label
-
-    @app.callback(
-        Output("week-chart-container", "children"),
-        Output("overflow-date", "data"),
-        Output("animation-refresh", "data"),
-        Input("usable-height", "data"),
-        Input("week-offset", "data"),
-        Input("screen-width", "data"),
-        Input("show-plotly-grid", "data"),
-        prevent_initial_call=True,
-    )
-    def render_single_week_chart(usable_height, week_offset, screen_width, show_chart):
-        today = datetime.now(PDT)
-        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-        week_start = current_sunday + timedelta(weeks=week_offset)
-
-        if not show_chart:
-            import plotly.graph_objs as go
-
-            hidden_graph = dcc.Graph(
-                id="weekly-graph",
-                figure=go.Figure(),
-                config={"displayModeBar": False},
-                style={"display": "none"},
-            )
-
-            container = html.Div(
-                children=[hidden_graph],
-                id=f"week-chart-{week_offset}",
-                style={"display": "none"},
-            )
-
-            from uuid import uuid4
-
-            return container, week_start.strftime("%Y-%m-%d"), str(uuid4())
-
-        fig, _ = generate_weekly_view(week_start, df, screen_width)
-
-        # Shared scrollable container for graph only
         chart = html.Div(
-            children=[
-                dcc.Graph(
-                    id="weekly-graph",
-                    figure=fig,
-                    config={"displayModeBar": False},
-                    style={"width": "100%", "height": "auto"},
-                ),
-            ],
+            children=[grid, overflow_toggle, overflow_box],
             id=f"week-chart-{week_offset}",
             className="slide-in week-chart-scroll",
-            style={"height": f"{usable_height}px"},
             **{"data-week": week_offset},
         )
 
         from uuid import uuid4
 
-        return chart, week_start.strftime("%Y-%m-%d"), str(uuid4())
+        return (
+            chart,
+            week_start.strftime("%Y-%m-%d"),
+            str(uuid4()),
+            {"height": f"{usable_height}px"},
+        )
 
     @app.callback(
         Output("overflow-box", "className"),
@@ -242,11 +182,9 @@ def register_callbacks(app, df):
         Output("event-modal", "className"),
         Output("event-modal-body", "children"),
         Output("close-timer", "n_intervals"),
-        Output("weekly-graph", "clickData"),
         Output("day-modal", "style"),
         Output("day-modal", "className"),
         Output("day-modal-body", "children"),
-        Input("weekly-graph", "clickData"),
         Input("day-event-catcher", "clickData"),
         Input("close-modal", "n_clicks"),
         Input("close-timer", "n_intervals"),
@@ -257,7 +195,6 @@ def register_callbacks(app, df):
         prevent_initial_call=True,
     )
     def show_event_modal(
-        weekly_click,
         day_click,
         close_clicks,
         timer_tick,
@@ -270,7 +207,7 @@ def register_callbacks(app, df):
         triggered_id = ctx.triggered_id
 
         if triggered_id == "close-timer":
-            return no_update, "", "", 0, None, {"display": "none"}, "", ""
+            return no_update, "", "", 0, {"display": "none"}, "", ""
 
         if triggered_id == "close-modal":
             return (
@@ -278,8 +215,7 @@ def register_callbacks(app, df):
                 "modal closing",
                 no_update,
                 1,
-                None,
-                no_update,
+                {"display": "none"},
                 no_update,
                 no_update,
             )
@@ -290,7 +226,6 @@ def register_callbacks(app, df):
                 no_update,
                 no_update,
                 no_update,
-                None,
                 {"display": "none"},
                 "modal closing",
                 "",
@@ -309,7 +244,6 @@ def register_callbacks(app, df):
                     no_update,
                     no_update,
                     no_update,
-                    None,
                     no_update,
                     no_update,
                     no_update,
@@ -338,7 +272,6 @@ def register_callbacks(app, df):
                     no_update,
                     no_update,
                     no_update,
-                    None,
                     no_update,
                     no_update,
                     no_update,
@@ -387,12 +320,10 @@ def register_callbacks(app, df):
                             className="event-label",
                         )
                     )
-            return ({}, "modal show", rows, 0, None, {"display": "none"}, "", "")
+            return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
 
         click_data = None
-        if triggered_id == "weekly-graph":
-            click_data = weekly_click
-        elif triggered_id == "day-event-catcher":
+        if triggered_id == "day-event-catcher":
             click_data = day_click
 
         if click_data and "points" in click_data and click_data["points"]:
@@ -405,7 +336,6 @@ def register_callbacks(app, df):
                         no_update,
                         no_update,
                         no_update,
-                        None,
                         no_update,
                         no_update,
                         no_update,
@@ -424,7 +354,6 @@ def register_callbacks(app, df):
                     no_update,
                     no_update,
                     no_update,
-                    None,
                     {},
                     "modal show",
                     content,
@@ -483,7 +412,7 @@ def register_callbacks(app, df):
                                 className="event-label",
                             )
                         )
-                return ({}, "modal show", rows, 0, None, {"display": "none"}, "", "")
+                return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
 
         raise dash.exceptions.PreventUpdate
 
