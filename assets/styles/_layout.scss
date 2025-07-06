@@ -36,6 +36,12 @@
     background-color: var(--color-background);
 }
 
+@include desktop {
+    .calendar-scroll-body {
+        overflow-y: visible;
+    }
+}
+
 .week-chart-scroll {
     overflow-x: visible;
     overflow-y: auto;
