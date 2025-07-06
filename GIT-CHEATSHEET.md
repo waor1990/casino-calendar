@@ -110,10 +110,20 @@ git branch -D feature-branch    # force if unmerged
 ## Pull (Update Your Local Branch)
 
 ```bash
+# 0. If you have uncommitted changes:
+#    • Commit them:
+git add [files]
+git commit -m "WIP: save work"
+#    • Or stash them:
+git stash
+#    • Or discard them:
+git reset --hard HEAD
+git clean -fd
+
 # 1. Fetch remote updates
 git fetch origin
 
-# 2. Merge remote changes
+# 2. Merge remote changes into the current branch
 git pull
 
 # —or—
@@ -122,7 +132,7 @@ git pull
 git pull --rebase
 ```
 
-✔️ **Use when:** you want to ensure your tracking branch reflects the latest on GitHub.
+✔️ **Use when:** you want to ensure your tracking branch reflects the latest on GitHub, and safely handle any local uncommitted work before pulling.
 
 ---
 
