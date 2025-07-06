@@ -98,9 +98,11 @@ def create_layout(app, df):
 def sticky_header(df):
     return html.Div(
         [
-            html.H1(
+            html.Button(
                 "🎰 Casino Event Calendar 📅",
-                className="calendar-title",
+                id="title-refresh-button",
+                className="calendar-title title-button",
+                type="button",
             ),
             # Navigation & Legend
             html.Div(
