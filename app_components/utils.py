@@ -33,15 +33,15 @@ def get_week_range(clicked_date: datetime) -> Tuple[datetime, datetime]:
     """
 
     tz = clicked_date.tzinfo or PDT
-    localized = clicked_date.astimezone(tz)
-    naive = localized.replace(tzinfo=None)
+    if clicked_date.tzinfo is None:
+        localized = tz.localize(clicked_date)
+    else:
+        localized = clicked_date.astimezone(tz)
 
-    start_naive = (naive - timedelta(days=(naive.weekday() + 1) % 7)).replace(
+    week_start = (localized - timedelta(days=(localized.weekday() + 1) % 7)).replace(
         hour=0, minute=0, second=0, microsecond=0
     )
-
-    week_start = start_naive.astimezone(tz)
-    week_end = (week_start + timedelta(days=7)).astimezone(tz)
+    week_end = week_start + timedelta(days=7)
 
     return week_start, week_end
 
