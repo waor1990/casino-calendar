@@ -4,8 +4,8 @@
   "description": "Dash casino event calendar assets",
   "private": true,
   "scripts": {
-    "build:css": "sass assets/style.scss assets/style.css",
-    "watch:css": "sass --watch assets/style.scss assets/style.css"
+    "build:css": "sass --no-source-map assets/style.scss assets/style.css",
+    "watch:css": "sass --no-source-map --watch assets/style.scss assets/style.css"
   },
   "devDependencies": {
     "sass": "^1.77.0"

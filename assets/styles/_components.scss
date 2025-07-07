@@ -1,3 +1,5 @@
+@use 'mixins' as mixins;
+
 /* Headers */
 
 h1,
@@ -12,7 +14,7 @@ h1,
     display: block;
     align-items: center;
 
-    @include mobile {
+    @include mixins.mobile {
         font-size: var(--font-header);
     }
 }
@@ -26,7 +28,7 @@ h1,
     margin-bottom: var(--padding-small);
     width: 100%;
 
-    @include mobile {
+    @include mixins.mobile {
         font-size: var(--font-subtitle);
     }
 }
