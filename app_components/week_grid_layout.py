@@ -10,6 +10,54 @@ from .plotting import (
 from .utils import get_week_range, trim_label
 
 
+def _build_block(row, week_start, week_end, screen_width, colors):
+    """Return button text, classes and style variables for a calendar block."""
+
+    start_delta = (row["StartDate"] - week_start).total_seconds() / (24 * 3600)
+    end_delta = (row["EndDate"] - week_start).total_seconds() / (24 * 3600)
+
+    visible_start = max(start_delta, 0)
+    visible_end = min(end_delta, 7)
+    row_num = row["row_num"] + 2
+    span_days = visible_end - visible_start
+
+    left_pct = (visible_start / 7) * 100
+    width_pct = (span_days / 7) * 100
+
+    font_px = (
+        12
+        if screen_width < 480
+        else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
+    )
+    approx_char_px = font_px * 0.6
+    block_px = screen_width * (span_days / 7) * 0.95
+    max_chars = max(int(block_px / approx_char_px), 0)
+    text = trim_label(row["EventName"], max_chars, row.get("OfferType", ""))
+
+    classes = ["event-block-grid"]
+    if row["has_left_arrow"]:
+        classes.append("arrow-left")
+    if row["has_right_arrow"]:
+        classes.append("arrow-right")
+    if span_days < 0.5:
+        classes.append("short-span")
+
+    arrow_left = "calc(-1 * var(--arrow-width))" if row["has_left_arrow"] else "0"
+    arrow_right = "calc(-1 * var(--arrow-width))" if row["has_right_arrow"] else "0"
+
+    style = {
+        "--row": row_num,
+        "--left": f"{left_pct:.2f}%",
+        "--width": f"{width_pct:.2f}%",
+        "--bg": colors[row["Casino"]]["bg"],
+        "--fg": colors[row["Casino"]]["text"],
+        "--arrow-left-offset": arrow_left,
+        "--arrow-right-offset": arrow_right,
+    }
+
+    return text, " ".join(classes), style
+
+
 def render_week_grid(clicked_date, df, screen_width=1024):
     # Calculate week bounds
     week_start, week_end = get_week_range(clicked_date)
@@ -43,68 +91,23 @@ def render_week_grid(clicked_date, df, screen_width=1024):
         max_row = df_assigned["row_num"].max()
         event_rows = int(max_row) + 1
 
-    # Build CSS--grid event-block divs that are clickable
+    # Build CSS-grid event-block divs that are clickable
     event_blocks = []
     for idx, row in df_assigned.iterrows():
-        delta_start = row["StartDate"] - week_start
-        delta_end = row["EndDate"] - week_start
-        start_delta = delta_start.total_seconds() / (24 * 3600)
-        end_delta = delta_end.total_seconds() / (24 * 3600)
-
-        visible_start = max(start_delta, 0)
-        visible_end = min(end_delta, 7)
-
-        row_num = row["row_num"] + 2
-
-        duration_days = visible_end - visible_start
-
-        # Percentage offsets for fractional placement
-        left_pct = (visible_start / 7) * 100
-        width_pct = (duration_days / 7) * 100
-
-        # Trim label based on span width and screen size
-        label = row["EventName"]
-        font_px = (
-            12
-            if screen_width < 480
-            else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
-        )
-        approx_char_px = font_px * 0.6
-        block_px = screen_width * ((visible_end - visible_start) / 7) * 0.95
-        max_chars = max(int(block_px / approx_char_px), 0)
-        text = trim_label(label, max_chars, row.get("OfferType", ""))
-
-        # Determine arrow classes
-        cls = ["event-block-grid"]
-        if row["has_left_arrow"]:
-            cls.append("arrow-left")
-        if row["has_right_arrow"]:
-            cls.append("arrow-right")
-
-        # Mark short events for additional styling
-        if duration_days < 0.5:
-            cls.append("short-span")
+        text, cls, style = _build_block(row, week_start, week_end, screen_width, colors)
 
         event_blocks.append(
             html.Button(
                 text,
                 id={"type": "grid-event", "index": row.get("orig_index", idx)},
                 n_clicks=0,
-                className=" ".join(cls),
-                style={
-                    "--row": row_num,
-                    "--left": f"{left_pct:.2f}%",
-                    "--width": f"{width_pct:.2f}%",
-                    "--bg": colors[row["Casino"]]["bg"],
-                    "--fg": colors[row["Casino"]]["text"],
-                },
+                className=cls,
+                style=style,
                 title=f"{row['EventName']} ({row['Casino']})",
                 **{
                     "data-eventname": row["EventName"],
                     "data-casino": row["Casino"],
-                    "data-start": row["StartDate"].strftime(
-                        "%Y-%m-%dT%H:%M:%SZ"
-                    ),  # noqa: E501
+                    "data-start": row["StartDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "data-offer": row["Offer"],
                 },
