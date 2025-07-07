@@ -37,6 +37,7 @@ These tools are installed via `requirements.txt`.
 - Use variables defined in `assets/base.css`.
 - Keep styles modular in `assets/*` and avoid global overrides.
 - Follow a BEM‑like naming style (e.g., `.week-grid`, `.event-block-grid`).
+- Compile SCSS with `npm run build:css` and watch with `npm run watch:css`
 
 ## Programmatic checks
 
@@ -123,6 +124,8 @@ source .venv/bin/activate  # on Windows use .\.venv\Scripts\activate
 
 ```bash
 pip install -r requirements.txt
+npm install
+npm run build:css
 ```
 
 Run the formatters and linter:
