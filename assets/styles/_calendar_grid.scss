@@ -89,7 +89,8 @@
 /* 4. Your events now start on row 2 automatically */
 .event-block-grid {
     position: relative;
-    overflow: visible;
+    overflow: hidden;
+    text-overflow: ellipsis;
     box-sizing: border-box;
     min-height: var(--event-row-height);
     padding-bottom: var(--gap-week);
@@ -119,7 +120,7 @@
     content: "";
     position: absolute;
     top: 0;
-    left: calc(-1 * var(--arrow-width));
+    left: var(--arrow-left-offset, calc(-1 * var(--arrow-width)));
     width: var(--arrow-width);
     height: 100%;
     background-color: var(--color-border-primary);
@@ -134,7 +135,7 @@
     content: "";
     position: absolute;
     top: 0;
-    right: calc(-1 * var(--arrow-width));
+    right: var(--arrow-right-offset, calc(-1 * var(--arrow-width)));
     width: var(--arrow-width);
     height: 100%;
     background-color: var(--color-border-primary);
@@ -180,9 +181,4 @@
     .day-label-grid {
         font-size: var(--font-base);
     }
-}
-
-.event-block-grid.short-span {
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
