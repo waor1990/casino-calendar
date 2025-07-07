@@ -52,6 +52,7 @@ README.md
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate  # use .\.venv\Scripts\activate on Windows
+./setup.sh                 # install Python and Node dependencies
 pip install -r requirements.txt  # installs black, isort and flake8
 npm install
 npm run build:css
