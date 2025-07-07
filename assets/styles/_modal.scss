@@ -1,3 +1,5 @@
+@use 'mixins' as mixins;
+
 /* Modal Container & Behavior */
 .modal {
     position: fixed;
@@ -122,7 +124,7 @@
 }
 
 /* Modal Responsiveness */
-@include tablet {
+@include mixins.tablet {
     #event-modal-content {
         max-width: var(--event-modal-max-width-tablet);
     }
@@ -136,7 +138,7 @@
     }
 }
 
-@include mobile {
+@include mixins.mobile {
     #event-modal-content {
         width: var(--modal-width-mobile) !important;
     }
@@ -151,7 +153,7 @@
     }
 }
 
-@include desktop {
+@include mixins.desktop {
     #event-modal-content {
         max-width: 40rem;
     }
@@ -160,7 +162,7 @@
     }
 }
 
-@include hd {
+@include mixins.hd {
     #event-modal-content {
         max-width: 45rem;
     }

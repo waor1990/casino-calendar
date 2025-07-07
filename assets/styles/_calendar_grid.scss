@@ -1,3 +1,5 @@
+@use 'mixins' as mixins;
+
 /* 1. Establish a 7-column grid with a header row +event rows */
 .week-grid {
     display: grid;
@@ -160,7 +162,7 @@
     border-right: var(--border-thick) solid var(--color-border-primary);
 }
 
-@include mobile {
+@include mixins.mobile {
     .day-label-grid {
         font-size: var(--font-small);
     }
@@ -173,7 +175,7 @@
     }
 }
 
-@include desktop {
+@include mixins.desktop {
     .day-label-grid {
         font-size: var(--font-base);
     }
