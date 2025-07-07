@@ -76,3 +76,21 @@ def trim_label(label: str, max_chars: int, offer_type: str = "") -> str:
         return emoji
 
     return f"{trimmed}..."
+
+
+def max_chars_for_span(span_days: float, screen_width: int) -> int:
+    """Return the character count that fits within ``span_days`` on ``screen_width``.
+
+    The calculation approximates the width of an average character to
+    determine how many characters can be displayed without overflowing the
+    event block.
+    """
+
+    font_px = (
+        12
+        if screen_width < 480
+        else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
+    )
+    approx_char_px = font_px * 0.6
+    block_px = screen_width * (span_days / 7) * 0.95
+    return max(int(block_px / approx_char_px), 0)

@@ -7,7 +7,57 @@ from .plotting import (
     filter_week_events,
     get_color,
 )
-from .utils import get_week_range, trim_label
+from .utils import get_week_range, max_chars_for_span, trim_label
+
+
+def _create_event_block(row, week_start, colors, screen_width, idx):
+    """Return a styled event block button for the weekly grid."""
+
+    delta_start = (row["StartDate"] - week_start).total_seconds() / (24 * 3600)
+    delta_end = (row["EndDate"] - week_start).total_seconds() / (24 * 3600)
+
+    visible_start = max(delta_start, 0)
+    visible_end = min(delta_end, 7)
+    duration_days = visible_end - visible_start
+
+    left_pct = (visible_start / 7) * 100
+    width_pct = (duration_days / 7) * 100
+
+    text = trim_label(
+        row["EventName"],
+        max_chars_for_span(duration_days, screen_width),
+        row.get("OfferType", ""),
+    )
+
+    classes = ["event-block-grid"]
+    if row["has_left_arrow"]:
+        classes.append("arrow-left")
+    if row["has_right_arrow"]:
+        classes.append("arrow-right")
+    if duration_days < 0.5:
+        classes.append("short-span")
+
+    return html.Button(
+        html.Span(text, className="event-block-grid__text"),
+        id={"type": "grid-event", "index": row.get("orig_index", idx)},
+        n_clicks=0,
+        className=" ".join(classes),
+        style={
+            "--row": row["row_num"] + 2,
+            "--left": f"{left_pct:.2f}%",
+            "--width": f"{width_pct:.2f}%",
+            "--bg": colors[row["Casino"]]["bg"],
+            "--fg": colors[row["Casino"]]["text"],
+        },
+        title=f"{row['EventName']} ({row['Casino']})",
+        **{
+            "data-eventname": row["EventName"],
+            "data-casino": row["Casino"],
+            "data-start": row["StartDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "data-offer": row["Offer"],
+        },
+    )
 
 
 def render_week_grid(clicked_date, df, screen_width=1024):
@@ -43,73 +93,11 @@ def render_week_grid(clicked_date, df, screen_width=1024):
         max_row = df_assigned["row_num"].max()
         event_rows = int(max_row) + 1
 
-    # Build CSS--grid event-block divs that are clickable
-    event_blocks = []
-    for idx, row in df_assigned.iterrows():
-        delta_start = row["StartDate"] - week_start
-        delta_end = row["EndDate"] - week_start
-        start_delta = delta_start.total_seconds() / (24 * 3600)
-        end_delta = delta_end.total_seconds() / (24 * 3600)
-
-        visible_start = max(start_delta, 0)
-        visible_end = min(end_delta, 7)
-
-        row_num = row["row_num"] + 2
-
-        duration_days = visible_end - visible_start
-
-        # Percentage offsets for fractional placement
-        left_pct = (visible_start / 7) * 100
-        width_pct = (duration_days / 7) * 100
-
-        # Trim label based on span width and screen size
-        label = row["EventName"]
-        font_px = (
-            12
-            if screen_width < 480
-            else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
-        )
-        approx_char_px = font_px * 0.6
-        block_px = screen_width * ((visible_end - visible_start) / 7) * 0.95
-        max_chars = max(int(block_px / approx_char_px), 0)
-        text = trim_label(label, max_chars, row.get("OfferType", ""))
-
-        # Determine arrow classes
-        cls = ["event-block-grid"]
-        if row["has_left_arrow"]:
-            cls.append("arrow-left")
-        if row["has_right_arrow"]:
-            cls.append("arrow-right")
-
-        # Mark short events for additional styling
-        if duration_days < 0.5:
-            cls.append("short-span")
-
-        event_blocks.append(
-            html.Button(
-                text,
-                id={"type": "grid-event", "index": row.get("orig_index", idx)},
-                n_clicks=0,
-                className=" ".join(cls),
-                style={
-                    "--row": row_num,
-                    "--left": f"{left_pct:.2f}%",
-                    "--width": f"{width_pct:.2f}%",
-                    "--bg": colors[row["Casino"]]["bg"],
-                    "--fg": colors[row["Casino"]]["text"],
-                },
-                title=f"{row['EventName']} ({row['Casino']})",
-                **{
-                    "data-eventname": row["EventName"],
-                    "data-casino": row["Casino"],
-                    "data-start": row["StartDate"].strftime(
-                        "%Y-%m-%dT%H:%M:%SZ"
-                    ),  # noqa: E501
-                    "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "data-offer": row["Offer"],
-                },
-            )
-        )
+    # Build CSS-grid event-block divs that are clickable
+    event_blocks = [
+        _create_event_block(row, week_start, colors, screen_width, idx)
+        for idx, row in df_assigned.iterrows()
+    ]
 
     grid_fillers = [
         html.Div(
