@@ -7,7 +7,7 @@ OFFER_TYPE_EMOJIS = {
     "Free-Play": "🎰💵",
     "Hospitality-Rewards": "🏨🎲",
     "Point-Based": "📈💯",
-    "Giveaways": "🎁🎰",
+    "Giveaway": "🎁🎰",
     "Special-Events": "🎲💵",
     "Offer": "🎁❓",
 }
