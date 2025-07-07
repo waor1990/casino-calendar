@@ -5,9 +5,10 @@ from pytz import timezone
 
 OFFER_TYPE_EMOJIS = {
     "Free-Play": "🎰💵",
-    "Drawings": "🎟️🎲",
+    "Hospitality-Rewards": "🏨🎲",
     "Point-Based": "📈💯",
-    "Giveaways": "🎁🏨",
+    "Giveaways": "🎁🎰",
+    "Special-Events": "🎲💵",
     "Offer": "🎁❓",
 }
 
@@ -39,8 +40,8 @@ def get_week_range(clicked_date: datetime) -> Tuple[datetime, datetime]:
         hour=0, minute=0, second=0, microsecond=0
     )
 
-    week_start = tz.localize(start_naive, is_dst=None)
-    week_end = tz.normalize(week_start + timedelta(days=7))
+    week_start = start_naive.astimezone(tz)
+    week_end = (week_start + timedelta(days=7)).astimezone(tz)
 
     return week_start, week_end
 
