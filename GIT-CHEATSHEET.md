@@ -334,7 +334,7 @@ git checkout main
 git pull origin main
 
 # 2. Find the merge commit SHA
-git log --oneline   # look for "Merge pull request #…" → e.g. abcd123
+git --no-pager log --oneline   # look for "Merge pull request #…" → e.g. abcd123
 
 # 3. Revert the merge commit
 git revert -m 1 abcd123
