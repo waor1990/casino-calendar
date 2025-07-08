@@ -4,7 +4,7 @@ services:
     runtime: python
     buildCommand: |
       pip install -r requirements.txt
-      npm install
+      NPM_CONFIG_PRODUCTION=false npm install
       npm run build:css
     startCommand: gunicorn app:server
     envVars:
