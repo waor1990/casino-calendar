@@ -98,7 +98,7 @@ def render_week_grid(clicked_date, df, screen_width=1024):
 
         event_blocks.append(
             html.Button(
-                text,
+                html.Span(text, className="event-block-grid__text"),
                 id={"type": "grid-event", "index": row.get("orig_index", idx)},
                 n_clicks=0,
                 className=cls,
