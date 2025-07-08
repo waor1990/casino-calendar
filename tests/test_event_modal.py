@@ -1,3 +1,4 @@
+import chromedriver_binary  # noqa: F401
 from dash.testing.application_runners import import_app
 from freezegun import freeze_time
 
