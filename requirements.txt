@@ -8,3 +8,10 @@ gunicorn==23.0.0
 black==25.1.0
 isort==6.0.1
 flake8==7.3.0
+psutil==7.0.0
+selenium==4.21.0
+percy==2.0.2
+beautifulsoup4==4.12.3
+freezegun==1.5.0
+# Dash testing utilities
+"dash[testing]==3.1.1"
