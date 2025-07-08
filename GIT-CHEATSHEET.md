@@ -16,7 +16,7 @@
 12. [Reset Your Branch to a Specific Commit](#reset-your-branch-to-a-specific-commit)  
 13. [Point Your Branch at a Specific Commit](#point-your-branch-at-a-specific-commit)  
 14. [Revert a Merged PR & Clean Up Its Branch](#revert-a-merged-pr--clean-up-its-branch)  
-15. [Delete a Merged Branch](#delete-a-merged-branch)  
+15. [Delete a Branch (Merged or Unmerged)](#delete-a-branch-merged-or-unmerged)  
 16. [Update Your Local Directory After a Branch Has Been Merged & Deleted](#update-your-local-directory-after-a-branch-has-been-merged--deleted)  
 17. [Handling Merge Conflicts](#handling-merge-conflicts)  
 18. [Interactive Rebase & History Cleanup](#interactive-rebase--history-cleanup)  
@@ -353,17 +353,20 @@ git push origin --delete feature-branch
 
 ---
 
-## Delete a Merged Branch
+## Delete a Branch (Merged or Unmerged)
 
 ```bash
-# 1. Delete the branch locally (only if merged)
+# 1. Delete the branch locally
+#    • If it’s already merged into main (safe delete):
 git branch -d feature-branch
+#    • If it’s not merged (force delete):
+git branch -D feature-branch
 
 # 2. Delete the branch on GitHub
 git push origin --delete feature-branch
 ```
 
-✔️ **Use when:** the branch has been merged into `main` and you want to clean it up locally and remotely.
+✔️ **Use when:** you want to clean up a feature branch both locally and remotely, regardless of whether it’s been merged.
 
 ---
 
