@@ -7,6 +7,7 @@ gunicorn==23.0.0
 black==25.1.0
 isort==6.0.1
 flake8==7.3.0
+multiprocess==0.70.16
 psutil==7.0.0
 selenium==4.21.0
 percy==2.0.2
