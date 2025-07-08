@@ -4,7 +4,11 @@ services:
     runtime: python
     buildCommand: |
       pip install -r requirements.txt
-      NPM_CONFIG_PRODUCTION=false npm install
+      npm install
+      python -m py_compile app.py app_components/*.py
+      black --check .
+      isort --check-only .
+      flake8 .
       npm run build:css
     startCommand: gunicorn app:server
     envVars:
