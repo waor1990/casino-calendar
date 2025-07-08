@@ -1,8 +1,16 @@
 import chromedriver_autoinstaller
+import pytest
 from dash.testing.application_runners import import_app
 from freezegun import freeze_time
 
-chromedriver_autoinstaller.install()
+try:
+    chromedriver_autoinstaller.install()
+except ValueError:
+    pytest.skip(
+        "Chrome browser is not available for chromedriver-autoinstaller",
+        allow_module_level=True,
+    )
+
 
 @freeze_time("2025-04-10")
 def test_event_blocks_open_modal(dash_duo):
