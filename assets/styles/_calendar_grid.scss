@@ -123,12 +123,13 @@
 .day-click-area {
     background: none;
     border: none;
-    cursor: pointer;
+    cursor: zoom-in;
     z-index: 5;
 }
 
 .day-click-area:hover {
     background-color: rgba(106, 90, 205, 0.1);
+    cursor: zoom-in;
 }
 
 
