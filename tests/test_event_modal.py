@@ -4,8 +4,10 @@ from dash.testing.application_runners import import_app
 from freezegun import freeze_time
 
 try:
-    chromedriver_autoinstaller.install()
-except ValueError:
+    chromedriver_path = chromedriver_autoinstaller.install()
+    if not chromedriver_path:
+        raise RuntimeError("chromedriver install returned no path")
+except Exception:
     pytest.skip(
         "Chrome browser is not available for chromedriver-autoinstaller",
         allow_module_level=True,
