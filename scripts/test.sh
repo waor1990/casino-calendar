@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Run style checks and unit tests.
+
+set -e
+
+# Compile Python modules
+python -m py_compile app.py app_components/*.py
+
+# Run formatters and linter if installed
+if command -v black >/dev/null 2>&1; then
+    black --check .
+fi
+if command -v isort >/dev/null 2>&1; then
+    isort --check-only .
+fi
+if command -v flake8 >/dev/null 2>&1; then
+    flake8 .
+fi
+
+# Run test suite
+pytest -q
