@@ -1,20 +1,25 @@
+import sys
+from pathlib import Path
+
 import chromedriver_autoinstaller
 import pytest
-import sys 
 from freezegun import freeze_time
-from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from dash.testing.application_runners import import_app
+from dash.testing.application_runners import import_app  # noqa: E402
 
 try:
-    chromedriver_autoinstaller.install()
-except ValueError:
+    # Install chromedriver in the current working directory to avoid
+    # permission issues on Windows where the package directory may
+    # require elevated privileges.
+    chromedriver_autoinstaller.install(cwd=True)
+except (ValueError, PermissionError, RuntimeError):
     pytest.skip(
-        "Chrome browser is not available for chromedriver-autoinstaller",
+        "Chrome browser is not available or could not be installed",
         allow_module_level=True,
     )
+
 
 @freeze_time("2025-04-10")
 def test_event_blocks_open_modal(dash_duo):
