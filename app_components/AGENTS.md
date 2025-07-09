@@ -8,6 +8,7 @@ This directory contains the Python modules for the Dash application.
 - `legacy.py` contains deprecated Plotly helpers for reference only.
 - Split out helpers if a file grows beyond roughly 400 lines.
 - Check syntax before committing:
+
   ```bash
   python -m py_compile *.py
   ```

@@ -2,11 +2,12 @@
 
 ## 📌 Overview
 
-A responsive Dash web application that visualizes casino events in a calendar layout. Built with Plotly Dash and deployed on Render.
+A responsive Dash web application that visualizes casino events in a calendar layout.
+Built with Plotly Dash and deployed on Render.
 
 ---
 
-## ✅ Current Features
+### ✅ Current Features
 
 - 📆 Weekly event chart with labeled time blocks
 - 🗂️ Built-in grid calendar view using CSS Grid
@@ -18,7 +19,7 @@ A responsive Dash web application that visualizes casino events in a calendar la
 
 ---
 
-## 📁 Project Structure Highlights
+### 📁 Project Structure Highlights
 
 casino_calendar/
 ├── app_components/
@@ -47,6 +48,7 @@ casino_calendar/
 ├── requirements.txt
 ├── app.py                   # Dash entry point
 └── README.md
+
 ---
 
 ## 🧠 Recent Refactors

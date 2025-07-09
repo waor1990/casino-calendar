@@ -1,6 +1,7 @@
 # 🎰 Casino Event Calendar
 
-A personal Dash application that displays casino events on a responsive calendar. Weekly and daily views include interactive modals rendered with a CSS grid layout.
+A personal Dash application that displays casino events on a responsive calendar.
+Weekly and daily views include interactive modals rendered with a CSS grid layout.
 
 ---
 
@@ -68,6 +69,8 @@ web: gunicorn app:server
 Please follow the development guidelines in `AGENTS.md` when proposing
 changes. Run the formatters and linters before committing and see
 `GIT-CHEATSHEET.md` for handy Git commands.
+VSCode users can take advantage of the included `.editorconfig` and
+`.vscode` files so formatting and linting run automatically on save.
 
 ## 🧼 License
 
