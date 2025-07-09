@@ -16,7 +16,9 @@ venv/
 Thumbs.db
 
 # IDE settings
-.vscode/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 
 # Logs and artifacts

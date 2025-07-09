@@ -2,7 +2,8 @@
 
 ## 📌 Overview
 
-A responsive Dash web application that visualizes casino events in a calendar layout. Built with Plotly Dash and deployed on Render.
+A responsive Dash web application that visualizes casino events in a calendar layout.
+Built with Plotly Dash and deployed on Render.
 
 ---
 
