@@ -22,28 +22,19 @@ A personal Dash application that displays casino events on a responsive calendar
 ```text
 app.py                   # Dash entry point
 app_components/          # Core logic modules
-  callbacks.py           # Dash callbacks
-  data.py                # Event data handling
-  layout.py              # Layout and modals
-  plotting.py            # Plotly figure generation
-  utils.py               # Helpers and time zone utilities
-  week_grid_layout.py    # CSS-based week grid layout
-  legacy.py            # Archived Plotly helpers for reference
 assets/                  # Static assets auto-loaded by Dash
-  base.css
-  style.css
-  style.scss
-  styles/
-    animations.css
-    calendar_grid.css
-    components.css
-    layout.css
-    modal.css
-    utilities.css
-casino_events.csv        # Event data
+data/                    # CSV data files
+  casino_events.csv
+docs/                    # Project documentation
+  handoff.md
+  TODO.md
+deploy/                  # Deployment configuration
+  Procfile
+  render.yaml
+scripts/                 # Utility scripts
+  setup.sh
 requirements.txt         # Python dependencies
-Procfile                 # Render deployment
-package.json           # NPM scripts for Sass
+package.json             # NPM scripts for Sass
 README.md
 ```
 
@@ -52,7 +43,7 @@ README.md
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate  # use .\.venv\Scripts\activate on Windows
-./setup.sh                 # install Python and Node dependencies
+scripts/setup.sh                 # install Python and Node dependencies
 pip install -r requirements.txt  # installs black, isort and flake8
 npm install
 npm run build:css
@@ -66,7 +57,7 @@ python app.py
 
 Hosted at [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
 
-`Procfile`:
+`deploy/Procfile`:
 
 ```txt
 web: gunicorn app:server

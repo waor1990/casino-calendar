@@ -7,6 +7,15 @@ and a link to the project's Git cheat‑sheet.
 Directory-specific instructions can be found in
 `app_components/AGENTS.md` and `assets/styles/AGENTS.md`.
 
+### Key folders
+
+The repository stores supporting material in dedicated folders:
+
+- `data/`    CSV event files
+- `docs/`    project documentation
+- `deploy/`  Render configuration
+- `scripts/` utility scripts such as `setup.sh`
+
 ## Code style
 
 ### Python
@@ -123,6 +132,7 @@ source .venv/bin/activate  # on Windows use .\.venv\Scripts\activate
 ### Install requirements
 
 ```bash
+scripts/setup.sh           # installs Python and Node deps
 pip install -r requirements.txt
 npm install
 npm run build:css
@@ -148,7 +158,7 @@ pre-commit run --all-files
 python app.py
 ```
 
-### Run with Gunicorn (as in `Procfile`)
+### Run with Gunicorn (as in `deploy/Procfile`)
 
 ```bash
 gunicorn app:server
