@@ -7,7 +7,7 @@ and a link to the project's Git cheat‑sheet.
 Directory-specific instructions can be found in
 `app_components/AGENTS.md` and `assets/styles/AGENTS.md`.
 
-### Key folders
+## Key folders
 
 The repository stores supporting material in dedicated folders:
 
