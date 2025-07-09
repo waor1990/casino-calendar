@@ -123,8 +123,19 @@ def render_week_grid(clicked_date, df, screen_width=1024):
         for col in range(1, 8)
     ]
 
+    day_clickers = [
+        html.Button(
+            id={"type": "day-column", "index": date.strftime("%Y-%m-%d")},
+            n_clicks=0,
+            className="day-click-area",
+            title=f"View events for {date.strftime('%A %b %d')}",
+            style={"gridColumn": f"{i + 1}", "gridRow": f"2 / {event_rows + 2}"},
+        )
+        for i, date in enumerate(dates)
+    ]
+
     # 4. Render a single grid container: header labels + event blocks
     return html.Div(
-        children=[header_row] + event_blocks + grid_fillers,
+        children=[header_row] + event_blocks + day_clickers + grid_fillers,
         className="week-grid",
     )

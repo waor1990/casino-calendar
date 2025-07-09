@@ -146,6 +146,14 @@ h1,
     align-items: start;
 }
 
+.day-modal-title {
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent);
+    margin-bottom: var(--padding-small);
+    text-align: center;
+}
+
 .event-label strong {
     color: var(--color-accent);
 }
@@ -163,5 +171,4 @@ h1,
 
 .no-events {
     text-align: center;
-    padding: var(--padding-base);
-}
+    padding: var(--padding-base);}

@@ -196,6 +196,7 @@ def register_callbacks(app, df):
         Input("close-timer", "n_intervals"),
         Input("close-day-modal", "n_clicks"),
         Input({"type": "grid-event", "index": ALL}, "n_clicks"),
+        Input({"type": "day-column", "index": ALL}, "n_clicks"),
         State("week-offset", "data"),
         State("screen-width", "data"),
         prevent_initial_call=True,
@@ -206,6 +207,7 @@ def register_callbacks(app, df):
         timer_tick,
         close_day_clicks,
         grid_clicks,
+        day_column_clicks,
         week_offset,
         screen_width,
     ):
@@ -327,6 +329,36 @@ def register_callbacks(app, df):
                         )
                     )
             return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
+
+        if isinstance(triggered_id, dict) and triggered_id.get("type") == "day-column":
+            triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
+            if not triggered_n:
+                raise dash.exceptions.PreventUpdate
+
+            date_str = triggered_id.get("index")
+            if not date_str:
+                return (
+                    no_update,
+                    no_update,
+                    no_update,
+                    no_update,
+                    no_update,
+                    no_update,
+                    no_update,
+                )
+
+            clicked_date = PDT.localize(datetime.strptime(date_str, "%Y-%m-%d"))
+            content = generate_day_view_html(df, clicked_date, get_color, screen_width)
+
+            return (
+                no_update,
+                no_update,
+                no_update,
+                no_update,
+                {},
+                "modal show",
+                content,
+            )
 
         click_data = None
         if triggered_id == "day-event-catcher":

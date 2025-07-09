@@ -192,12 +192,12 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     events = events[(events["StartDate"] >= day_start) & (events["EndDate"] <= day_end)]
 
     day_label = clicked_date.strftime("%A, %B %d")
+    header_text = f"Events for {day_label}"
 
     if events.empty:
         return [
-            html.Div(
-                f"No events scheduled for {day_label}.", className="day-label no-events"
-            )
+            html.H2(header_text, className="day-label day-modal-title"),
+            html.Div("No events scheduled.", className="no-events"),
         ]
 
     # Time math
@@ -323,9 +323,9 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     )
 
     # Sticky Add day label + scrollable grid container
-    header = html.Div(
-        day_label,
-        className="day-label",
+    header = html.H2(
+        header_text,
+        className="day-label day-modal-title",
     )
 
     return [
