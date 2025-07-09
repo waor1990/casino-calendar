@@ -1,0 +1,87 @@
+from datetime import datetime
+
+import pandas as pd
+from dash import Dash
+from freezegun import freeze_time
+
+from app_components.callbacks import register_callbacks
+from app_components.utils import PDT
+
+
+class DummyCtx:
+    def __init__(self, triggered_id):
+        self.triggered_id = triggered_id
+        self.triggered = [{"prop_id": f"{triggered_id}.n_clicks", "value": 1}]
+
+
+@freeze_time("2025-04-15")
+def test_update_week_offset_next(monkeypatch):
+    df = pd.DataFrame(
+        {
+            "EventName": ["E1", "E2", "E3"],
+            "Casino": ["C", "C", "C"],
+            "Location": ["L", "L", "L"],
+            "Offer": ["", "", ""],
+            "StartDate": [
+                PDT.localize(datetime(2025, 4, 14)),
+                PDT.localize(datetime(2025, 4, 21)),
+                PDT.localize(datetime(2025, 4, 28)),
+            ],
+            "EndDate": [
+                PDT.localize(datetime(2025, 4, 14, 1)),
+                PDT.localize(datetime(2025, 4, 21, 1)),
+                PDT.localize(datetime(2025, 4, 28, 1)),
+            ],
+        }
+    )
+
+    app = Dash(__name__)
+    register_callbacks(app, df)
+    func = app.callback_map[
+        "..week-offset.data...prev-button.disabled...next-button.disabled...next-button.title.."
+    ]["callback"].__wrapped__
+
+    monkeypatch.setattr("dash.callback_context", DummyCtx("next-button"), raising=False)
+    offset, prev_disabled, next_disabled, title = func(0, 1, 0)
+    assert offset == 1
+    assert not prev_disabled
+    assert not next_disabled
+    assert title == "Upcoming Week"
+
+
+@freeze_time("2025-04-15")
+def test_update_week_offset_no_next(monkeypatch):
+    df = pd.DataFrame(
+        {
+            "EventName": ["E1"],
+            "Casino": ["C"],
+            "Location": ["L"],
+            "Offer": [""],
+            "StartDate": [PDT.localize(datetime(2025, 4, 14))],
+            "EndDate": [PDT.localize(datetime(2025, 4, 14, 1))],
+        }
+    )
+
+    app = Dash(__name__)
+    register_callbacks(app, df)
+    func = app.callback_map[
+        "..week-offset.data...prev-button.disabled...next-button.disabled...next-button.title.."
+    ]["callback"].__wrapped__
+
+    monkeypatch.setattr("dash.callback_context", DummyCtx("next-button"), raising=False)
+    offset, _, next_disabled, _ = func(0, 1, 0)
+    assert offset == 0
+    assert next_disabled
+
+
+def test_toggle_overflow(monkeypatch):
+    df = pd.DataFrame()
+    app = Dash(__name__)
+    register_callbacks(app, df)
+    func = app.callback_map["..overflow-box.className...overflow-toggle.children.."][
+        "callback"
+    ].__wrapped__
+
+    result = func(1, "2025-04-13")
+    assert result[0] == "overflow-box-expand show"
+    assert "Hide" in result[1]
