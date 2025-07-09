@@ -152,7 +152,7 @@ def categorize_offer_type_updated(event_name, offer):
     return "Offer"
 
 
-def load_event_data(csv_path="casino_events.csv"):
+def load_event_data(csv_path="data/casino_events.csv"):
     df = pd.read_csv(csv_path)
 
     for col in ["StartDate", "EndDate"]:

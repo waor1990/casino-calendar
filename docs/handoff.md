@@ -19,7 +19,6 @@ A responsive Dash web application that visualizes casino events in a calendar la
 ---
 
 ## 📁 Project Structure Highlights
-
 casino_calendar/
 ├── app_components/
 │   ├── layout.py            # Sticky header, modals, containers
@@ -37,12 +36,16 @@ casino_calendar/
 │       ├── layout.css         # Page structure
 │       ├── modal.css          # Modal windows
 │       └── utilities.css      # Helper classes
-├── casino_events.csv
+├── data/
+│   └── casino_events.csv
+├── deploy/
+│   ├── Procfile                 # Render deployment file
+│   └── render.yaml
+├── scripts/
+│   └── setup.sh
 ├── requirements.txt
 ├── app.py                   # Dash entry point
-├── Procfile                 # Render deployment file
 └── README.md
-
 ---
 
 ## 🧠 Recent Refactors
@@ -83,7 +86,7 @@ casino_calendar/
 - Platform: [Render.com](https://render.com)
 - URL: [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
 - Python 3.11 / Dash 2.x
-- Gunicorn command in `Procfile`:
+- Gunicorn command in `deploy/Procfile`:
 
 ```txt
 web: gunicorn app:server
