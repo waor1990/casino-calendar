@@ -135,7 +135,7 @@ h1,
     border-top: var(--border-thin) solid var(--color-border-grid-light);
     box-sizing: border-box;
     pointer-events: none;
-    z-index: 1;
+    z-index: 2; // above modal background but below events
 }
 
 .event-label-title {
@@ -188,6 +188,7 @@ h1,
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--fg);
 }
 
 .no-events {
