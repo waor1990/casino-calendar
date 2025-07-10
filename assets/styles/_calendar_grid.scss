@@ -119,6 +119,19 @@
     text-overflow: ellipsis;
 }
 
+// Transparent button covering each day column
+.day-click-area {
+    background: none;
+    border: none;
+    cursor: zoom-in;
+    z-index: 5;
+}
+
+.day-click-area:hover {
+    background-color: rgba(106, 90, 205, 0.1);
+    cursor: zoom-in;
+}
+
 
 /* 5. Left/Right overflow arrows */
 .event-block-grid.arrow-left::before {

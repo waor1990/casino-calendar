@@ -192,12 +192,12 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     events = events[(events["StartDate"] >= day_start) & (events["EndDate"] <= day_end)]
 
     day_label = clicked_date.strftime("%A, %B %d")
+    header_text = f"Events for {day_label}"
 
     if events.empty:
         return [
-            html.Div(
-                f"No events scheduled for {day_label}.", className="day-label no-events"
-            )
+            html.H2(header_text, className="day-label day-modal-title"),
+            html.Div("No events scheduled.", className="no-events"),
         ]
 
     # Time math
@@ -233,6 +233,7 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
 
     color_map = get_color_fn()
     hour_blocks = []
+    hour_lines = []
     event_blocks = []
     click_markers = []
 
@@ -252,6 +253,15 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
                 },
             )
         )
+        hour_lines.append(
+            html.Div(
+                className="hour-grid-line",
+                style={
+                    "top": f"{top_px}px",
+                    "height": f"{hour_height}px",
+                },
+            )
+        )
 
     # Event blocks + invisible click markers
     for _, row in events.iterrows():
@@ -264,6 +274,7 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
         # Visible block
         event_blocks.append(
             html.Div(
+                html.Span(row["EventName"], className="event-block-label"),
                 title=row["EventName"],
                 className="event-block",
                 style={
@@ -323,15 +334,15 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     )
 
     # Sticky Add day label + scrollable grid container
-    header = html.Div(
-        day_label,
-        className="day-label",
+    header = html.H2(
+        header_text,
+        className="day-label day-modal-title",
     )
 
     return [
         header,
         html.Div(
-            children=hour_blocks + event_blocks + [click_graph],
+            children=hour_blocks + hour_lines + event_blocks + [click_graph],
             className="day-grid",
             style={
                 "height": f"{24 * hour_height}px",
