@@ -168,28 +168,7 @@ h1,
     color: var(--color-accent);
 }
 
-.event-block {
-    position: absolute;
-    border: var(--border-thin);
-    border-radius: var(--border-radius-sm);
-    box-sizing: border-box;
-    z-index: 10;
-    cursor: pointer;
-    font-size: var(--font-small);
-    font-weight: var(--font-weight-normal);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 var(--padding-xxs);
-    overflow: hidden;
-}
-
-.event-block-label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--fg);
-}
+// Deprecated: modal event block styles moved to _modal.scss
 
 .no-events {
     text-align: center;    padding: var(--padding-base);}
