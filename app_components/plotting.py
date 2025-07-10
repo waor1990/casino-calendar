@@ -269,20 +269,21 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
         height_px = max(24, row["duration_min"] / 60 * hour_height)
         left_pct = label_column_pct + row["overlap_index"] * width_pct
 
-        color = color_map.get(row["Casino"], {"bg": "#aaa"})["bg"]
+        colors = color_map.get(row["Casino"], {"bg": "#aaa", "text": "#000"})
 
         # Visible block
         event_blocks.append(
             html.Div(
-                html.Span(row["EventName"], className="event-block-label"),
+                html.Span(row["EventName"], className="event-block-day__text"),
                 title=row["EventName"],
-                className="event-block",
+                className="event-block-day",
                 style={
                     "top": f"{top_px}px",
                     "left": f"{left_pct}%",
                     "width": f"{width_pct}%",
                     "height": f"{height_px}px",
-                    "backgroundColor": color,
+                    "--bg": colors["bg"],
+                    "--fg": colors["text"],
                 },
             )
         )
