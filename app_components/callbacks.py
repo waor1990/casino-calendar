@@ -71,7 +71,7 @@ def register_callbacks(app, df):
 
         next_week_offset = desired_offset + 1
         next_week_start = current_sunday + timedelta(weeks=next_week_offset)
-        next_week_end = next_week_start + timedelta(days=6)
+        next_week_end = next_week_start + timedelta(days=7)
 
         has_next_week_events = not df[
             (df["EndDate"] > next_week_start) & (df["StartDate"] < next_week_end)
@@ -105,7 +105,7 @@ def register_callbacks(app, df):
 
         grid = render_week_grid(week_start, df, screen_width)
 
-        week_end = week_start + timedelta(days=6)
+        week_end = week_start + timedelta(days=7)
         overflow_df = filter_long_spanning_events(df, week_start, week_end)
 
         if not overflow_df.empty:
