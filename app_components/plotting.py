@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.graph_objs as go
 from dash import dcc, html
 
-from .utils import PDT
+from .utils import PDT, offer_type_emoji
 
 
 # Layout config shared across functions
@@ -270,13 +270,31 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
         left_pct = label_column_pct + row["overlap_index"] * width_pct
 
         colors = color_map.get(row["Casino"], {"bg": "#aaa", "text": "#000"})
+        emoji = offer_type_emoji(row.get("OfferType", ""))
+
+        short_span = row["duration_min"] < 90
+        tall_span = height_px >= hour_height * 3
+
+        children = []
+        if tall_span:
+            children.append(html.Span(emoji, className="event-block-day_emoji-top"))
+
+        label_content = emoji if short_span else row["EventName"]
+        children.append(html.Span(label_content, className="event-block-day_text"))
+
+        if tall_span:
+            children.append(html.Span(emoji, className="event-block-day_emoji-bottom"))
+
+        block_classes = ["event-block-day"]
+        if short_span:
+            block_classes.append("short-span")
 
         # Visible block
         event_blocks.append(
             html.Div(
-                html.Span(row["EventName"], className="event-block-day__text"),
+                children,
                 title=row["EventName"],
-                className="event-block-day",
+                className="".join(block_classes),
                 style={
                     "top": f"{top_px}px",
                     "left": f"{left_pct}%",

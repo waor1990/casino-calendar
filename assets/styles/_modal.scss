@@ -149,14 +149,27 @@
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     white-space: normal;
-    overflow-wrap: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
     text-align: center;
-    text-overflow: ellipsis;
-    line-height: 1;
+    line-height: 1.2;
     color: var(--fg);
+}
+
+.event-block-day_emoji-top,
+.event-block-day_emoji-bottom {
+    line-height: 1;
+}
+
+.event-block-day.short-span {
+    padding-left: 0;
+    padding-right: 0;
+    border-right: none;
+    border-left: none;
 }
 
 /* Modal Responsiveness */
