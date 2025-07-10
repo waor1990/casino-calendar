@@ -128,6 +128,16 @@ h1,
     background-color: var(--color-background);
 }
 
+.hour-grid-line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border-top: var(--border-thin) solid var(--color-border-grid-light);
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 2; // above modal background but below events
+}
+
 .event-label-title {
     font-size: var(--font-subtitle);
     font-weight: var(--font-weight-bold);
@@ -146,6 +156,14 @@ h1,
     align-items: start;
 }
 
+.day-modal-title {
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent);
+    margin-bottom: var(--padding-small);
+    text-align: center;
+}
+
 .event-label strong {
     color: var(--color-accent);
 }
@@ -159,9 +177,19 @@ h1,
     cursor: pointer;
     font-size: var(--font-small);
     font-weight: var(--font-weight-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--padding-xxs);
+    overflow: hidden;
+}
+
+.event-block-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--fg);
 }
 
 .no-events {
-    text-align: center;
-    padding: var(--padding-base);
-}
+    text-align: center;    padding: var(--padding-base);}
