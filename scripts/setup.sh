@@ -4,10 +4,18 @@
 
 set -e
 
-# Install Python dependencies
+# Creat and activate a virtual environment if not already present
+if [ ! -d ".venv" ]; then
+    python3 -m venv .venv
+fi
+
+# Activate the venv (will work within Codex)
+source .venv/bin/activate
+
+# Now install Python dependencies
 if [ -f requirements.txt ]; then
-    python3 -m pip install --upgrade pip
-    python3 -m pip install -r requirements.txt
+    pip install --upgrade pip
+    pip install -r requirements.txt
 fi
 
 # Install Node dependencies if npm is available
