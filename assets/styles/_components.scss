@@ -168,7 +168,7 @@ h1,
     color: var(--color-accent);
 }
 
-.event-block {
+.event-block-day {
     position: absolute;
     border: var(--border-thin);
     border-radius: var(--border-radius-sm);
@@ -184,7 +184,7 @@ h1,
     overflow: hidden;
 }
 
-.event-block-label {
+.event-block-day__label {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

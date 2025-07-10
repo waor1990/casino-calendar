@@ -175,6 +175,23 @@ def assign_event_rows(events_df, week_start):
     return events_df
 
 
+def create_day_event_block(row, top_px, height_px, left_pct, width_pct, color):
+    """Return a styled div representing a day-view event block."""
+
+    return html.Div(
+        html.Span(row["EventName"], className="event-block-day__label"),
+        title=row["EventName"],
+        className="event-block-day",
+        style={
+            "top": f"{top_px}px",
+            "left": f"{left_pct}%",
+            "width": f"{width_pct}%",
+            "height": f"{height_px}px",
+            "backgroundColor": color,
+        },
+    )
+
+
 # Generate a responsive 24-hour vertical day view with absolutely positioned event blocks.
 def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1024):
     hour_height, label_column_pct = get_layout_config(screen_width)
@@ -273,17 +290,13 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
 
         # Visible block
         event_blocks.append(
-            html.Div(
-                html.Span(row["EventName"], className="event-block-label"),
-                title=row["EventName"],
-                className="event-block",
-                style={
-                    "top": f"{top_px}px",
-                    "left": f"{left_pct}%",
-                    "width": f"{width_pct}%",
-                    "height": f"{height_px}px",
-                    "backgroundColor": color,
-                },
+            create_day_event_block(
+                row,
+                top_px=top_px,
+                height_px=height_px,
+                left_pct=left_pct,
+                width_pct=width_pct,
+                color=color,
             )
         )
 
