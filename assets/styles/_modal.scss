@@ -1,4 +1,5 @@
 @use 'mixins' as mixins;
+
 /* Modal windows and transitions */
 /* Modal Container & Behavior */
 .modal {
@@ -151,9 +152,10 @@
     align-items: center;
     justify-content: center;
     white-space: normal;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     text-align: center;
-    line-height: 1.2;
+    text-overflow: ellipsis;
+    line-height: 1;
     color: var(--fg);
 }
 
@@ -191,6 +193,7 @@
     #event-modal-content {
         max-width: 40rem;
     }
+
     #day-modal-content {
         max-width: 52rem;
     }
@@ -200,6 +203,7 @@
     #event-modal-content {
         max-width: 45rem;
     }
+
     #day-modal-content {
         max-width: 60rem;
     }
