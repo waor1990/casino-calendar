@@ -273,17 +273,9 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
         emoji = offer_type_emoji(row.get("OfferType", ""))
 
         short_span = row["duration_min"] < 90
-        tall_span = height_px >= hour_height * 3
-
-        children = []
-        if tall_span:
-            children.append(html.Span(emoji, className="event-block-day_emoji-top"))
 
         label_content = emoji if short_span else row["EventName"]
-        children.append(html.Span(label_content, className="event-block-day_text"))
-
-        if tall_span:
-            children.append(html.Span(emoji, className="event-block-day_emoji-bottom"))
+        children = [html.Span(label_content, className="event-block-day_text")]
 
         block_classes = ["event-block-day"]
         if short_span:
