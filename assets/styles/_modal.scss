@@ -154,7 +154,8 @@
     height: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: break-word;
+    word-break: break-word;
     text-align: center;
     line-height: 1.2;
     color: var(--fg);
@@ -165,6 +166,7 @@
     .event-block-day_text {
         font-size: var(--font-xs);
     }
+
     .event-block-day {
         margin-left: var(--padding-xs);
     }
