@@ -286,7 +286,7 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
             html.Div(
                 children,
                 title=row["EventName"],
-                className="".join(block_classes),
+                className=" ".join(block_classes),
                 style={
                     "top": f"{top_px}px",
                     "left": f"{left_pct}%",
