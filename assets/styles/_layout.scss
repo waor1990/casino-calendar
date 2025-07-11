@@ -67,14 +67,14 @@ body {
     border-radius: var(--border-radius-sm);
     z-index: 900;
     text-align: center;
-    font-size: clamp(var(--font-small), 2vw, var(--font-header));
+    font-size: var(--font-header);
     font-weight: var(--font-weight-bold);
     padding: var(--padding-small);
 }
 
 @include mixins.mobile {
     .week-label {
-        font-size: var(--font-small);
+        font-size: var(--font-header);
     }
 }
 
