@@ -193,7 +193,7 @@ body {
     border-radius: var(--border-radius-sm);
     z-index: 900;
     text-align: center;
-    font-size: clamp(var(--font-small), 2vw, var(--font-header));
+    font-size: var(--font-header);
     font-weight: var(--font-weight-bold);
     padding: var(--padding-small);
 }
@@ -201,7 +201,7 @@ body {
 @media (max-width: 480px),
 (max-width: 896px) and (orientation: landscape) {
     .week-label {
-        font-size: var(--font-small);
+        font-size: var(--font-header);
     }
 }
 
@@ -746,19 +746,37 @@ h1,
     align-items: center;
     justify-content: center;
     padding: 0 var(--padding-xxs);
+    margin-left: var(--padding-xxs);
     overflow: hidden;
     background-color: var(--bg);
     color: var(--fg);
 }
 
-.event-block-day__text {
+.event-block-day_text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    white-space: normal;
-    overflow-wrap: break-word;
+    height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: break-word;
     word-break: break-word;
     text-align: center;
     line-height: 1.2;
-    color: var(--fg)
+    color: var(--fg);
+    font-size: clamp(var(--font-xxs), 2.5vw, var(--font-base));
+}
+
+@media (max-width: 480px),
+(max-width: 896px) and (orientation: landscape) {
+    .event-block-day_text {
+        font-size: var(--font-xs);
+    }
+
+    .event-block-day {
+        margin-left: var(--padding-xs);
+    }
 }
 
 .event-block-day.short-span {
@@ -907,3 +925,5 @@ h1,
    - font-xs, font-small, font-base, font-subtitle,
      font-title, font-bold
 */
+
+/*# sourceMappingURL=style.css.map */
