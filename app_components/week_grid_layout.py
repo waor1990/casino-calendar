@@ -128,9 +128,9 @@ def render_week_grid(clicked_date, df, screen_width=1024):
             id={"type": "day-column", "index": date.strftime("%Y-%m-%d")},
             n_clicks=0,
             className="day-click-area",
-            title=f"{date.strftime('%a %b %d')} Events",
+            title=f"{date.strftime('%b %d')} Events",
             style={"gridColumn": f"{i + 1}", "gridRow": f"2 / {event_rows + 2}"},
-            **{"data-date": date.strftime("%a %b %d")},
+            **{"data-date": date.strftime("%b %d")},
         )
         for i, date in enumerate(dates)
     ]
