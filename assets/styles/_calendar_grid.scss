@@ -137,8 +137,10 @@
     content: attr(data-date) " Events";
     position: absolute;
     bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    display: inline-block;
     background-color: var(--color-accent);
     color: #fff;
     padding: 0 var(--padding-xxs);
