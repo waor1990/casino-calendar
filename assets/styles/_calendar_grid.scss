@@ -124,12 +124,30 @@
     background: none;
     border: none;
     cursor: zoom-in;
+    position: relative;
     z-index: 5;
 }
 
 .day-click-area:hover {
     background-color: rgba(106, 90, 205, 0.1);
     cursor: zoom-in;
+}
+
+.day-click-area:hover::after {
+    content: attr(data-date) " Events";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-accent);
+    color: #fff;
+    padding: 0 var(--padding-xxs);
+    font-size: var(--font-xs);
+    border-radius: var(--border-radius-sm);
+    white-space: nowrap;
+    box-shadow: var(--box-shadow-subtle);
+    pointer-events: none;
+    z-index: 20;
 }
 
 
