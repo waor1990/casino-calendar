@@ -179,6 +179,23 @@
     border-left: none;
 }
 
+.event-block-day.short-span:hover::after {
+    content: attr(data-event-name);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--bg);
+    color: var(--fg);
+    padding: 0 var(--padding-xxs);
+    font-size: var(--font-xs);
+    border-radius: var(--border-radius-sm);
+    white-space: nowrap;
+    box-shadow: var(--box-shadow-subtle);
+    pointer-events: none;
+    z-index: 20;
+}
+
 /* Modal Responsiveness */
 @include mixins.tablet {
     #event-modal-content {
