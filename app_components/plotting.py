@@ -281,22 +281,31 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
         if short_span:
             block_classes.append("short-span")
 
-        # Visible block
-        event_blocks.append(
-            html.Div(
-                children,
-                title=row["EventName"],
-                className=" ".join(block_classes),
-                style={
-                    "top": f"{top_px}px",
-                    "left": f"{left_pct}%",
-                    "width": f"{width_pct}%",
-                    "height": f"{height_px}px",
-                    "--bg": colors["bg"],
-                    "--fg": colors["text"],
-                },
-            )
+        def _fmt_time(ts: pd.Timestamp) -> str:
+            """Return timestamp formatted as h:mm AM/PM without leading zero."""
+            return ts.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
+
+        tooltip = (
+            f"{row['EventName']} ({row['Casino']}) - "
+            f"{_fmt_time(row['StartDate'])} to {_fmt_time(row['EndDate'])}"
         )
+
+        block_kwargs = dict(
+            title=row["EventName"],
+            className=" ".join(block_classes),
+            style={
+                "top": f"{top_px}px",
+                "left": f"{left_pct}%",
+                "width": f"{width_pct}%",
+                "height": f"{height_px}px",
+                "--bg": colors["bg"],
+                "--fg": colors["text"],
+            },
+            **{"data-tooltip": tooltip},
+        )
+
+        # Visible block
+        event_blocks.append(html.Div(children, **block_kwargs))
 
         # Invisible click marker for modal
         center_y = top_px + height_px / 2
