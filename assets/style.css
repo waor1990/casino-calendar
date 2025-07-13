@@ -2,920 +2,966 @@
 /* Design tokens and root variables */
 /* CSS Variables for Consistency */
 :root {
-  /* Layout spacings */
-  --padding-header: 0.625rem 0.9375rem;
-  --padding-button: 0.25rem 0.375rem;
-  --padding-small: 0.5rem;
-  --padding-base: 0.75rem;
-  --padding-large: 1rem;
-  --padding-xs: 0.25rem;
-  --padding-xxs: 0.125rem;
-  --gap-week: 0.25rem;
-  --gap-legend: 0.75rem;
-  --margin-section: 0.625rem;
-  /* Font sizes and weights */
-  --font-xs: 0.625rem;
-  --font-small: 0.875rem;
-  --font-base: 1rem;
-  --font-subtitle: 1.25rem;
-  --font-header: 1.5rem;
-  --font-title: 1.75rem;
-  --font-bold: bold;
-  --font-weight-bold: bold;
-  --font-weight-normal: normal;
-  /* Larger screen font sizes */
-  --font-title-lg: 2rem;
-  --font-subtitle-lg: 1.5rem;
-  /* Colors */
-  --color-primary-dark: #00008B;
-  --color-accent: #6A5ACD;
-  --color-accent-dark: #483D8B;
-  --color-background: #f5f3fa;
-  /* Day Header & Week Grid Colors */
-  --color-day-header-text: var(--color-accent-dark);
-  --color-day-header-bg: var(--color-background);
-  --color-border-primary: var(--color-primary-dark);
-  --color-border-accent: var(--color-accent);
-  --color-border-grid: #7F8BAA;
-  --color-border-grid-light: rgba(127, 139, 170, 0.3);
-  /* Borders and shadows */
-  --border-radius-lg: 0.625rem;
-  --border-radius-sm: 0.3125rem;
-  --border-radius-xs: 0.125rem;
-  --border-thin: 1px;
-  --border-thick: 0.125rem;
-  --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary-dark);
-  --box-shadow-subtle: 0 -0.0625rem 0.3125rem var(--color-accent);
-  --box-shadow-modal: 0 0 1.25rem var(--color-primary-dark);
-  /* Modal sizing */
-  --modal-max-width: clamp(20rem, 90vw, 37.5rem);
-  --modal-max-height: 80vh;
-  --modal-min-height: 18.75rem;
-  --modal-width: 90%;
-  --modal-width-mobile: 85%;
-  --day-modal-max-height: 50rem;
-  --modal-max-height-mobile: 70vh;
-  --event-modal-max-width-tablet: 31.25rem;
-  --day-modal-max-width-tablet: 43.75rem;
-  --modal-overlay-color: rgba(0, 0, 0, 0.25);
-  --modal-overlay-blur: 0.25rem;
-  /* Animation distances */
-  --slide-distance: 31.25rem;
-  --overflow-expand-max-height: 31.25rem;
-  --week-content-max-height: 93.75rem;
-  /* Row heights */
-  --header-row-height: 3.5rem;
-  --event-row-height: 1.875rem;
-  --arrow-width: 0.75rem;
+    /* Layout spacings */
+    --padding-header: 0.625rem 0.9375rem;
+    --padding-button: 0.25rem 0.375rem;
+    --padding-small: 0.5rem;
+    --padding-base: 0.75rem;
+    --padding-large: 1rem;
+    --padding-xs: 0.25rem;
+    --padding-xxs: 0.125rem;
+    --gap-week: 0.25rem;
+    --gap-legend: 0.75rem;
+    --margin-section: 0.625rem;
+    /* Font sizes and weights */
+    --font-xs: 0.625rem;
+    --font-small: 0.875rem;
+    --font-base: 1rem;
+    --font-subtitle: 1.25rem;
+    --font-header: 1.5rem;
+    --font-title: 1.75rem;
+    --font-bold: bold;
+    --font-weight-bold: bold;
+    --font-weight-normal: normal;
+    /* Larger screen font sizes */
+    --font-title-lg: 2rem;
+    --font-subtitle-lg: 1.5rem;
+    /* Colors */
+    --color-primary-dark: #00008B;
+    --color-accent: #6A5ACD;
+    --color-accent-dark: #483D8B;
+    --color-background: #f5f3fa;
+    /* Day Header & Week Grid Colors */
+    --color-day-header-text: var(--color-accent-dark);
+    --color-day-header-bg: var(--color-background);
+    --color-border-primary: var(--color-primary-dark);
+    --color-border-accent: var(--color-accent);
+    --color-border-grid: #7F8BAA;
+    --color-border-grid-light: rgba(127, 139, 170, 0.3);
+    /* Borders and shadows */
+    --border-radius-lg: 0.625rem;
+    --border-radius-sm: 0.3125rem;
+    --border-radius-xs: 0.125rem;
+    --border-thin: 1px;
+    --border-thick: 0.125rem;
+    --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary-dark);
+    --box-shadow-subtle: 0 -0.0625rem 0.3125rem var(--color-accent);
+    --box-shadow-modal: 0 0 1.25rem var(--color-primary-dark);
+    /* Modal sizing */
+    --modal-max-width: clamp(20rem, 90vw, 37.5rem);
+    --modal-max-height: 80vh;
+    --modal-min-height: 18.75rem;
+    --modal-width: 90%;
+    --modal-width-mobile: 85%;
+    --day-modal-max-height: 50rem;
+    --modal-max-height-mobile: 70vh;
+    --event-modal-max-width-tablet: 31.25rem;
+    --day-modal-max-width-tablet: 43.75rem;
+    --modal-overlay-color: rgba(0, 0, 0, 0.25);
+    --modal-overlay-blur: 0.25rem;
+    /* Animation distances */
+    --slide-distance: 31.25rem;
+    --overflow-expand-max-height: 31.25rem;
+    --week-content-max-height: 93.75rem;
+    /* Row heights */
+    --header-row-height: 3.5rem;
+    --event-row-height: 1.875rem;
+    --arrow-width: 0.75rem;
 }
 
 /* Font and spacing adjustments for small screens */
 @media (max-width: 480px) {
-  :root {
-    --font-xs: 0.45rem;
-    --font-small: 0.55rem;
-    --font-base: 0.7rem;
-    --font-subtitle: 0.85rem;
-    --font-header: 0.875rem;
-    --font-title: 0.9rem;
-  }
+    :root {
+        --font-xs: 0.45rem;
+        --font-small: 0.55rem;
+        --font-base: 0.7rem;
+        --font-subtitle: 0.85rem;
+        --font-header: 0.875rem;
+        --font-title: 0.9rem;
+    }
 }
+
 /* Slightly larger fonts for landscape phones */
 @media (max-width: 896px) and (orientation: landscape) {
-  :root {
-    --font-xs: 0.55rem;
-    --font-small: 0.75rem;
-    --font-base: 0.875rem;
-    --font-subtitle: 1rem;
-    --font-header: 1.125rem;
-    --font-title: 1.25rem;
-  }
+    :root {
+        --font-xs: 0.55rem;
+        --font-small: 0.75rem;
+        --font-base: 0.875rem;
+        --font-subtitle: 1rem;
+        --font-header: 1.125rem;
+        --font-title: 1.25rem;
+    }
 }
+
 /* Font and spacing adjustments for tablets */
 @media (max-width: 768px) {
-  :root {
-    --font-xs: 0.55rem;
-    --font-small: 0.75rem;
-    --font-base: 0.875rem;
-    --font-subtitle: 1rem;
-    --font-header: 1.125rem;
-    --font-title: 1.25rem;
-  }
+    :root {
+        --font-xs: 0.55rem;
+        --font-small: 0.75rem;
+        --font-base: 0.875rem;
+        --font-subtitle: 1rem;
+        --font-header: 1.125rem;
+        --font-title: 1.25rem;
+    }
 }
+
 /* Desktop font adjustments */
 @media (min-width: 1024px) {
-  :root {
-    --font-base: 1.05rem;
-    --font-subtitle: 1.3rem;
-    --font-header: 1.6rem;
-    --font-title: 1.9rem;
-  }
+    :root {
+        --font-base: 1.05rem;
+        --font-subtitle: 1.3rem;
+        --font-header: 1.6rem;
+        --font-title: 1.9rem;
+    }
 }
+
 @media (min-width: 1440px) {
-  :root {
-    --font-base: 1.125rem;
-    --font-subtitle: 1.5rem;
-    --font-header: 1.75rem;
-    --font-title: 2rem;
-  }
+    :root {
+        --font-base: 1.125rem;
+        --font-subtitle: 1.5rem;
+        --font-header: 1.75rem;
+        --font-title: 2rem;
+    }
 }
+
 body {
-  overflow: visible;
+    overflow: visible;
 }
 
 /* Application layout structure */
 /* Layout and Structure */
 html,
 body {
-  height: 100%;
-  overflow: hidden;
+    height: 100%;
+    overflow: hidden;
 }
 
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
-  html,
-  body {
-    height: auto;
-    overflow: auto;
-  }
+@media (max-width: 480px),
+(max-width: 896px) and (orientation: landscape) {
+
+    html,
+    body {
+        height: auto;
+        overflow: auto;
+    }
 }
+
 .main-layout {
-  font-family: "Segoe UI", sans-serif;
-  margin: 0 auto;
-  padding-bottom: var(--padding-base);
+    font-family: "Segoe UI", sans-serif;
+    margin: 0 auto;
+    padding-bottom: var(--padding-base);
 }
 
 .calendar-content {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .day-grid {
-  position: relative;
-  width: 100%;
-  box-sizing: border-box;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .day-event-catcher {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  pointer-events: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    pointer-events: auto;
 }
 
 .calendar-scroll-body {
-  overflow-y: auto;
-  padding: var(--padding-base);
-  box-sizing: border-box;
-  background-color: var(--color-background);
+    overflow-y: auto;
+    padding: var(--padding-base);
+    box-sizing: border-box;
+    background-color: var(--color-background);
 }
 
 .week-chart-scroll {
-  overflow-x: visible;
-  /* scrolling handled by parent container */
-  padding: 0 var(--padding-small) calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
-  margin-bottom: 0;
+    overflow-x: visible;
+    /* scrolling handled by parent container */
+    padding: 0 var(--padding-small) calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
+    margin-bottom: 0;
 }
 
 .week-label {
-  color: var(--color-primary-dark);
-  background-color: var(--color-background);
-  box-shadow: var(--box-shadow-light);
-  border-radius: var(--border-radius-sm);
-  z-index: 900;
-  text-align: center;
-  font-size: var(--font-header);
-  font-weight: var(--font-weight-bold);
-  padding: var(--padding-small);
+    color: var(--color-primary-dark);
+    background-color: var(--color-background);
+    box-shadow: var(--box-shadow-light);
+    border-radius: var(--border-radius-sm);
+    z-index: 900;
+    text-align: center;
+    font-size: var(--font-header);
+    font-weight: var(--font-weight-bold);
+    padding: var(--padding-small);
 }
 
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
-  .week-label {
-    font-size: var(--font-header);
-  }
+@media (max-width: 480px),
+(max-width: 896px) and (orientation: landscape) {
+    .week-label {
+        font-size: var(--font-header);
+    }
 }
+
 .legend-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  text-align: left;
-  gap: var(--gap-legend);
-  padding: var(--padding-small);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    gap: var(--gap-legend);
+    padding: var(--padding-small);
 }
 
 .sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background-color: var(--color-background);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--color-background);
 }
+
 @media (max-width: 768px) {
-  .sticky-header {
-    position: static;
-  }
+    .sticky-header {
+        position: static;
+    }
 }
+
 @media (max-width: 896px) and (orientation: landscape) {
-  .sticky-header {
-    position: static;
-  }
+    .sticky-header {
+        position: static;
+    }
 }
 
 /* Shared UI component styles */
 /* Headers */
 h1,
 .calendar-title {
-  font-size: clamp(var(--font-header), 4vw, var(--font-title-lg));
-  text-align: center;
-  color: var(--color-primary-dark);
-  background-color: var(--color-background);
-  box-shadow: var(--box-shadow-light);
-  border-radius: var(--border-radius-sm);
-  padding: var(--padding-base);
-  display: block;
-  align-items: center;
+    font-size: clamp(var(--font-header), 4vw, var(--font-title-lg));
+    text-align: center;
+    color: var(--color-primary-dark);
+    background-color: var(--color-background);
+    box-shadow: var(--box-shadow-light);
+    border-radius: var(--border-radius-sm);
+    padding: var(--padding-base);
+    display: block;
+    align-items: center;
 }
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
-  h1,
-  .calendar-title {
-    font-size: var(--font-header);
-  }
+
+@media (max-width: 480px),
+(max-width: 896px) and (orientation: landscape) {
+
+    h1,
+    .calendar-title {
+        font-size: var(--font-header);
+    }
 }
 
 .legend-title {
-  font-size: clamp(var(--font-subtitle), 2.5vw, var(--font-header));
-  font-weight: var(--font-weight-bold);
-  text-align: center;
-  color: var(--color-accent);
-  gap: var(--gap-legend);
-  margin-bottom: var(--padding-small);
-  width: 100%;
+    font-size: clamp(var(--font-subtitle), 2.5vw, var(--font-header));
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+    color: var(--color-accent);
+    gap: var(--gap-legend);
+    margin-bottom: var(--padding-small);
+    width: 100%;
 }
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
-  .legend-title {
-    font-size: var(--font-subtitle);
-  }
+
+@media (max-width: 480px),
+(max-width: 896px) and (orientation: landscape) {
+    .legend-title {
+        font-size: var(--font-subtitle);
+    }
 }
 
 .legend-text {
-  font-size: var(--font-base);
-  white-space: nowrap;
+    font-size: var(--font-base);
+    white-space: nowrap;
 }
 
 .legend-item {
-  display: flex;
-  align-items: center;
-  flex: 0 1 auto;
-  box-shadow: var(--box-shadow-subtle);
-  border-radius: var(--border-radius-sm);
-  padding: var(--padding-xxs) var(--padding-small);
+    display: flex;
+    align-items: center;
+    flex: 0 1 auto;
+    box-shadow: var(--box-shadow-subtle);
+    border-radius: var(--border-radius-sm);
+    padding: var(--padding-xxs) var(--padding-small);
 }
 
 .legend-color-box {
-  width: var(--arrow-width);
-  height: var(--arrow-width);
-  display: inline-block;
-  border-radius: var(--padding-xs);
-  margin-right: var(--padding-xs);
+    width: var(--arrow-width);
+    height: var(--arrow-width);
+    display: inline-block;
+    border-radius: var(--padding-xs);
+    margin-right: var(--padding-xs);
 }
 
 /* Buttons */
 .emoji-button {
-  all: unset;
-  cursor: pointer;
-  font-size: var(--font-title-lg);
-  line-height: 1;
-  padding: var(--padding-button);
-  transition: transform 0.2s ease;
+    all: unset;
+    cursor: pointer;
+    font-size: var(--font-title-lg);
+    line-height: 1;
+    padding: var(--padding-button);
+    transition: transform 0.2s ease;
 }
 
 .emoji-button:disabled {
-  opacity: 0.2;
-  cursor: not-allowed;
-  transition: opacity 0.5s ease;
+    opacity: 0.2;
+    cursor: not-allowed;
+    transition: opacity 0.5s ease;
 }
 
 #prev-button.emoji-button:hover {
-  transform: scale(1.5) rotate(-10deg);
+    transform: scale(1.5) rotate(-10deg);
 }
 
 #next-button.emoji-button:hover {
-  transform: scale(1.5) rotate(10deg);
+    transform: scale(1.5) rotate(10deg);
 }
 
 /* Event related UI */
 .overflow-toggle {
-  color: var(--color-accent-dark);
-  display: inline-block;
-  text-align: left;
-  margin: var(--margin-section) auto calc(var(--margin-section) * 4) auto;
-  font-family: "Segoe UI", sans-serif;
-  font-size: clamp(var(--font-small), 4vw, var(--font-subtitle));
-  font-weight: var(--font-weight-bold);
-  padding: var(--padding-small);
-  background-color: var(--color-background);
-  border: var(--border-thin);
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+    color: var(--color-accent-dark);
+    display: inline-block;
+    text-align: left;
+    margin: var(--margin-section) auto calc(var(--margin-section) * 4) auto;
+    font-family: "Segoe UI", sans-serif;
+    font-size: clamp(var(--font-small), 4vw, var(--font-subtitle));
+    font-weight: var(--font-weight-bold);
+    padding: var(--padding-small);
+    background-color: var(--color-background);
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .overflow-box {
-  width: 80%;
-  font-size: clamp(var(--font-xs), 3.5vw, var(--font-base));
-  padding: var(--padding-base);
+    width: 80%;
+    font-size: clamp(var(--font-xs), 3.5vw, var(--font-base));
+    padding: var(--padding-base);
 }
 
 .day-label {
-  font-weight: var(--font-weight-normal);
-  font-size: var(--font-base);
-  margin-bottom: var(--padding-small);
-  text-align: center;
-  color: var(--color-primary-dark);
-  position: sticky;
-  top: 0;
-  z-index: 15;
-  background-color: var(--color-background);
-  padding: var(--padding-xxs);
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-base);
+    margin-bottom: var(--padding-small);
+    text-align: center;
+    color: var(--color-primary-dark);
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background-color: var(--color-background);
+    padding: var(--padding-xxs);
 }
 
 .hour-label {
-  position: absolute;
-  left: 0;
-  font-size: var(--font-small);
-  color: var(--color-accent);
-  padding-left: var(--padding-small);
-  box-sizing: border-box;
-  z-index: 5;
-  background-color: var(--color-background);
+    position: absolute;
+    left: 0;
+    font-size: var(--font-small);
+    color: var(--color-accent);
+    padding-left: var(--padding-small);
+    box-sizing: border-box;
+    z-index: 5;
+    background-color: var(--color-background);
 }
 
 .hour-grid-line {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  border-top: var(--border-thin) solid var(--color-border-grid-light);
-  box-sizing: border-box;
-  pointer-events: none;
-  z-index: 2;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border-top: var(--border-thin) solid var(--color-border-grid-light);
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 2;
 }
 
 .event-label-title {
-  font-size: var(--font-subtitle);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-accent);
-  margin-bottom: var(--padding-large);
-  text-align: center !important;
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent);
+    margin-bottom: var(--padding-large);
+    text-align: center !important;
 }
 
 .event-label {
-  margin-bottom: var(--padding-xs);
-  font-size: var(--font-base);
-  font-weight: var(--font-weight-normal);
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: var(--padding-xs);
-  align-items: start;
+    margin-bottom: var(--padding-xs);
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-normal);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: var(--padding-xs);
+    align-items: start;
 }
 
 .day-modal-title {
-  font-size: var(--font-subtitle);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-accent);
-  margin-bottom: var(--padding-small);
-  text-align: center;
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent);
+    margin-bottom: var(--padding-small);
+    text-align: center;
 }
 
 .event-label strong {
-  color: var(--color-accent);
+    color: var(--color-accent);
 }
 
 .no-events {
-  text-align: center;
-  padding: var(--padding-base);
+    text-align: center;
+    padding: var(--padding-base);
 }
 
 /* Calendar week grid layout */
 /* 1. Establish a 7-column grid with a header row +event rows */
 .week-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  grid-template-rows: var(--header-row-height) auto;
-  grid-auto-rows: minmax(var(--event-row-height), auto);
-  gap: 0;
-  padding: var(--padding-base);
-  position: relative;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-rows: var(--header-row-height) auto;
+    grid-auto-rows: minmax(var(--event-row-height), auto);
+    gap: 0;
+    padding: var(--padding-base);
+    position: relative;
 }
 
 .grid-filler-cell {
-  border-left: var(--border-thin) solid var(--color-border-grid);
-  border-right: var(--border-thin) solid var(--color-border-grid);
-  box-sizing: border-box;
-  min-height: var(--event-row-height);
-  pointer-events: none;
+    border-left: var(--border-thin) solid var(--color-border-grid);
+    border-right: var(--border-thin) solid var(--color-border-grid);
+    box-sizing: border-box;
+    min-height: var(--event-row-height);
+    pointer-events: none;
 }
 
 /* 2. Your day-labels sit in row 1, columns 1-7 */
 .day-label-wrapper {
-  grid-row: 1;
-  grid-column: 1/-1;
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  position: sticky;
-  top: 0;
-  z-index: 1100;
-  background-color: var(--color-day-header-bg);
-  border-top: var(--border-thick) solid var(--color-border-primary);
-  border-bottom: var(--border-thick) solid var(--color-border-primary);
+    grid-row: 1;
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    position: sticky;
+    top: 0;
+    z-index: 1100;
+    background-color: var(--color-day-header-bg);
+    border-top: var(--border-thick) solid var(--color-border-primary);
+    border-bottom: var(--border-thick) solid var(--color-border-primary);
 }
 
 .day-label-grid {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2em;
-  align-items: center;
-  justify-content: center;
-  line-height: 0.8;
-  font-size: var(--font-subtitle);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-day-header-text);
-  box-sizing: border-box;
-  position: sticky;
-  top: 0;
-  z-index: 1200;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+    align-items: center;
+    justify-content: center;
+    line-height: 0.8;
+    font-size: var(--font-subtitle);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-day-header-text);
+    box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    z-index: 1200;
 }
 
-.day-label-grid > div {
-  margin: 0;
-  line-height: 0.8;
+.day-label-grid>div {
+    margin: 0;
+    line-height: 0.8;
 }
 
 /* 3. Place each label into its column */
 .day-label-grid:nth-of-type(1) {
-  grid-column: 1;
+    grid-column: 1;
 }
 
 .day-label-grid:nth-of-type(2) {
-  grid-column: 2;
+    grid-column: 2;
 }
 
 .day-label-grid:nth-of-type(3) {
-  grid-column: 3;
+    grid-column: 3;
 }
 
 .day-label-grid:nth-of-type(4) {
-  grid-column: 4;
+    grid-column: 4;
 }
 
 .day-label-grid:nth-of-type(5) {
-  grid-column: 5;
+    grid-column: 5;
 }
 
 .day-label-grid:nth-of-type(6) {
-  grid-column: 6;
+    grid-column: 6;
 }
 
 .day-label-grid:nth-of-type(7) {
-  grid-column: 7;
+    grid-column: 7;
 }
 
 /* 4. Your events now start on row 2 automatically */
 .event-block-grid {
-  position: relative;
-  overflow: visible;
-  box-sizing: border-box;
-  min-height: var(--event-row-height);
-  padding-bottom: var(--gap-week);
-  grid-row-start: var(--row);
-  grid-row-end: calc(var(--row) + 1);
-  grid-column: 1/-1;
-  margin-left: var(--left, 0%);
-  width: var(--width, 100%);
-  background-color: var(--bg);
-  color: var(--fg);
-  font-size: var(--font-base);
-  padding: var(--padding-small);
-  margin-bottom: var(--gap-week);
-  border-left: var(--border-thin) solid var(--color-border-grid);
-  border-right: var(--border-thin) solid var(--color-border-grid);
-  border-radius: var(--border-radius-xs);
-  border-top: none;
-  border-bottom: none;
-  cursor: pointer;
-  z-index: 10;
+    position: relative;
+    overflow: visible;
+    box-sizing: border-box;
+    min-height: var(--event-row-height);
+    padding-bottom: var(--gap-week);
+    grid-row-start: var(--row);
+    grid-row-end: calc(var(--row) + 1);
+    grid-column: 1/-1;
+    margin-left: var(--left, 0%);
+    width: var(--width, 100%);
+    background-color: var(--bg);
+    color: var(--fg);
+    font-size: var(--font-base);
+    padding: var(--padding-small);
+    margin-bottom: var(--gap-week);
+    border-left: var(--border-thin) solid var(--color-border-grid);
+    border-right: var(--border-thin) solid var(--color-border-grid);
+    border-radius: var(--border-radius-xs);
+    border-top: none;
+    border-bottom: none;
+    cursor: pointer;
+    z-index: 10;
 }
 
 .event-block-grid__text {
-  display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .day-click-area {
-  background: none;
-  border: none;
-  cursor: zoom-in;
-  position: relative;
-  z-index: 5;
+    background: none;
+    border: none;
+    cursor: zoom-in;
+    position: relative;
+    z-index: 5;
 }
 
 .day-click-area:hover {
-  background-color: rgba(106, 90, 205, 0.1);
-  cursor: zoom-in;
+    background-color: rgba(106, 90, 205, 0.1);
+    cursor: zoom-in;
 }
 
 .day-click-area:hover::after {
-  content: attr(data-date) " Events";
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  display: inline-block;
-  background-color: var(--color-accent);
-  color: #fff;
-  padding: 0 var(--padding-xxs);
-  font-size: var(--font-xs);
-  border-radius: var(--border-radius-sm);
-  white-space: nowrap;
-  box-shadow: var(--box-shadow-subtle);
-  pointer-events: none;
-  z-index: 20;
+    content: attr(data-date) " Events";
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    display: inline-block;
+    background-color: var(--color-accent);
+    color: #fff;
+    padding: 0 var(--padding-xxs);
+    font-size: var(--font-xs);
+    border-radius: var(--border-radius-sm);
+    white-space: nowrap;
+    box-shadow: var(--box-shadow-subtle);
+    pointer-events: none;
+    z-index: 20;
 }
 
 /* 5. Left/Right overflow arrows */
 .event-block-grid.arrow-left::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: var(--arrow-left-offset, calc(-1 * var(--arrow-width)));
-  width: var(--arrow-width);
-  height: 100%;
-  background-color: var(--color-border-primary);
-  clip-path: polygon(0 50%, 100% 0, 100% 100%);
-  pointer-events: none;
-  z-index: 1;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: var(--arrow-left-offset, calc(-1 * var(--arrow-width)));
+    width: var(--arrow-width);
+    height: 100%;
+    background-color: var(--color-border-primary);
+    clip-path: polygon(0 50%, 100% 0, 100% 100%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .event-block-grid.arrow-right::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: var(--arrow-right-offset, calc(-1 * var(--arrow-width)));
-  width: var(--arrow-width);
-  height: 100%;
-  background-color: var(--color-border-primary);
-  clip-path: polygon(100% 50%, 0 0, 0 100%);
-  pointer-events: none;
-  z-index: 1;
+    content: "";
+    position: absolute;
+    top: 0;
+    right: var(--arrow-right-offset, calc(-1 * var(--arrow-width)));
+    width: var(--arrow-width);
+    height: 100%;
+    background-color: var(--color-border-primary);
+    clip-path: polygon(100% 50%, 0 0, 0 100%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 /* 6. Rounded off grid edges */
-.day-label-wrapper > .day-label-grid:nth-child(1) {
-  border-left: var(--border-thick) solid var(--color-border-primary);
+.day-label-wrapper>.day-label-grid:nth-child(1) {
+    border-left: var(--border-thick) solid var(--color-border-primary);
 }
 
-.day-label-wrapper > .day-label-grid:nth-child(2),
-.day-label-wrapper > .day-label-grid:nth-child(3),
-.day-label-wrapper > .day-label-grid:nth-child(4),
-.day-label-wrapper > .day-label-grid:nth-child(5),
-.day-label-wrapper > .day-label-grid:nth-child(6),
-.day-label-wrapper > .day-label-grid:nth-child(7) {
-  border-left: var(--border-thick) solid var(--color-border-primary);
+.day-label-wrapper>.day-label-grid:nth-child(2),
+.day-label-wrapper>.day-label-grid:nth-child(3),
+.day-label-wrapper>.day-label-grid:nth-child(4),
+.day-label-wrapper>.day-label-grid:nth-child(5),
+.day-label-wrapper>.day-label-grid:nth-child(6),
+.day-label-wrapper>.day-label-grid:nth-child(7) {
+    border-left: var(--border-thick) solid var(--color-border-primary);
 }
 
-.day-label-wrapper > .day-label-grid:last-child {
-  border-right: var(--border-thick) solid var(--color-border-primary);
+.day-label-wrapper>.day-label-grid:last-child {
+    border-right: var(--border-thick) solid var(--color-border-primary);
 }
 
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
-  .day-label-grid {
-    font-size: var(--font-small);
-  }
-  .event-block-grid.short-span {
-    padding-left: 0;
-    padding-right: 0;
-    border-left: none;
-    border-right: none;
-  }
+@media (max-width: 480px),
+(max-width: 896px) and (orientation: landscape) {
+    .day-label-grid {
+        font-size: var(--font-small);
+    }
+
+    .event-block-grid.short-span {
+        padding-left: 0;
+        padding-right: 0;
+        border-left: none;
+        border-right: none;
+    }
 }
+
 @media (min-width: 1024px) {
-  .day-label-grid {
-    font-size: var(--font-base);
-  }
+    .day-label-grid {
+        font-size: var(--font-base);
+    }
 }
+
 /* Modal windows and transitions */
 /* Modal Container & Behavior */
 .modal {
-  position: fixed;
-  /* top: 50%;
+    position: fixed;
+    /* top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   */
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: auto;
-  height: auto;
-  border-radius: var(--border-radius-lg);
-  font-size: var(--font-base);
-  z-index: 2000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease-out;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: auto;
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-base);
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-out;
 }
 
 .modal.show {
-  opacity: 1;
-  pointer-events: auto;
-  overflow: hidden;
+    opacity: 1;
+    pointer-events: auto;
+    overflow: hidden;
 }
 
 .modal.show::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  -webkit-backdrop-filter: blur(var(--modal-overlay-blur));
-  backdrop-filter: blur(var(--modal-overlay-blur));
-  background-color: var(--modal-overlay-color);
-  z-index: -1;
-  pointer-events: none;
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-backdrop-filter: blur(var(--modal-overlay-blur));
+    backdrop-filter: blur(var(--modal-overlay-blur));
+    background-color: var(--modal-overlay-color);
+    z-index: -1;
+    pointer-events: none;
 }
 
 .modal.closing {
-  opacity: 0;
-  pointer-events: none;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .modal-close {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: var(--padding-small);
-  background-color: var(--color-accent);
-  color: var(--color-background);
-  font-size: var(--font-base);
-  border: none;
-  padding: var(--padding-button);
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: var(--padding-small);
+    background-color: var(--color-accent);
+    color: var(--color-background);
+    font-size: var(--font-base);
+    border: none;
+    padding: var(--padding-button);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
 }
 
 /* Base styling for modal cards */
 .modal-content {
-  background-color: var(--color-background);
-  border: var(--border-thick) solid var(--color-accent);
-  border-radius: var(--border-radius-lg, 10px);
-  padding: var(--padding-base);
-  box-shadow: var(--box-shadow-modal);
-  max-height: auto;
-  max-width: auto;
-  min-height: var(--modal-min-height);
-  width: var(--modal-max-width);
-  min-width: unset;
-  color: black;
-  font-size: var(--font-base);
-  pointer-events: none;
-  opacity: 0;
-  will-change: transform, opacity;
-  transform-origin: center center;
-  overflow-y: auto;
+    background-color: var(--color-background);
+    border: var(--border-thick) solid var(--color-accent);
+    border-radius: var(--border-radius-lg, 10px);
+    padding: var(--padding-base);
+    box-shadow: var(--box-shadow-modal);
+    max-height: auto;
+    max-width: auto;
+    min-height: var(--modal-min-height);
+    width: var(--modal-max-width);
+    min-width: unset;
+    color: black;
+    font-size: var(--font-base);
+    pointer-events: none;
+    opacity: 0;
+    will-change: transform, opacity;
+    transform-origin: center center;
+    overflow-y: auto;
 }
 
 .modal.show .modal-content {
-  animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  pointer-events: auto;
+    animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    pointer-events: auto;
 }
 
 .modal.closing .modal-content {
-  animation: slideOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  pointer-events: none;
+    animation: slideOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    pointer-events: none;
 }
 
 /* Dynamic sizing for event modal */
 #event-modal-content {
-  width: var(--modal-width);
-  max-width: var(--modal-max-width);
-  max-height: var(--modal-max-height);
-  display: flex;
-  flex-direction: column;
-  overflow-y: hidden;
+    width: var(--modal-width);
+    max-width: var(--modal-max-width);
+    max-height: var(--modal-max-height);
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
 }
 
 #event-modal-body {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: var(--padding-small);
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: var(--padding-small);
 }
 
 /* Responsive Day Modal Enhancements */
 #day-modal-content {
-  width: var(--modal-width);
-  max-height: var(--day-modal-max-height);
-  font-size: clamp(var(--font-small), 2vw, var(--font-base));
+    width: var(--modal-width);
+    max-height: var(--day-modal-max-height);
+    font-size: clamp(var(--font-small), 2vw, var(--font-base));
 }
 
 #day-modal-body {
-  overflow-y: scroll;
-  padding: var(--padding-small);
-  font-size: inherit;
+    overflow-y: scroll;
+    padding: var(--padding-small);
+    font-size: inherit;
 }
 
-#day-modal-body > div {
-  position: relative;
+#day-modal-body>div {
+    position: relative;
 }
 
 .event-block-day {
-  position: absolute;
-  border: var(--border-thin);
-  border-radius: var(--border-radius-sm);
-  box-sizing: border-box;
-  z-index: 10;
-  cursor: pointer;
-  font-size: inherit;
-  font-weight: var(--font-weight-normal);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 var(--padding-xxs);
-  margin-left: var(--padding-xxs);
-  overflow: hidden;
-  background-color: var(--bg);
-  color: var(--fg);
+    position: absolute;
+    border: var(--border-thin);
+    border-radius: var(--border-radius-sm);
+    box-sizing: border-box;
+    z-index: 10;
+    cursor: pointer;
+    font-size: inherit;
+    font-weight: var(--font-weight-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--padding-xxs);
+    margin-left: var(--padding-xxs);
+    overflow: hidden;
+    background-color: var(--bg);
+    color: var(--fg);
 }
 
 .event-block-day_text {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: break-word;
-  word-break: break-word;
-  text-align: center;
-  line-height: 1.2;
-  color: var(--fg);
-  font-size: clamp(var(--font-xxs), 2.5vw, var(--font-base));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: break-word;
+    word-break: break-word;
+    text-align: center;
+    line-height: 1.2;
+    color: var(--fg);
+    font-size: clamp(var(--font-xxs), 2.5vw, var(--font-base));
 }
 
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
-  .event-block-day_text {
-    font-size: var(--font-xs);
-  }
-  .event-block-day {
-    margin-left: var(--padding-xs);
-  }
+@media (max-width: 480px),
+(max-width: 896px) and (orientation: landscape) {
+    .event-block-day_text {
+        font-size: var(--font-xs);
+    }
+
+    .event-block-day {
+        margin-left: var(--padding-xs);
+    }
 }
+
 .event-block-day.short-span {
-  padding-left: 0;
-  padding-right: 0;
-  border-right: none;
-  border-left: none;
-  overflow: visible;
+    padding-left: 0;
+    padding-right: 0;
+    border-right: none;
+    border-left: none;
+    overflow: visible;
+}
+
+.event-block-day.short-span:hover {
+    background-color: rgba(106, 90, 205, 0.1);
+    cursor: text;
 }
 
 .event-block-day.short-span:hover::after {
-  content: attr(data-event-name);
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  display: inline-block !important;
-  background-color: var(--bg);
-  color: var(--fg);
-  padding: 0 var(--padding-xxs);
-  font-size: var(--font-xs);
-  border-radius: var(--border-radius-sm);
-  white-space: nowrap;
-  box-shadow: var(--box-shadow-subtle);
-  pointer-events: none;
-  z-index: 20;
+    content: attr(data-event-name);
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    display: inline-block !important;
+    background-color: var(--bg);
+    color: var(--fg);
+    padding: 0 var(--padding-xxs);
+    font-size: var(--font-xs);
+    border-radius: var(--border-radius-sm);
+    white-space: nowrap;
+    box-shadow: var(--box-shadow-subtle);
+    pointer-events: none;
+    z-index: 20;
 }
 
 /* Modal Responsiveness */
 @media (max-width: 768px) {
-  #event-modal-content {
-    max-width: var(--event-modal-max-width-tablet);
-  }
-  #day-modal-content {
-    max-width: var(--day-modal-max-width-tablet);
-  }
-  #day-modal-body {
-    max-height: var(--modal-max-height);
-  }
+    #event-modal-content {
+        max-width: var(--event-modal-max-width-tablet);
+    }
+
+    #day-modal-content {
+        max-width: var(--day-modal-max-width-tablet);
+    }
+
+    #day-modal-body {
+        max-height: var(--modal-max-height);
+    }
 }
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
-  #event-modal-content {
-    width: var(--modal-width-mobile) !important;
-  }
-  #day-modal-content {
-    width: var(--modal-width-mobile) !important;
-  }
-  #day-modal-body {
-    max-height: var(--modal-max-height-mobile);
-    font-size: var(--font-small);
-  }
+
+@media (max-width: 480px),
+(max-width: 896px) and (orientation: landscape) {
+    #event-modal-content {
+        width: var(--modal-width-mobile) !important;
+    }
+
+    #day-modal-content {
+        width: var(--modal-width-mobile) !important;
+    }
+
+    #day-modal-body {
+        max-height: var(--modal-max-height-mobile);
+        font-size: var(--font-small);
+    }
 }
+
 @media (min-width: 1024px) {
-  #event-modal-content {
-    max-width: 40rem;
-  }
-  #day-modal-content {
-    max-width: 52rem;
-  }
+    #event-modal-content {
+        max-width: 40rem;
+    }
+
+    #day-modal-content {
+        max-width: 52rem;
+    }
 }
+
 @media (min-width: 1440px) {
-  #event-modal-content {
-    max-width: 45rem;
-  }
-  #day-modal-content {
-    max-width: 60rem;
-  }
+    #event-modal-content {
+        max-width: 45rem;
+    }
+
+    #day-modal-content {
+        max-width: 60rem;
+    }
 }
+
 /* Animation helpers for modals and text transitions */
 .overflow-box-expand {
-  max-height: 0;
-  opacity: 0;
-  overflow: visible;
-  pointer-events: none;
-  transition: max-height 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  transition-delay: 0s, 0.8s;
+    max-height: 0;
+    opacity: 0;
+    overflow: visible;
+    pointer-events: none;
+    transition: max-height 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0s, 0.8s;
 }
 
 .overflow-box-expand.show {
-  max-height: var(--overflow-expand-max-height);
-  opacity: 1;
-  pointer-events: auto;
-  transition-delay: 0.4s, 0.8s;
+    max-height: var(--overflow-expand-max-height);
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 0.4s, 0.8s;
 }
 
 .fade-text {
-  animation: fadeChange 1.2s ease-in-out;
+    animation: fadeChange 1.2s ease-in-out;
 }
 
 @keyframes fadeChange {
-  0% {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    0% {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
+
 .slide-in {
-  animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes slideIn {
-  from {
-    transform: translateY(var(--slide-distance));
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+    from {
+        transform: translateY(var(--slide-distance));
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
+
 @keyframes slideOut {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(var(--slide-distance));
-    opacity: 0;
-  }
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(var(--slide-distance));
+        opacity: 0;
+    }
 }
+
 /* Generic helper utilities */
 /* Utility Classes */
 /* Core padding utility used across the app */
 .base-padding {
-  padding: var(--padding-base);
+    padding: var(--padding-base);
 }
 
 /* Section margin used by week charts */
 .section-margin {
-  margin-bottom: var(--margin-section);
+    margin-bottom: var(--margin-section);
 }
 
 /* Grid spacing helpers */
 .week-gap {
-  gap: var(--gap-week);
+    gap: var(--gap-week);
 }
 
 .legend-gap {
-  gap: var(--gap-legend);
+    gap: var(--gap-legend);
 }
 
 /* Legacy utilities moved to legacy.css
