@@ -790,7 +790,7 @@ h1,
   left: 0;
   right: 0;
   margin: 0 auto;
-  display: inline-block;
+  display: inline-block !important;
   background-color: var(--bg);
   color: var(--fg);
   padding: 0 var(--padding-xxs);
