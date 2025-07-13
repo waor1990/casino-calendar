@@ -180,11 +180,6 @@
     overflow: visible;
 }
 
-.event-block-day.short-span:hover {
-    background-color: rgba(106, 90, 205, 0.1);
-    cursor: text;
-}
-
 .event-block-day.short-span:hover::after {
     content: attr(data-event-name);
     position: absolute;
