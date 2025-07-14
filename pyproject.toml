@@ -1,6 +1,0 @@
-[tool.black]
-line-length = 88
-skip-string-normalization = false
-
-[tool.isort]
-profile = "black"
