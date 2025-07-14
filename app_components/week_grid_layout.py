@@ -85,6 +85,7 @@ def render_week_grid(clicked_date, df, screen_width=1024):
     df_week = filter_week_events(df, week_start, week_end)
     df_annot = annotate_events_with_flags(df_week, week_start, week_end)
     df_assigned = assign_event_rows(df_annot, week_start)
+    df_assigned["segment"] = 0
 
     # Duplicate short cross-midnight events into the next day's column
     dup_rows = []
@@ -99,6 +100,7 @@ def render_week_grid(clicked_date, df, screen_width=1024):
             if week_start <= next_day_start < week_end:
                 dup = row.copy()
                 dup["StartDate"] = next_day_start
+                dup["segment"] = row.get("segment", 0) + 1
                 dup_rows.append(dup)
 
     if dup_rows:
@@ -121,7 +123,11 @@ def render_week_grid(clicked_date, df, screen_width=1024):
         event_blocks.append(
             html.Button(
                 html.Span(text, className="event-block-grid__text"),
-                id={"type": "grid-event", "index": row.get("orig_index", idx)},
+                id={
+                    "type": "grid-event",
+                    "index": row.get("orig_index", idx),
+                    "segment": row.get("segment", 0),
+                },
                 n_clicks=0,
                 className=cls,
                 style=style,
