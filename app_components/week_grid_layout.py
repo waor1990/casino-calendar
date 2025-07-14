@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pandas as pd
 from dash import html
 
@@ -7,7 +9,7 @@ from .plotting import (
     filter_week_events,
     get_color,
 )
-from .utils import get_week_range, trim_label
+from .utils import PDT, get_week_range, trim_label
 
 
 def _build_block(row, week_start, week_end, screen_width, colors):
@@ -83,6 +85,26 @@ def render_week_grid(clicked_date, df, screen_width=1024):
     df_week = filter_week_events(df, week_start, week_end)
     df_annot = annotate_events_with_flags(df_week, week_start, week_end)
     df_assigned = assign_event_rows(df_annot, week_start)
+
+    # Duplicate short cross-midnight events into the next day's column
+    dup_rows = []
+    for _, row in df_assigned.iterrows():
+        duration = row["EndDate"] - row["StartDate"]
+        if row["EndDate"].date() != row["StartDate"].date() and duration <= timedelta(
+            days=1
+        ):
+            next_day_start = row["StartDate"].astimezone(PDT).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            ) + timedelta(days=1)
+            if week_start <= next_day_start < week_end:
+                dup = row.copy()
+                dup["StartDate"] = next_day_start
+                dup_rows.append(dup)
+
+    if dup_rows:
+        df_assigned = pd.concat(
+            [df_assigned, pd.DataFrame(dup_rows)], ignore_index=True
+        )
     colors = get_color()
 
     if df_assigned.empty:

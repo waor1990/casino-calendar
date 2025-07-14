@@ -185,11 +185,11 @@ def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1
     )
     day_end = day_start + timedelta(days=1)
 
-    # Filter events strictly within the day
+    # Filter events that overlap with the day window
     events = events_df.copy()
     events["StartDate"] = pd.to_datetime(events["StartDate"]).dt.tz_convert(PDT)
     events["EndDate"] = pd.to_datetime(events["EndDate"]).dt.tz_convert(PDT)
-    events = events[(events["StartDate"] >= day_start) & (events["EndDate"] <= day_end)]
+    events = events[(events["StartDate"] < day_end) & (events["EndDate"] > day_start)]
 
     day_label = clicked_date.strftime("%A, %B %d")
     header_text = f"Events for {day_label}"
