@@ -111,28 +111,36 @@ def render_week_grid(clicked_date, df, screen_width=1024):
 
         # Use a unique React key to avoid duplicate-key warnings when
         # events are duplicated for layout purposes (e.g. Saturday events
-        # that span into Sunday). The `id` continues to use the original
-        # index so callbacks can map back to the source row.
-        unique_key = f"{row.get('orig_index', idx)}"
+        # that span into Sunday). If an event is duplicated we append
+        # "-dup" to both the key and the component `index` to keep the
+        # React tree stable while still allowing callbacks to map back to
+        # the source row via the original index stored in a data attribute.
+        orig_index = row.get("orig_index", idx)
+        unique_key = f"{orig_index}"
+        button_id = {"type": "grid-event", "index": orig_index}
         if row.get("is_duplicate"):
             unique_key += "-dup"
+            button_id["index"] = f"{orig_index}-dup"
+
+        data_attrs = {
+            "data-eventname": row["EventName"],
+            "data-casino": row["Casino"],
+            "data-start": row["StartDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "data-offer": row["Offer"],
+            "data-orig-index": orig_index,
+        }
 
         event_blocks.append(
             html.Button(
                 html.Span(text, className="event-block-grid__text"),
-                id={"type": "grid-event", "index": row.get("orig_index", idx)},
+                id=button_id,
                 key=unique_key,
                 n_clicks=0,
                 className=cls,
                 style=style,
                 title=f"{row['EventName']} ({row['Casino']})",
-                **{
-                    "data-eventname": row["EventName"],
-                    "data-casino": row["Casino"],
-                    "data-start": row["StartDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "data-offer": row["Offer"],
-                },
+                **data_attrs,
             )
         )
 

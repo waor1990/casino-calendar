@@ -244,9 +244,9 @@ def register_callbacks(app, df):
             if not triggered_n:
                 raise dash.exceptions.PreventUpdate
 
-            idx = triggered_id.get("index")
+            idx_val = triggered_id.get("index")
 
-            if idx is None:
+            if idx_val is None:
                 return (
                     no_update,
                     no_update,
@@ -256,6 +256,13 @@ def register_callbacks(app, df):
                     no_update,
                     no_update,
                 )
+
+            # Duplicate events include a "-dup" suffix in the index. Strip the
+            # suffix so we can look up the original row in the weekly DataFrame.
+            if isinstance(idx_val, str) and idx_val.endswith("-dup"):
+                idx = int(idx_val.rsplit("-", 1)[0])
+            else:
+                idx = int(idx_val)
 
             from .plotting import (
                 annotate_events_with_flags,
