@@ -118,7 +118,7 @@ def render_week_grid(clicked_date, df, screen_width=1024):
         orig_index = row.get("orig_index", idx)
         unique_key = f"{orig_index}"
         button_id = {"type": "grid-event", "index": orig_index}
-        if row.get("is_duplicate"):
+        if row.get("is_duplicate") is True:
             unique_key += "-dup"
             button_id["index"] = f"{orig_index}-dup"
 
@@ -135,7 +135,6 @@ def render_week_grid(clicked_date, df, screen_width=1024):
             html.Button(
                 html.Span(text, className="event-block-grid__text"),
                 id=button_id,
-                key=unique_key,
                 n_clicks=0,
                 className=cls,
                 style=style,
