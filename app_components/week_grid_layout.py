@@ -41,6 +41,8 @@ def _build_block(row, week_start, week_end, screen_width, colors):
         classes.append("arrow-right")
     if span_days < 0.5:
         classes.append("short-span")
+    if row.get("is_duplicate"):
+        classes.append("mini-block")
 
     arrow_left = "calc(-1 * var(--arrow-width))" if row["has_left_arrow"] else "0"
     arrow_right = "calc(-1 * var(--arrow-width))" if row["has_right_arrow"] else "0"
@@ -83,6 +85,17 @@ def render_week_grid(clicked_date, df, screen_width=1024):
     df_week = filter_week_events(df, week_start, week_end)
     df_annot = annotate_events_with_flags(df_week, week_start, week_end)
     df_assigned = assign_event_rows(df_annot, week_start)
+
+    # Duplicate Saturday events that extend into Sunday
+    sat_mask = (df_assigned["StartDate"].dt.weekday == 5) & (
+        df_assigned["EndDate"].dt.weekday == 6
+    )
+    if sat_mask.any():
+        dup = df_assigned[sat_mask].copy()
+        dup["StartDate"] = dup["EndDate"].dt.floor("D")
+        dup["is_duplicate"] = True
+        df_assigned = pd.concat([df_assigned, dup], ignore_index=True)
+
     colors = get_color()
 
     if df_assigned.empty:
