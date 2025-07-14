@@ -1,5 +1,0 @@
-{    "MD003": { "style": "atx" },
-    "MD007": { "indent": 2 },
-    "MD013": { "line_length": 120, "strict": false },
-    "no-hard-tabs": true
-}
