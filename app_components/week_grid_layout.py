@@ -88,12 +88,14 @@ def render_week_grid(clicked_date, df, screen_width=1024):
     df_assigned = assign_event_rows(df_annot, week_start)
     df_assigned["is_duplicate"] = False
 
-    # Duplicate Saturday events that extend into Sunday
-    sat_mask = (df_assigned["StartDate"].dt.weekday == 5) & (
-        df_assigned["EndDate"].dt.weekday == 6
+    # Duplicate events that spill over into Sunday from any prior day
+    sunday_mask = (df_assigned["EndDate"].dt.weekday == 6) & (
+        df_assigned["StartDate"] < df_assigned["EndDate"].dt.floor("D")
     )
-    if sat_mask.any():
-        dup = df_assigned[sat_mask].copy()
+    if sunday_mask.any():
+        dup = df_assigned[sunday_mask].copy()
+        # Start the duplicate at midnight Sunday so width only reflects the
+        # portion visible on that day
         dup["StartDate"] = dup["EndDate"].dt.floor("D")
         dup["is_duplicate"] = True
         df_assigned = pd.concat([df_assigned, dup], ignore_index=True)
