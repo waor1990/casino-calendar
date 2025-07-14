@@ -109,10 +109,19 @@ def render_week_grid(clicked_date, df, screen_width=1024):
     for idx, row in df_assigned.iterrows():
         text, cls, style = _build_block(row, week_start, week_end, screen_width, colors)
 
+        # Use a unique React key to avoid duplicate-key warnings when
+        # events are duplicated for layout purposes (e.g. Saturday events
+        # that span into Sunday). The `id` continues to use the original
+        # index so callbacks can map back to the source row.
+        unique_key = f"{row.get('orig_index', idx)}"
+        if row.get("is_duplicate"):
+            unique_key += "-dup"
+
         event_blocks.append(
             html.Button(
                 html.Span(text, className="event-block-grid__text"),
                 id={"type": "grid-event", "index": row.get("orig_index", idx)},
+                key=unique_key,
                 n_clicks=0,
                 className=cls,
                 style=style,
