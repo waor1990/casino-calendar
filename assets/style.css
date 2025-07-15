@@ -507,6 +507,11 @@ h1,
   z-index: 10;
 }
 
+.event-block-grid.mini-block {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .event-block-grid__text {
   display: block;
   overflow: hidden;
@@ -923,5 +928,3 @@ h1,
    - font-xs, font-small, font-base, font-subtitle,
      font-title, font-bold
 */
-
-/*# sourceMappingURL=style.css.map */
