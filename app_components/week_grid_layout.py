@@ -84,8 +84,9 @@ def render_week_grid(clicked_date, df, screen_width=1024):
     df_annot = annotate_events_with_flags(df_week, week_start, week_end)
     df_assigned = assign_event_rows(df_annot, week_start)
 
-    # Duplicate events that carry into Sunday so a full block renders in the
-    # Sunday column. Preserve the original ``orig_index`` for modal linkage.
+    # Duplicate events that continue into Sunday so a matching block renders in
+    # the Sunday column. The duplicated block retains the original ``orig_index``
+    # so that modal clicks open the same event details.
     sunday_mask = (df_assigned["StartDate"].dt.weekday <= 5) & (
         df_assigned["EndDate"].dt.weekday == 6
     )
@@ -93,7 +94,9 @@ def render_week_grid(clicked_date, df, screen_width=1024):
     if sunday_mask.any():
         dup = df_assigned[sunday_mask].copy()
         dup["StartDate"] = dup["EndDate"].dt.floor("D")
-        dup["EndDate"] = dup["StartDate"] + pd.Timedelta(days=1)
+        # Keep the actual end time so the block reflects the real duration on
+        # Sunday rather than spanning the entire day.
+        dup["EndDate"] = df_assigned.loc[sunday_mask, "EndDate"].values
         dup["is_duplicate"] = True
         df_assigned = pd.concat([df_assigned, dup], ignore_index=True)
 
@@ -110,10 +113,14 @@ def render_week_grid(clicked_date, df, screen_width=1024):
     for idx, row in df_assigned.iterrows():
         text, cls, style = _build_block(row, week_start, week_end, screen_width, colors)
 
+        button_id = {"type": "grid-event", "index": row.get("orig_index", idx)}
+        if row.get("is_duplicate"):
+            button_id["dup"] = "sunday"
+
         event_blocks.append(
             html.Button(
                 html.Span(text, className="event-block-grid__text"),
-                id={"type": "grid-event", "index": row.get("orig_index", idx)},
+                id=button_id,
                 n_clicks=0,
                 className=cls,
                 style=style,
