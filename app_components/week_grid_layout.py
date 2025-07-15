@@ -128,7 +128,9 @@ def render_week_grid(clicked_date, df, screen_width=1024):
 
         button_id = {"type": "grid-event", "index": row.get("orig_index", idx)}
         if row.get("is_duplicate"):
-            button_id["dup"] = "sunday"
+            # Add a unique ``dup_idx`` flag so React keys remain unique while the
+            # original ``index`` links the duplicate to its modal details.
+            button_id.update({"dup": "sunday", "dup_idx": idx})
 
         event_blocks.append(
             html.Button(
