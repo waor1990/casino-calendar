@@ -10,11 +10,24 @@ from .plotting import (
 from .utils import get_week_range, trim_label
 
 
+def _normalize(dt):
+    """Return ``dt`` converted to a naive UTC datetime."""
+
+    ts = pd.Timestamp(dt)
+    if ts.tzinfo is not None:
+        ts = ts.tz_convert("UTC")
+    return ts.tz_localize(None)
+
+
 def _build_block(row, week_start, week_end, screen_width, colors):
     """Return button text, classes and style variables for a calendar block."""
 
-    start_delta = (row["StartDate"] - week_start).total_seconds() / (24 * 3600)
-    end_delta = (row["EndDate"] - week_start).total_seconds() / (24 * 3600)
+    start_delta = (
+        _normalize(row["StartDate"]) - _normalize(week_start)
+    ).total_seconds() / (24 * 3600)
+    end_delta = (
+        _normalize(row["EndDate"]) - _normalize(week_start)
+    ).total_seconds() / (24 * 3600)
 
     visible_start = max(start_delta, 0)
     visible_end = min(end_delta, 7)
