@@ -1,16 +1,13 @@
+import json
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Tuple
 
 from pytz import timezone
 
-OFFER_TYPE_EMOJIS = {
-    "Free-Play": "🎰💵",
-    "Hospitality-Rewards": "🏨🎲",
-    "Point-Based": "📈💯",
-    "Giveaway": "🎁🎰",
-    "Special-Events": "🎲💵",
-    "Offer": "🎁❓",
-}
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+with open(DATA_DIR / "offer_type_emojis.json", encoding="utf-8") as f:
+    OFFER_TYPE_EMOJIS = json.load(f)
 
 
 def offer_type_emoji(offer_type: str) -> str:

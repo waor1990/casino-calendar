@@ -1,0 +1,19 @@
+{
+  "ilani": {"bg": "#2c6f7f", "text": "#ffffff"},
+  "Spirit Mountain Casino": {"bg": "#a74321", "text": "#ffffff"},
+  "Lucky Eagle Casino": {"bg": "#862c8e", "text": "#ffffff"},
+  "Muckleshoot Casino": {"bg": "#1e1c29", "text": "#ffffff"},
+  "Little Creek Casino": {"bg": "#3086c3", "text": "#ffffff"},
+  "Red Wind Casino": {"bg": "#e13332", "text": "#ffffff"},
+  "Snoqualmie Casino": {"bg": "#00a9e0", "text": "#ffffff"},
+  "Angel of the Winds Casino": {"bg": "#64c7cc", "text": "#ffffff"},
+  "Lucky Dog Casino": {"bg": "#f07a22", "text": "#000000"},
+  "Legends Casino": {"bg": "#ca9a41", "text": "#000000"},
+  "Chinook Winds Casino": {"bg": "#32373d", "text": "#ffffff"},
+  "Emerald Queen Casino": {"bg": "#d62e52", "text": "#ffffff"},
+  "Rolling Hills Casino": {"bg": "#5b1d1e", "text": "#ffffff"},
+  "Wildhorse Casino": {"bg": "#d21245", "text": "#ffffff"},
+  "Tulalip Casino": {"bg": "#155e6d", "text": "#ffffff"},
+  "Quil Ceda Creek Casino": {"bg": "#9a0709", "text": "#ffffff"},
+  "Seven Feathers Casino": {"bg": "#41c5de", "text": "#000000"}
+}
