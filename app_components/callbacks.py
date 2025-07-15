@@ -272,6 +272,7 @@ def register_callbacks(app, df):
                 df_week, week_start, week_start + timedelta(days=7)
             )
             df_assigned = assign_event_rows(df_annot, week_start)
+            df_assigned = df_assigned.drop_duplicates("orig_index")
             df_assigned = df_assigned.set_index("orig_index")
 
             if idx not in df_assigned.index:
@@ -286,6 +287,8 @@ def register_callbacks(app, df):
                 )
 
             row = df_assigned.loc[idx]
+            if isinstance(row, pd.DataFrame):
+                row = row.iloc[0]
 
             rows: List[Any] = []
             emoji = offer_type_emoji(row.get("OfferType", ""))
