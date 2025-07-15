@@ -36,6 +36,8 @@ def _build_block(row, week_start, week_end, screen_width, colors):
 
     left_pct = (visible_start / 7) * 100
     width_pct = (span_days / 7) * 100
+    if left_pct + width_pct > 100:
+        width_pct = 100 - left_pct
 
     font_px = (
         12
