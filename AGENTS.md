@@ -2,7 +2,8 @@
 
 These guidelines outline how to format code and validate changes for this Dash
 application. See the **Contributing** section in `README.md` for workflow tips
-and a link to the project's Git cheat‑sheet.
+and a link to the project's Git cheat‑sheet.  Codex agents should keep commits
+atomic, include a clear summary and ensure automated checks run before pushing.
 
 Directory-specific instructions can be found in
 `app_components/AGENTS.md` and `assets/styles/AGENTS.md`.
@@ -46,9 +47,13 @@ These tools are installed via `requirements.txt`.
 - Use variables defined in `assets/base.css`.
 - Keep styles modular in `assets/*` and avoid global overrides.
 - Follow a BEM‑like naming style (e.g., `.week-grid`, `.event-block-grid`).
-- Compile SCSS with `npm run build:css` and watch with `npm run watch:css`
+- Compile SCSS with `npm run build:css` and watch with `npm run watch:css`.
+- Run `npx stylelint "assets/**/*.scss"` before committing style changes.
 
 ## Programmatic checks
+
+Run `scripts/test.sh` before committing to execute static analysis and the test
+suite.  The script wraps the commands below.
 
 ### Compilation
 
@@ -58,7 +63,8 @@ python -m py_compile app.py app_components/*.py
 
 ### Formatting and linting
 
-Run these only if the tools are installed:
+Run these only if the tools are installed.  Consider installing optional tools
+such as `mypy`, `bandit` and `pydocstyle` for additional checks:
 
 ```bash
 black --check .
@@ -80,6 +86,16 @@ If the commands are missing, skip them and proceed.
 - Summarize changes in bullet points.
 - Describe testing steps and results.
 - Add screenshots or GIFs for visual changes.
+
+### Branch naming
+
+Use prefixes to categorize work:
+
+- `feature/` for new features
+- `fix/` for bug fixes
+- `refactor/` for restructuring
+- `test/` for test-only updates
+- `doc/` for documentation changes
 
 ## Commit messages
 
@@ -166,8 +182,8 @@ gunicorn app:server
 
 ## Testing and future improvements
 
-- No unit tests yet—consider adding `pytest` fixtures for `data.py`, `utils.py`, etc.
-- When adding features, include sample data and verify timezone normalization.
+- Run `pytest` to execute the unit test suite.
+- When adding features include sample data and verify timezone normalization.
 
 —
 *[End of AGENTS guidelines]*

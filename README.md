@@ -3,6 +3,9 @@
 A personal Dash application that displays casino events on a responsive calendar.
 Weekly and daily views include interactive modals rendered with a CSS grid layout.
 
+The project targets **Python 3.11** and **Node 18**.  Other versions may work
+but are not tested.
+
 ---
 
 ## 🚀 Features
@@ -36,7 +39,6 @@ scripts/                 # Utility scripts
   setup.sh
 requirements.txt         # Python dependencies
 package.json             # NPM scripts for Sass
-README.md
 ```
 
 ## 🧪 Try It Locally
@@ -45,12 +47,13 @@ README.md
 python3 -m venv .venv
 source .venv/bin/activate  # use .\.venv\Scripts\activate on Windows
 scripts/setup.sh                 # install Python and Node dependencies
-pip install -r requirements.txt  # installs black, isort and flake8
 npm install
 npm run build:css
+pip install -r requirements.txt
 pre-commit install
 pre-commit run --all-files
 python -m py_compile app.py app_components/*.py
+scripts/test.sh                  # run linters and tests
 python app.py
 ```
 
@@ -71,6 +74,16 @@ changes. Run the formatters and linters before committing and see
 `GIT-CHEATSHEET.md` for handy Git commands.
 VSCode users can take advantage of the included `.editorconfig` and
 `.vscode` files so formatting and linting run automatically on save.
+
+### Branch strategy
+
+Use prefix-based branches when contributing:
+
+- `feature/` for new functionality
+- `fix/` for bug fixes
+- `refactor/` for internal improvements
+- `test/` for test additions
+- `doc/` for documentation updates
 
 ## 🧼 License
 

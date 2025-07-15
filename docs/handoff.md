@@ -5,6 +5,10 @@
 A responsive Dash web application that visualizes casino events in a calendar layout.
 Built with Plotly Dash and deployed on Render.
 
+The weekly view is rendered using a CSS grid while day modals are generated with
+absolute positioning.  Callbacks in `callbacks.py` wire up the interactive
+elements and keep state in Dash stores.
+
 ---
 
 ### ✅ Current Features
@@ -65,6 +69,12 @@ casino_calendar/
 
 - `.calendar-scroll-body` scrolls content beneath the sticky header
 
+### Modal architecture
+
+Two modal types exist: `event-modal` and `day-modal`.  Each is toggled via
+callbacks and hidden/shown by adding the `modal` CSS class.  Content for the day
+modal is built by `generate_day_view_html` in `plotting.py`.
+
 ---
 
 ## 🛠️ Work in Progress / Next Steps
@@ -81,6 +91,8 @@ casino_calendar/
 - `KeyError: 7` fixed by clamping day indices when building grid layout
 - Week charts adjust height based on `usable-height`
 - Scroll logic uses `calendar-scroll-body` height via `100vh - 150px`
+- Execute `scripts/test.sh` or run `pytest -q` to verify functionality before
+  pushing changes.
 
 ---
 
