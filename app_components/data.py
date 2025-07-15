@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 import pandas as pd
 
 from .utils import PDT
@@ -7,122 +10,19 @@ def categorize_offer_type_updated(event_name, offer):
     event_name = str(event_name).lower() if pd.notna(event_name) else ""
     offer = str(offer).lower() if pd.notna(offer) else ""
 
-    # Define keywords for each category
-    giveaway_keywords = [
-        "giveaway",
-        "giveaways",
-        "gift",
-        "gifts",
-        "redeem",
-        "earbuds",
-        "headphones",
-        "luggage",
-        "necklace",
-        "bracelet",
-        "earrings",
-        "tool set",
-        "barbuds",
-        "t-shirt",
-        "wearable",
-        "cooler",
-        "backpack",
-        "camping set",
-        "cookware",
-        "outdoor stove",
-        "fan",
-        "fishing pole",
-        "bathroom set",
-        "john wayne",
-        "frigidaire",
-        "collection",
-        "cash",
-        "drawing",
-        "sweepstakes",
-        "hot seat",
-        "prize",
-        "scratcher",
-        "bonus drawing",
-        "win it",
-        "winnings",
-        "fortune wheel",
-        "money",
-        "bonanza",
-        "red white drawings",
-        "hourly",
+    # Load keywords from JSON
+    DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+    with open(DATA_DIR / "offer_keywords.json", encoding="utf-8") as f:
+        keywords = json.load(f)
+
+    giveaway_keywords = keywords["giveaway_keywords"]
+    free_play_cash_drawing_keywords = keywords["free_play_cash_drawing_keywords"]
+    multiplier_points_keywords = keywords["multiplier_points_keywords"]
+    hotel_travel_dining_shopping_keywords = keywords[
+        "hotel_travel_dining_shopping_keywords"
     ]
-    free_play_cash_drawing_keywords = [
-        "free play",
-        "slot play",
-        "free-play",
-        "promo play",
-        "lucky bucks",
-        "mystery bonus",
-        "vault of riches",
-        "kiosk game",
-        "freeplay",
-        "xtra rewards",
-    ]
-    multiplier_points_keywords = [
-        "multiplier",
-        "points",
-        "x points",
-        "status points",
-        "points multiplier",
-        "point multiplier",
-    ]
-    hotel_travel_dining_shopping_keywords = [
-        "hotel",
-        "stay",
-        "rv",
-        "cruise",
-        "dining",
-        "shopping",
-        "buffet",
-        "food",
-        "restaurant",
-        "meal",
-        "discount",
-        "merchandise",
-        "spa",
-        "travel",
-        "trip",
-        "room night",
-        "standard room",
-        "double rewards",
-        "% off",
-    ]
-    special_event_keywords = [
-        "tournament",
-        "event",
-        "brunch",
-        "reception",
-        "fiesta",
-        "party",
-        "taco crawl",
-        "special",
-        "celebration",
-        "invite",
-        "parade",
-        "festival",
-        "show",
-        "game",
-        "bingo",
-        "concert",
-        "birthday",
-    ]
-    vehicle_car_giveaway_keywords = [
-        "car",
-        "toyota",
-        "tundra",
-        "volkswagen",
-        "jetta",
-        "kia k5",
-        "dodge charger",
-        "rv",
-        "atv",
-        "truck",
-        "land cruiser",
-    ]
+    special_event_keywords = keywords["special_event_keywords"]
+    vehicle_car_giveaway_keywords = keywords["vehicle_car_giveaway_keywords"]
 
     # Check for categories in a specific order of precedence
     if any(keyword in event_name for keyword in vehicle_car_giveaway_keywords) or any(

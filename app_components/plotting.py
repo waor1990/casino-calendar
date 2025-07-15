@@ -1,6 +1,8 @@
+import json
 from collections import defaultdict
 from datetime import timedelta
 from math import floor
+from pathlib import Path
 
 import pandas as pd
 import plotly.graph_objs as go
@@ -17,50 +19,16 @@ def get_layout_config(screen_width):
 
 
 # Color map by Casino
-def get_color():
-    color_map = {
-        "ilani": {"bg": "#2c6f7f", "text": "#ffffff"},
-        "Spirit Mountain Casino": {"bg": "#a74321", "text": "#ffffff"},
-        "Lucky Eagle Casino": {"bg": "#862c8e", "text": "#ffffff"},
-        "Muckleshoot Casino": {"bg": "#1e1c29", "text": "#ffffff"},
-        "Little Creek Casino": {"bg": "#3086c3", "text": "#ffffff"},
-        "Red Wind Casino": {"bg": "#e13332", "text": "#ffffff"},
-        "Snoqualmie Casino": {"bg": "#00a9e0", "text": "#ffffff"},
-        "Angel of the Winds Casino": {"bg": "#64c7cc", "text": "#ffffff"},
-        "Lucky Dog Casino": {"bg": "#f07a22", "text": "#000000"},
-        "Legends Casino": {"bg": "#ca9a41", "text": "#000000"},
-        "Chinook Winds Casino": {"bg": "#32373d", "text": "#ffffff"},
-        "Emerald Queen Casino": {"bg": "#d62e52", "text": "#ffffff"},
-        "Rolling Hills Casino": {"bg": "#5b1d1e", "text": "#ffffff"},
-        "Wildhorse Casino": {"bg": "#d21245", "text": "#ffffff"},
-        "Tulalip Casino": {"bg": "#155e6d", "text": "#ffffff"},
-        "Quil Ceda Creek Casino": {"bg": "#9a0709", "text": "#ffffff"},
-        "Seven Feathers Casino": {"bg": "#41c5de", "text": "#000000"},
-    }
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+with open(DATA_DIR / "casino_colors.json", encoding="utf-8") as f:
+    COLOR_MAP = json.load(f)
+with open(DATA_DIR / "default_colors.json", encoding="utf-8") as f:
+    DEFAULT_COLORS = json.load(f)
 
-    default_colors = {
-        "#ff0000",
-        "#00ff00",
-        "#0000ff",
-        "#ffff00",
-        "#ff00ff",
-        "#00ffff",
-        "#ff8000",
-        "#800000",
-        "#008000",
-        "#000080",
-        "#800080",
-        "#ffa500",
-        "#808080",
-        "#ff6347",
-        "#ff4500",
-        "#ff00ff",
-        "#008080",
-        "#4b0082",
-        "#008b8b",
-        "#000080",
-        "#4682b4",
-    }
+
+def get_color():
+    color_map = COLOR_MAP
+    default_colors = DEFAULT_COLORS
 
     result = {}
     for casino, colors in color_map.items():
