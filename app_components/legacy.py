@@ -3,7 +3,9 @@ from math import floor
 
 import plotly.graph_objs as go
 
-from .plotting import annotate_events_with_flags, filter_week_events, get_color
+from utils.colors import get_color
+from utils.data_parsing import annotate_events_with_flags, filter_week_events
+
 from .utils import get_week_range, trim_label
 
 """Legacy Plotly rendering code preserved for reference."""
