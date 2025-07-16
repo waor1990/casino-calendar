@@ -6,13 +6,14 @@ import pandas as pd
 from dash import ALL, Input, Output, State, html, no_update
 from pytz import timezone
 
-from ..plotting import (
+from utils.colors import get_color
+from utils.data_parsing import (
     annotate_events_with_flags,
     assign_event_rows,
     filter_week_events,
-    generate_day_view_html,
-    get_color,
 )
+
+from ..plotting import generate_day_view_html
 from ..utils import offer_type_emoji
 
 PDT = timezone("America/Los_Angeles")
