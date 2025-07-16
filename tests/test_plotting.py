@@ -9,6 +9,7 @@ from app_components.plotting import (
     filter_week_events,
 )
 from app_components.utils import PDT
+from utils.data_parsing import annotate_events_with_flags, filter_week_events
 
 
 def test_build_weekly_figure_structure():
