@@ -3,7 +3,7 @@ import re
 import requests
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-REPO = "waor1990/casino_calendar"
+REPO = "waor1990/casino-calendar"
 HEADERS = {
     "Authorization": f"token {GITHUB_TOKEN}",
     "Accept": "application/vnd.github+json",
