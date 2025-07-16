@@ -2,6 +2,8 @@ from collections import defaultdict
 from datetime import timedelta
 from math import floor
 
+import pandas as pd
+
 
 def annotate_events_with_flags(events_df, week_start, week_end):
     """Return events annotated with overflow flags and sorted for rendering."""
