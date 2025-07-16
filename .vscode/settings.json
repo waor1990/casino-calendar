@@ -1,18 +1,29 @@
 {
-  "editor.formatOnSave": true,
-  "python.formatting.provider": "black",
-  "python.sortImports.path": "isort",
-  "python.sortImports.args": ["--profile", "black"],
-  "python.linting.flake8Enabled": true,
-  "python.linting.flake8Path": "flake8",
-  "python.linting.pylintEnabled": false,
-  "stylelint.validate": ["css", "scss"],
-  "stylelint.configFile": ".stylelintrc.json",
-  "markdownlint.config": ".markdownlint.json",
-  "[python]": {
-    "editor.defaultFormatter": "ms-python.black-formatter"
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "davidanson.vscode-markdownlint"
-  }
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "black",
+    "python.sortImports.path": "isort",
+    "python.sortImports.args": [
+        "--profile",
+        "black"
+    ],
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Path": "flake8",
+    "python.linting.pylintEnabled": false,
+    "stylelint.validate": [
+        "css",
+        "scss"
+    ],
+    "stylelint.configFile": ".stylelintrc.json",
+    "markdownlint.config": ".markdownlint.json",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "davidanson.vscode-markdownlint"
+    },
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }
