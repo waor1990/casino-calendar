@@ -2,6 +2,8 @@ from collections import defaultdict
 from datetime import timedelta
 from math import floor
 
+import pandas as pd
+
 
 def annotate_events_with_flags(events_df, week_start, week_end):
     """Return events annotated with overflow flags and sorted for rendering."""
@@ -97,10 +99,35 @@ def assign_event_rows(events_df, week_start):
     return events_df
 
 
-def prepare_week_events(events_df, week_start):
-    """Return events filtered and annotated for a single week."""
+def prepare_week_events(events_df, week_start, *, include_sunday_duplicates=False):
+    """Return events filtered and annotated for a single week.
+
+    Parameters
+    ----------
+    events_df : pd.DataFrame
+        Raw events dataframe.
+    week_start : datetime
+        The start of the week being rendered.
+    include_sunday_duplicates : bool, optional
+        If ``True`` duplicate any events that continue into Sunday so
+        the duplicate block can be rendered in the Sunday column.  This
+        duplication happens **before** row assignment to avoid block
+        overlaps.
+    """
 
     week_end = week_start + timedelta(days=7)
     week_events = filter_week_events(events_df, week_start, week_end)
     annotated = annotate_events_with_flags(week_events, week_start, week_end)
+
+    if include_sunday_duplicates:
+        sunday_mask = (annotated["StartDate"].dt.weekday <= 5) & (
+            annotated["EndDate"].dt.weekday == 6
+        )
+
+        if sunday_mask.any():
+            dup = annotated[sunday_mask].copy()
+            dup["StartDate"] = dup["EndDate"].dt.floor("D")
+            dup["is_duplicate"] = True
+            annotated = pd.concat([annotated, dup], ignore_index=True)
+
     return assign_event_rows(annotated, week_start)
