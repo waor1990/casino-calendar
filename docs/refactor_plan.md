@@ -4,45 +4,45 @@ This document captures an audit of the current codebase and proposes a roadmap o
 
 ## Architecture and Modular Design
 
-- Split large callback functions in `app_components/callbacks.py` into smaller modules.
-- Move data parsing and color utilities from `plotting.py` into a dedicated `utils/colors.py` and `utils/data_parsing.py`.
-- Deprecate `legacy.py` by migrating useful helpers into clearer modules and documenting the remainder.
+- **#97 Split callback modules** – break up the oversized `app_components/callbacks.py` file.  Create focused modules such as `callbacks/events.py` and `callbacks/filters.py` and expose a `register_callbacks(app)` helper in each.
+- **#98 Extract utilities** – move data parsing and color functions from `plotting.py` into `utils/data_parsing.py` and `utils/colors.py`.  Update imports throughout the codebase.
+- **#99 Retire `legacy.py`** – migrate any still useful helpers into the new utils modules and add documentation for the remaining deprecated code.
 
 ## Callback and State Management
 
-- Simplify chained callbacks by extracting shared logic into reusable functions.
-- Review all `Input`/`State` pairs to ensure values are read only when necessary to avoid extra renders.
-- Add type hints and docstrings for callback helper functions.
+- **#100 Simplify chains** – extract duplicated logic from chained callbacks into reusable helpers to reduce complexity.
+- **#101 Audit `Input`/`State` usage** – verify each callback only listens to values it truly depends on to prevent unnecessary renders.
+- **#102 Document helpers** – add type hints and concise docstrings to every callback helper for easier maintenance.
 
 ## Grid and Modal Rendering
 
-- Ensure mini blocks never overlap full blocks in `week_grid_layout.py` by normalizing spans before rendering.
-- Address click-through mismatches where day modal opens instead of event modal.
-- Verify responsiveness on mobile and tablet breakpoints.
+- **#103 Fix block overlap** – normalize event spans in `week_grid_layout.py` so mini blocks never cover full-day blocks.
+- **#104 Correct modal selection** – resolve click-through issues where a day modal opens instead of the event modal.
+- **#105 Test breakpoints** – verify layout responsiveness at typical mobile and tablet widths.
 
 ## Styling and Responsiveness
 
-- Consolidate SCSS variables in `_variables.scss` and audit unused rules in `assets/styles`.
-- Standardize font sizing for `.event-block-day_text`, `.week-label` and modal containers using `var(--font-*)` tokens.
-- Add tests for text truncation and overflow on small screens.
+- **#106 Consolidate variables** – move all repeated color and spacing variables into `_variables.scss` and remove unused styles.
+- **#107 Standardize fonts** – apply `var(--font-*)` tokens to `.event-block-day_text`, `.week-label` and modal containers.
+- **#108 Test text overflow** – create tests to ensure truncation and overflow behave on narrow screens.
 
 ## Data Handling and Time Normalization
 
-- Validate DST logic in `data.py` when events span multiple days.
-- Normalize times to naive UTC internally and convert to PDT only for display.
-- Expand unit tests for multi-day events and DST boundary cases.
+- **#109 Validate DST logic** – check `data.py` when events cross daylight saving time boundaries and ensure offsets are correct.
+- **#110 Normalize times** – store all times as naive UTC and convert to PDT only when displaying dates.
+- **#111 Expand boundary tests** – add unit tests for multi-day events and DST changeovers.
 
 ## Testing Strategy
 
-- Increase coverage for modal behaviour and duplicated Sunday events.
-- Parametrize existing tests to cover additional casinos and offer types.
-- Integrate `mypy`, `bandit` and `pydocstyle` into `scripts/test.sh` when available.
+- **#112 Cover modals** – write tests for modal behaviour and scenarios with duplicated Sunday events.
+- **#113 Parametrize suites** – extend tests to run across more casinos and offer types using pytest parametrize.
+- **#114 Optional linters** – update `scripts/test.sh` to run `mypy`, `bandit` and `pydocstyle` when those tools are installed.
 
 ## Tooling and CI
 
-- Update `.flake8` to ignore the `.venv` directory (already done).
-- Add GitHub Actions workflows for linting and testing on pull requests.
-- Provide an npm script to run `stylelint` for SCSS files.
+- **#115 Update flake8** – ensure `.flake8` excludes the `.venv` directory (already completed).
+- **#116 GitHub Actions** – create workflows to run `scripts/test.sh` and CSS linting on each pull request.
+- **#117 Stylelint script** – add an npm script `lint:css` to invoke `stylelint` against SCSS files.
 
 ## GitHub Project Setup
 
