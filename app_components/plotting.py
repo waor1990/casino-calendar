@@ -1,5 +1,6 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from math import floor
+from typing import Callable, List, Tuple
 
 import pandas as pd
 import plotly.graph_objs as go
@@ -11,14 +12,23 @@ from .utils import PDT, offer_type_emoji, trim_label
 
 
 # Layout config shared across functions
-def get_layout_config(screen_width):
+def get_layout_config(screen_width: int) -> Tuple[int, int]:
+    """Return hour height and label column width based on ``screen_width``."""
+
     hour_height = 20 if screen_width < 480 else 36 if screen_width < 768 else 44
     label_column_pct = 10
     return hour_height, label_column_pct
 
 
 # Generate a responsive 24-hour vertical day view with absolutely positioned event blocks.
-def generate_day_view_html(events_df, clicked_date, get_color_fn, screen_width=1024):
+def generate_day_view_html(
+    events_df: pd.DataFrame,
+    clicked_date: datetime,
+    get_color_fn: Callable[[], dict],
+    screen_width: int = 1024,
+) -> List[html.Div | dcc.Graph]:
+    """Return a list of HTML elements representing a single day's events."""
+
     hour_height, label_column_pct = get_layout_config(screen_width)
 
     # Normalize clicked_date

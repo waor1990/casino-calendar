@@ -6,7 +6,9 @@ import pandas as pd
 from .utils import PDT
 
 
-def categorize_offer_type_updated(event_name, offer):
+def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> str:
+    """Return an offer type based on keywords found in ``event_name`` or ``offer``."""
+
     event_name = str(event_name).lower() if pd.notna(event_name) else ""
     offer = str(offer).lower() if pd.notna(offer) else ""
 
@@ -52,7 +54,8 @@ def categorize_offer_type_updated(event_name, offer):
     return "Offer"
 
 
-def load_event_data(csv_path="data/casino_events.csv"):
+def load_event_data(csv_path: str = "data/casino_events.csv") -> pd.DataFrame:
+    """Load event data from ``csv_path`` with timezone normalized to PDT."""
     df = pd.read_csv(csv_path)
 
     for col in ["StartDate", "EndDate"]:
