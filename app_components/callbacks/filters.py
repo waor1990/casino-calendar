@@ -48,7 +48,7 @@ def register_callbacks(app, df):
         Input("next-button", "n_clicks"),
         State("week-offset", "data"),
     )
-    def update_week_offset(prev_clicks, next_clicks, current_offset):
+    def update_week_offset(_prev_clicks, _next_clicks, current_offset):
         ctx = dash.callback_context
         desired_offset = current_offset
 

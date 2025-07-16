@@ -57,14 +57,19 @@ def register_callbacks(app, df):
     )
     def show_event_modal(
         day_click,
-        close_clicks,
-        timer_tick,
-        close_day_clicks,
-        grid_clicks,
-        day_column_clicks,
+        _close_clicks,
+        _timer_tick,
+        _close_day_clicks,
+        _grid_clicks,
+        _day_column_clicks,
         week_offset,
         screen_width,
     ):
+        """Handle modal open and close events.
+
+        Unused parameters prefixed with an underscore are included solely so the
+        callback fires when those inputs change.
+        """
         ctx = dash.callback_context
         triggered_id = ctx.triggered_id
 
