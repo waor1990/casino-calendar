@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Tuple
 
+import pandas as pd
 from pytz import timezone
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -73,3 +74,15 @@ def trim_label(label: str, max_chars: int, offer_type: str = "") -> str:
         return emoji
 
     return f"{trimmed}..."
+
+
+def filter_long_spanning_events(
+    events_df: pd.DataFrame,
+    week_start: datetime,
+    week_end: datetime,
+) -> pd.DataFrame:
+    """Return events that span the entire week."""
+
+    return events_df[
+        (events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end)
+    ].copy()

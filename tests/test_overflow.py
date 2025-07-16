@@ -2,8 +2,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 
-from app_components.legacy import filter_long_spanning_events
-from app_components.utils import PDT
+from app_components.utils import PDT, filter_long_spanning_events
 
 
 def test_filter_long_spanning_events():
