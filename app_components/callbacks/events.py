@@ -1,166 +1,24 @@
-# isort:skip_file
+from datetime import datetime, timedelta
+from typing import Any, List
+
+import dash
+import pandas as pd
+from dash import ALL, Input, Output, State, html, no_update
+from pytz import timezone
+
+from ..plotting import (
+    annotate_events_with_flags,
+    assign_event_rows,
+    filter_week_events,
+    generate_day_view_html,
+    get_color,
+)
+from ..utils import offer_type_emoji
+
+PDT = timezone("America/Los_Angeles")
 
 
 def register_callbacks(app, df):
-    from datetime import datetime, timedelta
-    from typing import Any, List
-
-    import dash
-    import pandas as pd
-    from dash import ALL, Input, Output, State, html, no_update
-    from pytz import timezone
-
-    from .plotting import generate_day_view_html, get_color
-    from .legacy import filter_long_spanning_events
-    from .utils import offer_type_emoji
-    from .week_grid_layout import render_week_grid
-
-    PDT = timezone("America/Los_Angeles")
-
-    # Screen detection JS (for height + width)
-    app.clientside_callback(
-        """
-        function(n_intervals) {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            const header = document.getElementById("app-header");
-            const headerHeight = header ? header.offsetHeight : 100;
-            const usable = Math.max(height - headerHeight - 20, 300);
-
-            return [width, usable];
-        }
-        """,
-        Output("screen-width", "data"),
-        Output("usable-height", "data"),
-        Input("initial-trigger", "n_intervals"),
-    )
-
-    # Sticky header with responsive legend
-    @app.callback(Output("week-label", "children"), Input("week-offset", "data"))
-    def update_week_label(week_offset):
-        today = datetime.now(PDT)
-        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-        week_start = current_sunday + timedelta(weeks=week_offset)
-
-        return f"Events for the Week of {week_start.strftime('%B %d')} - {(week_start + timedelta(days=6)).strftime('%B %d, %Y')}"
-
-    # Update week offset on button clicks
-    @app.callback(
-        Output("week-offset", "data"),
-        Output("prev-button", "disabled"),
-        Output("next-button", "disabled"),
-        Output("next-button", "title"),
-        Input("prev-button", "n_clicks"),
-        Input("next-button", "n_clicks"),
-        State("week-offset", "data"),
-    )
-    def update_week_offset(prev_clicks, next_clicks, current_offset):
-        ctx = dash.callback_context
-        desired_offset = current_offset
-
-        if ctx.triggered_id == "prev-button":
-            desired_offset -= 1
-        elif ctx.triggered_id == "next-button":
-            desired_offset += 1
-
-        # Limit going back no more than 6 weeks
-        desired_offset = max(-6, desired_offset)
-        # Limit forward navigation if next 4 weeks are empty
-        today = datetime.now(PDT)
-        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-
-        next_week_offset = desired_offset + 1
-        next_week_start = current_sunday + timedelta(weeks=next_week_offset)
-        next_week_end = next_week_start + timedelta(days=7)
-
-        has_next_week_events = not df[
-            (df["EndDate"] > next_week_start) & (df["StartDate"] < next_week_end)
-        ].empty
-
-        if not has_next_week_events and desired_offset > current_offset:
-            desired_offset = current_offset
-
-        prev_disabled = desired_offset <= -6
-        next_disabled = not has_next_week_events
-
-        # Dynamic tooltip text for forward navigation
-        next_title = "No Upcoming events" if next_disabled else "Upcoming Week"
-
-        return desired_offset, prev_disabled, next_disabled, next_title
-
-    @app.callback(
-        Output("week-chart-container", "children"),
-        Output("overflow-date", "data"),
-        Output("animation-refresh", "data"),
-        Output("calendar-scroll-body", "style"),
-        Input("usable-height", "data"),
-        Input("week-offset", "data"),
-        Input("screen-width", "data"),
-        prevent_initial_call=True,
-    )
-    def render_single_week_chart(usable_height, week_offset, screen_width):
-        today = datetime.now(PDT)
-        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-        week_start = current_sunday + timedelta(weeks=week_offset)
-
-        grid = render_week_grid(week_start, df, screen_width)
-
-        week_end = week_start + timedelta(days=7)
-        overflow_df = filter_long_spanning_events(df, week_start, week_end)
-
-        if not overflow_df.empty:
-            overflow_toggle = html.Button(
-                f"🌀 Show Ongoing Events for {week_start.strftime('%b %d')} - {week_end.strftime('%b %d')}",
-                id="overflow-toggle",
-                n_clicks=0,
-                className="overflow-toggle",
-            )
-            overflow_box = html.Div(
-                id="overflow-box",
-                className="overflow-box-expand",
-                children=[
-                    html.Strong(
-                        "Ongoing Events This Week:",
-                        className="font-bold mb-section",
-                        style={"color": "#6A5ACD", "display": "block"},
-                    ),
-                    html.Ul(
-                        [
-                            html.Li(
-                                f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}",
-                                style={"color": "#00008B"},
-                            )
-                            for _, row in overflow_df.iterrows()
-                        ]
-                    ),
-                ],
-            )
-        else:
-            overflow_toggle = html.Div()
-            overflow_box = html.Div()
-
-        chart = html.Div(
-            children=[grid, overflow_toggle, overflow_box],
-            id=f"week-chart-{week_offset}",
-            className="slide-in week-chart-scroll",
-            **{"data-week": week_offset},
-        )
-
-        from uuid import uuid4
-
-        style = (
-            {"height": f"{usable_height}px"}
-            if screen_width >= 768
-            else {"minHeight": f"{usable_height}px"}
-        )
-
-        return (
-            chart,
-            week_start.strftime("%Y-%m-%d"),
-            str(uuid4()),
-            style,
-        )
-
     @app.callback(
         Output("overflow-box", "className"),
         Output("overflow-toggle", "children"),
@@ -176,9 +34,9 @@ def register_callbacks(app, df):
         box_class = "overflow-box-expand show" if is_open else "overflow-box-expand"
 
         button_text = (
-            f"🌀 Hide Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+            f"\U0001f300 Hide Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
             if is_open
-            else f"🌀 Show Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+            else f"\U0001f300 Show Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
         )
 
         return box_class, button_text
@@ -256,12 +114,6 @@ def register_callbacks(app, df):
                     no_update,
                     no_update,
                 )
-
-            from .plotting import (
-                annotate_events_with_flags,
-                assign_event_rows,
-                filter_week_events,
-            )
 
             today = datetime.now(PDT)
             current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
@@ -411,7 +263,6 @@ def register_callbacks(app, df):
                     "Offer",
                 ]
             ):
-                # Normal event click
                 emoji = offer_type_emoji(data.get("OfferType", ""))
                 rows = [
                     html.H2(
@@ -456,23 +307,3 @@ def register_callbacks(app, df):
                 return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
 
         raise dash.exceptions.PreventUpdate
-
-    # Re-trigger slide-in animation when week content is rendered
-    app.clientside_callback(
-        """
-        function(refresh) {
-            setTimeout(function() {
-                const container = document.getElementById('week-chart-container');
-                if (!container) { return; }
-                const chart = container.querySelector('.week-chart-scroll');
-                if (!chart) { return; }
-                chart.classList.remove('slide-in');
-                void chart.offsetWidth;
-                chart.classList.add('slide-in');
-            }, 0);
-            return '';
-        }
-        """,
-        Output("animation-dummy", "children"),
-        Input("animation-refresh", "data"),
-    )
