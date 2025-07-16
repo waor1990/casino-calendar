@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Any, Tuple
 
 import dash
 import pandas as pd
@@ -14,7 +15,9 @@ from ..utils import build_event_info_rows
 PDT = timezone("America/Los_Angeles")
 
 
-def register_callbacks(app, df):
+def register_callbacks(app, df) -> None:
+    """Register event related callbacks on the given Dash ``app``."""
+
     @app.callback(
         Output("overflow-box", "className"),
         Output("overflow-toggle", "children"),
@@ -22,7 +25,8 @@ def register_callbacks(app, df):
         State("overflow-date", "data"),
         prevent_initial_call=True,
     )
-    def toggle_overflow(n_clicks, start_date_str):
+    def toggle_overflow(n_clicks: int, start_date_str: str) -> Tuple[str, str]:
+        """Toggle visibility of the overflow list for the selected week."""
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
         end_date = start_date + timedelta(days=6)
         is_open = n_clicks % 2 == 1
@@ -56,15 +60,15 @@ def register_callbacks(app, df):
         prevent_initial_call=True,
     )
     def show_event_modal(
-        day_click,
-        _close_clicks,
-        _timer_tick,
-        _close_day_clicks,
-        _grid_clicks,
-        _day_column_clicks,
-        week_offset,
-        screen_width,
-    ):
+        day_click: dict | None,
+        _close_clicks: int,
+        _timer_tick: int,
+        _close_day_clicks: int,
+        _grid_clicks: list[int],
+        _day_column_clicks: list[int],
+        week_offset: int,
+        screen_width: int,
+    ) -> Tuple[Any, Any, Any, int, Any, Any, Any]:
         """Handle modal open and close events.
 
         Unused parameters prefixed with an underscore are included solely so the
