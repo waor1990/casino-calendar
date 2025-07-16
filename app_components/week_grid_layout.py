@@ -30,13 +30,14 @@ def _build_block(row, week_start, week_end, screen_width, colors):
 
     visible_start = max(start_delta, 0)
     visible_end = min(end_delta, 7)
-    row_num = row["row_num"] + 2
-    span_days = visible_end - visible_start
+    span_days = max(visible_end - visible_start, 0)
+    row_num = row.get("row_num", 0) + 2
 
     left_pct = (visible_start / 7) * 100
     width_pct = (span_days / 7) * 100
     if left_pct + width_pct > 100:
         width_pct = 100 - left_pct
+    width_pct = max(width_pct, 0)
 
     font_px = (
         12
@@ -97,24 +98,8 @@ def render_week_grid(
     # Wrap the labels so the entire row can be sticky
     header_row = html.Div(day_labels, className="day-label-wrapper")
 
-    # Filter and annotate events for the week
-    df_assigned = prepare_week_events(df, week_start)
-
-    # Duplicate events that continue into Sunday so a matching block renders in
-    # the Sunday column. The duplicated block retains the original ``orig_index``
-    # so that modal clicks open the same event details.
-    sunday_mask = (df_assigned["StartDate"].dt.weekday <= 5) & (
-        df_assigned["EndDate"].dt.weekday == 6
-    )
-
-    if sunday_mask.any():
-        dup = df_assigned[sunday_mask].copy()
-        dup["StartDate"] = dup["EndDate"].dt.floor("D")
-        # Keep the actual end time so the block reflects the real duration on
-        # Sunday rather than spanning the entire day.
-        dup["EndDate"] = df_assigned.loc[sunday_mask, "EndDate"].values
-        dup["is_duplicate"] = True
-        df_assigned = pd.concat([df_assigned, dup], ignore_index=True)
+    # Filter, annotate and optionally duplicate events that cross into Sunday
+    df_assigned = prepare_week_events(df, week_start, include_sunday_duplicates=True)
 
     colors = get_color()
 
