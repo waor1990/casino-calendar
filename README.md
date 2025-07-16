@@ -32,6 +32,7 @@ data/                    # CSV data files
 docs/                    # Project documentation
   handoff.md
   TODO.md
+  legacy_plotly.md       # Archived Plotly helpers
 deploy/                  # Deployment configuration
   Procfile
   render.yaml
