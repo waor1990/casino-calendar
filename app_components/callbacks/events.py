@@ -1,25 +1,23 @@
 from datetime import datetime, timedelta
-from typing import Any, List
+from typing import Any, Tuple
 
 import dash
 import pandas as pd
-from dash import ALL, Input, Output, State, html, no_update
+from dash import ALL, Input, Output, State, no_update
 from pytz import timezone
 
 from utils.colors import get_color
-from utils.data_parsing import (
-    annotate_events_with_flags,
-    assign_event_rows,
-    filter_week_events,
-)
+from utils.data_parsing import prepare_week_events
 
 from ..plotting import generate_day_view_html
-from ..utils import offer_type_emoji
+from ..utils import build_event_info_rows
 
 PDT = timezone("America/Los_Angeles")
 
 
-def register_callbacks(app, df):
+def register_callbacks(app, df) -> None:
+    """Register event related callbacks on the given Dash ``app``."""
+
     @app.callback(
         Output("overflow-box", "className"),
         Output("overflow-toggle", "children"),
@@ -27,7 +25,8 @@ def register_callbacks(app, df):
         State("overflow-date", "data"),
         prevent_initial_call=True,
     )
-    def toggle_overflow(n_clicks, start_date_str):
+    def toggle_overflow(n_clicks: int, start_date_str: str) -> Tuple[str, str]:
+        """Toggle visibility of the overflow list for the selected week."""
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
         end_date = start_date + timedelta(days=6)
         is_open = n_clicks % 2 == 1
@@ -61,15 +60,20 @@ def register_callbacks(app, df):
         prevent_initial_call=True,
     )
     def show_event_modal(
-        day_click,
-        close_clicks,
-        timer_tick,
-        close_day_clicks,
-        grid_clicks,
-        day_column_clicks,
-        week_offset,
-        screen_width,
-    ):
+        day_click: dict | None,
+        _close_clicks: int,
+        _timer_tick: int,
+        _close_day_clicks: int,
+        _grid_clicks: list[int],
+        _day_column_clicks: list[int],
+        week_offset: int,
+        screen_width: int,
+    ) -> Tuple[Any, Any, Any, int, Any, Any, Any]:
+        """Handle modal open and close events.
+
+        Unused parameters prefixed with an underscore are included solely so the
+        callback fires when those inputs change.
+        """
         ctx = dash.callback_context
         triggered_id = ctx.triggered_id
 
@@ -120,11 +124,7 @@ def register_callbacks(app, df):
             current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
             week_start = current_sunday + timedelta(weeks=week_offset)
 
-            df_week = filter_week_events(df, week_start, week_start + timedelta(days=7))
-            df_annot = annotate_events_with_flags(
-                df_week, week_start, week_start + timedelta(days=7)
-            )
-            df_assigned = assign_event_rows(df_annot, week_start)
+            df_assigned = prepare_week_events(df, week_start)
             df_assigned = df_assigned.drop_duplicates("orig_index")
             df_assigned = df_assigned.set_index("orig_index")
 
@@ -143,47 +143,7 @@ def register_callbacks(app, df):
             if isinstance(row, pd.DataFrame):
                 row = row.iloc[0]
 
-            rows: List[Any] = []
-            emoji = offer_type_emoji(row.get("OfferType", ""))
-            rows.append(
-                html.H2(f"{emoji} Promo Info {emoji}", className="event-label-title")
-            )
-
-            for label in [
-                "EventName",
-                "Casino",
-                "OfferType",
-                "StartDate",
-                "EndDate",
-                "Offer",
-            ]:
-                if label in row:
-                    display_label = {
-                        "EventName": "Name of Event",
-                        "StartDate": "Start of Event",
-                        "EndDate": "End of Event",
-                        "OfferType": "Offer Type",
-                    }.get(label, label)
-
-                    value = row[label]
-
-                    if label in ["StartDate", "EndDate"]:
-                        try:
-                            value = pd.to_datetime(value).strftime(
-                                "%b %d, %Y @ %I:%M %p"
-                            )
-                        except Exception:
-                            pass
-
-                    rows.append(
-                        html.Div(
-                            [
-                                html.Strong(f"{display_label}: "),
-                                html.Span(value),
-                            ],
-                            className="event-label",
-                        )
-                    )
+            rows = build_event_info_rows(row.items())
             return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
 
         if isinstance(triggered_id, dict) and triggered_id.get("type") == "day-column":
@@ -264,47 +224,7 @@ def register_callbacks(app, df):
                     "Offer",
                 ]
             ):
-                emoji = offer_type_emoji(data.get("OfferType", ""))
-                rows = [
-                    html.H2(
-                        f"{emoji} Promo Info {emoji}", className="event-label-title"
-                    )
-                ]
-                for label in [
-                    "EventName",
-                    "Casino",
-                    "OfferType",
-                    "StartDate",
-                    "EndDate",
-                    "Offer",
-                ]:
-                    if label in data:
-                        display_label = {
-                            "EventName": "Name of Event",
-                            "StartDate": "Start of Event",
-                            "EndDate": "End of Event",
-                            "OfferType": "Offer Type",
-                        }.get(label, label)
-
-                        value = data[label]
-
-                        if label in ["StartDate", "EndDate"]:
-                            try:
-                                value = pd.to_datetime(value).strftime(
-                                    "%b %d, %Y @ %I:%M %p"
-                                )
-                            except Exception:
-                                pass
-
-                        rows.append(
-                            html.Div(
-                                [
-                                    html.Strong(f"{display_label}: "),
-                                    html.Span(value),
-                                ],
-                                className="event-label",
-                            )
-                        )
+                rows = build_event_info_rows(data.items())
                 return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
 
         raise dash.exceptions.PreventUpdate
