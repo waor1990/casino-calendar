@@ -2,11 +2,7 @@ import pandas as pd
 from dash import html
 
 from utils.colors import get_color
-from utils.data_parsing import (
-    annotate_events_with_flags,
-    assign_event_rows,
-    filter_week_events,
-)
+from utils.data_parsing import prepare_week_events
 
 from .utils import get_week_range, trim_label
 
@@ -95,10 +91,8 @@ def render_week_grid(clicked_date, df, screen_width=1024):
     # Wrap the labels so the entire row can be sticky
     header_row = html.Div(day_labels, className="day-label-wrapper")
 
-    # Filer/annotate/assign events
-    df_week = filter_week_events(df, week_start, week_end)
-    df_annot = annotate_events_with_flags(df_week, week_start, week_end)
-    df_assigned = assign_event_rows(df_annot, week_start)
+    # Filter and annotate events for the week
+    df_assigned = prepare_week_events(df, week_start)
 
     # Duplicate events that continue into Sunday so a matching block renders in
     # the Sunday column. The duplicated block retains the original ``orig_index``
