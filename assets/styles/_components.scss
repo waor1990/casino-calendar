@@ -130,9 +130,9 @@ h1,
 
 .hour-grid-line {
     position: absolute;
-    left: 0;
-    width: 100%;
-    border-top: var(--border-thin) solid var(--color-border-grid-light);
+    left: -0.25rem;
+    width: calc(100% + 0.25rem);
+    border-top: var(--border-thin) solid var(--color-border-grid);
     box-sizing: border-box;
     pointer-events: none;
     z-index: 2; // above modal background but below events

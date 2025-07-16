@@ -98,8 +98,8 @@ def render_week_grid(
     # Wrap the labels so the entire row can be sticky
     header_row = html.Div(day_labels, className="day-label-wrapper")
 
-    # Filter, annotate and optionally duplicate events that cross into Sunday
-    df_assigned = prepare_week_events(df, week_start, include_sunday_duplicates=True)
+    # Filter and annotate events for the week
+    df_assigned = prepare_week_events(df, week_start)
 
     colors = get_color()
 

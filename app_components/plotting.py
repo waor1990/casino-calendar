@@ -91,7 +91,11 @@ def generate_day_view_html(
 
     for hour in range(24):
         top_px = hour * hour_height
-        label = f"{hour:02d}:00" if hour % 3 == 0 else ""
+        label = (
+            datetime(2000, 1, 1, hour).strftime("%I %p").lstrip("0")
+            if hour % 3 == 0
+            else ""
+        )
 
         # Label on left
         hour_blocks.append(
