@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Any, Tuple
 from uuid import uuid4
 
 import dash
@@ -11,7 +12,8 @@ from ..week_grid_layout import render_week_grid
 PDT = timezone("America/Los_Angeles")
 
 
-def register_callbacks(app, df):
+def register_callbacks(app, df) -> None:
+    """Register filter and navigation callbacks."""
     app.clientside_callback(
         """
         function(n_intervals) {
@@ -30,7 +32,8 @@ def register_callbacks(app, df):
     )
 
     @app.callback(Output("week-label", "children"), Input("week-offset", "data"))
-    def update_week_label(week_offset):
+    def update_week_label(week_offset: int) -> str:
+        """Return a label for the currently selected week."""
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
@@ -48,7 +51,12 @@ def register_callbacks(app, df):
         Input("next-button", "n_clicks"),
         State("week-offset", "data"),
     )
-    def update_week_offset(prev_clicks, next_clicks, current_offset):
+    def update_week_offset(
+        _prev_clicks: int,
+        _next_clicks: int,
+        current_offset: int,
+    ) -> Tuple[int, bool, bool, str]:
+        """Update the week offset based on navigation button clicks."""
         ctx = dash.callback_context
         desired_offset = current_offset
 
@@ -87,7 +95,12 @@ def register_callbacks(app, df):
         Input("screen-width", "data"),
         prevent_initial_call=True,
     )
-    def render_single_week_chart(usable_height, week_offset, screen_width):
+    def render_single_week_chart(
+        usable_height: int,
+        week_offset: int,
+        screen_width: int,
+    ) -> Tuple[html.Div, str, str, dict[str, Any]]:
+        """Render a single week of events and overflow list."""
         today = datetime.now(PDT)
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)

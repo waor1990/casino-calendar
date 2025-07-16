@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import timedelta
 from math import floor
 
 
@@ -94,3 +95,12 @@ def assign_event_rows(events_df, week_start):
         current_row = max(row_nums, default=current_row) + 1
 
     return events_df
+
+
+def prepare_week_events(events_df, week_start):
+    """Return events filtered and annotated for a single week."""
+
+    week_end = week_start + timedelta(days=7)
+    week_events = filter_week_events(events_df, week_start, week_end)
+    annotated = annotate_events_with_flags(week_events, week_start, week_end)
+    return assign_event_rows(annotated, week_start)
