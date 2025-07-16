@@ -1,20 +1,15 @@
 from datetime import datetime, timedelta
-from typing import Any, List
 
 import dash
 import pandas as pd
-from dash import ALL, Input, Output, State, html, no_update
+from dash import ALL, Input, Output, State, no_update
 from pytz import timezone
 
 from utils.colors import get_color
-from utils.data_parsing import (
-    annotate_events_with_flags,
-    assign_event_rows,
-    filter_week_events,
-)
+from utils.data_parsing import prepare_week_events
 
 from ..plotting import generate_day_view_html
-from ..utils import offer_type_emoji
+from ..utils import build_event_info_rows
 
 PDT = timezone("America/Los_Angeles")
 
@@ -120,11 +115,7 @@ def register_callbacks(app, df):
             current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
             week_start = current_sunday + timedelta(weeks=week_offset)
 
-            df_week = filter_week_events(df, week_start, week_start + timedelta(days=7))
-            df_annot = annotate_events_with_flags(
-                df_week, week_start, week_start + timedelta(days=7)
-            )
-            df_assigned = assign_event_rows(df_annot, week_start)
+            df_assigned = prepare_week_events(df, week_start)
             df_assigned = df_assigned.drop_duplicates("orig_index")
             df_assigned = df_assigned.set_index("orig_index")
 
@@ -143,47 +134,7 @@ def register_callbacks(app, df):
             if isinstance(row, pd.DataFrame):
                 row = row.iloc[0]
 
-            rows: List[Any] = []
-            emoji = offer_type_emoji(row.get("OfferType", ""))
-            rows.append(
-                html.H2(f"{emoji} Promo Info {emoji}", className="event-label-title")
-            )
-
-            for label in [
-                "EventName",
-                "Casino",
-                "OfferType",
-                "StartDate",
-                "EndDate",
-                "Offer",
-            ]:
-                if label in row:
-                    display_label = {
-                        "EventName": "Name of Event",
-                        "StartDate": "Start of Event",
-                        "EndDate": "End of Event",
-                        "OfferType": "Offer Type",
-                    }.get(label, label)
-
-                    value = row[label]
-
-                    if label in ["StartDate", "EndDate"]:
-                        try:
-                            value = pd.to_datetime(value).strftime(
-                                "%b %d, %Y @ %I:%M %p"
-                            )
-                        except Exception:
-                            pass
-
-                    rows.append(
-                        html.Div(
-                            [
-                                html.Strong(f"{display_label}: "),
-                                html.Span(value),
-                            ],
-                            className="event-label",
-                        )
-                    )
+            rows = build_event_info_rows(row.items())
             return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
 
         if isinstance(triggered_id, dict) and triggered_id.get("type") == "day-column":
@@ -264,47 +215,7 @@ def register_callbacks(app, df):
                     "Offer",
                 ]
             ):
-                emoji = offer_type_emoji(data.get("OfferType", ""))
-                rows = [
-                    html.H2(
-                        f"{emoji} Promo Info {emoji}", className="event-label-title"
-                    )
-                ]
-                for label in [
-                    "EventName",
-                    "Casino",
-                    "OfferType",
-                    "StartDate",
-                    "EndDate",
-                    "Offer",
-                ]:
-                    if label in data:
-                        display_label = {
-                            "EventName": "Name of Event",
-                            "StartDate": "Start of Event",
-                            "EndDate": "End of Event",
-                            "OfferType": "Offer Type",
-                        }.get(label, label)
-
-                        value = data[label]
-
-                        if label in ["StartDate", "EndDate"]:
-                            try:
-                                value = pd.to_datetime(value).strftime(
-                                    "%b %d, %Y @ %I:%M %p"
-                                )
-                            except Exception:
-                                pass
-
-                        rows.append(
-                            html.Div(
-                                [
-                                    html.Strong(f"{display_label}: "),
-                                    html.Span(value),
-                                ],
-                                className="event-label",
-                            )
-                        )
+                rows = build_event_info_rows(data.items())
                 return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
 
         raise dash.exceptions.PreventUpdate

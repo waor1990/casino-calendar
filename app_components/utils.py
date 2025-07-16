@@ -1,9 +1,10 @@
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Tuple
+from typing import Any, Iterable, Tuple
 
 import pandas as pd
+from dash import html
 from pytz import timezone
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -86,3 +87,43 @@ def filter_long_spanning_events(
     return events_df[
         (events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end)
     ].copy()
+
+
+def build_event_info_rows(data: Iterable[tuple[str, Any]]) -> list:
+    """Return HTML rows for event details given a ``data`` iterable."""
+
+    mapping = dict(data)
+    emoji = offer_type_emoji(mapping.get("OfferType", ""))
+    rows = [html.H2(f"{emoji} Promo Info {emoji}", className="event-label-title")]
+
+    for label in [
+        "EventName",
+        "Casino",
+        "OfferType",
+        "StartDate",
+        "EndDate",
+        "Offer",
+    ]:
+        if label in mapping:
+            display_label = {
+                "EventName": "Name of Event",
+                "StartDate": "Start of Event",
+                "EndDate": "End of Event",
+                "OfferType": "Offer Type",
+            }.get(label, label)
+
+            value = mapping[label]
+            if label in ["StartDate", "EndDate"]:
+                try:
+                    value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
+                except Exception:
+                    pass
+
+            rows.append(
+                html.Div(
+                    [html.Strong(f"{display_label}: "), html.Span(value)],
+                    className="event-label",
+                )
+            )
+
+    return rows
