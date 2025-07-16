@@ -1,8 +1,11 @@
 from datetime import timedelta
+from math import floor
 
 import pandas as pd
 import plotly.graph_objs as go
 from dash import dcc, html
+
+from utils.colors import get_color
 
 from .utils import PDT, offer_type_emoji, trim_label
 
