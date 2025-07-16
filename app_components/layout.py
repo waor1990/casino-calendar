@@ -1,7 +1,7 @@
 import plotly.graph_objs as go
 from dash import dcc, html
 
-from .plotting import get_color
+from utils.colors import get_color
 
 
 def create_layout(app, df):

@@ -4,8 +4,8 @@ import pandas as pd
 import plotly.graph_objs as go
 
 from app_components.legacy import build_weekly_figure
-from app_components.plotting import annotate_events_with_flags, filter_week_events
 from app_components.utils import PDT
+from utils.data_parsing import annotate_events_with_flags, filter_week_events
 
 
 def test_build_weekly_figure_structure():
