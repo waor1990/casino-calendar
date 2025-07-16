@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from math import floor
-from typing import Callable, Iterable, List, Tuple
+from typing import Callable, List, Tuple
 
 import pandas as pd
 import plotly.graph_objs as go
