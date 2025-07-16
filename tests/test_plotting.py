@@ -3,8 +3,11 @@ from datetime import datetime, timedelta
 import pandas as pd
 import plotly.graph_objs as go
 
-from app_components.legacy import build_weekly_figure
-from app_components.plotting import annotate_events_with_flags, filter_week_events
+from app_components.plotting import (
+    annotate_events_with_flags,
+    build_weekly_figure,
+    filter_week_events,
+)
 from app_components.utils import PDT
 
 

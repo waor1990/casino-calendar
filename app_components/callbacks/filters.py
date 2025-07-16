@@ -5,7 +5,7 @@ import dash
 from dash import Input, Output, State, html
 from pytz import timezone
 
-from ..legacy import filter_long_spanning_events
+from ..utils import filter_long_spanning_events
 from ..week_grid_layout import render_week_grid
 
 PDT = timezone("America/Los_Angeles")
