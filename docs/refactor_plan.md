@@ -16,8 +16,8 @@ This document captures an audit of the current codebase and proposes a roadmap o
 
 ## Grid and Modal Rendering
 
-- **#103 Fix block overlap** – normalize event spans in `week_grid_layout.py` so mini blocks never cover full-day blocks.
-- **#104 Correct modal selection** – resolve click-through issues where a day modal opens instead of the event modal.
+- **#103 Fix block overlap** – normalize event spans in `week_grid_layout.py` so mini blocks never cover full-day blocks and event blocks do not spand outside the week grid.
+- **#104 Correct modal selection** – resolve click-through issues where a day modal opens instead of the event modal or no modal opens at all.
 - **#105 Test breakpoints** – verify layout responsiveness at typical mobile and tablet widths.
 
 ## Styling and Responsiveness
