@@ -109,7 +109,7 @@
     border-top: none;
     border-bottom: none;
     cursor: pointer;
-    z-index: 10;
+    z-index: 20;
 }
 
 .event-block-grid.mini-block {
@@ -132,7 +132,7 @@
     border: none;
     cursor: zoom-in;
     position: relative;
-    z-index: 5;
+    z-index: 1;
 }
 
 .day-click-area:hover {
