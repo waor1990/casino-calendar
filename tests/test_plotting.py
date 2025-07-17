@@ -2,19 +2,21 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import plotly.graph_objs as go
+import pytest
 
 from app_components.plotting import build_weekly_figure
 from app_components.utils import to_naive_utc
 from utils.data_parsing import annotate_events_with_flags, filter_week_events
 
 
-def test_build_weekly_figure_structure():
+@pytest.mark.usefixtures("casino", "offer_type")
+def test_build_weekly_figure_structure(casino, offer_type):
     week_start = to_naive_utc(datetime(2025, 4, 13))
     df = pd.DataFrame(
         {
             "EventName": ["Event"],
-            "Casino": ["ilani"],
-            "OfferType": ["Giveaway"],
+            "Casino": [casino],
+            "OfferType": [offer_type],
             "StartDate": [week_start + timedelta(days=1, hours=2)],
             "EndDate": [week_start + timedelta(days=1, hours=4)],
         }

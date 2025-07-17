@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pandas as pd
+import pytest
 from dash import Dash
 
 from app_components.callbacks import register_callbacks
@@ -14,11 +15,11 @@ class DummyCtx:
         self.triggered = [{"prop_id": f"{triggered_id}.n_clicks", "value": 1}]
 
 
-def _create_app():
+def _create_app(casino: str):
     df = pd.DataFrame(
         {
             "EventName": ["Weekend Bash"],
-            "Casino": ["ilani"],
+            "Casino": [casino],
             "Location": [""],
             "Offer": [""],
             "StartDate": [to_naive_utc(datetime(2025, 7, 12, 10))],
@@ -35,8 +36,9 @@ def _create_app():
     return func
 
 
-def test_show_event_modal_handles_duplicate(monkeypatch):
-    func = _create_app()
+@pytest.mark.usefixtures("casino")
+def test_show_event_modal_handles_duplicate(monkeypatch, casino):
+    func = _create_app(casino)
 
     def fake_prepare(events_df, week_start):
         return data_parsing.prepare_week_events(
@@ -57,8 +59,9 @@ def test_show_event_modal_handles_duplicate(monkeypatch):
     assert result[4] == {"display": "none"}
 
 
-def test_show_event_modal_close(monkeypatch):
-    func = _create_app()
+@pytest.mark.usefixtures("casino")
+def test_show_event_modal_close(monkeypatch, casino):
+    func = _create_app(casino)
     monkeypatch.setattr("dash.callback_context", DummyCtx("close-modal"), raising=False)
 
     result = func(None, 1, 0, 0, [0], [0], 0, 1024)
