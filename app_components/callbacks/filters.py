@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, Tuple
+from typing import Any, Tuple, cast
 from uuid import uuid4
 
 import dash
@@ -134,8 +134,8 @@ def register_callbacks(app, df) -> None:
                         [
                             html.Li(
                                 f"{row['EventName']} ({row['Casino']}) - "
-                                f"{to_pdt(row['StartDate']).strftime('%b %d')} to "
-                                f"{to_pdt(row['EndDate']).strftime('%b %d')}",
+                                f"{to_pdt(cast(datetime, row['StartDate'])).strftime('%b %d')} to "
+                                f"{to_pdt(cast(datetime, row['EndDate'])).strftime('%b %d')}",
                                 style={"color": "#00008B"},
                             )
                             for _, row in overflow_df.iterrows()
@@ -147,11 +147,12 @@ def register_callbacks(app, df) -> None:
             overflow_toggle = html.Div()
             overflow_box = html.Div()
 
+        data_attr: dict[str, Any] = {"data-week": str(week_offset)}
         chart = html.Div(
             children=[grid, overflow_toggle, overflow_box],
             id=f"week-chart-{week_offset}",
             className="slide-in week-chart-scroll",
-            **{"data-week": week_offset},
+            **data_attr,
         )
 
         style = (

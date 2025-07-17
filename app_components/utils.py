@@ -24,11 +24,10 @@ PDT = timezone("America/Los_Angeles")
 def to_naive_utc(dt: datetime) -> datetime:
     """Return ``dt`` converted to naive UTC."""
 
-    tz = dt.tzinfo or PDT
     if dt.tzinfo is None:
-        localized = tz.localize(dt)
+        localized = PDT.localize(dt)
     else:
-        localized = dt.astimezone(tz)
+        localized = dt
     return localized.astimezone(UTC).replace(tzinfo=None)
 
 
@@ -36,7 +35,7 @@ def to_pdt(dt: datetime) -> datetime:
     """Return ``dt`` converted from naive UTC to aware PDT."""
 
     if dt.tzinfo is None:
-        dt = UTC.localize(dt)
+        dt = dt.replace(tzinfo=UTC)
     return dt.astimezone(PDT)
 
 
@@ -52,7 +51,7 @@ def get_week_range(clicked_date: datetime) -> Tuple[datetime, datetime]:
 
     tz = clicked_date.tzinfo or PDT
     if clicked_date.tzinfo is None:
-        localized = tz.localize(clicked_date)
+        localized = PDT.localize(clicked_date)
     else:
         localized = clicked_date.astimezone(tz)
 
@@ -111,12 +110,14 @@ def filter_long_spanning_events(
     ].copy()
 
 
-def build_event_info_rows(data: Iterable[tuple[str, Any]]) -> list:
+def build_event_info_rows(data: Iterable[tuple[str, Any]]) -> list[Any]:
     """Return HTML rows for event details given a ``data`` iterable."""
 
     mapping = dict(data)
     emoji = offer_type_emoji(mapping.get("OfferType", ""))
-    rows = [html.H2(f"{emoji} Promo Info {emoji}", className="event-label-title")]
+    rows: list[Any] = [
+        html.H2(f"{emoji} Promo Info {emoji}", className="event-label-title")
+    ]
 
     for label in [
         "EventName",

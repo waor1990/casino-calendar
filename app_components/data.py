@@ -73,7 +73,8 @@ def load_event_data(csv_path: str = "data/casino_events.csv") -> pd.DataFrame:
                 localized = PDT.localize(ts + timedelta(hours=1))
         else:
             localized = ts.astimezone(PDT)
-        return localized.astimezone(UTC).replace(tzinfo=None)
+        dt = localized.astimezone(UTC).replace(tzinfo=None)
+        return pd.Timestamp(dt)
 
     for col in ["StartDate", "EndDate"]:
         df[col] = pd.to_datetime(df[col], errors="coerce")

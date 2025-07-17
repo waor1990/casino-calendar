@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from math import floor
-from typing import Callable, List, Tuple
+from typing import Any, Callable, List, Tuple
 
 import pandas as pd
 import plotly.graph_objs as go
@@ -26,7 +26,7 @@ def generate_day_view_html(
     clicked_date: datetime,
     get_color_fn: Callable[[], dict],
     screen_width: int = 1024,
-) -> List[html.Div | dcc.Graph]:
+) -> List[html.Div | dcc.Graph | html.H2]:
     """Return a list of HTML elements representing a single day's events."""
 
     hour_height, label_column_pct = get_layout_config(screen_width)
@@ -144,7 +144,7 @@ def generate_day_view_html(
             f"{_fmt_time(row['StartDate'])} to {_fmt_time(row['EndDate'])}"
         )
 
-        block_kwargs = dict(
+        block_kwargs: dict[str, Any] = dict(
             title=row["EventName"],
             className=" ".join(block_classes),
             style={

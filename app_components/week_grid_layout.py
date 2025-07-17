@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any, cast
 
 import pandas as pd
 from dash import html
@@ -128,13 +129,16 @@ def render_week_grid(
                 className=cls,
                 style=style,
                 title=f"{row['EventName']} ({row['Casino']})",
-                **{
-                    "data-eventname": row["EventName"],
-                    "data-casino": row["Casino"],
-                    "data-start": row["StartDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "data-offer": row["Offer"],
-                },
+                **cast(
+                    dict[str, Any],
+                    {
+                        "data-eventname": row["EventName"],
+                        "data-casino": row["Casino"],
+                        "data-start": row["StartDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "data-offer": row["Offer"],
+                    },
+                ),
             )
         )
 
@@ -154,7 +158,7 @@ def render_week_grid(
             className="day-click-area",
             title=f"{date.strftime('%b %d')} Events",
             style={"gridColumn": f"{i + 1}", "gridRow": f"2 / {event_rows + 2}"},
-            **{"data-date": date.strftime("%b %d")},
+            **cast(dict[str, Any], {"data-date": date.strftime("%b %d")}),
         )
         for i, date in enumerate(dates)
     ]
