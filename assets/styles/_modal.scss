@@ -73,7 +73,7 @@
     min-height: var(--modal-min-height);
     width: var(--modal-max-width);
     min-width: unset;
-    color: black;
+    color: var(--color-black);
     font-size: var(--font-base);
     pointer-events: none;
     opacity: 0;

@@ -130,8 +130,8 @@ h1,
 
 .hour-grid-line {
     position: absolute;
-    left: -0.25rem;
-    width: calc(100% + 0.25rem);
+    left: calc(-1 * var(--hour-line-offset));
+    width: calc(100% + var(--hour-line-offset));
     border-top: var(--border-thin) solid var(--color-border-grid);
     box-sizing: border-box;
     pointer-events: none;
