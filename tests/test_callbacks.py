@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pandas as pd
+import pytest
 from dash import Dash
 from freezegun import freeze_time
 
@@ -15,11 +16,12 @@ class DummyCtx:
 
 
 @freeze_time("2025-04-15")
-def test_update_week_offset_next(monkeypatch):
+@pytest.mark.usefixtures("casino")
+def test_update_week_offset_next(monkeypatch, casino):
     df = pd.DataFrame(
         {
             "EventName": ["E1", "E2", "E3"],
-            "Casino": ["C", "C", "C"],
+            "Casino": [casino, casino, casino],
             "Location": ["L", "L", "L"],
             "Offer": ["", "", ""],
             "StartDate": [
@@ -50,11 +52,12 @@ def test_update_week_offset_next(monkeypatch):
 
 
 @freeze_time("2025-04-15")
-def test_update_week_offset_no_next(monkeypatch):
+@pytest.mark.usefixtures("casino")
+def test_update_week_offset_no_next(monkeypatch, casino):
     df = pd.DataFrame(
         {
             "EventName": ["E1"],
-            "Casino": ["C"],
+            "Casino": [casino],
             "Location": ["L"],
             "Offer": [""],
             "StartDate": [to_naive_utc(datetime(2025, 4, 14))],
@@ -74,7 +77,8 @@ def test_update_week_offset_no_next(monkeypatch):
     assert next_disabled
 
 
-def test_toggle_overflow(monkeypatch):
+@pytest.mark.usefixtures("casino")
+def test_toggle_overflow(monkeypatch, casino):
     df = pd.DataFrame()
     app = Dash(__name__)
     register_callbacks(app, df)
