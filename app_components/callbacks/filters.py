@@ -159,15 +159,21 @@ def register_callbacks(app, df) -> None:
         if not overflow_df.empty:
             week_start_pdt = to_pdt(week_start)
             week_end_pdt = to_pdt(week_end)
+            is_open = bool(selected_casinos)
+            toggle_text = (
+                f"\U0001f300 Hide Ongoing Events for {week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
+                if is_open
+                else f"\U0001f300 Show Ongoing Events for {week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
+            )
             overflow_toggle = html.Button(
-                f"\U0001f300 Show Ongoing Events for {week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}",
+                toggle_text,
                 id="overflow-toggle",
-                n_clicks=0,
+                n_clicks=1 if is_open else 0,
                 className="overflow-toggle",
             )
             overflow_box = html.Div(
                 id="overflow-box",
-                className="overflow-box-expand",
+                className="overflow-box-expand" + (" show" if is_open else ""),
                 children=[
                     html.Strong(
                         "Ongoing Events This Week:",
