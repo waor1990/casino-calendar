@@ -40,7 +40,7 @@ This document captures an audit of the current codebase and proposes a roadmap o
 
 ## Tooling and CI
 
-- **#115 Update flake8** – ensure `.flake8` excludes the `.venv` directory (already completed).
+ - **#115 Update flake8** – ensure `.flake8` excludes the `.venv` directory.
 - **#116 GitHub Actions** – create workflows to run `scripts/test.sh` and CSS linting on each pull request.
 - **#117 Stylelint script** – add an npm script `lint:css` to invoke `stylelint` against SCSS files.
 
