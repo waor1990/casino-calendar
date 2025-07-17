@@ -6,8 +6,7 @@ A responsive Dash web application that visualizes casino events in a calendar la
 Built with Plotly Dash and deployed on Render.
 
 The weekly view is rendered using a CSS grid while day modals are generated with
-absolute positioning.  Callbacks in `callbacks.py` wire up the interactive
-elements and keep state in Dash stores.
+absolute positioning.  Callback functions in `app_components/callbacks/` wire up the interactive elements and keep state in Dash stores.
 
 ---
 
@@ -28,10 +27,10 @@ elements and keep state in Dash stores.
 casino_calendar/
 ├── app_components/
 │   ├── layout.py            # Sticky header, modals, containers
-│   ├── callbacks.py         # Dash callbacks
+│   ├── callbacks/           # Modular callback handlers
 │   ├── data.py              # CSV loader with timezone handling
-│   ├── plotting.py          # Plotly charting logic
-│   ├── utils.py             # Responsive calculations
+│   ├── plotting.py          # Legacy Plotly helpers and modal builders
+│   ├── utils/               # General utilities
 │   └── week_grid_layout.py  # Pure CSS grid preview
 ├── assets/
 │   ├── base.css             # Variables and resets
