@@ -29,5 +29,5 @@ if command -v npm >/dev/null 2>&1; then
     npm run lint:css
 fi
 
-# Run test suite
-pytest -q
+# Run test suite with coverage
+pytest --cov=app_components tests/ -q
