@@ -3,6 +3,7 @@ from typing import Any, Tuple
 
 import dash
 from dash import ALL, Input, Output, State, no_update
+from dash._callback import NoUpdate
 from pytz import timezone
 
 from utils.colors import get_color
@@ -67,7 +68,7 @@ def register_callbacks(app, df) -> None:
         _day_column_clicks: list[int],
         week_offset: int,
         screen_width: int,
-    ) -> Tuple[Any, Any, Any, int, Any, Any, Any]:
+    ) -> Tuple[Any, Any, Any, int | NoUpdate, Any, Any, Any]:
         """Handle modal open and close events.
 
         Unused parameters prefixed with an underscore are included solely so the
