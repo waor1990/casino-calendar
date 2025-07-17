@@ -12,6 +12,7 @@
   --gap-legend: 0.75rem;
   --margin-section: 0.625rem;
   /* Font sizes and weights */
+  --font-xxs: 0.5rem;
   --font-xs: 0.625rem;
   --font-small: 0.875rem;
   --font-base: 1rem;
@@ -69,6 +70,7 @@
 /* Font and spacing adjustments for small screens */
 @media (max-width: 480px) {
   :root {
+    --font-xxs: 0.35rem;
     --font-xs: 0.45rem;
     --font-small: 0.55rem;
     --font-base: 0.7rem;
@@ -79,6 +81,7 @@
 /* Slightly larger fonts for landscape phones */
 @media (max-width: 896px) and (orientation: landscape) {
   :root {
+    --font-xxs: 0.45rem;
     --font-xs: 0.55rem;
     --font-small: 0.75rem;
     --font-base: 0.875rem;
@@ -89,6 +92,7 @@
 /* Font and spacing adjustments for tablets */
 @media (max-width: 768px) {
   :root {
+    --font-xxs: 0.45rem;
     --font-xs: 0.55rem;
     --font-small: 0.75rem;
     --font-base: 0.875rem;
