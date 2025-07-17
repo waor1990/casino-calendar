@@ -1,6 +1,4 @@
-# Pull Request Template
-
-## Suummary
+# Summary
 
 <!-- Provide a concise description of the change -->
 
