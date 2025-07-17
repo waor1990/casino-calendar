@@ -71,7 +71,7 @@ Now that many refactor plan issues have been addressed through merged pull reque
 - [ ]  Review and adjust any instructions in handoff.md that refer to now-removed paths or callback flow
 - [ ]  Ensure any remaining changes to internal structure are reflected in AGENTS.md, especially in formatting or testing responsibilities
 
-# Issue Categories
+### Issue Categories
 
 - **UI/UX** – styling, grid layout and modal behaviour.
 - **Logic & Architecture** – callback refactors and module separation.
