@@ -30,4 +30,5 @@ if command -v npm >/dev/null 2>&1; then
 fi
 
 # Run test suite with coverage
-pytest --cov=app_components tests/ -q
+# Print verbose test names and captured output
+pytest --cov=app_components tests/ -vv -s tests/
