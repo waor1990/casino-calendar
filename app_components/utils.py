@@ -5,7 +5,7 @@ from typing import Any, Iterable, Tuple
 
 import pandas as pd
 from dash import html
-from pytz import timezone
+from pytz import UTC, timezone
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 with open(DATA_DIR / "offer_type_emojis.json", encoding="utf-8") as f:
@@ -19,6 +19,25 @@ def offer_type_emoji(offer_type: str) -> str:
 
 
 PDT = timezone("America/Los_Angeles")
+
+
+def to_naive_utc(dt: datetime) -> datetime:
+    """Return ``dt`` converted to naive UTC."""
+
+    tz = dt.tzinfo or PDT
+    if dt.tzinfo is None:
+        localized = tz.localize(dt)
+    else:
+        localized = dt.astimezone(tz)
+    return localized.astimezone(UTC).replace(tzinfo=None)
+
+
+def to_pdt(dt: datetime) -> datetime:
+    """Return ``dt`` converted from naive UTC to aware PDT."""
+
+    if dt.tzinfo is None:
+        dt = UTC.localize(dt)
+    return dt.astimezone(PDT)
 
 
 def get_week_range(clicked_date: datetime) -> Tuple[datetime, datetime]:
@@ -37,10 +56,13 @@ def get_week_range(clicked_date: datetime) -> Tuple[datetime, datetime]:
     else:
         localized = clicked_date.astimezone(tz)
 
-    week_start = (localized - timedelta(days=(localized.weekday() + 1) % 7)).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
-    week_end = week_start + timedelta(days=7)
+    week_start_local = (
+        localized - timedelta(days=(localized.weekday() + 1) % 7)
+    ).replace(hour=0, minute=0, second=0, microsecond=0)
+    week_end_local = week_start_local + timedelta(days=7)
+
+    week_start = week_start_local.astimezone(UTC).replace(tzinfo=None)
+    week_end = week_end_local.astimezone(UTC).replace(tzinfo=None)
 
     return week_start, week_end
 
@@ -115,7 +137,8 @@ def build_event_info_rows(data: Iterable[tuple[str, Any]]) -> list:
             value = mapping[label]
             if label in ["StartDate", "EndDate"]:
                 try:
-                    value = pd.to_datetime(value).strftime("%b %d, %Y @ %I:%M %p")
+                    ts = pd.to_datetime(value)
+                    value = to_pdt(ts).strftime("%b %d, %Y @ %I:%M %p")
                 except Exception:
                     pass
 

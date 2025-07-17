@@ -3,7 +3,6 @@ from pathlib import Path
 import pandas as pd
 
 from app_components.data import categorize_offer_type_updated, load_event_data
-from app_components.utils import PDT
 
 
 def test_categorize_offer_type_updated_basic():
@@ -35,8 +34,7 @@ def test_load_event_data_localizes_dates(tmp_path: Path):
 
     result = load_event_data(csv_path)
 
-    assert result["StartDate"].dt.tz is not None
-    assert result["StartDate"].dt.tz.zone == PDT.zone
+    assert result["StartDate"].dt.tz is None
     assert result.loc[0, "OfferType"] == "Free-Play"
 
 

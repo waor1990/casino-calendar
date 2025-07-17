@@ -10,7 +10,7 @@ from utils.colors import get_color
 from utils.data_parsing import prepare_week_events
 
 from ..plotting import generate_day_view_html
-from ..utils import build_event_info_rows
+from ..utils import build_event_info_rows, to_naive_utc
 
 PDT = timezone("America/Los_Angeles")
 
@@ -120,7 +120,7 @@ def register_callbacks(app, df) -> None:
                     no_update,
                 )
 
-            today = datetime.now(PDT)
+            today = datetime.utcnow()
             current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
             week_start = current_sunday + timedelta(weeks=week_offset)
 
@@ -163,7 +163,7 @@ def register_callbacks(app, df) -> None:
                     no_update,
                 )
 
-            clicked_date = PDT.localize(datetime.strptime(date_str, "%Y-%m-%d"))
+            clicked_date = to_naive_utc(datetime.strptime(date_str, "%Y-%m-%d"))
             content = generate_day_view_html(df, clicked_date, get_color, screen_width)
 
             return (
@@ -195,7 +195,7 @@ def register_callbacks(app, df) -> None:
                         no_update,
                     )
 
-                today = datetime.now(PDT)
+                today = datetime.utcnow()
                 current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
                 week_start = current_sunday + timedelta(weeks=week_offset)
                 clicked_date = week_start + timedelta(days=day_index)
