@@ -56,3 +56,23 @@ def test_load_event_data_handles_dst(tmp_path: Path):
 
     delta = result.loc[0, "EndDate"] - result.loc[0, "StartDate"]
     assert delta.total_seconds() == 3600
+
+
+def test_load_event_data_handles_dst_fall(tmp_path: Path):
+    csv_path = tmp_path / "dst_fall.csv"
+    df = pd.DataFrame(
+        {
+            "EventName": ["DST Fall"],
+            "Casino": ["Test Casino"],
+            "Location": ["Test"],
+            "Offer": [""],
+            "StartDate": ["11/2/2025 0:30"],
+            "EndDate": ["11/2/2025 2:30"],
+        }
+    )
+    df.to_csv(csv_path, index=False)
+
+    result = load_event_data(csv_path)
+
+    delta = result.loc[0, "EndDate"] - result.loc[0, "StartDate"]
+    assert delta.total_seconds() == 10800
