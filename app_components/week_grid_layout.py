@@ -75,7 +75,10 @@ def _build_block(row, week_start, week_end, screen_width, colors):
 
 
 def render_week_grid(
-    clicked_date: datetime, df: pd.DataFrame, screen_width: int = 1024
+    clicked_date: datetime,
+    df: pd.DataFrame,
+    screen_width: int = 1024,
+    selected_casinos: list[str] | None = None,
 ) -> html.Div:
     """Render a week's events in a CSS grid layout."""
 
@@ -100,7 +103,8 @@ def render_week_grid(
     header_row = html.Div(day_labels, className="day-label-wrapper")
 
     # Filter and annotate events for the week
-    df_assigned = prepare_week_events(df, week_start)
+    filtered = df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
+    df_assigned = prepare_week_events(filtered, week_start)
 
     colors = get_color()
 

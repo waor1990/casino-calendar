@@ -55,6 +55,16 @@ h1,
     margin-right: var(--padding-xs);
 }
 
+.legend-button {
+    all: unset;
+    cursor: pointer;
+}
+
+.legend-selected {
+    outline: var(--border-thin) solid var(--color-accent-dark);
+    background-color: var(--color-accent-light);
+}
+
 /* Buttons */
 
 .emoji-button {

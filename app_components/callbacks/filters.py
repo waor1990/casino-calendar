@@ -3,7 +3,7 @@ from typing import Any, Tuple, cast
 from uuid import uuid4
 
 import dash
-from dash import Input, Output, State, html
+from dash import ALL, Input, Output, State, html
 from pytz import timezone
 
 from ..utils import filter_long_spanning_events, to_pdt
@@ -88,6 +88,45 @@ def register_callbacks(app, df) -> None:
         return desired_offset, prev_disabled, next_disabled, next_title
 
     @app.callback(
+        Output("selected-casinos", "data"),
+        Input({"type": "casino-filter", "index": ALL}, "n_clicks"),
+        State({"type": "casino-filter", "index": ALL}, "id"),
+        State("selected-casinos", "data"),
+        prevent_initial_call=True,
+    )
+    def toggle_casino_filter(n_clicks, ids, selected):
+        ctx = dash.callback_context
+        if not ctx.triggered_id:
+            raise dash.exceptions.PreventUpdate
+        clicked = ctx.triggered_id.get("index")
+
+        if not selected:
+            selected = []
+
+        if clicked in selected:
+            selected = []
+        else:
+            selected = [clicked]
+
+        return selected
+
+    @app.callback(
+        Output({"type": "casino-filter", "index": ALL}, "className"),
+        Input("selected-casinos", "data"),
+        State({"type": "casino-filter", "index": ALL}, "id"),
+    )
+    def update_legend_classes(selected, ids):
+        base = "legend-item legend-button"
+        selected_set = set(selected or [])
+        classes = []
+        for item in ids:
+            cls = base
+            if item.get("index") in selected_set:
+                cls += " legend-selected"
+            classes.append(cls)
+        return classes
+
+    @app.callback(
         Output("week-chart-container", "children"),
         Output("overflow-date", "data"),
         Output("animation-refresh", "data"),
@@ -95,22 +134,27 @@ def register_callbacks(app, df) -> None:
         Input("usable-height", "data"),
         Input("week-offset", "data"),
         Input("screen-width", "data"),
+        Input("selected-casinos", "data"),
         prevent_initial_call=True,
     )
     def render_single_week_chart(
         usable_height: int,
         week_offset: int,
         screen_width: int,
+        selected_casinos: list[str] | None,
     ) -> Tuple[html.Div, str, str, dict[str, Any]]:
         """Render a single week of events and overflow list."""
         today = datetime.utcnow()
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
 
-        grid = render_week_grid(week_start, df, screen_width)
+        filtered_df = (
+            df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
+        )
+        grid = render_week_grid(week_start, filtered_df, screen_width, selected_casinos)
 
         week_end = week_start + timedelta(days=7)
-        overflow_df = filter_long_spanning_events(df, week_start, week_end)
+        overflow_df = filter_long_spanning_events(filtered_df, week_start, week_end)
 
         if not overflow_df.empty:
             week_start_pdt = to_pdt(week_start)
