@@ -92,6 +92,7 @@
     overflow: visible;
     box-sizing: border-box;
     min-height: var(--event-row-height);
+    padding: var(--padding-small);
     padding-bottom: var(--gap-week);
     grid-row-start: var(--row);
     grid-row-end: calc(var(--row) + 1);
@@ -101,7 +102,6 @@
     background-color: var(--bg);
     color: var(--fg);
     font-size: var(--font-base);
-    padding: var(--padding-small);
     margin-bottom: var(--gap-week);
     border-left: var(--border-thin) solid var(--color-border-grid);
     border-right: var(--border-thin) solid var(--color-border-grid);
