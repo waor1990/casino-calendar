@@ -14,7 +14,7 @@ but are not tested.
 - Modal windows for detailed event and day information
 - CSS grid layout for weekly view
 - Responsive design for desktop, tablet and mobile
-- Time zone normalized to Pacific Time (PDT)
+- Times stored in UTC and displayed in Pacific Time (PDT)
 - Toggle to show ongoing events that span the week
 - Auto-categorizes offers into Giveaway, Free-Play, Point-Based, Hospitality-Rewards and Special-Events
 - SCSS styles compiled with Sass

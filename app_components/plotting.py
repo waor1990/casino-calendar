@@ -8,7 +8,7 @@ from dash import dcc, html
 
 from utils.colors import get_color
 
-from .utils import PDT, offer_type_emoji, trim_label
+from .utils import offer_type_emoji, to_pdt, trim_label
 
 
 # Layout config shared across functions
@@ -32,18 +32,16 @@ def generate_day_view_html(
     hour_height, label_column_pct = get_layout_config(screen_width)
 
     # Normalize clicked_date
-    day_start = clicked_date.astimezone(PDT).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+    day_start = to_pdt(clicked_date).replace(hour=0, minute=0, second=0, microsecond=0)
     day_end = day_start + timedelta(days=1)
 
     # Filter events strictly within the day
     events = events_df.copy()
-    events["StartDate"] = pd.to_datetime(events["StartDate"]).dt.tz_convert(PDT)
-    events["EndDate"] = pd.to_datetime(events["EndDate"]).dt.tz_convert(PDT)
+    events["StartDate"] = pd.to_datetime(events["StartDate"]).map(to_pdt)
+    events["EndDate"] = pd.to_datetime(events["EndDate"]).map(to_pdt)
     events = events[(events["StartDate"] >= day_start) & (events["EndDate"] <= day_end)]
 
-    day_label = clicked_date.strftime("%A, %B %d")
+    day_label = to_pdt(clicked_date).strftime("%A, %B %d")
     header_text = f"Events for {day_label}"
 
     if events.empty:

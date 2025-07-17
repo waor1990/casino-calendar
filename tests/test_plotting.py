@@ -4,12 +4,12 @@ import pandas as pd
 import plotly.graph_objs as go
 
 from app_components.plotting import build_weekly_figure
-from app_components.utils import PDT
+from app_components.utils import to_naive_utc
 from utils.data_parsing import annotate_events_with_flags, filter_week_events
 
 
 def test_build_weekly_figure_structure():
-    week_start = PDT.localize(datetime(2025, 4, 13))
+    week_start = to_naive_utc(datetime(2025, 4, 13))
     df = pd.DataFrame(
         {
             "EventName": ["Event"],

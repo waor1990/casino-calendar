@@ -3,7 +3,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import pandas as pd
-from pytz import AmbiguousTimeError, NonExistentTimeError
+from pytz import UTC, AmbiguousTimeError, NonExistentTimeError
 
 from .utils import PDT
 
@@ -57,25 +57,27 @@ def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> 
 
 
 def load_event_data(csv_path: str = "data/casino_events.csv") -> pd.DataFrame:
-    """Load event data from ``csv_path`` with timezone normalized to PDT."""
+    """Load event data from ``csv_path`` with times stored as naive UTC."""
     df = pd.read_csv(csv_path)
 
-    def _to_pdt(ts: pd.Timestamp) -> pd.Timestamp:
-        """Return ``ts`` localized to PDT handling DST edges."""
+    def _to_naive_utc(ts: pd.Timestamp) -> pd.Timestamp:
+        """Return ``ts`` converted to naive UTC handling DST edges."""
         if pd.isna(ts):
             return ts
         if ts.tzinfo is None:
             try:
-                return PDT.localize(ts, is_dst=None)
+                localized = PDT.localize(ts, is_dst=None)
             except AmbiguousTimeError:
-                return PDT.localize(ts, is_dst=False)
+                localized = PDT.localize(ts, is_dst=False)
             except NonExistentTimeError:
-                return PDT.localize(ts + timedelta(hours=1))
-        return ts.astimezone(PDT)
+                localized = PDT.localize(ts + timedelta(hours=1))
+        else:
+            localized = ts.astimezone(PDT)
+        return localized.astimezone(UTC).replace(tzinfo=None)
 
     for col in ["StartDate", "EndDate"]:
         df[col] = pd.to_datetime(df[col], errors="coerce")
-        df[col] = df[col].map(_to_pdt)
+        df[col] = df[col].map(_to_naive_utc)
 
     df["OfferType"] = df.apply(
         lambda row: categorize_offer_type_updated(
