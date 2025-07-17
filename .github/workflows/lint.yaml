@@ -12,12 +12,18 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+          npm install
       - name: Check style
         run: |
           black --check .
           isort --check-only .
           flake8 .
           python -m py_compile app.py app_components/*.py
+      - name: Lint CSS
+        run: npx stylelint "assets/**/*.scss"
