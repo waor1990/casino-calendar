@@ -26,6 +26,8 @@ but are not tested.
 ```text
 app.py                   # Dash entry point
 app_components/          # Core logic modules
+  callbacks/             # Dash callback handlers
+  utils/                 # Shared helper functions
 assets/                  # Static assets auto-loaded by Dash
 data/                    # CSV data files
   casino_events.csv
