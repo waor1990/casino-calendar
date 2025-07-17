@@ -40,20 +40,38 @@ This document captures an audit of the current codebase and proposes a roadmap o
 
 ## Tooling and CI
 
- - **#115 Update flake8** – ensure `.flake8` excludes the `.venv` directory.
+- **#115 Update flake8** – ensure `.flake8` excludes the `.venv` directory.
+
 - **#116 GitHub Actions** – create workflows to run `scripts/test.sh` and CSS linting on each pull request.
+
 - **#117 Stylelint script** – add an npm script `lint:css` to invoke `stylelint` against SCSS files.
 
-## GitHub Project Setup
+## [#128](https://github.com/waor1990/casino-calendar/issues/128) Update Markdown Documentation to Reflect Completed Refactor Plan
 
-1. Create a **Casino Calendar Refactor Plan** project board with columns: *To Do*, *In Progress*, *Review* and *Done*.
-2. File issues under the categories below and assign a priority label (`critical`, `high`, `medium`, `low`).
-3. Suggested milestones:
-   - **v1.1 Bug Fixes** – immediate rendering and data issues.
-   - **v1.2 Modal Rewrite** – improved callback and modal logic.
-   - **v2.0 Architecture Cleanup** – module restructuring and new tooling.
+### **Summary**
 
-### Issue Categories
+Now that many refactor plan issues have been addressed through merged pull requests, several markdown files should be updated to reflect the current state of the codebase and eliminate outdated or redundant information.
+
+### **Affected Files**
+
+- docs/refactor_plan.md
+- docs/TODO.md
+- docs/handoff.md
+- app_components/AGENTS.md
+- assets/styles/AGENTS.md
+- AGENTS.md (if any refactor process changes impact agent behavior)
+- README.md
+
+### **Tasks**
+
+- [ ]  Mark completed issue lines in refactor_plan.md with a ✅ or move them to a "Completed" section
+- [ ]  Remove or revise outdated references to legacy.py or the Plotly-based rendering logic if deprecated
+- [ ]  Update README.md to reflect module changes (e.g., split callback files, new utility structure)
+- [ ]  Trim or restructure TODO.md if items have been resolved through refactor PRs
+- [ ]  Review and adjust any instructions in handoff.md that refer to now-removed paths or callback flow
+- [ ]  Ensure any remaining changes to internal structure are reflected in AGENTS.md, especially in formatting or testing responsibilities
+
+# Issue Categories
 
 - **UI/UX** – styling, grid layout and modal behaviour.
 - **Logic & Architecture** – callback refactors and module separation.
