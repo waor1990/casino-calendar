@@ -16,6 +16,15 @@ fi
 if command -v flake8 >/dev/null 2>&1; then
     flake8 .
 fi
+if command -v mypy >/dev/null 2>&1; then
+    mypy .
+fi
+if command -v bandit >/dev/null 2>&1; then
+    bandit -r .
+fi
+if command -v pydocstyle >/dev/null 2>&1; then
+    pydocstyle .
+fi
 
 # Run test suite
 pytest -q
