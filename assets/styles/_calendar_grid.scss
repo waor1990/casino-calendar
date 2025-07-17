@@ -136,7 +136,7 @@
 }
 
 .day-click-area:hover {
-    background-color: rgba(106, 90, 205, 0.1);
+    background-color: var(--color-accent-light);
     cursor: zoom-in;
 }
 
@@ -149,7 +149,7 @@
     margin: 0 auto;
     display: inline-block;
     background-color: var(--color-accent);
-    color: #fff;
+    color: var(--color-white);
     padding: 0 var(--padding-xxs);
     font-size: var(--font-xs);
     border-radius: var(--border-radius-sm);
