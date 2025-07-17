@@ -6,7 +6,7 @@
   "scripts": {
     "build:css": "sass --no-source-map assets/style.scss assets/style.generated.css",
     "watch:css": "sass --no-source-map --watch assets/style.scss assets/style.css",
-    "lint:css": "stylelint \"assets/**/*.scss\""
+    "lint:css": "stylelint 'assets/**/*.scss'"
   },
   "devDependencies": {
     "@stylistic/stylelint-plugin": "^3.1.3",

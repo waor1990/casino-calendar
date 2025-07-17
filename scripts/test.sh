@@ -25,6 +25,9 @@ fi
 if command -v pydocstyle >/dev/null 2>&1; then
     pydocstyle .
 fi
+if command -v npm >/dev/null 2>&1; then
+    npm run lint:css
+fi
 
 # Run test suite
 pytest -q

@@ -50,6 +50,7 @@ source .venv/bin/activate  # use .\.venv\Scripts\activate on Windows
 scripts/setup.sh                 # install Python and Node dependencies
 npm install
 npm run build:css
+npm run lint:css
 pip install -r requirements.txt
 pre-commit install
 pre-commit run --all-files
