@@ -364,7 +364,7 @@ h1,
     color: var(--color-accent);
     padding-left: var(--padding-small);
     box-sizing: border-box;
-    z-index: 5;
+    z-index: 2;
     background-color: var(--color-background);
 }
 
