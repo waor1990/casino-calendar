@@ -26,4 +26,4 @@ jobs:
           flake8 .
           python -m py_compile app.py app_components/*.py
       - name: Lint CSS
-        run: npx stylelint "assets/**/*.scss"
+        run: npm run lint:css

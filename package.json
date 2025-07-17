@@ -1,17 +1,18 @@
 {
-    "name": "casino-calendar",
-    "version": "1.0.0",
-    "description": "Dash casino event calendar assets",
-    "private": true,
-    "scripts": {
-        "build:css": "sass --no-source-map assets/style.scss assets/style.generated.css",
-        "watch:css": "sass --no-source-map --watch assets/style.scss assets/style.css"
-    },
-    "devDependencies": {
-        "@stylistic/stylelint-plugin": "^3.1.3",
-        "sass": "^1.77.0",
-        "stylelint": "^16.21.1",
-        "stylelint-config-standard": "^38.0.0",
-        "stylelint-config-standard-scss": "^15.0.1"
-    }
+  "name": "casino-calendar",
+  "version": "1.0.0",
+  "description": "Dash casino event calendar assets",
+  "private": true,
+  "scripts": {
+    "build:css": "sass --no-source-map assets/style.scss assets/style.generated.css",
+    "watch:css": "sass --no-source-map --watch assets/style.scss assets/style.css",
+    "lint:css": "stylelint \"assets/**/*.scss\""
+  },
+  "devDependencies": {
+    "@stylistic/stylelint-plugin": "^3.1.3",
+    "sass": "^1.77.0",
+    "stylelint": "^16.21.1",
+    "stylelint-config-standard": "^38.0.0",
+    "stylelint-config-standard-scss": "^15.0.1"
+  }
 }
