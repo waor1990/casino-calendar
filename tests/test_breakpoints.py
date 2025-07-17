@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
-from app_components.utils import PDT
+from app_components.utils import to_naive_utc
 from app_components.week_grid_layout import _build_block
 
 
 def test_build_block_breakpoints():
-    week_start = PDT.localize(datetime(2025, 7, 6))
+    week_start = to_naive_utc(datetime(2025, 7, 6))
     week_end = week_start + timedelta(days=7)
     row = {
         "EventName": "This is a very long event name for testing breakpoints",

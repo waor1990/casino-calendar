@@ -6,7 +6,7 @@ import dash
 from dash import Input, Output, State, html
 from pytz import timezone
 
-from ..utils import filter_long_spanning_events
+from ..utils import filter_long_spanning_events, to_pdt
 from ..week_grid_layout import render_week_grid
 
 PDT = timezone("America/Los_Angeles")
@@ -34,12 +34,14 @@ def register_callbacks(app, df) -> None:
     @app.callback(Output("week-label", "children"), Input("week-offset", "data"))
     def update_week_label(week_offset: int) -> str:
         """Return a label for the currently selected week."""
-        today = datetime.now(PDT)
+        today = datetime.utcnow()
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
+        week_start_pdt = to_pdt(week_start)
+        week_end_pdt = week_start_pdt + timedelta(days=6)
         return (
-            f"Events for the Week of {week_start.strftime('%B %d')} - "
-            f"{(week_start + timedelta(days=6)).strftime('%B %d, %Y')}"
+            f"Events for the Week of {week_start_pdt.strftime('%B %d')} - "
+            f"{week_end_pdt.strftime('%B %d, %Y')}"
         )
 
     @app.callback(
@@ -66,7 +68,7 @@ def register_callbacks(app, df) -> None:
             desired_offset += 1
 
         desired_offset = max(-6, desired_offset)
-        today = datetime.now(PDT)
+        today = datetime.utcnow()
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
 
         next_week_offset = desired_offset + 1
@@ -101,7 +103,7 @@ def register_callbacks(app, df) -> None:
         screen_width: int,
     ) -> Tuple[html.Div, str, str, dict[str, Any]]:
         """Render a single week of events and overflow list."""
-        today = datetime.now(PDT)
+        today = datetime.utcnow()
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
         week_start = current_sunday + timedelta(weeks=week_offset)
 
@@ -111,8 +113,10 @@ def register_callbacks(app, df) -> None:
         overflow_df = filter_long_spanning_events(df, week_start, week_end)
 
         if not overflow_df.empty:
+            week_start_pdt = to_pdt(week_start)
+            week_end_pdt = to_pdt(week_end)
             overflow_toggle = html.Button(
-                f"\U0001f300 Show Ongoing Events for {week_start.strftime('%b %d')} - {week_end.strftime('%b %d')}",
+                f"\U0001f300 Show Ongoing Events for {week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}",
                 id="overflow-toggle",
                 n_clicks=0,
                 className="overflow-toggle",
@@ -129,7 +133,9 @@ def register_callbacks(app, df) -> None:
                     html.Ul(
                         [
                             html.Li(
-                                f"{row['EventName']} ({row['Casino']}) - {row['StartDate'].strftime('%b %d')} to {row['EndDate'].strftime('%b %d')}",
+                                f"{row['EventName']} ({row['Casino']}) - "
+                                f"{to_pdt(row['StartDate']).strftime('%b %d')} to "
+                                f"{to_pdt(row['EndDate']).strftime('%b %d')}",
                                 style={"color": "#00008B"},
                             )
                             for _, row in overflow_df.iterrows()

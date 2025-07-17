@@ -2,11 +2,11 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 
-from app_components.utils import PDT, filter_long_spanning_events
+from app_components.utils import filter_long_spanning_events, to_naive_utc
 
 
 def test_filter_long_spanning_events():
-    week_start = PDT.localize(datetime(2025, 7, 6))
+    week_start = to_naive_utc(datetime(2025, 7, 6))
     week_end = week_start + timedelta(days=7)
     df = pd.DataFrame(
         {

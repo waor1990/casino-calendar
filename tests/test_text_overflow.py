@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from app_components.utils import PDT
+from app_components.utils import to_naive_utc
 from app_components.week_grid_layout import _build_block
 
 LONG_TEXT = "This is a very long event name for overflow testing"
@@ -23,7 +23,7 @@ COLORS = {"ilani": {"bg": "#fff", "text": "#000"}}
 
 
 def test_build_block_adds_ellipsis_on_narrow_screen():
-    week_start = PDT.localize(datetime(2025, 7, 6))
+    week_start = to_naive_utc(datetime(2025, 7, 6))
     week_end = week_start + timedelta(days=7)
     row = _row(week_start + timedelta(days=1), week_start + timedelta(days=2))
 
@@ -32,7 +32,7 @@ def test_build_block_adds_ellipsis_on_narrow_screen():
 
 
 def test_build_block_uses_emoji_when_too_small():
-    week_start = PDT.localize(datetime(2025, 7, 6))
+    week_start = to_naive_utc(datetime(2025, 7, 6))
     week_end = week_start + timedelta(days=7)
     row = _row(week_start + timedelta(days=1), week_start + timedelta(days=2))
 

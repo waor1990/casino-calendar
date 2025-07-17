@@ -5,7 +5,7 @@ from dash import Dash
 from freezegun import freeze_time
 
 from app_components.callbacks import register_callbacks
-from app_components.utils import PDT
+from app_components.utils import to_naive_utc
 
 
 class DummyCtx:
@@ -23,14 +23,14 @@ def test_update_week_offset_next(monkeypatch):
             "Location": ["L", "L", "L"],
             "Offer": ["", "", ""],
             "StartDate": [
-                PDT.localize(datetime(2025, 4, 14)),
-                PDT.localize(datetime(2025, 4, 21)),
-                PDT.localize(datetime(2025, 4, 28)),
+                to_naive_utc(datetime(2025, 4, 14)),
+                to_naive_utc(datetime(2025, 4, 21)),
+                to_naive_utc(datetime(2025, 4, 28)),
             ],
             "EndDate": [
-                PDT.localize(datetime(2025, 4, 14, 1)),
-                PDT.localize(datetime(2025, 4, 21, 1)),
-                PDT.localize(datetime(2025, 4, 28, 1)),
+                to_naive_utc(datetime(2025, 4, 14, 1)),
+                to_naive_utc(datetime(2025, 4, 21, 1)),
+                to_naive_utc(datetime(2025, 4, 28, 1)),
             ],
         }
     )
@@ -57,8 +57,8 @@ def test_update_week_offset_no_next(monkeypatch):
             "Casino": ["C"],
             "Location": ["L"],
             "Offer": [""],
-            "StartDate": [PDT.localize(datetime(2025, 4, 14))],
-            "EndDate": [PDT.localize(datetime(2025, 4, 14, 1))],
+            "StartDate": [to_naive_utc(datetime(2025, 4, 14))],
+            "EndDate": [to_naive_utc(datetime(2025, 4, 14, 1))],
         }
     )
 
