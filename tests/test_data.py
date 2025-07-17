@@ -1,29 +1,37 @@
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from app_components.data import categorize_offer_type_updated, load_event_data
 
 
-def test_categorize_offer_type_updated_basic():
-    assert categorize_offer_type_updated("Car Giveaway", "") == "Giveaway"
-    assert categorize_offer_type_updated("", "free play bonus") == "Free-Play"
-    assert categorize_offer_type_updated("Points Multiplier", "") == "Point-Based"
-    assert categorize_offer_type_updated("Hotel Stay", "") == "Hospitality-Rewards"
-    assert categorize_offer_type_updated("Tournament", "") == "Special-Events"
-    assert categorize_offer_type_updated("Generic Promo", "") == "Offer"
+@pytest.mark.parametrize(
+    "event_name,offer,expected",
+    [
+        ("Car Giveaway", "", "Giveaway"),
+        ("", "free play bonus", "Free-Play"),
+        ("Points Multiplier", "", "Point-Based"),
+        ("Hotel Stay", "", "Hospitality-Rewards"),
+        ("Tournament", "", "Special-Events"),
+        ("Generic Promo", "", "Offer"),
+    ],
+)
+def test_categorize_offer_type_updated_basic(event_name, offer, expected):
+    assert categorize_offer_type_updated(event_name, offer) == expected
 
 
 def test_categorize_offer_type_handles_missing():
     assert categorize_offer_type_updated(None, None) == "Offer"
 
 
-def test_load_event_data_localizes_dates(tmp_path: Path):
+@pytest.mark.usefixtures("casino")
+def test_load_event_data_localizes_dates(tmp_path: Path, casino):
     csv_path = tmp_path / "sample.csv"
     df = pd.DataFrame(
         {
             "EventName": ["Test Event"],
-            "Casino": ["Test Casino"],
+            "Casino": [casino],
             "Location": ["Test"],
             "Offer": ["free play"],
             "StartDate": ["1/1/2025 10:00"],
@@ -38,12 +46,13 @@ def test_load_event_data_localizes_dates(tmp_path: Path):
     assert result.loc[0, "OfferType"] == "Free-Play"
 
 
-def test_load_event_data_handles_dst(tmp_path: Path):
+@pytest.mark.usefixtures("casino")
+def test_load_event_data_handles_dst(tmp_path: Path, casino):
     csv_path = tmp_path / "dst.csv"
     df = pd.DataFrame(
         {
             "EventName": ["DST Event"],
-            "Casino": ["Test Casino"],
+            "Casino": [casino],
             "Location": ["Test"],
             "Offer": [""],
             "StartDate": ["3/9/2025 1:30"],
@@ -58,12 +67,13 @@ def test_load_event_data_handles_dst(tmp_path: Path):
     assert delta.total_seconds() == 3600
 
 
-def test_load_event_data_handles_dst_fall(tmp_path: Path):
+@pytest.mark.usefixtures("casino")
+def test_load_event_data_handles_dst_fall(tmp_path: Path, casino):
     csv_path = tmp_path / "dst_fall.csv"
     df = pd.DataFrame(
         {
             "EventName": ["DST Fall"],
-            "Casino": ["Test Casino"],
+            "Casino": [casino],
             "Location": ["Test"],
             "Offer": [""],
             "StartDate": ["11/2/2025 0:30"],
