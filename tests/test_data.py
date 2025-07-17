@@ -38,3 +38,23 @@ def test_load_event_data_localizes_dates(tmp_path: Path):
     assert result["StartDate"].dt.tz is not None
     assert result["StartDate"].dt.tz.zone == PDT.zone
     assert result.loc[0, "OfferType"] == "Free-Play"
+
+
+def test_load_event_data_handles_dst(tmp_path: Path):
+    csv_path = tmp_path / "dst.csv"
+    df = pd.DataFrame(
+        {
+            "EventName": ["DST Event"],
+            "Casino": ["Test Casino"],
+            "Location": ["Test"],
+            "Offer": [""],
+            "StartDate": ["3/9/2025 1:30"],
+            "EndDate": ["3/9/2025 3:30"],
+        }
+    )
+    df.to_csv(csv_path, index=False)
+
+    result = load_event_data(csv_path)
+
+    delta = result.loc[0, "EndDate"] - result.loc[0, "StartDate"]
+    assert delta.total_seconds() == 3600
