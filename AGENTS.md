@@ -12,11 +12,11 @@ Directory-specific instructions can be found in
 
 The repository stores supporting material in dedicated folders:
 
-- `data/`    CSV event files
-- `docs/`    project documentation
-- `deploy/`  Render configuration
-- `scripts/` utility scripts such as `setup.sh`
-
+- `app_components/`  Python modules including callbacks and utilities
+- `data/`            CSV event files
+- `docs/`            project documentation
+- `deploy/`          Render configuration
+- `scripts/`         utility scripts such as `setup.sh`
 ## Code style
 
 ### Python
