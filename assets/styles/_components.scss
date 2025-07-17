@@ -124,7 +124,7 @@ h1,
     color: var(--color-accent);
     padding-left: var(--padding-small);
     box-sizing: border-box;
-    z-index: 5;
+    z-index: 2;
     background-color: var(--color-background);
 }
 
@@ -171,4 +171,6 @@ h1,
 // Deprecated: modal event block styles moved to _modal.scss
 
 .no-events {
-    text-align: center;    padding: var(--padding-base);}
+    text-align: center;
+    padding: var(--padding-base);
+}
