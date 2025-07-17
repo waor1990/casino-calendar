@@ -34,6 +34,9 @@
     --color-accent: #6A5ACD;
     --color-accent-dark: #483D8B;
     --color-background: #f5f3fa;
+    --color-white: #ffffff;
+    --color-black: #000000;
+    --color-accent-light: rgba(106, 90, 205, 0.1);
 
     /* Day Header & Week Grid Colors */
     --color-day-header-text: var(--color-accent-dark);
@@ -76,6 +79,7 @@
     --event-row-height: 1.875rem;
 
     --arrow-width: 0.75rem;
+    --hour-line-offset: 0.25rem;
 }
 
 /* Font and spacing adjustments for small screens */
