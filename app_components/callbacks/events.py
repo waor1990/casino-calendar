@@ -2,12 +2,11 @@ from datetime import datetime, timedelta
 from typing import Any, Tuple
 
 import dash
-import pandas as pd
 from dash import ALL, Input, Output, State, no_update
 from pytz import timezone
 
 from utils.colors import get_color
-from utils.data_parsing import prepare_week_events
+from utils.data_parsing import prepare_week_events  # noqa: F401
 
 from ..plotting import generate_day_view_html
 from ..utils import build_event_info_rows, to_naive_utc
@@ -109,7 +108,7 @@ def register_callbacks(app, df) -> None:
 
             idx = triggered_id.get("index")
 
-            if idx is None:
+            if idx is None or idx not in df.index:
                 return (
                     no_update,
                     no_update,
@@ -120,29 +119,7 @@ def register_callbacks(app, df) -> None:
                     no_update,
                 )
 
-            today = datetime.utcnow()
-            current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-            week_start = current_sunday + timedelta(weeks=week_offset)
-
-            df_assigned = prepare_week_events(df, week_start)
-            df_assigned = df_assigned.drop_duplicates("orig_index")
-            df_assigned = df_assigned.set_index("orig_index")
-
-            if idx not in df_assigned.index:
-                return (
-                    no_update,
-                    no_update,
-                    no_update,
-                    no_update,
-                    no_update,
-                    no_update,
-                    no_update,
-                )
-
-            row = df_assigned.loc[idx]
-            if isinstance(row, pd.DataFrame):
-                row = row.iloc[0]
-
+            row = df.loc[idx]
             rows = build_event_info_rows(row.items())
             return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
 
