@@ -131,12 +131,23 @@ def generate_day_view_html(
         if short_span:
             children = [html.Span(emoji, className="event-block-day_text")]
         else:
-            lines = [
-                html.Span(str(row["EventName"]), className="event-block-day_line"),
-                html.Span(str(row["Casino"]), className="event-block-day_line"),
-                html.Span(str(row.get("Offer", "")), className="event-block-day_line"),
-                html.Span(emoji, className="event-block-day_line"),
+            # Approximate number of text lines that can fit in the block
+            line_height = 18
+            max_lines = max(1, int(height_px // line_height))
+
+            values = [
+                str(row["EventName"]),
+                str(row["Casino"]),
+                str(row.get("Offer", "")),
+                emoji,
             ]
+
+            lines = [
+                html.Span(v, className="event-block-day_line")
+                for v in values[:max_lines]
+                if v
+            ]
+
             children = html.Div(lines, className="event-block-day_text")
 
         block_classes = ["event-block-day"]
