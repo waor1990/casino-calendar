@@ -45,9 +45,17 @@ def generate_day_view_html(
     header_text = f"Events for {day_label}"
 
     if events.empty:
+        placeholder_graph = dcc.Graph(
+            id="day-event-catcher",
+            figure=go.Figure(),
+            config={"displayModeBar": False},
+            style={"display": "none"},
+        )
+
         return [
             html.H2(header_text, className="day-label day-modal-title"),
             html.Div("No events scheduled.", className="no-events"),
+            placeholder_graph,
         ]
 
     # Time math
