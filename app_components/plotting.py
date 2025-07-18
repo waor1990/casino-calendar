@@ -128,8 +128,16 @@ def generate_day_view_html(
 
         short_span = row["duration_min"] < 90
 
-        label_content = emoji if short_span else row["EventName"]
-        children = [html.Span(label_content, className="event-block-day_text")]
+        if short_span:
+            children = [html.Span(emoji, className="event-block-day_text")]
+        else:
+            lines = [
+                html.Span(str(row["EventName"]), className="event-block-day_line"),
+                html.Span(str(row["Casino"]), className="event-block-day_line"),
+                html.Span(str(row.get("Offer", "")), className="event-block-day_line"),
+                html.Span(emoji, className="event-block-day_line"),
+            ]
+            children = html.Div(lines, className="event-block-day_text")
 
         block_classes = ["event-block-day"]
         if short_span:
