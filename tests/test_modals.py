@@ -54,7 +54,7 @@ def test_show_event_modal_handles_duplicate(monkeypatch, casino):
         raising=False,
     )
 
-    result = func(None, 0, 0, 0, [1], [0], 0, 1024)
+    result = func(None, 0, 0, 0, [1], [0], 0, 1024, [])
     assert result[1] == "modal show"
     assert result[4] == {"display": "none"}
 
@@ -64,6 +64,6 @@ def test_show_event_modal_close(monkeypatch, casino):
     func = _create_app(casino)
     monkeypatch.setattr("dash.callback_context", DummyCtx("close-modal"), raising=False)
 
-    result = func(None, 1, 0, 0, [0], [0], 0, 1024)
+    result = func(None, 1, 0, 0, [0], [0], 0, 1024, [])
     assert result[1] == "modal closing"
     assert result[3] == 1

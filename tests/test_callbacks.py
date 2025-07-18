@@ -89,3 +89,20 @@ def test_toggle_overflow(monkeypatch, casino):
     result = func(1, "2025-04-13")
     assert result[0] == "overflow-box-expand show"
     assert "Hide" in result[1]
+
+
+@pytest.mark.usefixtures("casino")
+def test_toggle_casino_filter(monkeypatch, casino):
+    df = pd.DataFrame({"EventName": ["E1"], "Casino": [casino]})
+    app = Dash(__name__)
+    register_callbacks(app, df)
+    func = app.callback_map["selected-casinos.data"]["callback"].__wrapped__
+
+    monkeypatch.setattr(
+        "dash.callback_context",
+        DummyCtx({"type": "casino-filter", "index": casino}),
+        raising=False,
+    )
+
+    result = func([1], [{"type": "casino-filter", "index": casino}], [])
+    assert result == [casino]

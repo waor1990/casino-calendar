@@ -3,6 +3,8 @@ from dash import dcc, html
 
 from utils.colors import get_color
 
+LEGEND_CASINOS: list[str] = []
+
 
 def create_layout(app, df):
     return html.Div(
@@ -38,6 +40,7 @@ def create_layout(app, df):
             dcc.Store(id="week-offset", data=0),
             dcc.Store(id="overflow-date"),
             dcc.Store(id="animation-refresh"),
+            dcc.Store(id="selected-casinos", data=[]),
             html.Div(id="animation-dummy", style={"display": "none"}),
             # Interval Triggers
             dcc.Interval(id="initial-trigger", interval=1, max_intervals=1),
@@ -148,17 +151,19 @@ def sticky_header(df):
 
 def create_legend(df):
     legend_items = []
+    LEGEND_CASINOS.clear()
     for casino, color in get_color().items():
         if casino in df["Casino"].unique():
+            LEGEND_CASINOS.append(casino)
             legend_items.append(
-                html.Div(
-                    className="legend-item",
+                html.Button(
+                    className="legend-item legend-button",
+                    id={"type": "casino-filter", "index": casino},
+                    n_clicks=0,
                     children=[
                         html.Div(
                             className="legend-color-box",
-                            style={
-                                "backgroundColor": color["bg"],
-                            },
+                            style={"backgroundColor": color["bg"]},
                         ),
                         html.Span(
                             f"{casino}",

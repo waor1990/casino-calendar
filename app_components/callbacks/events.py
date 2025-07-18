@@ -57,6 +57,7 @@ def register_callbacks(app, df) -> None:
         Input({"type": "day-column", "index": ALL}, "n_clicks"),
         State("week-offset", "data"),
         State("screen-width", "data"),
+        State("selected-casinos", "data"),
         prevent_initial_call=True,
     )
     def show_event_modal(
@@ -68,6 +69,7 @@ def register_callbacks(app, df) -> None:
         _day_column_clicks: list[int],
         week_offset: int,
         screen_width: int,
+        selected_casinos: list[str] | None,
     ) -> Tuple[Any, Any, Any, int | NoUpdate, Any, Any, Any]:
         """Handle modal open and close events.
 
@@ -142,7 +144,12 @@ def register_callbacks(app, df) -> None:
                 )
 
             clicked_date = to_naive_utc(datetime.strptime(date_str, "%Y-%m-%d"))
-            content = generate_day_view_html(df, clicked_date, get_color, screen_width)
+            filtered = (
+                df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
+            )
+            content = generate_day_view_html(
+                filtered, clicked_date, get_color, screen_width
+            )
 
             return (
                 no_update,
@@ -177,8 +184,11 @@ def register_callbacks(app, df) -> None:
                 current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
                 week_start = current_sunday + timedelta(weeks=week_offset)
                 clicked_date = week_start + timedelta(days=day_index)
+                filtered = (
+                    df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
+                )
                 content = generate_day_view_html(
-                    df, clicked_date, get_color, screen_width
+                    filtered, clicked_date, get_color, screen_width
                 )
 
                 return (
