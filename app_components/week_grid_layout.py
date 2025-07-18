@@ -75,7 +75,10 @@ def _build_block(row, week_start, week_end, screen_width, colors):
 
 
 def render_week_grid(
-    clicked_date: datetime, df: pd.DataFrame, screen_width: int = 1024
+    clicked_date: datetime,
+    df: pd.DataFrame,
+    screen_width: int = 1024,
+    selected_casinos: list[str] | None = None,
 ) -> html.Div:
     """Render a week's events in a CSS grid layout."""
 
@@ -100,7 +103,8 @@ def render_week_grid(
     header_row = html.Div(day_labels, className="day-label-wrapper")
 
     # Filter and annotate events for the week
-    df_assigned = prepare_week_events(df, week_start)
+    filtered = df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
+    df_assigned = prepare_week_events(filtered, week_start)
 
     colors = get_color()
 
@@ -111,36 +115,55 @@ def render_week_grid(
         event_rows = int(max_row) + 1
 
     # Build CSS-grid event-block divs that are clickable
-    event_blocks = []
-    for idx, row in df_assigned.iterrows():
-        text, cls, style = _build_block(row, week_start, week_end, screen_width, colors)
+    event_blocks: list[Any] = []
 
-        button_id = {"type": "grid-event", "index": row.get("orig_index", idx)}
-        if row.get("is_duplicate"):
-            # Add a unique ``dup_idx`` flag so React keys remain unique while the
-            # original ``index`` links the duplicate to its modal details.
-            button_id.update({"dup": "sunday", "dup_idx": idx})
-
+    if df_assigned.empty:
+        if selected_casinos:
+            joined = ", ".join(selected_casinos)
+            msg = f"No Events at {joined} have been logged for this week."
+        else:
+            msg = "No Events have been logged for this week."
         event_blocks.append(
-            html.Button(
-                html.Span(text, className="event-block-grid__text"),
-                id=button_id,
-                n_clicks=0,
-                className=cls,
-                style=style,
-                title=f"{row['EventName']} ({row['Casino']})",
-                **cast(
-                    dict[str, Any],
-                    {
-                        "data-eventname": row["EventName"],
-                        "data-casino": row["Casino"],
-                        "data-start": row["StartDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
-                        "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
-                        "data-offer": row["Offer"],
-                    },
-                ),
+            html.Div(
+                msg,
+                className="no-events",
+                style={"gridRow": "2", "gridColumn": "1 / 8"},
             )
         )
+    else:
+        for idx, row in df_assigned.iterrows():
+            text, cls, style = _build_block(
+                row, week_start, week_end, screen_width, colors
+            )
+
+            button_id = {"type": "grid-event", "index": row.get("orig_index", idx)}
+            if row.get("is_duplicate"):
+                # Add a unique ``dup_idx`` flag so React keys remain unique while the
+                # original ``index`` links the duplicate to its modal details.
+                button_id.update({"dup": "sunday", "dup_idx": idx})
+
+            event_blocks.append(
+                html.Button(
+                    html.Span(text, className="event-block-grid__text"),
+                    id=button_id,
+                    n_clicks=0,
+                    className=cls,
+                    style=style,
+                    title=f"{row['EventName']} ({row['Casino']})",
+                    **cast(
+                        dict[str, Any],
+                        {
+                            "data-eventname": row["EventName"],
+                            "data-casino": row["Casino"],
+                            "data-start": row["StartDate"].strftime(
+                                "%Y-%m-%dT%H:%M:%SZ"
+                            ),
+                            "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
+                            "data-offer": row["Offer"],
+                        },
+                    ),
+                )
+            )
 
     grid_fillers = [
         html.Div(
