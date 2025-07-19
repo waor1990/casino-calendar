@@ -40,7 +40,3 @@ dist/
 
 # Node dependencies
 node_modules/
-
-assets/style.generated.css
-
-.fake
