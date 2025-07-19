@@ -5,7 +5,7 @@
 .week-grid {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    grid-template-rows: var(--header-row-height) auto;
+    grid-template-rows: calc(var(--header-row-height) + var(--header-gap)) auto;
     grid-auto-rows: minmax(var(--event-row-height), auto);
     gap: 0;
     padding: var(--padding-base);
