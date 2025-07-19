@@ -248,8 +248,13 @@ def generate_day_view_html(
 
     # Sticky Add day label + scrollable grid container
     min_width_rem = DAY_MODAL_WIDE_REM if len(events) < 5 else DAY_MODAL_MIN_REM
+    max_name_len = max((len(str(n)) for n in events["EventName"]), default=0)
+    char_rem = 0.55
+    label_and_names = DAY_MODAL_LABEL_REM + char_rem * (max_name_len + 2) * n_tracks
     grid_min_width = max(
-        min_width_rem, DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * n_tracks
+        min_width_rem,
+        DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * n_tracks,
+        label_and_names,
     )
     header = html.H2(
         header_text,

@@ -6,7 +6,6 @@ import pytest
 
 from app_components.plotting import (
     DAY_MODAL_LABEL_REM,
-    DAY_MODAL_MIN_REM,
     DAY_MODAL_TRACK_REM,
     DAY_MODAL_WIDE_REM,
     build_weekly_figure,
@@ -65,9 +64,12 @@ def test_generate_day_view_width_scales_with_tracks():
 
     result = generate_day_view_html(df, clicked, get_color, 1024)
     grid_style = result[1].style
+    char_rem = 0.55
+    max_len = max(len(n) for n in df["EventName"])
     expected = max(
         DAY_MODAL_WIDE_REM,
         DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * 3,
+        DAY_MODAL_LABEL_REM + char_rem * (max_len + 2) * 3,
     )
     assert grid_style["minWidth"] == f"{expected}rem"
 
