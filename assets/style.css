@@ -62,6 +62,9 @@
   --modal-max-height-mobile: 70vh;
   --event-modal-max-width-tablet: 31.25rem;
   --day-modal-max-width-tablet: 43.75rem;
+  --day-modal-min-width: 18rem;
+  --day-modal-max-width-desktop: 70rem;
+  --day-modal-max-width-hd: 90rem;
   --modal-overlay-color: rgba(0, 0, 0, 0.25);
   --modal-overlay-blur: 0.25rem;
   /* Animation distances */
@@ -71,6 +74,7 @@
   /* Row heights */
   --header-row-height: 3.5rem;
   --event-row-height: 1.875rem;
+  --header-gap: 0.5rem;
   --arrow-width: 0.75rem;
   --hour-line-offset: 0.25rem;
 }
@@ -420,14 +424,14 @@ h1,
 }
 
 /* Calendar week grid layout */
-/* 1. Establish a 7-column grid with a header row +event rows */
+/* 1. Establish a 7-column grid for event blocks */
 .week-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  grid-template-rows: var(--header-row-height) auto;
   grid-auto-rows: minmax(var(--event-row-height), auto);
   gap: 0;
-  padding: var(--padding-base);
+  padding: 0;
+  padding-bottom: var(--padding-base);
   position: relative;
 }
 
@@ -441,16 +445,12 @@ h1,
 
 /* 2. Your day-labels sit in row 1, columns 1-7 */
 .day-label-wrapper {
-  grid-row: 1;
-  grid-column: 1/-1;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  position: sticky;
-  top: 0;
-  z-index: 1100;
   background-color: var(--color-day-header-bg);
-  border-top: var(--border-thick) solid var(--color-border-primary);
-  border-bottom: var(--border-thick) solid var(--color-border-primary);
+  border-top: var(--border-thin) solid var(--color-border-primary);
+  border-bottom: var(--border-thin) solid var(--color-border-primary);
+  margin-bottom: var(--header-gap);
 }
 
 .day-label-grid {
@@ -465,9 +465,6 @@ h1,
   font-weight: var(--font-weight-bold);
   color: var(--color-day-header-text);
   box-sizing: border-box;
-  position: sticky;
-  top: 0;
-  z-index: 1200;
 }
 
 .day-label-grid > div {
@@ -504,7 +501,7 @@ h1,
   grid-column: 7;
 }
 
-/* 4. Your events now start on row 2 automatically */
+/* 4. Event blocks within the grid */
 .event-block-grid {
   position: relative;
   overflow: visible;
@@ -747,7 +744,9 @@ h1,
 
 /* Responsive Day Modal Enhancements */
 #day-modal-content {
-  width: var(--modal-width);
+  width: auto;
+  min-width: var(--day-modal-min-width);
+  max-width: 90vw;
   max-height: var(--day-modal-max-height);
   font-size: clamp(var(--font-small), 2vw, var(--font-base));
 }
@@ -858,6 +857,8 @@ h1,
   }
   #day-modal-content {
     width: var(--modal-width-mobile) !important;
+    max-width: var(--modal-width-mobile) !important;
+    min-width: var(--modal-width-mobile);
   }
   #day-modal-body {
     max-height: var(--modal-max-height-mobile);
@@ -869,7 +870,7 @@ h1,
     max-width: 40rem;
   }
   #day-modal-content {
-    max-width: 52rem;
+    max-width: var(--day-modal-max-width-desktop);
   }
 }
 @media (min-width: 1440px) {
@@ -877,7 +878,7 @@ h1,
     max-width: 45rem;
   }
   #day-modal-content {
-    max-width: 60rem;
+    max-width: var(--day-modal-max-width-hd);
   }
 }
 /* Animation helpers for modals and text transitions */
