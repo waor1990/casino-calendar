@@ -51,7 +51,7 @@ python3 -m venv .venv
 source .venv/bin/activate  # use .\.venv\Scripts\activate on Windows
 scripts/setup.sh                 # install Python and Node dependencies
 npm install
-npm run build:css
+npm run build:css  # compiles assets/style.scss to assets/style.css
 npm run lint:css
 pip install -r requirements.txt
 pre-commit install
