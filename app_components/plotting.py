@@ -12,6 +12,8 @@ from .utils import offer_type_emoji, to_pdt, trim_label
 
 # Constants used to size the day modal dynamically
 DAY_MODAL_MIN_REM = 18
+# Extra width when only a few events are shown
+DAY_MODAL_WIDE_REM = 24
 DAY_MODAL_LABEL_REM = 3
 DAY_MODAL_TRACK_REM = 7
 
@@ -186,6 +188,11 @@ def generate_day_view_html(
                 "height": f"{height_px}px",
                 "--bg": colors["bg"],
                 "--fg": colors["text"],
+                **(
+                    {"minWidth": f"{len(str(row['EventName'])) + 2}ch"}
+                    if len(events) < 5
+                    else {}
+                ),
             },
             **{"data-tooltip": tooltip},
         )
@@ -240,8 +247,9 @@ def generate_day_view_html(
     )
 
     # Sticky Add day label + scrollable grid container
+    min_width_rem = DAY_MODAL_WIDE_REM if len(events) < 5 else DAY_MODAL_MIN_REM
     grid_min_width = max(
-        DAY_MODAL_MIN_REM, DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * n_tracks
+        min_width_rem, DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * n_tracks
     )
     header = html.H2(
         header_text,
