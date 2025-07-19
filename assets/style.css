@@ -36,7 +36,7 @@
   --color-black: #000000;
   --color-accent-light: rgba(106, 90, 205, 0.1);
   /* Day Header & Week Grid Colors */
-  --color-day-header-text: var(--color-accent-dark);
+  --color-day-header-text: var(--color-accent);
   --color-day-header-bg: var(--color-background);
   --color-border-primary: var(--color-primary-dark);
   --color-border-accent: var(--color-accent);
@@ -48,6 +48,7 @@
   --border-radius-xs: 0.125rem;
   --border-thin: 1px;
   --border-thick: 0.125rem;
+  --border-event: 0.1875rem;
   --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary-dark);
   --box-shadow-subtle: 0 -0.0625rem 0.3125rem var(--color-accent);
   --box-shadow-modal: 0 0 1.25rem var(--color-primary-dark);
@@ -763,7 +764,7 @@ h1,
 
 .event-block-day {
   position: absolute;
-  border: var(--border-thick) solid var(--color-border-primary);
+  border: var(--border-event) solid var(--color-border-accent);
   border-radius: var(--border-radius-sm);
   box-sizing: border-box;
   z-index: 10;
@@ -773,7 +774,7 @@ h1,
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--padding-xxs);
+  padding: var(--padding-xs);
   margin-left: var(--padding-xs);
   overflow: visible;
   background-color: var(--bg);
@@ -802,6 +803,7 @@ h1,
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-bottom: var(--padding-xxs);
 }
 
 @media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {

@@ -131,7 +131,7 @@
 // Event blocks displayed in the day view modal
 .event-block-day {
     position: absolute;
-    border: var(--border-thick) solid var(--color-border-primary);
+    border: var(--border-event) solid var(--color-border-accent);
     border-radius: var(--border-radius-sm);
     box-sizing: border-box;
     z-index: 10;
@@ -141,7 +141,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--padding-xxs);
+    padding: var(--padding-xs);
     margin-left: var(--padding-xs);
     overflow: visible;
     background-color: var(--bg);
@@ -170,6 +170,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    margin-bottom: var(--padding-xxs);
 }
 
 @include mixins.mobile {
