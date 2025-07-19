@@ -143,7 +143,7 @@
     align-items: center;
     justify-content: center;
     padding: var(--padding-xs);
-    margin-left: 0;
+    margin-left: var(--padding-xs);
     overflow: visible;
     background-color: var(--bg);
     color: var(--fg);
@@ -180,7 +180,7 @@
     }
 
     .event-block-day {
-        margin-left: 0;
+        margin-left: var(--padding-xs);
     }
 }
 

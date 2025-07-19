@@ -107,9 +107,7 @@ def generate_day_view_html(
     )
 
     label_column_pct = DAY_MODAL_LABEL_REM / grid_min_width * 100
-    track_width_pct = (100 - label_column_pct) / n_tracks
-    gap_pct = 1
-    width_pct = max(track_width_pct - gap_pct, 0)
+    width_pct = (100 - label_column_pct) / n_tracks
 
     color_map = get_color_fn()
     hour_blocks = []
@@ -151,9 +149,7 @@ def generate_day_view_html(
     for _, row in events.iterrows():
         top_px = row["start_offset_min"] / 60 * hour_height
         height_px = max(24, row["duration_min"] / 60 * hour_height)
-        left_pct = (
-            label_column_pct + row["overlap_index"] * track_width_pct + gap_pct / 2
-        )
+        left_pct = label_column_pct + row["overlap_index"] * width_pct
 
         colors = color_map.get(row["Casino"], {"bg": "#aaa", "text": "#000"})
         emoji = offer_type_emoji(row.get("OfferType", ""))
