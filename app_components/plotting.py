@@ -197,7 +197,8 @@ def generate_day_view_html(
             style={
                 "top": f"{top_px}px",
                 "left": f"{left_pct}%",
-                "width": f"{width_pct}%",
+                "width": "fit-content",
+                "maxWidth": f"{width_pct}%",
                 "height": f"{height_px}px",
                 "--bg": colors["bg"],
                 "--fg": colors["text"],
