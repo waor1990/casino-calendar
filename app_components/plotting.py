@@ -45,9 +45,17 @@ def generate_day_view_html(
     header_text = f"Events for {day_label}"
 
     if events.empty:
+        placeholder_graph = dcc.Graph(
+            id="day-event-catcher",
+            figure=go.Figure(),
+            config={"displayModeBar": False},
+            style={"display": "none"},
+        )
+
         return [
             html.H2(header_text, className="day-label day-modal-title"),
             html.Div("No events scheduled.", className="no-events"),
+            placeholder_graph,
         ]
 
     # Time math
@@ -128,8 +136,27 @@ def generate_day_view_html(
 
         short_span = row["duration_min"] < 90
 
-        label_content = emoji if short_span else row["EventName"]
-        children = [html.Span(label_content, className="event-block-day_text")]
+        if short_span:
+            children = [html.Span(emoji, className="event-block-day_text")]
+        else:
+            # Approximate number of text lines that can fit in the block
+            line_height = 18
+            max_lines = max(1, int(height_px // line_height))
+
+            values = [
+                str(row["EventName"]),
+                str(row["Casino"]),
+                str(row.get("Offer", "")),
+                emoji,
+            ]
+
+            lines = [
+                html.Span(v, className="event-block-day_line")
+                for v in values[:max_lines]
+                if v
+            ]
+
+            children = html.Div(lines, className="event-block-day_text")
 
         block_classes = ["event-block-day"]
         if short_span:
