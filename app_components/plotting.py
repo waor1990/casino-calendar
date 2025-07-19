@@ -10,6 +10,11 @@ from utils.colors import get_color
 
 from .utils import offer_type_emoji, to_pdt, trim_label
 
+# Constants used to size the day modal dynamically
+DAY_MODAL_MIN_REM = 18
+DAY_MODAL_LABEL_REM = 3
+DAY_MODAL_TRACK_REM = 7
+
 
 # Layout config shared across functions
 def get_layout_config(screen_width: int) -> Tuple[int, int]:
@@ -235,6 +240,9 @@ def generate_day_view_html(
     )
 
     # Sticky Add day label + scrollable grid container
+    grid_min_width = max(
+        DAY_MODAL_MIN_REM, DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * n_tracks
+    )
     header = html.H2(
         header_text,
         className="day-label day-modal-title",
@@ -247,6 +255,7 @@ def generate_day_view_html(
             className="day-grid",
             style={
                 "height": f"{24 * hour_height}px",
+                "minWidth": f"{grid_min_width}rem",
             },
         ),
     ]
