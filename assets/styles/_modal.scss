@@ -68,8 +68,8 @@
     border-radius: var(--border-radius-lg, 10px);
     padding: var(--padding-base);
     box-shadow: var(--box-shadow-modal);
-    max-height: auto;
-    max-width: auto;
+    max-height: none;
+    max-width: none;
     min-height: var(--modal-min-height);
     width: var(--modal-max-width);
     min-width: unset;
