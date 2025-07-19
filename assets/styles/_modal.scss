@@ -114,12 +114,13 @@
     width: auto;
     min-width: var(--day-modal-min-width);
     max-width: 90vw;
-    max-height: var(--day-modal-max-height);
+    max-height: min(var(--day-modal-max-height), 90vh);
     font-size: clamp(var(--font-small), 2vw, var(--font-base));
 }
 
 #day-modal-body {
-    overflow-y: scroll;
+    overflow-x: auto;
+    overflow-y: auto;
     padding: var(--padding-small);
     font-size: inherit;
 }
@@ -234,6 +235,7 @@
         width: var(--modal-width-mobile) !important;
         max-width: var(--modal-width-mobile) !important;
         min-width: var(--modal-width-mobile);
+        max-height: var(--modal-max-height-mobile);
     }
 
     #day-modal-body {
