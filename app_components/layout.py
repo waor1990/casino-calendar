@@ -142,8 +142,9 @@ def sticky_header(df):
                     "paddingBottom": "10px",
                 },
             ),
-            # Week Label
+            # Week Label and dynamic day headers
             html.Div(id="week-label", className="fade-text week-label", children=""),
+            html.Div(id="day-label-row", className="day-label-wrapper"),
         ],
         className="sticky-header",
     )

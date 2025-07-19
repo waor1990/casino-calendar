@@ -7,7 +7,7 @@ from dash import ALL, Input, Output, State, html
 from pytz import timezone
 
 from ..utils import filter_long_spanning_events, to_pdt
-from ..week_grid_layout import render_week_grid
+from ..week_grid_layout import render_day_labels, render_week_grid
 
 PDT = timezone("America/Los_Angeles")
 
@@ -128,6 +128,7 @@ def register_callbacks(app, df) -> None:
 
     @app.callback(
         Output("week-chart-container", "children"),
+        Output("day-label-row", "children"),
         Output("overflow-date", "data"),
         Output("animation-refresh", "data"),
         Output("calendar-scroll-body", "style"),
@@ -142,7 +143,7 @@ def register_callbacks(app, df) -> None:
         week_offset: int,
         screen_width: int,
         selected_casinos: list[str] | None,
-    ) -> Tuple[html.Div, str, str, dict[str, Any]]:
+    ) -> Tuple[html.Div, html.Div, str, str, dict[str, Any]]:
         """Render a single week of events and overflow list."""
         today = datetime.utcnow()
         current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
@@ -152,6 +153,7 @@ def register_callbacks(app, df) -> None:
             df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
         )
         grid = render_week_grid(week_start, filtered_df, screen_width, selected_casinos)
+        labels = render_day_labels(week_start)
 
         week_end = week_start + timedelta(days=7)
         overflow_df = filter_long_spanning_events(filtered_df, week_start, week_end)
@@ -211,7 +213,7 @@ def register_callbacks(app, df) -> None:
             else {"minHeight": f"{usable_height}px"}
         )
 
-        return chart, week_start.strftime("%Y-%m-%d"), str(uuid4()), style
+        return chart, labels, week_start.strftime("%Y-%m-%d"), str(uuid4()), style
 
     app.clientside_callback(
         """

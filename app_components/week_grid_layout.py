@@ -32,7 +32,8 @@ def _build_block(row, week_start, week_end, screen_width, colors):
     visible_start = max(start_delta, 0)
     visible_end = min(end_delta, 7)
     span_days = max(visible_end - visible_start, 0)
-    row_num = row.get("row_num", 0) + 2
+    # Offset rows by one since the grid no longer includes a header row
+    row_num = row.get("row_num", 0) + 1
 
     left_pct = (visible_start / 7) * 100
     width_pct = (span_days / 7) * 100
@@ -74,6 +75,21 @@ def _build_block(row, week_start, week_end, screen_width, colors):
     return text, " ".join(classes), style
 
 
+def render_day_labels(week_start: datetime) -> html.Div:
+    """Return a row of day labels for the given week."""
+    dates = pd.date_range(week_start, periods=7)
+    day_labels = [
+        html.Div(
+            [html.Div(date.strftime("%a")), html.Div(date.strftime("%b %d"))],
+            className="day-label-grid",
+            style={"gridColumn": f"{i + 1}"},
+        )
+        for i, date in enumerate(dates)
+    ]
+
+    return html.Div(day_labels, className="day-label-wrapper")
+
+
 def render_week_grid(
     clicked_date: datetime,
     df: pd.DataFrame,
@@ -85,22 +101,6 @@ def render_week_grid(
     # Calculate week bounds
     week_start, week_end = get_week_range(clicked_date)
     dates = pd.date_range(week_start, periods=7)
-    # Build 7 day-label divs for header row
-    day_labels = []
-    for i, date in enumerate(dates):
-        day_labels.append(
-            html.Div(
-                children=[
-                    html.Div(date.strftime("%a")),
-                    html.Div(date.strftime("%b %d")),
-                ],
-                className="day-label-grid",
-                style={"gridColumn": f"{i + 1}"},
-            )
-        )
-
-    # Wrap the labels so the entire row can be sticky
-    header_row = html.Div(day_labels, className="day-label-wrapper")
 
     # Filter and annotate events for the week
     filtered = df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
@@ -127,7 +127,7 @@ def render_week_grid(
             html.Div(
                 msg,
                 className="no-events",
-                style={"gridRow": "2", "gridColumn": "1 / 8"},
+                style={"gridRow": "1", "gridColumn": "1 / 8"},
             )
         )
     else:
@@ -168,7 +168,7 @@ def render_week_grid(
     grid_fillers = [
         html.Div(
             className="grid-filler-cell",
-            style={"gridRow": str(row + 2), "gridColumn": f"{col}"},
+            style={"gridRow": str(row + 1), "gridColumn": f"{col}"},
         )
         for row in range(event_rows)
         for col in range(1, 8)
@@ -180,14 +180,14 @@ def render_week_grid(
             n_clicks=0,
             className="day-click-area",
             title=f"{date.strftime('%b %d')} Events",
-            style={"gridColumn": f"{i + 1}", "gridRow": f"2 / {event_rows + 2}"},
+            style={"gridColumn": f"{i + 1}", "gridRow": f"1 / {event_rows + 1}"},
             **cast(dict[str, Any], {"data-date": date.strftime("%b %d")}),
         )
         for i, date in enumerate(dates)
     ]
 
-    # 4. Render a single grid container: header labels + event blocks
+    # 4. Render a single grid container containing only event blocks
     return html.Div(
-        children=[header_row] + event_blocks + day_clickers + grid_fillers,
+        children=event_blocks + day_clickers + grid_fillers,
         className="week-grid",
     )

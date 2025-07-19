@@ -40,7 +40,7 @@
     --color-accent-light: rgba(106, 90, 205, 0.1);
 
     /* Day Header & Week Grid Colors */
-    --color-day-header-text: var(--color-accent-dark);
+    --color-day-header-text: var(--color-accent);
     --color-day-header-bg: var(--color-background);
     --color-border-primary: var(--color-primary-dark);
     --color-border-accent: var(--color-accent);
@@ -53,6 +53,7 @@
     --border-radius-xs: 0.125rem;
     --border-thin: 1px;
     --border-thick: 0.125rem;
+    --border-event: 0.1875rem;
     --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary-dark);
     --box-shadow-subtle: 0 -0.0625rem 0.3125rem var(--color-accent);
     --box-shadow-modal: 0 0 1.25rem var(--color-primary-dark);
@@ -67,6 +68,9 @@
     --modal-max-height-mobile: 70vh;
     --event-modal-max-width-tablet: 31.25rem;
     --day-modal-max-width-tablet: 43.75rem;
+    --day-modal-min-width: 18rem;
+    --day-modal-max-width-desktop: 70rem;
+    --day-modal-max-width-hd: 90rem;
     --modal-overlay-color: rgba(0, 0, 0, 0.25);
     --modal-overlay-blur: 0.25rem;
 
@@ -78,6 +82,7 @@
     /* Row heights */
     --header-row-height: 3.5rem;
     --event-row-height: 1.875rem;
+    --header-gap: 0.5rem;
 
     --arrow-width: 0.75rem;
     --hour-line-offset: 0.25rem;
