@@ -61,6 +61,13 @@ scripts/test.sh                  # run linters and tests
 python app.py
 ```
 
+On Windows you can run everything from one command by executing `run.bat`
+in a Command Prompt or the VSCode terminal:
+
+```cmd
+run.bat
+```
+
 ## 🌍 Deployment
 
 Hosted at [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
