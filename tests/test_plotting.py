@@ -6,8 +6,8 @@ import pytest
 
 from app_components.plotting import (
     DAY_MODAL_LABEL_REM,
-    DAY_MODAL_MIN_REM,
     DAY_MODAL_TRACK_REM,
+    DAY_MODAL_WIDE_REM,
     build_weekly_figure,
     generate_day_view_html,
 )
@@ -64,8 +64,47 @@ def test_generate_day_view_width_scales_with_tracks():
 
     result = generate_day_view_html(df, clicked, get_color, 1024)
     grid_style = result[1].style
+    char_rem = 0.55
+    max_len = max(len(n) for n in df["EventName"])
     expected = max(
-        DAY_MODAL_MIN_REM,
+        DAY_MODAL_WIDE_REM,
         DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * 3,
+        DAY_MODAL_LABEL_REM + char_rem * (max_len + 2) * 3,
     )
     assert grid_style["minWidth"] == f"{expected}rem"
+
+
+def test_event_block_min_width_for_few_events():
+    clicked = to_naive_utc(datetime(2025, 8, 5))
+    df = pd.DataFrame(
+        {
+            "EventName": [
+                "Very Long Event Name One",
+                "Another Extremely Long Event Name",
+            ],
+            "Casino": ["ilani", "ilani"],
+            "OfferType": ["", ""],
+            "Offer": ["", ""],
+            "StartDate": [
+                clicked.replace(hour=9),
+                clicked.replace(hour=12),
+            ],
+            "EndDate": [
+                clicked.replace(hour=10),
+                clicked.replace(hour=13),
+            ],
+        }
+    )
+
+    result = generate_day_view_html(df, clicked, get_color, 1024)
+    grid_children = result[1].children
+    event_divs = [
+        c
+        for c in grid_children
+        if getattr(c, "className", "") and "event-block-day" in c.className
+    ]
+
+    assert len(event_divs) == 2
+    for div, name in zip(event_divs, df["EventName"]):
+        expected_width = f"{len(name) + 2}ch"
+        assert div.style.get("minWidth") == expected_width
