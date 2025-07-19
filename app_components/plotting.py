@@ -36,7 +36,7 @@ def generate_day_view_html(
 ) -> List[html.Div | dcc.Graph | html.H2]:
     """Return a list of HTML elements representing a single day's events."""
 
-    hour_height, label_column_pct = get_layout_config(screen_width)
+    hour_height, _ = get_layout_config(screen_width)
 
     # Normalize clicked_date
     day_start = to_pdt(clicked_date).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -94,6 +94,19 @@ def generate_day_view_html(
 
     events["overlap_index"] = track_assignments
     n_tracks = max(len(tracks), 1)
+
+    # Calculate grid sizing before positioning blocks
+    min_width_rem = DAY_MODAL_WIDE_REM if len(events) < 5 else DAY_MODAL_MIN_REM
+    max_name_len = max((len(str(n)) for n in events["EventName"]), default=0)
+    char_rem = 0.55
+    label_and_names = DAY_MODAL_LABEL_REM + char_rem * (max_name_len + 2) * n_tracks
+    grid_min_width = max(
+        min_width_rem,
+        DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * n_tracks,
+        label_and_names,
+    )
+
+    label_column_pct = DAY_MODAL_LABEL_REM / grid_min_width * 100
     width_pct = (100 - label_column_pct) / n_tracks
 
     color_map = get_color_fn()
@@ -247,15 +260,6 @@ def generate_day_view_html(
     )
 
     # Sticky Add day label + scrollable grid container
-    min_width_rem = DAY_MODAL_WIDE_REM if len(events) < 5 else DAY_MODAL_MIN_REM
-    max_name_len = max((len(str(n)) for n in events["EventName"]), default=0)
-    char_rem = 0.55
-    label_and_names = DAY_MODAL_LABEL_REM + char_rem * (max_name_len + 2) * n_tracks
-    grid_min_width = max(
-        min_width_rem,
-        DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * n_tracks,
-        label_and_names,
-    )
     header = html.H2(
         header_text,
         className="day-label day-modal-title",
