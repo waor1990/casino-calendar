@@ -111,7 +111,9 @@
 
 /* Responsive Day Modal Enhancements */
 #day-modal-content {
-    width: var(--modal-width);
+    width: auto;
+    min-width: var(--day-modal-min-width);
+    max-width: 90vw;
     max-height: var(--day-modal-max-height);
     font-size: clamp(var(--font-small), 2vw, var(--font-base));
 }
@@ -229,6 +231,8 @@
 
     #day-modal-content {
         width: var(--modal-width-mobile) !important;
+        max-width: var(--modal-width-mobile) !important;
+        min-width: var(--modal-width-mobile);
     }
 
     #day-modal-body {
@@ -243,7 +247,7 @@
     }
 
     #day-modal-content {
-        max-width: 52rem;
+        max-width: var(--day-modal-max-width-desktop);
     }
 }
 
@@ -253,6 +257,6 @@
     }
 
     #day-modal-content {
-        max-width: 60rem;
+        max-width: var(--day-modal-max-width-hd);
     }
 }
