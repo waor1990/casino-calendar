@@ -702,8 +702,8 @@ h1,
   border-radius: var(--border-radius-lg, 10px);
   padding: var(--padding-base);
   box-shadow: var(--box-shadow-modal);
-  max-height: auto;
-  max-width: auto;
+  max-height: none;
+  max-width: none;
   min-height: var(--modal-min-height);
   width: var(--modal-max-width);
   min-width: unset;
@@ -747,12 +747,13 @@ h1,
   width: auto;
   min-width: var(--day-modal-min-width);
   max-width: 90vw;
-  max-height: var(--day-modal-max-height);
+  max-height: min(var(--day-modal-max-height), 90vh);
   font-size: clamp(var(--font-small), 2vw, var(--font-base));
 }
 
 #day-modal-body {
-  overflow-y: scroll;
+  overflow-x: auto;
+  overflow-y: auto;
   padding: var(--padding-small);
   font-size: inherit;
 }
@@ -859,6 +860,7 @@ h1,
     width: var(--modal-width-mobile) !important;
     max-width: var(--modal-width-mobile) !important;
     min-width: var(--modal-width-mobile);
+    max-height: var(--modal-max-height-mobile);
   }
   #day-modal-body {
     max-height: var(--modal-max-height-mobile);
