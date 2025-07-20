@@ -29,6 +29,7 @@
     border-top: var(--border-thin) solid var(--color-border-primary);
     border-bottom: var(--border-thin) solid var(--color-border-primary);
     margin-bottom: var(--header-gap);
+    padding: 0 var(--padding-small);
 }
 
 .day-label-grid {
@@ -43,6 +44,7 @@
     font-weight: var(--font-weight-bold);
     color: var(--color-day-header-text);
     box-sizing: border-box;
+    min-height: var(--header-row-height);
 }
 
 .day-label-grid>div {
