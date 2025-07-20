@@ -34,10 +34,9 @@ def register_callbacks(app, df) -> None:
     @app.callback(Output("week-label", "children"), Input("week-offset", "data"))
     def update_week_label(week_offset: int) -> str:
         """Return a label for the currently selected week."""
-        today = datetime.utcnow()
-        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-        week_start = current_sunday + timedelta(weeks=week_offset)
-        week_start_pdt = to_pdt(week_start)
+        today_pdt = datetime.now(PDT)
+        current_sunday = today_pdt - timedelta(days=(today_pdt.weekday() + 1) % 7)
+        week_start_pdt = current_sunday + timedelta(weeks=week_offset)
         week_end_pdt = week_start_pdt + timedelta(days=6)
         return (
             f"Events for the Week of {week_start_pdt.strftime('%B %d')} - "
