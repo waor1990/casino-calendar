@@ -6,7 +6,7 @@ import dash
 from dash import ALL, Input, Output, State, html
 from pytz import timezone
 
-from ..utils import filter_long_spanning_events, to_pdt
+from ..utils import filter_long_spanning_events, to_naive_utc, to_pdt
 from ..week_grid_layout import render_day_labels, render_week_grid
 
 PDT = timezone("America/Los_Angeles")
@@ -34,10 +34,9 @@ def register_callbacks(app, df) -> None:
     @app.callback(Output("week-label", "children"), Input("week-offset", "data"))
     def update_week_label(week_offset: int) -> str:
         """Return a label for the currently selected week."""
-        today = datetime.utcnow()
-        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-        week_start = current_sunday + timedelta(weeks=week_offset)
-        week_start_pdt = to_pdt(week_start)
+        today_pdt = datetime.now(PDT)
+        current_sunday = today_pdt - timedelta(days=(today_pdt.weekday() + 1) % 7)
+        week_start_pdt = current_sunday + timedelta(weeks=week_offset)
         week_end_pdt = week_start_pdt + timedelta(days=6)
         return (
             f"Events for the Week of {week_start_pdt.strftime('%B %d')} - "
@@ -68,11 +67,12 @@ def register_callbacks(app, df) -> None:
             desired_offset += 1
 
         desired_offset = max(-6, desired_offset)
-        today = datetime.utcnow()
-        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
+        today_pdt = datetime.now(PDT)
+        current_sunday = today_pdt - timedelta(days=(today_pdt.weekday() + 1) % 7)
 
         next_week_offset = desired_offset + 1
-        next_week_start = current_sunday + timedelta(weeks=next_week_offset)
+        next_week_start_pdt = current_sunday + timedelta(weeks=next_week_offset)
+        next_week_start = to_naive_utc(next_week_start_pdt)
         next_week_end = next_week_start + timedelta(days=7)
 
         has_next_week_events = not df[
@@ -145,9 +145,10 @@ def register_callbacks(app, df) -> None:
         selected_casinos: list[str] | None,
     ) -> Tuple[html.Div, html.Div, str, str, dict[str, Any]]:
         """Render a single week of events and overflow list."""
-        today = datetime.utcnow()
-        current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-        week_start = current_sunday + timedelta(weeks=week_offset)
+        today_pdt = datetime.now(PDT)
+        current_sunday = today_pdt - timedelta(days=(today_pdt.weekday() + 1) % 7)
+        week_start_pdt = current_sunday + timedelta(weeks=week_offset)
+        week_start = to_naive_utc(week_start_pdt)
 
         filtered_df = (
             df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
