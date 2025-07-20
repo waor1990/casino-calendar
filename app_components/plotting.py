@@ -148,7 +148,7 @@ def generate_day_view_html(
     # Event blocks + invisible click markers
     for _, row in events.iterrows():
         top_px = row["start_offset_min"] / 60 * hour_height
-        height_px = max(24, row["duration_min"] / 60 * hour_height)
+        height_px = max(16, row["duration_min"] / 60 * hour_height)
         left_pct = label_column_pct + row["overlap_index"] * width_pct
 
         colors = color_map.get(row["Casino"], {"bg": "#aaa", "text": "#000"})
@@ -197,8 +197,7 @@ def generate_day_view_html(
             style={
                 "top": f"{top_px}px",
                 "left": f"{left_pct}%",
-                "width": "fit-content",
-                "maxWidth": f"{width_pct}%",
+                "width": f"{width_pct}%",
                 "height": f"{height_px}px",
                 "--bg": colors["bg"],
                 "--fg": colors["text"],
