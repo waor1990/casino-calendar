@@ -1,7 +1,7 @@
 (function () {
-  function applyTheme(saved) {
+  function applyTheme(theme) {
     const root = document.documentElement;
-    if (saved === 'dark') {
+    if (theme === 'dark') {
       root.setAttribute('data-theme', 'dark');
       return true;
     }
@@ -10,21 +10,15 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    const stored = localStorage.getItem('theme-store');
+    let theme = null;
+    try {
+      theme = stored ? JSON.parse(stored) : null;
+    } catch (e) {}
+    const isDark = applyTheme(theme);
     const button = document.getElementById('theme-toggle');
-    if (!button) return;
-    const isDark = applyTheme(localStorage.getItem('theme'));
-    button.textContent = isDark ? '☀️' : '🌙';
-    button.addEventListener('click', function () {
-      const currentlyDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      if (currentlyDark) {
-        document.documentElement.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-        button.textContent = '🌙';
-      } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-        button.textContent = '☀️';
-      }
-    });
+    if (button) {
+      button.textContent = isDark ? '☀️' : '🌙';
+    }
   });
 })();

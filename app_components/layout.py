@@ -41,6 +41,8 @@ def create_layout(app, df):
             dcc.Store(id="overflow-date"),
             dcc.Store(id="animation-refresh"),
             dcc.Store(id="selected-casinos", data=[]),
+            dcc.Store(id="theme-store", data="light", storage_type="local"),
+            html.Div(id="theme-dummy", style={"display": "none"}),
             html.Div(id="animation-dummy", style={"display": "none"}),
             # Interval Triggers
             dcc.Interval(id="initial-trigger", interval=1, max_intervals=1),
@@ -143,6 +145,7 @@ def sticky_header(df):
                                 n_clicks=0,
                                 className="emoji-button",
                                 title="Toggle dark mode",
+                                style={"marginLeft": "auto"},
                             ),
                         ],
                         style={"display": "flex", "gap": "0.5rem"},
