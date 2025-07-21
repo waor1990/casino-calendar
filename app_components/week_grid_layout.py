@@ -75,10 +75,10 @@ def _build_block(row, week_start, week_end, screen_width, colors):
     return text, " ".join(classes), style
 
 
-def render_day_labels(week_start: datetime) -> html.Div:
-    """Return a row of day labels for the given week."""
+def render_day_labels(week_start: datetime) -> list[html.Div]:
+    """Return a list of day label divs for the given week."""
     dates = pd.date_range(week_start, periods=7)
-    day_labels = [
+    return [
         html.Div(
             [html.Div(date.strftime("%a")), html.Div(date.strftime("%b %d"))],
             className="day-label-grid",
@@ -86,8 +86,6 @@ def render_day_labels(week_start: datetime) -> html.Div:
         )
         for i, date in enumerate(dates)
     ]
-
-    return html.Div(day_labels, className="day-label-wrapper")
 
 
 def render_week_grid(

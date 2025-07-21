@@ -19,7 +19,7 @@ body {
 
 .main-layout {
     font-family: 'Segoe UI', sans-serif;
-    margin: 0 auto;
+    margin: 0 .75px;
     padding-bottom: var(--padding-base);
 }
 
@@ -69,7 +69,8 @@ body {
     text-align: center;
     font-size: var(--font-header);
     font-weight: var(--font-weight-bold);
-    padding: var(--padding-small);
+    padding: var(--padding-base);
+    margin-bottom: var(--gap-legend);
 }
 
 @include mixins.mobile {

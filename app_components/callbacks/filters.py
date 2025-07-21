@@ -143,7 +143,7 @@ def register_callbacks(app, df) -> None:
         week_offset: int,
         screen_width: int,
         selected_casinos: list[str] | None,
-    ) -> Tuple[html.Div, html.Div, str, str, dict[str, Any]]:
+    ) -> Tuple[html.Div, list[html.Div], str, str, dict[str, Any]]:
         """Render a single week of events and overflow list."""
         today_pdt = datetime.now(PDT)
         current_sunday = today_pdt - timedelta(days=(today_pdt.weekday() + 1) % 7)
