@@ -56,9 +56,8 @@ body {
 .week-chart-scroll {
     overflow-x: visible;
     /* scrolling handled by parent container */
-    box-sizing: border-box;
-    margin: 0 var(--padding-base);
-    padding: 0 0 calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
+    padding: 0 var(--padding-base) calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
+    margin-bottom: 0;
 }
 
 .week-label {
@@ -66,7 +65,6 @@ body {
     background-color: var(--color-background);
     box-shadow: var(--box-shadow-light);
     border-radius: var(--border-radius-sm);
-    box-sizing: border-box;
     z-index: 900;
     text-align: center;
     font-size: var(--font-header);
@@ -83,8 +81,8 @@ body {
     }
 
     .week-chart-scroll {
-        margin-left: 0;
-        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
     }
 
     .calendar-scroll-body {
