@@ -28,6 +28,7 @@
     background-color: var(--color-day-header-bg);
     border-top: var(--border-thin) solid var(--color-border-primary);
     border-bottom: var(--border-thin) solid var(--color-border-primary);
+    box-sizing: border-box;
     margin: 0 var(--padding-base);
     padding: 0;
 }
