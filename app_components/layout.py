@@ -129,11 +129,23 @@ def sticky_header(df):
                             "flex": "1",
                         },
                     ),
-                    html.Button(
-                        "🎰",
-                        id="next-button",
-                        n_clicks=0,
-                        className="emoji-button",
+                    html.Div(
+                        [
+                            html.Button(
+                                "🎰",
+                                id="next-button",
+                                n_clicks=0,
+                                className="emoji-button",
+                            ),
+                            html.Button(
+                                "🌙",
+                                id="theme-toggle",
+                                n_clicks=0,
+                                className="emoji-button",
+                                title="Toggle dark mode",
+                            ),
+                        ],
+                        style={"display": "flex", "gap": "0.5rem"},
                     ),
                 ],
                 style={
