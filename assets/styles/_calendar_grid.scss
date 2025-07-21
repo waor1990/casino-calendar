@@ -28,9 +28,8 @@
     background-color: var(--color-day-header-bg);
     border-top: var(--border-thin) solid var(--color-border-primary);
     border-bottom: var(--border-thin) solid var(--color-border-primary);
-    margin: 0 var(--padding-base) var(--header-gap);
-    margin-bottom: 0;
-    padding: 0 var(--padding-small);
+    margin: 0 var(--padding-base);
+    padding: 0;
 }
 
 .day-label-grid {

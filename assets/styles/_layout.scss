@@ -56,7 +56,7 @@ body {
 .week-chart-scroll {
     overflow-x: visible;
     /* scrolling handled by parent container */
-    padding: 0 var(--padding-small) calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
+    padding: 0 var(--padding-base) calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
     margin-bottom: 0;
 }
 
@@ -69,7 +69,7 @@ body {
     text-align: center;
     font-size: var(--font-header);
     font-weight: var(--font-weight-bold);
-    padding: var(--padding-base);
+    padding: var(--padding-base) var(--padding-base);
     margin-bottom: var(--gap-legend);
 }
 
