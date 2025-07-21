@@ -200,7 +200,8 @@ body {
   text-align: center;
   font-size: var(--font-header);
   font-weight: var(--font-weight-bold);
-  padding: var(--padding-small);
+  padding: var(--padding-base);
+  margin-bottom: auto;
 }
 
 @media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
@@ -450,7 +451,9 @@ h1,
   background-color: var(--color-day-header-bg);
   border-top: var(--border-thin) solid var(--color-border-primary);
   border-bottom: var(--border-thin) solid var(--color-border-primary);
-  margin-bottom: var(--header-gap);
+  margin: 0 var(--padding-base) var(--header-gap);
+  margin-bottom: 0;
+  padding: 0 var(--padding-small);
 }
 
 .day-label-grid {
@@ -465,6 +468,7 @@ h1,
   font-weight: var(--font-weight-bold);
   color: var(--color-day-header-text);
   box-sizing: border-box;
+  min-height: var(--header-row-height);
 }
 
 .day-label-grid > div {
