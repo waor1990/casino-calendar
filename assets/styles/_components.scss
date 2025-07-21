@@ -11,12 +11,20 @@ h1,
     box-shadow: var(--box-shadow-light);
     border-radius: var(--border-radius-sm);
     padding: var(--padding-base);
-    display: block;
-    align-items: center;
+    display: flex;
+    justify-content: center;
+    position: relative;
 
     @include mixins.mobile {
         font-size: var(--font-header);
     }
+}
+
+.calendar-title .theme-toggle {
+    position: absolute;
+    right: var(--padding-base);
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .legend-title {

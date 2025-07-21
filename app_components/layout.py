@@ -104,7 +104,16 @@ def sticky_header(df):
     return html.Div(
         [
             html.H1(
-                "🎰 Casino Event Calendar 📅",
+                [
+                    "🎰 Casino Event Calendar 📅",
+                    html.Button(
+                        "🌙",
+                        id="theme-toggle",
+                        n_clicks=0,
+                        className="emoji-button theme-toggle",
+                        title="Toggle dark mode",
+                    ),
+                ],
                 className="calendar-title",
             ),
             # Navigation & Legend
@@ -138,14 +147,6 @@ def sticky_header(df):
                                 id="next-button",
                                 n_clicks=0,
                                 className="emoji-button",
-                            ),
-                            html.Button(
-                                "🌙",
-                                id="theme-toggle",
-                                n_clicks=0,
-                                className="emoji-button",
-                                title="Toggle dark mode",
-                                style={"marginLeft": "auto"},
                             ),
                         ],
                         style={"display": "flex", "gap": "0.5rem"},
