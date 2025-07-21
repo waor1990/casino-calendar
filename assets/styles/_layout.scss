@@ -48,7 +48,7 @@ body {
 .calendar-scroll-body {
 
     overflow-y: auto;
-    padding: var(--padding-base);
+    padding: var(--padding-base) 0;
     box-sizing: border-box;
     background-color: var(--color-background);
 }
@@ -69,13 +69,25 @@ body {
     text-align: center;
     font-size: var(--font-header);
     font-weight: var(--font-weight-bold);
-    padding: var(--padding-base) var(--padding-base);
-    margin-bottom: var(--gap-legend);
+    padding: var(--padding-base) 0;
+    margin: 0 var(--padding-base) var(--gap-legend);
 }
 
 @include mixins.mobile {
     .week-label {
         font-size: var(--font-header);
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .week-chart-scroll {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .calendar-scroll-body {
+        padding-left: 0;
+        padding-right: 0;
     }
 }
 
