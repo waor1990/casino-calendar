@@ -1,4 +1,5 @@
 @use 'mixins' as mixins;
+
 /* Design tokens and root variables */
 /* CSS Variables for Consistency */
 :root {
@@ -152,11 +153,11 @@ body {
 
 /* Dark theme overrides */
 [data-theme="dark"] {
-    --color-background: #1e1e1e;
+    --color-background: #3c3c3c;
     --color-primary-dark: #e0e0e0;
     --color-border-primary: var(--color-primary-dark);
     --color-border-grid: #555555;
     --color-border-grid-light: rgba(127, 139, 170, 0.6);
-    --box-shadow-light: 0 -0.125rem 0.3125rem rgba(255, 255, 255, 0.2);
+    --box-shadow-light: 0 -0.125rem 0.3125rem rgba(0, 0, 0, 0.4);
     --box-shadow-modal: 0 0 1.25rem rgba(255, 255, 255, 0.25);
 }
