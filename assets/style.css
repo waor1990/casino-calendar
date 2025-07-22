@@ -136,6 +136,17 @@ body {
   overflow: visible;
 }
 
+/* Dark theme overrides */
+[data-theme=dark] {
+  --color-background: #3c3c3c;
+  --color-primary-dark: #e0e0e0;
+  --color-border-primary: var(--color-primary-dark);
+  --color-border-grid: #555555;
+  --color-border-grid-light: rgba(127, 139, 170, 0.6);
+  --box-shadow-light: 0 -0.125rem 0.3125rem rgba(0, 0, 0, 0.4);
+  --box-shadow-modal: 0 0 1.25rem rgba(255, 255, 255, 0.25);
+}
+
 /* Application layout structure */
 /* Layout and Structure */
 html,
@@ -153,7 +164,7 @@ body {
 }
 .main-layout {
   font-family: "Segoe UI", sans-serif;
-  margin: 0 auto;
+  margin: 0 0.75px;
   padding-bottom: var(--padding-base);
 }
 
@@ -179,7 +190,7 @@ body {
 
 .calendar-scroll-body {
   overflow-y: auto;
-  padding: var(--padding-base);
+  padding: var(--padding-base) 0;
   box-sizing: border-box;
   background-color: var(--color-background);
 }
@@ -187,8 +198,9 @@ body {
 .week-chart-scroll {
   overflow-x: visible;
   /* scrolling handled by parent container */
-  padding: 0 var(--padding-small) calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
-  margin-bottom: 0;
+  box-sizing: border-box;
+  margin: 0 var(--padding-base);
+  padding: 0 0 calc(var(--padding-base) * 3 + var(--overflow-expand-max-height));
 }
 
 .week-label {
@@ -196,17 +208,27 @@ body {
   background-color: var(--color-background);
   box-shadow: var(--box-shadow-light);
   border-radius: var(--border-radius-sm);
-  z-index: 900;
+  box-sizing: border-box;
   text-align: center;
   font-size: var(--font-header);
   font-weight: var(--font-weight-bold);
-  padding: var(--padding-base);
-  margin-bottom: auto;
+  padding: var(--padding-base) 0;
+  margin: 0 var(--padding-base) var(--gap-legend);
 }
 
 @media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
   .week-label {
     font-size: var(--font-header);
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .week-chart-scroll {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .calendar-scroll-body {
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 .legend-container {
@@ -247,14 +269,23 @@ h1,
   box-shadow: var(--box-shadow-light);
   border-radius: var(--border-radius-sm);
   padding: var(--padding-base);
-  display: block;
-  align-items: center;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  position: relative;
 }
 @media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
   h1,
   .calendar-title {
     font-size: var(--font-header);
   }
+}
+
+.calendar-title .theme-toggle {
+  position: absolute;
+  right: var(--padding-base);
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .legend-title {
@@ -451,9 +482,9 @@ h1,
   background-color: var(--color-day-header-bg);
   border-top: var(--border-thin) solid var(--color-border-primary);
   border-bottom: var(--border-thin) solid var(--color-border-primary);
-  margin: 0 var(--padding-base) var(--header-gap);
-  margin-bottom: 0;
-  padding: 0 var(--padding-small);
+  box-sizing: border-box;
+  margin: 0 var(--padding-base);
+  padding: 0;
 }
 
 .day-label-grid {
@@ -623,6 +654,10 @@ h1,
 }
 
 @media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
+  .day-label-wrapper {
+    margin-left: 0;
+    margin-right: 0;
+  }
   .day-label-grid {
     font-size: var(--font-small);
   }
