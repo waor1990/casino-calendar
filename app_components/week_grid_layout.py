@@ -7,7 +7,7 @@ from dash import html
 from utils.colors import get_color
 from utils.data_parsing import prepare_week_events
 
-from .utils import get_week_range, trim_label
+from .utils import get_week_range, to_pdt, trim_label
 
 
 def _normalize(dt):
@@ -76,11 +76,16 @@ def _build_block(row, week_start, week_end, screen_width, colors):
 
 
 def render_day_labels(week_start: datetime) -> list[html.Div]:
-    """Return a list of day label divs for the given week."""
+    """Return a list of day label divs for the week starting on Sunday."""
+
     dates = pd.date_range(week_start, periods=7)
+
     return [
         html.Div(
-            [html.Div(date.strftime("%a")), html.Div(date.strftime("%b %d"))],
+            [
+                html.Div(to_pdt(date).strftime("%a")),
+                html.Div(to_pdt(date).strftime("%b %d")),
+            ],
             className="day-label-grid",
             style={"gridColumn": f"{i + 1}"},
         )
