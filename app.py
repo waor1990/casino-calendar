@@ -1,6 +1,13 @@
 import time
 from dash import Dash
 
+# Load environment variables from .env file early
+try:
+    from dotenv import load_dotenv
+    load_dotenv()  # Load .env file before importing other modules
+except ImportError:
+    pass
+
 from app_components.callbacks import register_callbacks
 from app_components.data import load_event_data
 from app_components.layout import create_layout
