@@ -42,11 +42,11 @@ def generate_day_view_html(
     day_start = to_pdt(clicked_date).replace(hour=0, minute=0, second=0, microsecond=0)
     day_end = day_start + timedelta(days=1)
 
-    # Filter events strictly within the day
+    # Filter events overlapping the day
     events = events_df.copy()
     events["StartDate"] = pd.to_datetime(events["StartDate"]).map(to_pdt)
     events["EndDate"] = pd.to_datetime(events["EndDate"]).map(to_pdt)
-    events = events[(events["StartDate"] >= day_start) & (events["EndDate"] <= day_end)]
+    events = events[(events["EndDate"] > day_start) & (events["StartDate"] < day_end)]
 
     day_label = to_pdt(clicked_date).strftime("%A, %B %d")
     header_text = f"Events for {day_label}"
@@ -66,10 +66,12 @@ def generate_day_view_html(
         ]
 
     # Time math
+    events["adj_start"] = events["StartDate"].clip(lower=day_start, upper=day_end)
+    events["adj_end"] = events["EndDate"].clip(lower=day_start, upper=day_end)
     events["start_offset_min"] = (
-        events["StartDate"] - day_start
+        events["adj_start"] - day_start
     ).dt.total_seconds() / 60
-    events["end_offset_min"] = (events["EndDate"] - day_start).dt.total_seconds() / 60
+    events["end_offset_min"] = (events["adj_end"] - day_start).dt.total_seconds() / 60
     events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
     events = events.sort_values(by=["start_offset_min", "duration_min"])
 
