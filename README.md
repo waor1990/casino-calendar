@@ -18,6 +18,7 @@ but are not tested.
 - Toggle to show ongoing events that span the week
 - Auto-categorizes offers into Giveaway, Free-Play, Point-Based, Hospitality-Rewards and Special-Events
 - SCSS styles compiled with Sass
+- **Comprehensive logging system** for debugging and monitoring
 
 ---
 
@@ -67,6 +68,44 @@ in a Command Prompt or the VSCode terminal:
 ```cmd
 run.bat
 ```
+
+## 📊 Logging System
+
+The application includes a comprehensive logging system for debugging and monitoring:
+
+### Quick Start
+
+```bash
+# Run with default logging (INFO level, console output)
+python app.py
+
+# Enable debug logging
+LOG_LEVEL=DEBUG python app.py
+
+# Enable file logging
+LOG_FILE=logs/app.log python app.py
+
+# Production logging
+LOG_LEVEL=WARNING LOG_FILE=logs/production.log gunicorn app:server
+```
+
+### Features
+
+- **Configurable log levels**: DEBUG, INFO, WARNING, ERROR, CRITICAL
+- **File and console output** with automatic log rotation
+- **Color-coded console output** for better readability
+- **Performance timing** for key operations
+- **Structured error logging** with stack traces
+- **Client-side JavaScript logging** in browser console
+
+### Configuration
+
+Set environment variables to control logging:
+
+- `LOG_LEVEL`: Minimum log level (default: INFO)
+- `LOG_FILE`: Optional file output path
+
+For detailed documentation, see [`docs/logging_system.md`](docs/logging_system.md).
 
 ## 🌍 Deployment
 

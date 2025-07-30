@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, timedelta
 from typing import Any, Tuple
 
@@ -9,14 +10,19 @@ from pytz import timezone
 from utils.colors import get_color
 from utils.data_parsing import prepare_week_events  # noqa: F401
 
+from ..logging_config import setup_logger
 from ..plotting import generate_day_view_html
 from ..utils import build_event_info_rows, to_naive_utc
 
 PDT = timezone("America/Los_Angeles")
 
+# Initialize module logger
+logger = setup_logger(__name__)
+
 
 def register_callbacks(app, df) -> None:
     """Register event related callbacks on the given Dash ``app``."""
+    logger.info("Registering event-related callbacks")
 
     @app.callback(
         Output("overflow-box", "className"),
@@ -27,19 +33,29 @@ def register_callbacks(app, df) -> None:
     )
     def toggle_overflow(n_clicks: int, start_date_str: str) -> Tuple[str, str]:
         """Toggle visibility of the overflow list for the selected week."""
-        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-        end_date = start_date + timedelta(days=6)
-        is_open = n_clicks % 2 == 1
-
-        box_class = "overflow-box-expand show" if is_open else "overflow-box-expand"
-
-        button_text = (
-            f"\U0001f300 Hide Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
-            if is_open
-            else f"\U0001f300 Show Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+        logger.debug(
+            f"Toggle overflow called with n_clicks={n_clicks}, date={start_date_str}"
         )
 
-        return box_class, button_text
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_date = start_date + timedelta(days=6)
+            is_open = n_clicks % 2 == 1
+
+            box_class = "overflow-box-expand show" if is_open else "overflow-box-expand"
+
+            button_text = (
+                f"\U0001f300 Hide Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+                if is_open
+                else f"\U0001f300 Show Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+            )
+
+            logger.debug(f"Overflow toggled: is_open={is_open}, class={box_class}")
+            return box_class, button_text
+
+        except Exception as e:
+            logger.error(f"Error in toggle_overflow callback: {e}")
+            raise
 
     @app.callback(
         Output("event-modal", "style"),
@@ -76,100 +92,56 @@ def register_callbacks(app, df) -> None:
         Unused parameters prefixed with an underscore are included solely so the
         callback fires when those inputs change.
         """
-        ctx = dash.callback_context
-        triggered_id = ctx.triggered_id
+        start_time = time.time()
+        logger.debug("show_event_modal callback triggered")
 
-        if triggered_id == "close-timer":
-            return no_update, "", "", 0, {"display": "none"}, "", ""
+        try:
+            ctx = dash.callback_context
+            triggered_id = ctx.triggered_id
+            logger.debug(f"Triggered by: {triggered_id}")
 
-        if triggered_id == "close-modal":
-            return (
-                no_update,
-                "modal closing",
-                no_update,
-                1,
-                {"display": "none"},
-                no_update,
-                no_update,
-            )
+            if triggered_id == "close-timer":
+                logger.debug("Closing modal via timer")
+                return no_update, "", "", 0, {"display": "none"}, "", ""
 
-        if triggered_id == "close-day-modal":
-            return (
-                no_update,
-                no_update,
-                no_update,
-                no_update,
-                {"display": "none"},
-                "modal closing",
-                "",
-            )
+            if triggered_id == "close-modal":
+                logger.debug("Closing event modal")
+                return (
+                    no_update,
+                    "modal closing",
+                    no_update,
+                    1,
+                    {"display": "none"},
+                    no_update,
+                    no_update,
+                )
 
-        if isinstance(triggered_id, dict) and triggered_id.get("type") == "grid-event":
-            triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
-            if not triggered_n:
-                raise dash.exceptions.PreventUpdate
-
-            idx = triggered_id.get("index")
-
-            if idx is None or idx not in df.index:
+            if triggered_id == "close-day-modal":
+                logger.debug("Closing day modal")
                 return (
                     no_update,
                     no_update,
                     no_update,
                     no_update,
-                    no_update,
-                    no_update,
-                    no_update,
+                    {"display": "none"},
+                    "modal closing",
+                    "",
                 )
 
-            row = df.loc[idx]
-            rows = build_event_info_rows(row.items())
-            return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
+            if (
+                isinstance(triggered_id, dict)
+                and triggered_id.get("type") == "grid-event"
+            ):
+                logger.debug(f"Grid event clicked: {triggered_id}")
+                triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
+                if not triggered_n:
+                    logger.debug("No triggered value, preventing update")
+                    raise dash.exceptions.PreventUpdate
 
-        if isinstance(triggered_id, dict) and triggered_id.get("type") == "day-column":
-            triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
-            if not triggered_n:
-                raise dash.exceptions.PreventUpdate
+                idx = triggered_id.get("index")
 
-            date_str = triggered_id.get("index")
-            if not date_str:
-                return (
-                    no_update,
-                    no_update,
-                    no_update,
-                    no_update,
-                    no_update,
-                    no_update,
-                    no_update,
-                )
-
-            clicked_date = to_naive_utc(datetime.strptime(date_str, "%Y-%m-%d"))
-            filtered = (
-                df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
-            )
-            content = generate_day_view_html(
-                filtered, clicked_date, get_color, screen_width
-            )
-
-            return (
-                no_update,
-                no_update,
-                no_update,
-                no_update,
-                {},
-                "modal show",
-                content,
-            )
-
-        click_data = None
-        if triggered_id == "day-event-catcher":
-            click_data = day_click
-
-        if click_data and "points" in click_data and click_data["points"]:
-            data = click_data["points"][0].get("customdata", [None])[0]
-            if data and data.get("type") == "day_click":
-                day_index = data.get("day_index")
-                if day_index is None:
+                if idx is None or idx not in df.index:
+                    logger.warning(f"Invalid event index: {idx}")
                     return (
                         no_update,
                         no_update,
@@ -180,13 +152,48 @@ def register_callbacks(app, df) -> None:
                         no_update,
                     )
 
-                today = datetime.utcnow()
-                current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-                week_start = current_sunday + timedelta(weeks=week_offset)
-                clicked_date = week_start + timedelta(days=day_index)
+                row = df.loc[idx]
+                logger.info(
+                    f"Opening event modal for: {row.get('EventName', 'Unknown Event')}"
+                )
+                rows = build_event_info_rows(row.items())
+                return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
+
+            if (
+                isinstance(triggered_id, dict)
+                and triggered_id.get("type") == "day-column"
+            ):
+                logger.debug(f"Day column clicked: {triggered_id}")
+                triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
+                if not triggered_n:
+                    logger.debug("No triggered value for day column, preventing update")
+                    raise dash.exceptions.PreventUpdate
+
+                date_str = triggered_id.get("index")
+                if not date_str:
+                    logger.warning("No date string provided for day column click")
+                    return (
+                        no_update,
+                        no_update,
+                        no_update,
+                        no_update,
+                        no_update,
+                        no_update,
+                        no_update,
+                    )
+
+                clicked_date = to_naive_utc(datetime.strptime(date_str, "%Y-%m-%d"))
+                logger.info(
+                    f"Opening day modal for: {clicked_date.strftime('%Y-%m-%d')}"
+                )
+
                 filtered = (
                     df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
                 )
+                logger.debug(
+                    f"Filtered events to {len(filtered)} items based on selected casinos"
+                )
+
                 content = generate_day_view_html(
                     filtered, clicked_date, get_color, screen_width
                 )
@@ -201,18 +208,87 @@ def register_callbacks(app, df) -> None:
                     content,
                 )
 
-            if data and all(
-                k in data
-                for k in [
-                    "EventName",
-                    "Casino",
-                    "OfferType",
-                    "StartDate",
-                    "EndDate",
-                    "Offer",
-                ]
-            ):
-                rows = build_event_info_rows(data.items())
-                return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
+            click_data = None
+            if triggered_id == "day-event-catcher":
+                click_data = day_click
 
-        raise dash.exceptions.PreventUpdate
+            if click_data and "points" in click_data and click_data["points"]:
+                logger.debug("Processing day-event-catcher click data")
+                data = click_data["points"][0].get("customdata", [None])[0]
+                if data and data.get("type") == "day_click":
+                    day_index = data.get("day_index")
+                    if day_index is None:
+                        logger.warning("Day index is None in click data")
+                        return (
+                            no_update,
+                            no_update,
+                            no_update,
+                            no_update,
+                            no_update,
+                            no_update,
+                            no_update,
+                        )
+
+                    today = datetime.utcnow()
+                    current_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
+                    week_start = current_sunday + timedelta(weeks=week_offset)
+                    clicked_date = week_start + timedelta(days=day_index)
+
+                    logger.info(
+                        f"Opening day modal for day index {day_index}: {clicked_date.strftime('%Y-%m-%d')}"
+                    )
+
+                    filtered = (
+                        df[df["Casino"].isin(selected_casinos)]
+                        if selected_casinos
+                        else df
+                    )
+                    content = generate_day_view_html(
+                        filtered, clicked_date, get_color, screen_width
+                    )
+
+                    return (
+                        no_update,
+                        no_update,
+                        no_update,
+                        no_update,
+                        {},
+                        "modal show",
+                        content,
+                    )
+
+                if data and all(
+                    k in data
+                    for k in [
+                        "EventName",
+                        "Casino",
+                        "OfferType",
+                        "StartDate",
+                        "EndDate",
+                        "Offer",
+                    ]
+                ):
+                    logger.info(
+                        f"Opening event modal for: {data.get('EventName', 'Unknown Event')}"
+                    )
+                    rows = build_event_info_rows(data.items())
+                    return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
+
+            logger.debug("No valid trigger found, preventing update")
+            raise dash.exceptions.PreventUpdate
+
+        except Exception as e:
+            logger.error(f"Error in show_event_modal callback: {e}")
+            # Log performance even on error
+            end_time = time.time()
+            logger.debug(
+                f"show_event_modal callback completed in {end_time - start_time:.3f}s (with error)"
+            )
+            raise
+
+        end_time = time.time()
+        logger.debug(
+            f"show_event_modal callback completed successfully in {end_time - start_time:.3f}s"
+        )
+
+    logger.info("Event callbacks registered successfully")
