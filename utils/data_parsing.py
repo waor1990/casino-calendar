@@ -4,9 +4,18 @@ from math import floor
 
 import pandas as pd
 
+from app_components.logging_config import setup_logger
+
+# Initialize module logger
+logger = setup_logger(__name__)
+
 
 def annotate_events_with_flags(events_df, week_start, week_end):
     """Return events annotated with overflow flags and sorted for rendering."""
+    logger.debug(
+        f"Annotating {len(events_df)} events with flags for week {week_start} to {week_end}"
+    )
+
     events_df = events_df.copy()
     events_df["orig_index"] = events_df.index
 
@@ -15,6 +24,15 @@ def annotate_events_with_flags(events_df, week_start, week_end):
     ).dt.total_seconds()
     events_df["has_left_arrow"] = events_df["StartDate"] < week_start
     events_df["has_right_arrow"] = events_df["EndDate"] > week_end
+
+    # Count overflow types
+    left_arrows = events_df["has_left_arrow"].sum()
+    right_arrows = events_df["has_right_arrow"].sum()
+    both_arrows = (events_df["has_left_arrow"] & events_df["has_right_arrow"]).sum()
+
+    logger.debug(
+        f"Event overflow flags: {left_arrows} left arrows, {right_arrows} right arrows, {both_arrows} both"
+    )
 
     def get_overflow_priority(row):
         if row["has_left_arrow"] and row["has_right_arrow"]:
@@ -27,24 +45,34 @@ def annotate_events_with_flags(events_df, week_start, week_end):
 
     events_df["overflow_sort"] = events_df.apply(get_overflow_priority, axis=1)
 
-    return events_df.sort_values(
+    sorted_events = events_df.sort_values(
         by=["overflow_sort", "StartDate", "EndDate", "Duration", "Casino"],
         ascending=[True, True, True, False, True],
     ).reset_index(drop=True)
 
+    logger.debug(f"Events annotated and sorted successfully")
+    return sorted_events
+
 
 def filter_week_events(events_df, week_start, week_end):
     """Return events that intersect the current week."""
-    return events_df[
+    logger.debug(f"Filtering events for week {week_start} to {week_end}")
+
+    filtered = events_df[
         (events_df["EndDate"] > week_start)
         & (events_df["StartDate"] < week_end)
         & ~(events_df["StartDate"] == week_end)
         & ~((events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end))
     ].copy()
 
+    logger.debug(f"Filtered to {len(filtered)} events for current week")
+    return filtered
+
 
 def assign_event_rows(events_df, week_start):
     """Assign vertical grid rows to events without overlap."""
+    logger.debug(f"Assigning grid rows for {len(events_df)} events")
+
     used_rows_by_day = {i: set() for i in range(7)}
     recurring_rows = defaultdict(int)
     current_row = 0
