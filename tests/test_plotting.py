@@ -108,3 +108,35 @@ def test_event_block_min_width_for_few_events():
     for div, name in zip(event_divs, df["EventName"]):
         expected_width = f"{len(name) + 2}ch"
         assert div.style.get("minWidth") == expected_width
+
+
+def test_day_view_includes_overlapping_events():
+    sunday = to_naive_utc(datetime(2025, 7, 13))
+    df = pd.DataFrame(
+        {
+            "EventName": ["Span1", "Span2"],
+            "Casino": ["ilani", "ilani"],
+            "OfferType": ["", ""],
+            "Offer": ["", ""],
+            "StartDate": [
+                sunday - timedelta(hours=2),
+                sunday + timedelta(hours=22),
+            ],
+            "EndDate": [
+                sunday + timedelta(days=1, hours=1),
+                sunday + timedelta(days=1, hours=2),
+            ],
+        }
+    )
+
+    sun_result = generate_day_view_html(df, sunday, get_color, 1024)
+    mon_result = generate_day_view_html(df, sunday + timedelta(days=1), get_color, 1024)
+
+    for result in (sun_result, mon_result):
+        grid_children = result[1].children
+        event_divs = [
+            c
+            for c in grid_children
+            if getattr(c, "className", "") and "event-block-day" in c.className
+        ]
+        assert len(event_divs) == 2
