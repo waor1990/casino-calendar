@@ -46,6 +46,10 @@ for issue in issues:
     )
     if res.status_code == 201:
         url = res.json().get("html_url")
+        # Note: Using print here since this is a one-off utility script
+        # Production apps should use proper logging
         print(f"✅ Created: {url}")
     else:
+        # Note: Using print here since this is a one-off utility script
+        # Production apps should use proper logging
         print(f"❌ Failed: {issue['title']} ({res.status_code}) — {res.text}")
