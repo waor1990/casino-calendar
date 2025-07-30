@@ -7,6 +7,15 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Optional
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()  # This loads the .env file automatically
+except ImportError:
+    # python-dotenv not installed, continue without it
+    pass
+
 
 class CasinoCalendarFormatter(logging.Formatter):
     """Custom formatter with enhanced formatting for different log levels."""
@@ -80,13 +89,14 @@ def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
     console_handler.setFormatter(CasinoCalendarFormatter(use_colors=True))
     logger.addHandler(console_handler)
 
-    # File handler (optional)
-    if log_file:
-        log_path = Path(log_file)
+    # File handler - use log_file parameter or fall back to LOG_FILE env var
+    file_path = log_file or os.getenv("LOG_FILE")
+    if file_path:
+        log_path = Path(file_path)
         log_path.parent.mkdir(parents=True, exist_ok=True)
 
         file_handler = RotatingFileHandler(
-            log_file, maxBytes=10 * 1024 * 1024, backupCount=5  # 10MB
+            file_path, maxBytes=10 * 1024 * 1024, backupCount=5  # 10MB
         )
         file_handler.setLevel(logging.DEBUG)  # File gets all levels
         file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))

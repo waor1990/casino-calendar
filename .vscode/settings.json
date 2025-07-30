@@ -14,12 +14,17 @@
         "scss"
     ],
     "stylelint.configFile": ".stylelintrc.json",
-    "markdownlint.config": ".markdownlint.json",
+    "python.pythonPath": ".venv/Scripts/python.exe",
+    "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
+    "python.terminal.activateEnvironment": true,
+    "terminal.integrated.env.windows": {
+        "PYTHONPATH": "${workspaceFolder}"
+    },
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "[markdown]": {
-        "editor.defaultFormatter": "davidanson.vscode-markdownlint"
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
     },
     "python.testing.pytestArgs": [
         "tests"
