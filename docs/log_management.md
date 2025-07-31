@@ -25,47 +25,47 @@ The application now includes automatic log rotation and cleanup features to prev
 
 ```bash
 # Using batch file
-cleanup_logs.bat --info
+tools\cleanup_logs.bat --info
 
 # Using Python directly
-python scripts/cleanup_logs.py --info
+python scripts\maintenance\cleanup_logs.py --info
 ```
 
 ### Preview What Would Be Deleted
 
 ```bash
 # Show files older than 30 days (default)
-cleanup_logs.bat --dry-run
+tools\cleanup_logs.bat --dry-run
 
 # Show files older than 7 days
-python scripts/cleanup_logs.py --days 7 --dry-run
+python scripts\maintenance\cleanup_logs.py --days 7 --dry-run
 ```
 
 ### Clean Up Old Logs
 
 ```bash
 # Clean logs older than 30 days
-cleanup_logs.bat
+tools\cleanup_logs.bat
 
 # Clean logs older than specific days
-python scripts/cleanup_logs.py --days 7
+python scripts\maintenance\cleanup_logs.py --days 7
 ```
 
 ### Archive Current Log
 
 ```bash
 # Archive the current production log
-cleanup_logs.bat --archive
+tools\cleanup_logs.bat --archive
 
 # Archive with custom name
-python scripts/cleanup_logs.py --archive-current
+python scripts\maintenance\cleanup_logs.py --archive-current
 ```
 
 ## Automated Cleanup
 
 ### Option 1: Windows Task Scheduler (Recommended)
 
-1. Run as Administrator: `scripts/create_scheduled_cleanup.bat`
+1. Run as Administrator: `scripts\maintenance\create_scheduled_cleanup.bat`
 2. This creates a weekly task that runs every Sunday at 2:00 AM
 3. Automatically cleans logs older than 30 days
 
@@ -129,7 +129,7 @@ After cleanup, the log directory should typically use:
 
 ```bash
 # Test the cleanup script
-python scripts/cleanup_logs.py --info
+python scripts\maintenance\cleanup_logs.py --info
 
 # Check if virtual environment is activated
 .venv\Scripts\python.exe --version
@@ -204,6 +204,6 @@ If you have existing `casino_calendar_prod.log` files:
 For issues with log management:
 
 1. Check this documentation first
-2. Review the cleanup script help: `python scripts/cleanup_logs.py --help`
+2. Review the cleanup script help: `python scripts\maintenance\cleanup_logs.py --help`
 3. Check application logs for any logging-related errors
 4. Verify file permissions and disk space

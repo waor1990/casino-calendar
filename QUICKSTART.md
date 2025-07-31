@@ -6,20 +6,20 @@
 
 ```cmd
 # Setup everything (virtual env, dependencies, CSS)
-setup.bat
+tools\setup.bat
 
-# Run the application
+# Run the application  
+tools\run_direct.bat
+
+# Or use convenience launcher
 run.bat
-
-# Development mode (with CSS watching)
-dev.bat
 ```
 
 ### For Linux/Mac Users
 
 ```bash
 # Setup
-scripts/setup.sh
+scripts/setup/setup.sh
 
 # Run
 python app.py
@@ -27,11 +27,12 @@ python app.py
 
 ## 📂 Key Scripts
 
-- `setup.bat` - Complete setup for Windows
-- `run.bat` - Run application on Windows  
-- `dev.bat` - Development mode with CSS watching
-- `scripts/setup.sh` - Linux/Mac setup script
+- `tools\setup.bat` - Complete setup for Windows
+- `tools\run_direct.bat` - Run application on Windows
+- `run.bat` - Convenience launcher for run_direct.bat  
+- `scripts/setup/setup.sh` - Linux/Mac setup script
 - `scripts/test.sh` - Run test suite
+- `tools\cleanup_logs.bat` - Log management utility
 
 ## 🔧 Manual Setup
 

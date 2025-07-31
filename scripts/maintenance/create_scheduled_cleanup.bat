@@ -4,9 +4,9 @@ REM Run this script as Administrator to create the scheduled task
 
 echo Creating scheduled task for Casino Calendar log cleanup...
 
-set PROJECT_PATH=%~dp0
+set PROJECT_PATH=%~dp0..\..\
 set TASK_NAME="Casino Calendar Log Cleanup"
-set PYTHON_SCRIPT="%PROJECT_PATH%scripts\cleanup_logs.py"
+set PYTHON_SCRIPT="%PROJECT_PATH%scripts\maintenance\cleanup_logs.py"
 set PYTHON_EXE="%PROJECT_PATH%.venv\Scripts\python.exe"
 
 REM Create the task to run every Sunday at 2:00 AM

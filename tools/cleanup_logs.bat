@@ -5,9 +5,12 @@ REM Cleans up old log files and provides log management options
 echo Casino Calendar Log Cleanup Utility
 echo =====================================
 
+REM Navigate to project root (parent of tools directory)
+cd /d "%~dp0\.."
+
 REM Check if virtual environment exists
 IF NOT EXIST .venv (
-    echo Virtual environment not found. Please run setup.bat first.
+    echo Virtual environment not found. Please run tools\setup.bat first.
     pause
     exit /b 1
 )
@@ -34,10 +37,10 @@ echo.
 echo Cleanup completed!
 echo.
 echo Usage examples:
-echo   cleanup_logs.bat                 # Clean logs older than 30 days
-echo   cleanup_logs.bat --info          # Show log directory info
-echo   cleanup_logs.bat --archive       # Archive current log file
-echo   cleanup_logs.bat --dry-run       # Preview what would be deleted
+echo   tools\cleanup_logs.bat                 # Clean logs older than 30 days
+echo   tools\cleanup_logs.bat --info          # Show log directory info
+echo   tools\cleanup_logs.bat --archive       # Archive current log file
+echo   tools\cleanup_logs.bat --dry-run       # Preview what would be deleted
 echo.
 
 pause

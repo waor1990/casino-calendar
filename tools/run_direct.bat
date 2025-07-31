@@ -7,8 +7,8 @@ echo ================================================
 echo Working directory: %CD%
 echo.
 
-REM Navigate to script directory
-cd /d "%~dp0"
+REM Navigate to project root (parent of tools directory)
+cd /d "%~dp0\.."
 
 REM Set environment variables
 set PYTHONPATH=%CD%
@@ -16,7 +16,7 @@ set PYTHONPATH=%CD%
 REM Check if virtual environment exists
 if not exist ".venv\Scripts\python.exe" (
     echo ERROR: Virtual environment not found at .venv\Scripts\python.exe
-    echo Please run setup.bat first to create the virtual environment
+    echo Please run tools\setup.bat first to create the virtual environment
     pause
     exit /b 1
 )

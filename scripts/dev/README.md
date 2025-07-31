@@ -4,34 +4,30 @@ This directory contains development and testing utilities for the Casino Calenda
 
 ## Scripts
 
-- `demo_logging.py` - Demonstrates the logging system capabilities
-- `test_logging.py` - Comprehensive logging system tests
-- `test_logging_complete.py` - Full application logging verification
+- `test_day_modal_fix.py` - Test script for day modal improvements
+- `test_imports.py` - Verify application imports and basic functionality
 
 ## Usage
 
 Run scripts from the project root directory:
 
 ```bash
-# Demonstrate logging system
-python scripts/dev/demo_logging.py
+# Test day modal functionality
+python scripts/dev/test_day_modal_fix.py
 
-# Test logging functionality
-python scripts/dev/test_logging.py
-
-# Complete logging verification
-python scripts/dev/test_logging_complete.py
+# Test application imports
+python scripts/dev/test_imports.py
 ```
 
 ## Environment Variables
 
-These scripts respect the same logging environment variables as the main application:
+These scripts respect the same environment variables as the main application:
 
 - `LOG_LEVEL` - Set log verbosity (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-- `LOG_FILE` - Optional file output path
+- `PYTHONPATH` - Project root is automatically added for imports
 
 Example:
 
 ```bash
-LOG_LEVEL=DEBUG LOG_FILE=dev.log python scripts/dev/demo_logging.py
+LOG_LEVEL=DEBUG python scripts/dev/test_imports.py
 ```
