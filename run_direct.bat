@@ -32,21 +32,17 @@ where npm >nul 2>nul
 if !ERRORLEVEL! equ 0 (
     echo [INFO] npm found, attempting CSS build...
     echo [DEBUG] Running: npm run build:css
-    npm run build:css 2>&1
-    if errorlevel 1 (
-        echo.
+    call npm run build:css
+    if !ERRORLEVEL! equ 0 (
+        echo [OK] CSS built successfully
+    ) else (
         echo WARNING: CSS build failed
         echo This might be due to:
         echo   - SCSS syntax errors in assets/style.scss or imported files
         echo   - Missing Node.js dependencies: try 'npm install'
         echo   - Sass compiler version compatibility issues
         echo   - File permission problems
-        echo.
-        echo [DEBUG] Checking Sass installation...
-        npx sass --version 2>&1 || echo Sass not found via npx
         echo Continuing with existing CSS files...
-    ) else (
-        echo [OK] CSS built successfully
     )
 ) else (
     echo WARNING: npm not found, skipping CSS build
@@ -61,6 +57,7 @@ if exist "assets\style.css" (
     echo The application may not display correctly without CSS
 )
 echo.
+echo [DEBUG] CSS build section completed, proceeding to run application...
 
 REM Run the application
 echo Starting Casino Calendar application...
@@ -68,6 +65,8 @@ echo Application will be available at: http://localhost:8050
 echo Press Ctrl+C to stop the application
 echo.
 echo Executing: "%CD%\.venv\Scripts\python.exe" app.py
+echo ================================================
+echo.
 echo ================================================
 echo.
 
