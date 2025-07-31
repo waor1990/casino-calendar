@@ -29,22 +29,6 @@
         "PowerShell": {
             "source": "PowerShell",
             "icon": "terminal-powershell"
-        },
-        "Casino Calendar Environment": {
-            "path": "C:\\Windows\\System32\\cmd.exe",
-            "args": [
-                "/k",
-                "auto_activate.bat"
-            ],
-            "icon": "gear"
-        },
-        "Casino Calendar Setup": {
-            "path": "C:\\Windows\\System32\\cmd.exe",
-            "args": [
-                "/k",
-                "setup_terminal.bat"
-            ],
-            "icon": "tools"
         }
     },
     "terminal.integrated.cwd": "${workspaceFolder}",
