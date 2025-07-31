@@ -17,9 +17,36 @@
     "python.pythonPath": ".venv/Scripts/python.exe",
     "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
     "python.terminal.activateEnvironment": true,
-    "terminal.integrated.env.windows": {
-        "PYTHONPATH": "${workspaceFolder}"
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "terminal.integrated.defaultProfile.windows": "Casino Calendar Environment",
+    "terminal.integrated.profiles.windows": {
+        "Command Prompt": {
+            "path": "C:\\Windows\\System32\\cmd.exe",
+            "args": [],
+            "icon": "terminal-cmd"
+        },
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell"
+        },
+        "Casino Calendar Environment": {
+            "path": "C:\\Windows\\System32\\cmd.exe",
+            "args": ["/k", "auto_activate.bat"],
+            "icon": "gear"
+        },
+        "Casino Calendar Setup": {
+            "path": "C:\\Windows\\System32\\cmd.exe",
+            "args": ["/k", "setup_terminal.bat"],
+            "icon": "tools"
+        }
     },
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "terminal.integrated.env.windows": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "PROJECT_ROOT": "${workspaceFolder}"
+    },
+    "terminal.integrated.shellIntegration.enabled": true,
+    "terminal.integrated.shellIntegration.showWelcome": false,
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
@@ -30,5 +57,10 @@
         "tests"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        ".venv": false
+    }
 }

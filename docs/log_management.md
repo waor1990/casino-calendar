@@ -9,10 +9,12 @@ The application now includes automatic log rotation and cleanup features to prev
 ## Current Log Setup
 
 ### Log Files
+
 - **Main log**: `logs/casino_calendar.log` (with automatic rotation)
 - **Legacy log**: `logs/casino_calendar_prod.log` (to be phased out)
 
 ### Rotation Settings
+
 - **Max file size**: 10MB per log file
 - **Backup count**: 5 files (total ~50MB)
 - **File naming**: `casino_calendar.log`, `casino_calendar.log.1`, `casino_calendar.log.2`, etc.
@@ -20,6 +22,7 @@ The application now includes automatic log rotation and cleanup features to prev
 ## Manual Log Management
 
 ### Check Log Directory Information
+
 ```bash
 # Using batch file
 cleanup_logs.bat --info
@@ -29,6 +32,7 @@ python scripts/cleanup_logs.py --info
 ```
 
 ### Preview What Would Be Deleted
+
 ```bash
 # Show files older than 30 days (default)
 cleanup_logs.bat --dry-run
@@ -38,6 +42,7 @@ python scripts/cleanup_logs.py --days 7 --dry-run
 ```
 
 ### Clean Up Old Logs
+
 ```bash
 # Clean logs older than 30 days
 cleanup_logs.bat
@@ -47,6 +52,7 @@ python scripts/cleanup_logs.py --days 7
 ```
 
 ### Archive Current Log
+
 ```bash
 # Archive the current production log
 cleanup_logs.bat --archive
@@ -58,11 +64,13 @@ python scripts/cleanup_logs.py --archive-current
 ## Automated Cleanup
 
 ### Option 1: Windows Task Scheduler (Recommended)
+
 1. Run as Administrator: `scripts/create_scheduled_cleanup.bat`
 2. This creates a weekly task that runs every Sunday at 2:00 AM
 3. Automatically cleans logs older than 30 days
 
 ### Option 2: Manual Scheduled Task
+
 ```cmd
 # Create task manually
 schtasks /create /tn "Casino Calendar Log Cleanup" /tr "C:\path\to\project\.venv\Scripts\python.exe C:\path\to\project\scripts\cleanup_logs.py --days 30 --quiet" /sc weekly /d SUN /st 02:00
@@ -80,25 +88,31 @@ schtasks /delete /tn "Casino Calendar Log Cleanup" /f
 ## Log Retention Recommendations
 
 ### Development Environment
+
 - **Retention**: 7 days
 - **Reason**: Frequent testing generates many logs, shorter retention saves space
 
 ### Production Environment  
+
 - **Retention**: 30-90 days
 - **Reason**: Longer retention helps with debugging issues that might surface later
 
 ### Critical Systems
+
 - **Retention**: 1 year
 - **Reason**: Compliance and audit requirements
 
 ## Log Size Management
 
 ### Current Space Usage
+
 After cleanup, the log directory should typically use:
+
 - **Active logs**: ~10-50MB (depending on application activity)
 - **Archived logs**: Varies based on retention period
 
 ### Warning Signs
+
 - Log directory > 500MB
 - Individual files > 10MB (rotation not working)
 - Very old files present (cleanup not running)
@@ -106,11 +120,13 @@ After cleanup, the log directory should typically use:
 ## Troubleshooting
 
 ### Log Rotation Not Working
+
 1. Check file permissions on log directory
 2. Verify application has write access
 3. Check for file locks (application using the log file)
 
 ### Cleanup Script Issues
+
 ```bash
 # Test the cleanup script
 python scripts/cleanup_logs.py --info
@@ -123,6 +139,7 @@ dir scripts\cleanup_logs.py
 ```
 
 ### Scheduled Task Not Running
+
 1. Check task exists: `schtasks /query /tn "Casino Calendar Log Cleanup"`
 2. Check task history in Task Scheduler GUI
 3. Run manually to test: `schtasks /run /tn "Casino Calendar Log Cleanup"`
@@ -131,6 +148,7 @@ dir scripts\cleanup_logs.py
 ## Best Practices
 
 ### For Developers
+
 1. **Use appropriate log levels**:
    - DEBUG: Detailed information for debugging
    - INFO: General information about application flow
@@ -147,6 +165,7 @@ dir scripts\cleanup_logs.py
    - Use consistent formatting
 
 ### For System Administrators
+
 1. **Monitor log disk usage**: Set up alerts if logs consume too much space
 2. **Regular backups**: Include important logs in backup strategy
 3. **Security**: Protect log files from unauthorized access
@@ -155,14 +174,18 @@ dir scripts\cleanup_logs.py
 ## Configuration Files
 
 ### Environment Variables
+
 Set these in your `.env` file or environment:
+
 ```env
 LOG_LEVEL=INFO                    # Set log level
 LOG_FILE=logs/casino_calendar.log # Set log file path
 ```
 
 ### Application Configuration
+
 The application automatically:
+
 - Creates log directory if it doesn't exist
 - Sets up rotation (10MB files, 5 backups)
 - Cleans up old logs on startup (30 days retention)
@@ -171,6 +194,7 @@ The application automatically:
 ## Migration from Old Logging
 
 If you have existing `casino_calendar_prod.log` files:
+
 1. Archive them: `cleanup_logs.bat --archive`
 2. The new system will create `casino_calendar.log` with rotation
 3. Update any log monitoring tools to use the new file names
@@ -178,6 +202,7 @@ If you have existing `casino_calendar_prod.log` files:
 ## Support
 
 For issues with log management:
+
 1. Check this documentation first
 2. Review the cleanup script help: `python scripts/cleanup_logs.py --help`
 3. Check application logs for any logging-related errors

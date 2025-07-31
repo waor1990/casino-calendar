@@ -106,12 +106,9 @@ def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
         # Use larger rotation settings for development
         max_bytes = 10 * 1024 * 1024  # 10MB per file
         backup_count = 5  # Keep 5 backup files
-        
+
         file_handler = RotatingFileHandler(
-            file_path, 
-            maxBytes=max_bytes, 
-            backupCount=backup_count,
-            encoding='utf-8'
+            file_path, maxBytes=max_bytes, backupCount=backup_count, encoding="utf-8"
         )
         file_handler.setLevel(logging.DEBUG)  # File gets all levels
         file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
@@ -125,21 +122,21 @@ def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
 
 def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
     """Setup logger with production-ready log rotation and cleanup.
-    
+
     This function sets up a logger with:
     - Automatic log rotation (10MB files, 5 backups)
     - Cleanup of old logs (30 days retention)
     - Appropriate log levels for production
-    
+
     Args:
         name: Logger name
-        
+
     Returns:
         Configured logger instance
     """
     log_dir = Path("logs")
     log_file = log_dir / "casino_calendar.log"
-    
+
     # Clean up old logs (keep last 30 days)
     if cleanup_old_logs:
         try:
@@ -148,7 +145,7 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
                 print(f"Cleaned up {deleted_count} old log files")
         except Exception as e:
             print(f"Warning: Could not clean up old logs: {e}")
-    
+
     # Use custom rotating logger if available, otherwise fallback
     if setup_rotating_logger:
         logger = setup_rotating_logger(
@@ -157,14 +154,14 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
             level=logging.INFO,  # Production level
             max_bytes=10 * 1024 * 1024,  # 10MB
             backup_count=5,
-            console_output=True
+            console_output=True,
         )
         logger.info("Production logging initialized with rotation")
     else:
         # Fallback to standard setup
         logger = setup_logger(name, str(log_file))
         logger.info("Standard logging initialized")
-    
+
     return logger
 
 
