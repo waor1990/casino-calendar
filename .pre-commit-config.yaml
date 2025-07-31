@@ -1,7 +1,7 @@
-repos: 
+repos:
   - repo: https://github.com/psf/black
     rev: 24.3.0
-    hooks: 
+    hooks:
       - id: black
         language_version: python3
 
@@ -9,12 +9,13 @@ repos:
     rev: v5.13.2
     hooks:
       - id: isort
-        args: ["--profile", "black"]
+        args: ["--profile", "black", "--settings-path", "config/.isort.cfg"]
 
   - repo: https://github.com/pycqa/flake8
     rev: 6.1.0
-    hooks: 
+    hooks:
       - id: flake8
+        args: ["--config", "config/.flake8"]
 
   - id: python-check
     name: py_compile

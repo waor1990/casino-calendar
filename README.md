@@ -30,26 +30,50 @@ app_components/          # Core logic modules
   callbacks/             # Dash callback handlers
   utils/                 # Shared helper functions
 assets/                  # Static assets auto-loaded by Dash
+config/                  # Tool configuration files
+  .flake8              # Python linting config
+  .isort.cfg           # Import sorting config
+  mypy.ini             # Type checking config
+  .stylelintrc.json    # CSS linting config
 data/                    # CSV data files
   casino_events.csv
 docs/                    # Project documentation
+  archived/            # Completed/historical docs
   handoff.md
   TODO.md
-  legacy_plotly.md       # Archived Plotly helpers
+  logging_system.md
 deploy/                  # Deployment configuration
   Procfile
   render.yaml
 scripts/                 # Utility scripts
-  setup.sh
+  dev/                 # Development tools
+  setup.sh             # Linux/Mac setup
+tests/                   # Test suite
+utils/                   # Shared utilities
 requirements.txt         # Python dependencies
 package.json             # NPM scripts for Sass
 ```
 
 ## 🧪 Try It Locally
 
+### Windows (Recommended)
+
+```cmd
+# Quick setup - runs everything needed
+setup.bat
+
+# Run the application
+run.bat
+
+# Development mode with CSS watching
+dev.bat
+```
+
+### Linux/Mac
+
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate  # use .\.venv\Scripts\activate on Windows
+source .venv/bin/activate
 scripts/setup.sh                 # install Python and Node dependencies
 npm install
 npm run build:css  # compiles assets/style.scss to assets/style.css

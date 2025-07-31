@@ -13,10 +13,17 @@ Directory-specific instructions can be found in
 The repository stores supporting material in dedicated folders:
 
 - `app_components/`  Python modules including callbacks and utilities
+- `assets/`          Static CSS, JS and other web assets
+- `config/`          Tool configuration files (.flake8, .isort.cfg, etc.)
 - `data/`            CSV event files
-- `docs/`            project documentation
+- `docs/`            Project documentation
+  - `archived/`      Completed/historical documentation
 - `deploy/`          Render configuration
-- `scripts/`         utility scripts such as `setup.sh`
+- `scripts/`         Utility scripts
+  - `dev/`           Development and testing tools
+- `tests/`           Test suite
+- `utils/`           Shared utility functions
+
 ## Code style
 
 ### Python
@@ -31,13 +38,13 @@ The repository stores supporting material in dedicated folders:
 - Sort imports with [isort](https://pycqa.github.io/isort/):
 
   ```bash
-  isort .
+  isort --settings-path config/.isort.cfg .
   ```
 
 - Lint with [flake8](https://flake8.pycqa.org):
 
   ```bash
-  flake8 .
+  flake8 --config config/.flake8 .
   ```
 
 These tools are installed via `requirements.txt`.
@@ -48,7 +55,7 @@ These tools are installed via `requirements.txt`.
 - Keep styles modular in `assets/*` and avoid global overrides.
 - Follow a BEM‑like naming style (e.g., `.week-grid`, `.event-block-grid`).
 - Compile SCSS with `npm run build:css` and watch with `npm run watch:css`.
-- Run `npx stylelint "assets/**/*.scss"` before committing style changes.
+- Run `npm run lint:css` before committing style changes.
 
 ## Programmatic checks
 
