@@ -12,7 +12,6 @@ cd /d "%~dp0"
 
 REM Set environment variables
 set PYTHONPATH=%CD%
-set LOG_LEVEL=DEBUG
 
 REM Check if virtual environment exists
 if not exist ".venv\Scripts\python.exe" (
