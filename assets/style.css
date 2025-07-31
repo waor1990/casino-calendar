@@ -710,10 +710,29 @@ h1,
 /* Modal Container & Behavior */
 .modal {
   position: fixed;
-  /* top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  */
+  /* top: // Event blocks displayed in the day view modal
+  .event-block-day {
+      position: absolute;
+      border: var(--border-event) solid var(--color-border-accent);
+      border-radius: var(--border-radius-sm);
+      box-sizing: border-box;
+      z-index: 10;
+      cursor: pointer;
+      font-size: inherit;
+      font-weight: var(--font-weight-normal);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--padding-xs);
+      margin-left: var(--padding-xxs); // Reduced spacing between blocks
+      overflow: visible;
+      background-color: var(--bg);
+      color: var(--fg);
+      box-shadow: var(--box-shadow-light);
+      white-space: nowrap;
+  }
+      transform: translate(-50%, -50%);
+      */
   inset: 0;
   display: flex;
   justify-content: center;
@@ -859,7 +878,7 @@ h1,
   align-items: center;
   justify-content: center;
   padding: var(--padding-xs);
-  margin-left: var(--padding-xs);
+  margin-right: var(--padding-xxs);
   overflow: visible;
   background-color: var(--bg);
   color: var(--fg);
@@ -871,15 +890,16 @@ h1,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--padding-xxs);
-  width: 100%;
+  gap: 0;
+  width: auto;
   height: 100%;
   overflow: hidden;
   text-align: center;
   line-height: 1.2;
   color: var(--fg);
-  font-size: var(--font-xs);
-  /* Smaller font size */
+  font-size: var(--font-small);
+  /* Slightly larger font size */
+  white-space: nowrap;
 }
 
 .event-block-day_line {
@@ -888,15 +908,15 @@ h1,
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-bottom: var(--padding-xxs);
+  margin: 0;
 }
 
 @media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
   .event-block-day_text {
-    font-size: var(--font-xs);
+    font-size: var(--font-small);
   }
   .event-block-day {
-    margin-left: var(--padding-xs);
+    margin-right: var(--padding-xxs);
   }
 }
 .event-block-day.short-span {

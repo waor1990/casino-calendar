@@ -8,7 +8,13 @@ from dash import dcc, html
 
 from utils.colors import get_color
 
-from .utils import offer_type_emoji, to_pdt, trim_label
+from .utils import (
+    filter_long_spanning_events,
+    offer_type_emoji,
+    to_naive_utc,
+    to_pdt,
+    trim_label,
+)
 
 # Constants used to size the day modal dynamically
 DAY_MODAL_MIN_REM = 18
@@ -40,14 +46,58 @@ def generate_day_view_html(
     hour_height, _ = get_layout_config(screen_width)
 
     # Normalize clicked_date
-    day_start = to_pdt(clicked_date).replace(hour=0, minute=0, second=0, microsecond=0)
+    # The clicked_date comes from the callback as naive UTC (via to_naive_utc)
+    # We need to treat it as a local PDT date for day boundaries
+    if clicked_date.tzinfo is None:
+        # Treat the naive UTC date as a local PDT date for day boundaries
+        from pytz import timezone
+
+        PDT = timezone("America/Los_Angeles")
+        day_start = PDT.localize(
+            clicked_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+    else:
+        day_start = to_pdt(clicked_date).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
     day_end = day_start + timedelta(days=1)
 
-    # Filter events overlapping the day
+    # Filter events that overlap with the day
+    # Show any event that either starts, ends, or spans through the current day
+    # BUT exclude ongoing events that are shown in the overflow box
     events = events_df.copy()
     events["StartDate"] = pd.to_datetime(events["StartDate"]).map(to_pdt)
     events["EndDate"] = pd.to_datetime(events["EndDate"]).map(to_pdt)
-    events = events[(events["EndDate"] > day_start) & (events["StartDate"] < day_end)]
+
+    # Calculate week boundaries to identify ongoing events
+    # Find the week that contains the clicked day
+    days_from_sunday = day_start.weekday() + 1  # Monday=1, Sunday=0
+    if days_from_sunday == 7:  # Sunday
+        days_from_sunday = 0
+    week_start = day_start - timedelta(days=days_from_sunday)
+    week_end = week_start + timedelta(days=7)
+
+    # Get ongoing events for this week (events that span the entire week)
+    ongoing_events = filter_long_spanning_events(
+        events_df, to_naive_utc(week_start), to_naive_utc(week_end)
+    )
+    ongoing_event_ids = set(ongoing_events.index) if not ongoing_events.empty else set()
+
+    # Original overlap logic: event overlaps if end > day_start AND start < day_end
+    # But exclude ongoing events that are shown in the overflow box
+    # AND limit to events that don't start more than 1 day before or end more than 1 day after
+
+    # Define time window: events can start up to 1 day before, end up to 1 day after
+    earliest_start = day_start - timedelta(days=1)  # Previous day
+    latest_end = day_end + timedelta(days=1)  # Next day
+
+    events = events[
+        (events["EndDate"] > day_start)  # Event ends after day starts
+        & (events["StartDate"] < day_end)  # Event starts before day ends
+        & (events["StartDate"] >= earliest_start)  # Event doesn't start too early
+        & (events["EndDate"] <= latest_end)  # Event doesn't end too late
+        & (~events.index.isin(ongoing_event_ids))  # Exclude ongoing events
+    ]
 
     day_label = to_pdt(clicked_date).strftime("%A, %B %d")
     header_text = f"Events for {day_label}"
@@ -98,14 +148,15 @@ def generate_day_view_html(
     events["overlap_index"] = track_assignments
     n_tracks = max(len(tracks), 1)
 
-    # Calculate grid sizing before positioning blocks
+    # Calculate grid sizing before positioning blocks - make more compact
     min_width_rem = DAY_MODAL_WIDE_REM if len(events) < 5 else DAY_MODAL_MIN_REM
     max_name_len = max((len(str(n)) for n in events["EventName"]), default=0)
-    char_rem = 0.55
-    label_and_names = DAY_MODAL_LABEL_REM + char_rem * (max_name_len + 2) * n_tracks
+    char_rem = 0.4  # Reduced from 0.55 for more compact layout
+    # Use smaller track width calculation for tighter spacing
+    track_width = max(4, min(6, max_name_len * char_rem))  # 4-6rem per track
+    label_and_names = DAY_MODAL_LABEL_REM + track_width * n_tracks
     grid_min_width = max(
         min_width_rem,
-        DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * n_tracks,
         label_and_names,
     )
 
@@ -154,6 +205,7 @@ def generate_day_view_html(
     for _, row in events.iterrows():
         top_px = row["start_offset_min"] / 60 * hour_height
         height_px = max(16, row["duration_min"] / 60 * hour_height)
+        # Position blocks using proper track-based layout to prevent overlap
         left_pct = label_column_pct + row["overlap_index"] * width_pct
 
         colors = color_map.get(row["Casino"], {"bg": "#aaa", "text": "#000"})
@@ -196,9 +248,13 @@ def generate_day_view_html(
             f"{_fmt_time(row['StartDate'])} to {_fmt_time(row['EndDate'])}"
         )
 
-        # Calculate appropriate width based on content
+        # Calculate appropriate width based on content and available track space
         event_name = str(row["EventName"])
         casino_name = str(row["Casino"])
+
+        # Calculate maximum width based on track allocation (leaving small margin)
+        track_width_pct = width_pct * 0.9  # Use 90% of track to leave margin
+        max_track_width = f"{track_width_pct}%"
 
         # Build the style dictionary with base properties
         style_dict = {
@@ -209,17 +265,23 @@ def generate_day_view_html(
             "--fg": colors["text"],
         }
 
-        # Always set minWidth based on event name length for test compatibility
-        style_dict["minWidth"] = f"{len(event_name) + 2}ch"
-
         if short_span:
             # For short events, use minimal width based on emoji
-            style_dict["width"] = "2.5rem"
+            style_dict["width"] = "auto"
+            style_dict["minWidth"] = "2.5rem"
+            style_dict["maxWidth"] = min("3rem", max_track_width)  # Constrain to track
         else:
-            # For longer events, use width based on longest text line
-            max_text_len = max(len(event_name), len(casino_name))
-            # Use character-based width with reasonable min/max bounds
-            style_dict["width"] = f"{min(max(max_text_len * 0.6, 6), 20)}rem"
+            # For longer events, use auto width with both character and track constraints
+            char_min = f"{min(len(event_name), len(casino_name))}ch"
+            char_max = (
+                f"{max(len(event_name), len(casino_name)) + 1}ch"  # Reduced padding
+            )
+
+            style_dict["width"] = "auto"
+            style_dict["minWidth"] = char_min
+            style_dict["maxWidth"] = (
+                f"min({char_max}, {max_track_width})"  # Respect track bounds
+            )
 
         block_kwargs: dict[str, Any] = dict(
             title=row["EventName"],
