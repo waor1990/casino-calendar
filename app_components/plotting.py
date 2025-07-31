@@ -22,8 +22,9 @@ DAY_MODAL_TRACK_REM = 7
 def get_layout_config(screen_width: int) -> Tuple[int, int]:
     """Return hour height and label column width based on ``screen_width``."""
 
-    hour_height = 20 if screen_width < 480 else 36 if screen_width < 768 else 44
-    label_column_pct = 10
+    # Reduce hour height to fit all 24 hours within modal height
+    hour_height = 16 if screen_width < 480 else 20 if screen_width < 768 else 24
+    label_column_pct = 12  # Slightly wider for better hour label visibility
     return hour_height, label_column_pct
 
 
@@ -119,6 +120,7 @@ def generate_day_view_html(
 
     for hour in range(24):
         top_px = hour * hour_height
+        # Show hour labels every 3 hours to avoid clutter
         label = (
             datetime(2000, 1, 1, hour).strftime("%I %p").lstrip("0")
             if hour % 3 == 0
@@ -137,17 +139,18 @@ def generate_day_view_html(
                 },
             )
         )
+
+        # Grid line spanning the full width
         hour_lines.append(
             html.Div(
                 className="hour-grid-line",
                 style={
                     "top": f"{top_px}px",
-                    "height": f"{hour_height}px",
+                    "left": f"{label_column_pct}%",
+                    "width": f"{100 - label_column_pct}%",
                 },
             )
-        )
-
-    # Event blocks + invisible click markers
+        )  # Event blocks + invisible click markers
     for _, row in events.iterrows():
         top_px = row["start_offset_min"] / 60 * hour_height
         height_px = max(16, row["duration_min"] / 60 * hour_height)
@@ -193,21 +196,29 @@ def generate_day_view_html(
             f"{_fmt_time(row['StartDate'])} to {_fmt_time(row['EndDate'])}"
         )
 
+        # Calculate appropriate width based on content
+        event_name = str(row["EventName"])
+        casino_name = str(row["Casino"])
+
+        if short_span:
+            # For short events, use minimal width based on emoji
+            content_width = "2.5rem"
+        else:
+            # For longer events, use width based on longest text line
+            max_text_len = max(len(event_name), len(casino_name))
+            # Use character-based width with reasonable min/max bounds
+            content_width = f"{min(max(max_text_len * 0.6, 6), 20)}rem"
+
         block_kwargs: dict[str, Any] = dict(
             title=row["EventName"],
             className=" ".join(block_classes),
             style={
                 "top": f"{top_px}px",
                 "left": f"{left_pct}%",
-                "width": f"{width_pct}%",
+                "width": content_width,  # Content-based width instead of percentage
                 "height": f"{height_px}px",
                 "--bg": colors["bg"],
                 "--fg": colors["text"],
-                **(
-                    {"minWidth": f"{len(str(row['EventName'])) + 2}ch"}
-                    if len(events) < 5
-                    else {}
-                ),
             },
             **{"data-tooltip": tooltip},
         )

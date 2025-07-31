@@ -58,8 +58,10 @@
   --modal-min-height: 18.75rem;
   --modal-width: 90%;
   --modal-width-mobile: 85%;
-  --day-modal-max-height: 90vh;
-  --modal-max-height-mobile: 85vh;
+  --day-modal-max-height: 70vh;
+  /* Significantly reduced height */
+  /* Slightly reduced to better fit content */
+  --modal-max-height-mobile: 75vh;
   --event-modal-max-width-tablet: 31.25rem;
   --day-modal-max-width-tablet: 43.75rem;
   --day-modal-min-width: 18rem;
@@ -398,13 +400,19 @@ h1,
 .hour-label {
   position: sticky;
   left: 0;
-  font-size: var(--font-small);
+  font-size: var(--font-xs);
+  /* Smaller font to prevent wrapping */
   color: var(--color-accent);
   padding-left: var(--padding-small);
   box-sizing: border-box;
   z-index: 15;
   background-color: var(--color-background);
   border-right: var(--border-thin) solid var(--color-border-grid-light);
+  border-bottom: var(--border-thin) solid var(--color-border-grid-light);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-weight: var(--font-weight-bold);
 }
 
 .hour-grid-line {
@@ -415,6 +423,7 @@ h1,
   box-sizing: border-box;
   pointer-events: none;
   z-index: 2;
+  /* above modal background but below events */
 }
 
 .event-label-title {
@@ -740,7 +749,8 @@ h1,
   background-color: var(--color-background);
   border: var(--border-thick) solid var(--color-accent);
   border-radius: var(--border-radius-lg, 10px);
-  padding: var(--padding-base);
+  padding: var(--padding-small) var(--padding-base) var(--padding-base);
+  /* Reduced top padding */
   box-shadow: var(--box-shadow-modal);
   max-height: none;
   max-width: none;
@@ -789,17 +799,28 @@ h1,
   max-width: 90vw;
   max-height: var(--day-modal-max-height);
   font-size: clamp(var(--font-small), 2vw, var(--font-base));
+  display: flex;
+  flex-direction: column;
 }
 
 #day-modal-body {
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   padding: var(--padding-small);
   font-size: inherit;
+  flex-grow: 1;
+  min-height: 0;
+  /* Allow flex item to shrink below content size */
 }
 
 #day-modal-body > div {
   position: relative;
+}
+
+/* Day grid container within modal */
+#day-modal-body .day-grid {
+  border: var(--border-thin) solid var(--color-border-grid-light);
+  border-radius: var(--border-radius-sm);
 }
 
 .event-block-day {
@@ -834,7 +855,8 @@ h1,
   text-align: center;
   line-height: 1.2;
   color: var(--fg);
-  font-size: clamp(var(--font-xxs), 2.5vw, var(--font-base));
+  font-size: var(--font-xs);
+  /* Smaller font size */
 }
 
 .event-block-day_line {
@@ -900,7 +922,9 @@ h1,
     width: var(--modal-width-mobile) !important;
     max-width: var(--modal-width-mobile) !important;
     min-width: var(--modal-width-mobile);
-    max-height: none;
+    max-height: 65vh;
+    /* Even more reduced on mobile */
+    /* Reduced height on mobile */
   }
   #day-modal-body {
     max-height: none;

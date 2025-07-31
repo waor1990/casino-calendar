@@ -31,7 +31,7 @@ IF EXIST requirements.txt (
     echo Warning: requirements.txt not found
 )
 
-REM Install Node dependencies & build CSS
+REM Install Node dependencies (CSS build moved to run_direct.bat)
 where npm >nul 2>nul && (
     echo Installing Node.js dependencies...
     npm install 
@@ -39,13 +39,7 @@ where npm >nul 2>nul && (
         echo Failed to install Node.js dependencies
         exit /b 1
     )
-    
-    echo Building CSS...
-    npm run build:css
-    if %ERRORLEVEL% NEQ 0 (
-        echo Failed to build CSS
-        exit /b 1
-    )
+    echo ✓ Node.js dependencies installed (CSS will be built when running the app)
 ) || (
     echo Warning: npm not found, skipping Node.js dependencies
 )
@@ -61,8 +55,8 @@ where pre-commit >nul 2>nul && (
 echo.
 echo ✅ Setup completed successfully!
 echo.
-echo To run the application:
-echo   scripts\run.bat
+echo To run the application (CSS will be built automatically):
+echo   run_direct.bat
+echo   or use VSCode task: "Run Casino Calendar App"
 echo.
-echo To run in development mode with CSS watching:
-echo   scripts\dev.bat
+echo Note: CSS is now built automatically when running the app for convenience.
