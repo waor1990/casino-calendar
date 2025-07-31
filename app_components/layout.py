@@ -158,7 +158,11 @@ def sticky_header(df):
                             # Hotel booking link that appears when a casino is selected
                             html.Div(
                                 id="hotel-booking-container",
-                                style={"display": "none", "textAlign": "center", "marginTop": "10px"},
+                                style={
+                                    "display": "none",
+                                    "textAlign": "center",
+                                    "marginTop": "10px",
+                                },
                                 children=[],
                             ),
                         ],

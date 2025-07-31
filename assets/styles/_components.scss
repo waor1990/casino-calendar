@@ -77,7 +77,7 @@ h1,
 /* Hotel booking link styles */
 #hotel-booking-container a {
     display: inline-block;
-    color: var(--color-accent);
+    color: var(--color-accent-dark);
     text-decoration: none;
     font-size: var(--font-base);
     font-weight: var(--font-weight-bold);
@@ -85,7 +85,7 @@ h1,
     border: 2px solid var(--color-accent);
     border-radius: var(--border-radius-sm);
     background-color: var(--color-background);
-    transition: all 0.2s ease;
+    transition: all 0.4s ease;
 
     &:hover {
         background-color: var(--color-accent);
