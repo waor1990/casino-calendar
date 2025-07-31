@@ -114,13 +114,13 @@
     width: auto;
     min-width: var(--day-modal-min-width);
     max-width: 90vw;
-    max-height: min(var(--day-modal-max-height), 90vh);
+    max-height: var(--day-modal-max-height);
     font-size: clamp(var(--font-small), 2vw, var(--font-base));
 }
 
 #day-modal-body {
     overflow-x: auto;
-    overflow-y: auto;
+    overflow-y: hidden;
     padding: var(--padding-small);
     font-size: inherit;
 }

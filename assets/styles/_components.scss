@@ -137,14 +137,15 @@ h1,
 }
 
 .hour-label {
-    position: absolute;
+    position: sticky;
     left: 0;
     font-size: var(--font-small);
     color: var(--color-accent);
     padding-left: var(--padding-small);
     box-sizing: border-box;
-    z-index: 2;
+    z-index: 15;
     background-color: var(--color-background);
+    border-right: var(--border-thin) solid var(--color-border-grid-light);
 }
 
 .hour-grid-line {

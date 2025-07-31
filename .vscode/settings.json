@@ -16,6 +16,7 @@
     "stylelint.configFile": ".stylelintrc.json",
     "python.pythonPath": ".venv/Scripts/python.exe",
     "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
+    "python.envFile": "${workspaceFolder}/.env",
     "python.terminal.activateEnvironment": true,
     "python.terminal.activateEnvInCurrentTerminal": true,
     "terminal.integrated.defaultProfile.windows": "Casino Calendar Environment",
@@ -31,12 +32,18 @@
         },
         "Casino Calendar Environment": {
             "path": "C:\\Windows\\System32\\cmd.exe",
-            "args": ["/k", "auto_activate.bat"],
+            "args": [
+                "/k",
+                "auto_activate.bat"
+            ],
             "icon": "gear"
         },
         "Casino Calendar Setup": {
             "path": "C:\\Windows\\System32\\cmd.exe",
-            "args": ["/k", "setup_terminal.bat"],
+            "args": [
+                "/k",
+                "setup_terminal.bat"
+            ],
             "icon": "tools"
         }
     },
