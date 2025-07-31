@@ -114,13 +114,13 @@
     width: auto;
     min-width: var(--day-modal-min-width);
     max-width: 90vw;
-    max-height: min(var(--day-modal-max-height), 90vh);
+    max-height: none;
     font-size: clamp(var(--font-small), 2vw, var(--font-base));
 }
 
 #day-modal-body {
     overflow-x: auto;
-    overflow-y: auto;
+    overflow-y: visible;
     padding: var(--padding-small);
     font-size: inherit;
 }
@@ -222,7 +222,7 @@
     }
 
     #day-modal-body {
-        max-height: var(--modal-max-height);
+        max-height: none;
     }
 }
 
@@ -235,11 +235,11 @@
         width: var(--modal-width-mobile) !important;
         max-width: var(--modal-width-mobile) !important;
         min-width: var(--modal-width-mobile);
-        max-height: var(--modal-max-height-mobile);
+        max-height: none;
     }
 
     #day-modal-body {
-        max-height: var(--modal-max-height-mobile);
+        max-height: none;
         font-size: var(--font-small);
     }
 }
