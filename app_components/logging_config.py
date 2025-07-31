@@ -16,6 +16,14 @@ except ImportError:
     # python-dotenv not installed, continue without it
     pass
 
+# Import our custom log rotation utilities
+try:
+    from utils.log_rotation import setup_rotating_logger, cleanup_old_logs
+except ImportError:
+    # Fallback if utils module not available
+    setup_rotating_logger = None
+    cleanup_old_logs = None
+
 
 class CasinoCalendarFormatter(logging.Formatter):
     """Custom formatter with enhanced formatting for different log levels."""
@@ -95,8 +103,15 @@ def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
         log_path = Path(file_path)
         log_path.parent.mkdir(parents=True, exist_ok=True)
 
+        # Use larger rotation settings for development
+        max_bytes = 10 * 1024 * 1024  # 10MB per file
+        backup_count = 5  # Keep 5 backup files
+        
         file_handler = RotatingFileHandler(
-            file_path, maxBytes=10 * 1024 * 1024, backupCount=5  # 10MB
+            file_path, 
+            maxBytes=max_bytes, 
+            backupCount=backup_count,
+            encoding='utf-8'
         )
         file_handler.setLevel(logging.DEBUG)  # File gets all levels
         file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
@@ -105,6 +120,51 @@ def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
     # Prevent propagation to root logger to avoid duplicate messages
     logger.propagate = False
 
+    return logger
+
+
+def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
+    """Setup logger with production-ready log rotation and cleanup.
+    
+    This function sets up a logger with:
+    - Automatic log rotation (10MB files, 5 backups)
+    - Cleanup of old logs (30 days retention)
+    - Appropriate log levels for production
+    
+    Args:
+        name: Logger name
+        
+    Returns:
+        Configured logger instance
+    """
+    log_dir = Path("logs")
+    log_file = log_dir / "casino_calendar.log"
+    
+    # Clean up old logs (keep last 30 days)
+    if cleanup_old_logs:
+        try:
+            deleted_count = cleanup_old_logs(str(log_dir), days_to_keep=30)
+            if deleted_count > 0:
+                print(f"Cleaned up {deleted_count} old log files")
+        except Exception as e:
+            print(f"Warning: Could not clean up old logs: {e}")
+    
+    # Use custom rotating logger if available, otherwise fallback
+    if setup_rotating_logger:
+        logger = setup_rotating_logger(
+            name=name,
+            log_file=str(log_file),
+            level=logging.INFO,  # Production level
+            max_bytes=10 * 1024 * 1024,  # 10MB
+            backup_count=5,
+            console_output=True
+        )
+        logger.info("Production logging initialized with rotation")
+    else:
+        # Fallback to standard setup
+        logger = setup_logger(name, str(log_file))
+        logger.info("Standard logging initialized")
+    
     return logger
 
 
@@ -130,11 +190,8 @@ def log_dataframe_info(logger: logging.Logger, df, description: str = "DataFrame
         logger.warning(f"{description} is None or invalid")
 
 
-# Global application logger instance
-app_logger = setup_logger(
-    "casino_calendar",
-    log_file=os.getenv("LOG_FILE"),  # Optional file logging via env var
-)
+# Global application logger instance - use production setup
+app_logger = setup_production_logger("casino_calendar")
 
 # Log startup
 app_logger.info("Logging system initialized")
