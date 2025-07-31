@@ -16,7 +16,7 @@ except FileNotFoundError:
     logger.error(f"Casino colors file not found: {DATA_DIR / 'casino_colors.json'}")
     COLOR_MAP = {}
 except json.JSONDecodeError as e:
-    logger.error(f"Invalid JSON in casino colors file: {e}")
+    logger.error(f"Invalid JSON in casino colors file: {e}", exc_info=True)
     COLOR_MAP = {}
 
 try:
@@ -27,7 +27,7 @@ except FileNotFoundError:
     logger.error(f"Default colors file not found: {DATA_DIR / 'default_colors.json'}")
     DEFAULT_COLORS = []
 except json.JSONDecodeError as e:
-    logger.error(f"Invalid JSON in default colors file: {e}")
+    logger.error(f"Invalid JSON in default colors file: {e}", exc_info=True)
     DEFAULT_COLORS = []
 
 

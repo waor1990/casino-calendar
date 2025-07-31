@@ -115,7 +115,7 @@ def create_layout(app, df):
         return layout
 
     except Exception as e:
-        logger.error(f"Error creating layout: {e}")
+        logger.error(f"Error creating layout: {e}", exc_info=True)
         raise
 
 
@@ -222,5 +222,5 @@ def create_legend(df):
         return legend_items
 
     except Exception as e:
-        logger.error(f"Error creating legend: {e}")
+        logger.error(f"Error creating legend: {e}", exc_info=True)
         return []
