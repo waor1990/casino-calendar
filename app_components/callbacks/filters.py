@@ -166,29 +166,22 @@ def register_callbacks(app, df) -> None:
         if not selected_casinos or len(selected_casinos) != 1:
             # Hide the container if no casino or multiple casinos are selected
             return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
-        
+
         casino_name = selected_casinos[0]
         booking_url = HOTEL_BOOKING_SITES.get(casino_name)
-        
+
         if booking_url and booking_url != "N/A":
             # Show the hotel booking link
             link_content = html.A(
                 "🏨 Hotel Booking",
                 href=booking_url,
                 target="_blank",
-                style={
-                    "color": "var(--color-accent)",
-                    "textDecoration": "none",
-                    "fontSize": "var(--font-base)",
-                    "fontWeight": "var(--font-weight-bold)",
-                    "padding": "8px 16px",
-                    "border": "2px solid var(--color-accent)",
-                    "borderRadius": "var(--border-radius-sm)",
-                    "backgroundColor": "var(--color-background)",
-                    "transition": "all 0.2s ease",
-                }
             )
-            return [link_content], {"display": "block", "textAlign": "center", "marginTop": "10px"}
+            return [link_content], {
+                "display": "block",
+                "textAlign": "center",
+                "marginTop": "10px",
+            }
         else:
             # Hide the container if no booking URL or N/A
             return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}

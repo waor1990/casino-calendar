@@ -131,9 +131,10 @@ def test_hotel_booking_link_display(casino):
     # Test with a casino that has a booking URL
     # Mock the casino to be in the hotel booking sites data
     import app_components.callbacks.filters as filters_module
+
     original_booking_sites = filters_module.HOTEL_BOOKING_SITES
     filters_module.HOTEL_BOOKING_SITES = {casino: "https://example.com/booking"}
-    
+
     try:
         children, style = func([casino])
         assert len(children) == 1
@@ -146,7 +147,7 @@ def test_hotel_booking_link_display(casino):
 
     # Test with a casino that has N/A booking URL
     filters_module.HOTEL_BOOKING_SITES = {casino: "N/A"}
-    
+
     try:
         children, style = func([casino])
         assert children == []
