@@ -137,7 +137,7 @@ h1,
 }
 
 .hour-label {
-    position: absolute;
+    position: sticky;
     left: 0;
     font-size: var(--font-small);
     color: var(--color-accent);
