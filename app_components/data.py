@@ -32,7 +32,7 @@ def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> 
         logger.error(f"Keywords file not found: {keywords_file}")
         return "Offer"
     except json.JSONDecodeError as e:
-        logger.error(f"Invalid JSON in keywords file: {e}")
+        logger.error(f"Invalid JSON in keywords file: {e}", exc_info=True)
         return "Offer"
 
     giveaway_keywords = keywords["giveaway_keywords"]
@@ -104,7 +104,7 @@ def load_event_data(csv_path: str = "data/casino_events.csv") -> pd.DataFrame:
         logger.error(f"Event data file is empty: {csv_path}")
         raise
     except Exception as e:
-        logger.error(f"Failed to load event data: {e}")
+        logger.error(f"Failed to load event data: {e}", exc_info=True)
         raise
 
     def _to_naive_utc(ts: pd.Timestamp) -> pd.Timestamp:
@@ -155,7 +155,7 @@ def load_event_data(csv_path: str = "data/casino_events.csv") -> pd.DataFrame:
         logger.info(f"Offer type distribution: {offer_counts.to_dict()}")
 
     except Exception as e:
-        logger.error(f"Failed to categorize offer types: {e}")
+        logger.error(f"Failed to categorize offer types: {e}", exc_info=True)
         raise
 
     load_time = time.time() - start_time

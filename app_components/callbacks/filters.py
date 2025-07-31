@@ -58,7 +58,7 @@ def register_callbacks(app, df) -> None:
             return label
 
         except Exception as e:
-            logger.error(f"Error generating week label: {e}")
+            logger.error(f"Error generating week label: {e}", exc_info=True)
             return "Events for Current Week"
 
     @app.callback(

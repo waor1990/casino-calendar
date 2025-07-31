@@ -54,7 +54,7 @@ def register_callbacks(app, df) -> None:
             return box_class, button_text
 
         except Exception as e:
-            logger.error(f"Error in toggle_overflow callback: {e}")
+            logger.error(f"Error in toggle_overflow callback: {e}", exc_info=True)
             raise
 
     @app.callback(
@@ -133,7 +133,14 @@ def register_callbacks(app, df) -> None:
                 and triggered_id.get("type") == "grid-event"
             ):
                 logger.debug(f"Grid event clicked: {triggered_id}")
-                triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
+                try:
+                    triggered_n = (
+                        ctx.triggered[0]["value"]
+                        if ctx.triggered and len(ctx.triggered) > 0
+                        else None
+                    )
+                except (IndexError, KeyError, TypeError):
+                    triggered_n = None
                 if not triggered_n:
                     logger.debug("No triggered value, preventing update")
                     raise dash.exceptions.PreventUpdate
@@ -153,9 +160,10 @@ def register_callbacks(app, df) -> None:
                     )
 
                 row = df.loc[idx]
-                logger.info(
-                    f"Opening event modal for: {row.get('EventName', 'Unknown Event')}"
+                event_name = (
+                    row["EventName"] if "EventName" in row.index else "Unknown Event"
                 )
+                logger.info(f"Opening event modal for: {event_name}")
                 rows = build_event_info_rows(row.items())
                 return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
 
@@ -164,7 +172,14 @@ def register_callbacks(app, df) -> None:
                 and triggered_id.get("type") == "day-column"
             ):
                 logger.debug(f"Day column clicked: {triggered_id}")
-                triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
+                try:
+                    triggered_n = (
+                        ctx.triggered[0]["value"]
+                        if ctx.triggered and len(ctx.triggered) > 0
+                        else None
+                    )
+                except (IndexError, KeyError, TypeError):
+                    triggered_n = None
                 if not triggered_n:
                     logger.debug("No triggered value for day column, preventing update")
                     raise dash.exceptions.PreventUpdate
@@ -214,7 +229,11 @@ def register_callbacks(app, df) -> None:
 
             if click_data and "points" in click_data and click_data["points"]:
                 logger.debug("Processing day-event-catcher click data")
-                data = click_data["points"][0].get("customdata", [None])[0]
+                try:
+                    data = click_data["points"][0].get("customdata", [None])[0]
+                except (IndexError, KeyError, TypeError) as e:
+                    logger.warning(f"Error accessing click data: {e}")
+                    data = None
                 if data and data.get("type") == "day_click":
                     day_index = data.get("day_index")
                     if day_index is None:
@@ -275,20 +294,26 @@ def register_callbacks(app, df) -> None:
                     return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
 
             logger.debug("No valid trigger found, preventing update")
+            end_time = time.time()
+            logger.debug(
+                f"show_event_modal callback completed in {end_time - start_time:.3f}s (PreventUpdate)"
+            )
             raise dash.exceptions.PreventUpdate
 
+        except dash.exceptions.PreventUpdate:
+            # PreventUpdate is expected behavior, not an error - just re-raise it
+            end_time = time.time()
+            logger.debug(
+                f"show_event_modal callback completed in {end_time - start_time:.3f}s (PreventUpdate)"
+            )
+            raise
         except Exception as e:
-            logger.error(f"Error in show_event_modal callback: {e}")
+            logger.error(f"Error in show_event_modal callback: {e}", exc_info=True)
             # Log performance even on error
             end_time = time.time()
             logger.debug(
                 f"show_event_modal callback completed in {end_time - start_time:.3f}s (with error)"
             )
             raise
-
-        end_time = time.time()
-        logger.debug(
-            f"show_event_modal callback completed successfully in {end_time - start_time:.3f}s"
-        )
 
     logger.info("Event callbacks registered successfully")
