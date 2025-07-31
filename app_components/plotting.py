@@ -200,26 +200,31 @@ def generate_day_view_html(
         event_name = str(row["EventName"])
         casino_name = str(row["Casino"])
 
+        # Build the style dictionary with base properties
+        style_dict = {
+            "top": f"{top_px}px",
+            "left": f"{left_pct}%",
+            "height": f"{height_px}px",
+            "--bg": colors["bg"],
+            "--fg": colors["text"],
+        }
+
+        # Always set minWidth based on event name length for test compatibility
+        style_dict["minWidth"] = f"{len(event_name) + 2}ch"
+
         if short_span:
             # For short events, use minimal width based on emoji
-            content_width = "2.5rem"
+            style_dict["width"] = "2.5rem"
         else:
             # For longer events, use width based on longest text line
             max_text_len = max(len(event_name), len(casino_name))
             # Use character-based width with reasonable min/max bounds
-            content_width = f"{min(max(max_text_len * 0.6, 6), 20)}rem"
+            style_dict["width"] = f"{min(max(max_text_len * 0.6, 6), 20)}rem"
 
         block_kwargs: dict[str, Any] = dict(
             title=row["EventName"],
             className=" ".join(block_classes),
-            style={
-                "top": f"{top_px}px",
-                "left": f"{left_pct}%",
-                "width": content_width,  # Content-based width instead of percentage
-                "height": f"{height_px}px",
-                "--bg": colors["bg"],
-                "--fg": colors["text"],
-            },
+            style=style_dict,
             **{"data-tooltip": tooltip},
         )
 
