@@ -30,6 +30,8 @@ app_components/          # Core logic modules
   callbacks/             # Dash callback handlers
   utils/                 # Shared helper functions
 assets/                  # Static assets auto-loaded by Dash
+archive/                 # Archived files and directories
+  old_batch_files/       # Deprecated batch scripts
 config/                  # Tool configuration files
   .flake8              # Python linting config
   .isort.cfg           # Import sorting config
@@ -45,10 +47,17 @@ docs/                    # Project documentation
 deploy/                  # Deployment configuration
   Procfile
   render.yaml
+logs/                    # Application log files
+  archive/             # Archived log files
 scripts/                 # Utility scripts
   dev/                 # Development tools
-  setup.sh             # Linux/Mac setup
+  maintenance/         # Log cleanup and maintenance
+  setup/               # Setup and installation scripts
 tests/                   # Test suite
+tools/                   # User-facing utility scripts
+  setup.bat            # Environment setup
+  run_direct.bat       # Application launcher
+  cleanup_logs.bat     # Log management
 utils/                   # Shared utilities
 requirements.txt         # Python dependencies
 package.json             # NPM scripts for Sass
@@ -60,13 +69,14 @@ package.json             # NPM scripts for Sass
 
 ```cmd
 # Quick setup - runs everything needed
-setup.bat
+tools\setup.bat
 
-# Run the application
-run.bat
+# Run the application  
+tools\run_direct.bat
 
-# Development mode with CSS watching
-dev.bat
+# Or use convenience launchers
+setup.bat  # calls tools\setup.bat
+run.bat    # calls tools\run_direct.bat
 ```
 
 ### Linux/Mac
@@ -74,7 +84,7 @@ dev.bat
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-scripts/setup.sh                 # install Python and Node dependencies
+scripts/setup/setup.sh           # install Python and Node dependencies
 npm install
 npm run build:css  # compiles assets/style.scss to assets/style.css
 npm run lint:css
@@ -86,10 +96,12 @@ scripts/test.sh                  # run linters and tests
 python app.py
 ```
 
-On Windows you can run everything from one command by executing `run.bat`
-in a Command Prompt or the VSCode terminal:
+On Windows you can run everything from one command by executing `tools\run_direct.bat`
+or the convenience launcher `run.bat` in a Command Prompt or the VSCode terminal:
 
 ```cmd
+tools\run_direct.bat
+# Or use the convenience launcher:
 run.bat
 ```
 
