@@ -74,6 +74,31 @@ h1,
     background-color: var(--color-accent-light);
 }
 
+/* Hotel booking link styles */
+#hotel-booking-container a {
+    display: inline-block;
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: var(--font-base);
+    font-weight: var(--font-weight-bold);
+    padding: 8px 16px;
+    border: 2px solid var(--color-accent);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--color-background);
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: var(--color-accent);
+        color: var(--color-background);
+        transform: translateY(-2px);
+        box-shadow: var(--box-shadow-light);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
 /* Buttons */
 
 .emoji-button {

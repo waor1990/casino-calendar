@@ -17,6 +17,7 @@ but are not tested.
 - Times stored in UTC and displayed in Pacific Time (PDT)
 - Toggle to show ongoing events that span the week
 - Auto-categorizes offers into Giveaway, Free-Play, Point-Based, Hospitality-Rewards and Special-Events
+- **Hotel booking links** that appear when a casino is selected from the legend
 - SCSS styles compiled with Sass
 - **Comprehensive logging system** for debugging and monitoring
 
