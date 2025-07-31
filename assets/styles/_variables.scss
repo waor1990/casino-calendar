@@ -65,8 +65,10 @@
     --modal-min-height: 18.75rem;
     --modal-width: 90%;
     --modal-width-mobile: 85%;
-    --day-modal-max-height: 90vh;
-    --modal-max-height-mobile: 85vh;
+    --day-modal-max-height: 70vh;
+    /* Significantly reduced height */
+    /* Slightly reduced to better fit content */
+    --modal-max-height-mobile: 75vh;
     --event-modal-max-width-tablet: 31.25rem;
     --day-modal-max-width-tablet: 43.75rem;
     --day-modal-min-width: 18rem;
