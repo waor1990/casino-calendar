@@ -31,17 +31,22 @@ echo Building CSS from SCSS...
 where npm >nul 2>nul
 if !ERRORLEVEL! equ 0 (
     echo [INFO] npm found, attempting CSS build...
-    npm run build:css
-    set CSS_BUILD_RESULT=!ERRORLEVEL!
-    if !CSS_BUILD_RESULT! equ 0 (
-        echo [OK] CSS built successfully
-    ) else (
-        echo WARNING: CSS build failed with exit code !CSS_BUILD_RESULT!
+    echo [DEBUG] Running: npm run build:css
+    npm run build:css 2>&1
+    if errorlevel 1 (
+        echo.
+        echo WARNING: CSS build failed
         echo This might be due to:
+        echo   - SCSS syntax errors in assets/style.scss or imported files
         echo   - Missing Node.js dependencies: try 'npm install'
-        echo   - SCSS syntax errors in assets/style.scss
-        echo   - Missing assets directory or files
+        echo   - Sass compiler version compatibility issues
+        echo   - File permission problems
+        echo.
+        echo [DEBUG] Checking Sass installation...
+        npx sass --version 2>&1 || echo Sass not found via npx
         echo Continuing with existing CSS files...
+    ) else (
+        echo [OK] CSS built successfully
     )
 ) else (
     echo WARNING: npm not found, skipping CSS build
