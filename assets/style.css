@@ -58,8 +58,8 @@
   --modal-min-height: 18.75rem;
   --modal-width: 90%;
   --modal-width-mobile: 85%;
-  --day-modal-max-height: 50rem;
-  --modal-max-height-mobile: 70vh;
+  --day-modal-max-height: 90vh;
+  --modal-max-height-mobile: 85vh;
   --event-modal-max-width-tablet: 31.25rem;
   --day-modal-max-width-tablet: 43.75rem;
   --day-modal-min-width: 18rem;
@@ -396,14 +396,15 @@ h1,
 }
 
 .hour-label {
-  position: absolute;
+  position: sticky;
   left: 0;
   font-size: var(--font-small);
   color: var(--color-accent);
   padding-left: var(--padding-small);
   box-sizing: border-box;
-  z-index: 2;
+  z-index: 15;
   background-color: var(--color-background);
+  border-right: var(--border-thin) solid var(--color-border-grid-light);
 }
 
 .hour-grid-line {
@@ -786,13 +787,13 @@ h1,
   width: auto;
   min-width: var(--day-modal-min-width);
   max-width: 90vw;
-  max-height: min(var(--day-modal-max-height), 90vh);
+  max-height: var(--day-modal-max-height);
   font-size: clamp(var(--font-small), 2vw, var(--font-base));
 }
 
 #day-modal-body {
   overflow-x: auto;
-  overflow-y: auto;
+  overflow-y: hidden;
   padding: var(--padding-small);
   font-size: inherit;
 }
@@ -888,7 +889,7 @@ h1,
     max-width: var(--day-modal-max-width-tablet);
   }
   #day-modal-body {
-    max-height: var(--modal-max-height);
+    max-height: none;
   }
 }
 @media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
@@ -899,10 +900,10 @@ h1,
     width: var(--modal-width-mobile) !important;
     max-width: var(--modal-width-mobile) !important;
     min-width: var(--modal-width-mobile);
-    max-height: var(--modal-max-height-mobile);
+    max-height: none;
   }
   #day-modal-body {
-    max-height: var(--modal-max-height-mobile);
+    max-height: none;
     font-size: var(--font-small);
   }
 }
