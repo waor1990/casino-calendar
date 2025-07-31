@@ -106,3 +106,51 @@ def test_toggle_casino_filter(monkeypatch, casino):
 
     result = func([1], [{"type": "casino-filter", "index": casino}], [])
     assert result == [casino]
+
+
+@pytest.mark.usefixtures("casino")
+def test_hotel_booking_link_display(casino):
+    """Test hotel booking link display logic."""
+    df = pd.DataFrame({"EventName": ["E1"], "Casino": [casino]})
+    app = Dash(__name__)
+    register_callbacks(app, df)
+    func = app.callback_map[
+        "..hotel-booking-container.children...hotel-booking-container.style.."
+    ]["callback"].__wrapped__
+
+    # Test with no casino selected
+    children, style = func([])
+    assert children == []
+    assert style["display"] == "none"
+
+    # Test with multiple casinos selected
+    children, style = func([casino, "Another Casino"])
+    assert children == []
+    assert style["display"] == "none"
+
+    # Test with a casino that has a booking URL
+    # Mock the casino to be in the hotel booking sites data
+    import app_components.callbacks.filters as filters_module
+    original_booking_sites = filters_module.HOTEL_BOOKING_SITES
+    filters_module.HOTEL_BOOKING_SITES = {casino: "https://example.com/booking"}
+    
+    try:
+        children, style = func([casino])
+        assert len(children) == 1
+        assert style["display"] == "block"
+        assert children[0].href == "https://example.com/booking"
+        assert "Hotel Booking" in children[0].children
+    finally:
+        # Restore original booking sites
+        filters_module.HOTEL_BOOKING_SITES = original_booking_sites
+
+    # Test with a casino that has N/A booking URL
+    filters_module.HOTEL_BOOKING_SITES = {casino: "N/A"}
+    
+    try:
+        children, style = func([casino])
+        assert children == []
+        assert style["display"] == "none"
+    finally:
+        # Restore original booking sites
+        filters_module.HOTEL_BOOKING_SITES = original_booking_sites

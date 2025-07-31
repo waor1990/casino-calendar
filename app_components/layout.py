@@ -155,6 +155,12 @@ def sticky_header(df):
                                 className="legend-title legend-gap",
                             ),
                             html.Div(create_legend(df), className="legend-container"),
+                            # Hotel booking link that appears when a casino is selected
+                            html.Div(
+                                id="hotel-booking-container",
+                                style={"display": "none", "textAlign": "center", "marginTop": "10px"},
+                                children=[],
+                            ),
                         ],
                         style={
                             "flex": "1",

@@ -1,3 +1,4 @@
+import json
 import time
 from datetime import datetime, timedelta
 from typing import Any, Tuple, cast
@@ -15,6 +16,17 @@ PDT = timezone("America/Los_Angeles")
 
 # Initialize module logger
 logger = setup_logger(__name__)
+
+# Load hotel booking sites data
+try:
+    with open("data/hotel_book_sites.json", "r") as f:
+        HOTEL_BOOKING_SITES = json.load(f)
+except FileNotFoundError:
+    logger.warning("hotel_book_sites.json not found, hotel booking links disabled")
+    HOTEL_BOOKING_SITES = {}
+except json.JSONDecodeError as e:
+    logger.error(f"Error parsing hotel_book_sites.json: {e}")
+    HOTEL_BOOKING_SITES = {}
 
 
 def register_callbacks(app, df) -> None:
@@ -143,6 +155,43 @@ def register_callbacks(app, df) -> None:
                 cls += " legend-selected"
             classes.append(cls)
         return classes
+
+    @app.callback(
+        Output("hotel-booking-container", "children"),
+        Output("hotel-booking-container", "style"),
+        Input("selected-casinos", "data"),
+    )
+    def update_hotel_booking_link(selected_casinos):
+        """Update hotel booking link based on selected casino."""
+        if not selected_casinos or len(selected_casinos) != 1:
+            # Hide the container if no casino or multiple casinos are selected
+            return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
+        
+        casino_name = selected_casinos[0]
+        booking_url = HOTEL_BOOKING_SITES.get(casino_name)
+        
+        if booking_url and booking_url != "N/A":
+            # Show the hotel booking link
+            link_content = html.A(
+                "🏨 Hotel Booking",
+                href=booking_url,
+                target="_blank",
+                style={
+                    "color": "var(--color-accent)",
+                    "textDecoration": "none",
+                    "fontSize": "var(--font-base)",
+                    "fontWeight": "var(--font-weight-bold)",
+                    "padding": "8px 16px",
+                    "border": "2px solid var(--color-accent)",
+                    "borderRadius": "var(--border-radius-sm)",
+                    "backgroundColor": "var(--color-background)",
+                    "transition": "all 0.2s ease",
+                }
+            )
+            return [link_content], {"display": "block", "textAlign": "center", "marginTop": "10px"}
+        else:
+            # Hide the container if no booking URL or N/A
+            return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
 
     @app.callback(
         Output("week-chart-container", "children"),
