@@ -18,11 +18,12 @@ The repository stores supporting material in dedicated folders:
 - `data/`            CSV event files
 - `docs/`            Project documentation
   - `archived/`      Completed/historical documentation
-- `deploy/`          Render configuration
 - `scripts/`         Utility scripts
   - `dev/`           Development and testing tools
 - `tests/`           Test suite
 - `utils/`           Shared utility functions
+- `Procfile`         Heroku deployment configuration
+- `render.yaml`      Render.com deployment configuration
 
 ## Code style
 
@@ -181,7 +182,7 @@ pre-commit run --all-files
 python app.py
 ```
 
-### Run with Gunicorn (as in `deploy/Procfile`)
+### Run with Gunicorn (as in `Procfile`)
 
 ```bash
 gunicorn app:server

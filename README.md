@@ -25,6 +25,8 @@ but are not tested.
 
 ## 📁 Project Layout
 
+> For detailed project structure documentation, see [docs/project_structure.md](docs/project_structure.md).
+
 ```text
 app.py                   # Dash entry point
 app_components/          # Core logic modules
@@ -45,9 +47,6 @@ docs/                    # Project documentation
   handoff.md
   TODO.md
   logging_system.md
-deploy/                  # Deployment configuration
-  Procfile
-  render.yaml
 logs/                    # Application log files
   archive/             # Archived log files
 scripts/                 # Utility scripts
@@ -62,6 +61,8 @@ tools/                   # User-facing utility scripts
 utils/                   # Shared utilities
 requirements.txt         # Python dependencies
 package.json             # NPM scripts for Sass
+Procfile                 # Heroku deployment configuration  
+render.yaml              # Render.com deployment configuration
 ```
 
 ## 🧪 Try It Locally
@@ -148,7 +149,7 @@ For detailed documentation, see [`docs/logging_system.md`](docs/logging_system.m
 
 Hosted at [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
 
-`deploy/Procfile`:
+`Procfile`:
 
 ```txt
 web: gunicorn app:server
