@@ -124,6 +124,7 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
     """Setup logger with production-ready log rotation and cleanup.
 
     This function sets up a logger with:
+    - Uses LOG_FILE environment variable for file path
     - Automatic log rotation (10MB files, 5 backups)
     - Cleanup of old logs (30 days retention)
     - Appropriate log levels for production
@@ -134,13 +135,21 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
     Returns:
         Configured logger instance
     """
-    log_dir = Path("logs")
-    log_file = log_dir / "casino_calendar.log"
+    # Get log file from environment variable, fallback to default
+    log_file_env = os.getenv("LOG_FILE")
+    if not log_file_env:
+        log_dir = Path("logs")
+        log_file = log_dir / "casino_calendar.log"
+    else:
+        log_file = Path(log_file_env)
+
+    # Ensure log directory exists
+    log_file.parent.mkdir(parents=True, exist_ok=True)
 
     # Clean up old logs (keep last 30 days)
     if cleanup_old_logs:
         try:
-            deleted_count = cleanup_old_logs(str(log_dir), days_to_keep=30)
+            deleted_count = cleanup_old_logs(str(log_file.parent), days_to_keep=30)
             if deleted_count > 0:
                 print(f"Cleaned up {deleted_count} old log files")
         except Exception as e:
