@@ -1,5 +1,7 @@
 # Project Organization Improvements Summary
 
+> **📋 Note**: This document provides historical context about organization improvements made to the project. For current project structure and file organization, see [project_structure.md](project_structure.md).
+
 ## Overview
 
 This document summarizes the structural and organizational improvements made to the Casino Calendar project for better maintainability, clarity, and development workflow.
