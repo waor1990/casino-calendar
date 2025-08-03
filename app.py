@@ -63,10 +63,18 @@ server = app.server
 
 # Run the Dash app
 if __name__ == "__main__":
-    logger.info("Starting Casino Calendar application in development mode")
-    logger.warning("Debug mode is enabled - not suitable for production")
+    # Check environment for debug mode (defaults to False)
+    import os
+    debug_mode = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes', 'on')
+    
+    if debug_mode:
+        logger.info("Starting Casino Calendar application in development mode")
+        logger.warning("Debug mode is enabled - not suitable for production")
+    else:
+        logger.info("Starting Casino Calendar application in production mode")
+    
     try:
-        app.run(debug=True)
+        app.run(debug=debug_mode)
     except KeyboardInterrupt:
         logger.info("Application stopped by user")
     except Exception as e:
