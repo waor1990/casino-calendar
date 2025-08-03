@@ -1,29 +1,66 @@
-# AGENTS Instructions for Casino Event Calendar
+# Casino Calendar - AI Agent Instructions
 
-These guidelines outline how to format code and validate changes for this Dash
-application. See the **Contributing** section in `README.md` for workflow tips
-and a link to the project's Git cheat‑sheet.  Codex agents should keep commits
-atomic, include a clear summary and ensure automated checks run before pushing.
+This is a Dash web application for displaying casino events in a calendar view. The app is designed for Python 3.11 and Node 18.
 
-Directory-specific instructions can be found in
-`app_components/AGENTS.md` and `assets/styles/AGENTS.md`.
+**See `.github/copilot-instructions.md` for comprehensive development guidelines.**
 
-## Key folders
+## Architecture Overview
 
-The repository stores supporting material in dedicated folders:
+The app follows a modular Dash pattern with clear separation of concerns:
 
-- `app_components/`  Python modules including callbacks and utilities
-- `assets/`          Static CSS, JS and other web assets
-- `config/`          Tool configuration files (.flake8, .isort.cfg, etc.)
-- `data/`            CSV event files
-- `docs/`            Project documentation
-  - `archived/`      Completed/historical documentation
-- `scripts/`         Utility scripts
-  - `dev/`           Development and testing tools
-- `tests/`           Test suite
-- `utils/`           Shared utility functions
-- `Procfile`         Heroku deployment configuration
-- `render.yaml`      Render.com deployment configuration
+- **`app.py`** - Entry point that loads data, creates layout, and registers callbacks
+- **`app_components/`** - Core application modules (layout, callbacks, data processing, logging)
+- **`utils/`** - Shared utilities (colors, data parsing, log rotation)
+- **`assets/`** - Static assets with SCSS compilation to CSS
+- **`data/`** - CSV event data and JSON configuration files
+- **`tests/`** - Test suite with pytest fixtures
+- **`tools/`** - User-facing scripts for setup and running
+- **`config/`** - Tool configuration files (.flake8, .isort.cfg, etc.)
+- **`scripts/`** - Utility and maintenance scripts
+- **`docs/`** - Project documentation with archived completed docs
+
+## Development Workflow
+
+### Quick Setup and Running
+
+```cmd
+# Windows (recommended approach)
+tools\setup.bat      # Creates venv, installs dependencies, builds CSS
+tools\run_direct.bat # Launches app with proper environment
+
+# Or use convenience launchers
+setup.bat  # calls tools\setup.bat
+run.bat    # calls tools\run_direct.bat
+```
+
+### VS Code Tasks
+
+Use the predefined tasks for common operations:
+
+- "Run Casino Calendar App" - Background server with logging
+- "Run Tests" - Execute pytest suite
+- "Install Dependencies" - Update Python packages
+
+## Key Patterns
+
+### Data Flow
+
+Events load from `data/casino_events.csv` → `load_event_data()` in `data.py` → UI layout generation → interactive callbacks
+
+### Callback Organization
+
+Callbacks are split by domain and centrally registered:
+
+- `callbacks/events.py` - Modal dialogs and event interactions
+- `callbacks/filters.py` - Casino filtering and date range selection
+- `callbacks/theme.py` - Theme switching functionality
+
+### Logging System
+
+Use `setup_logger(__name__)` in all modules. Control via environment variables:
+
+- `LOG_LEVEL` (DEBUG, INFO, WARNING, ERROR)
+- `LOG_FILE` for optional file output
 
 ## Code style
 
