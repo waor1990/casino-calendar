@@ -170,6 +170,8 @@
     cursor: pointer;
     font-size: inherit;
     font-weight: var(--font-weight-normal);
+    font-family: "Segoe UI", sans-serif;
+    /* Match app font family */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -194,6 +196,10 @@
     line-height: 1.2;
     color: var(--fg);
     font-size: var(--font-small); // Slightly larger font from var(--font-xs)
+    font-weight: var(--font-weight-normal);
+    /* Ensure normal font weight */
+    font-family: "Segoe UI", sans-serif;
+    /* Match app font family */
     /* Slightly larger font size */
     white-space: nowrap;
 }

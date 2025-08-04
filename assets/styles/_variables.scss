@@ -35,7 +35,8 @@
     --color-primary-dark: #00008B;
     --color-accent: #6A5ACD;
     --color-accent-dark: #483D8B;
-    --color-background: #f5f3fa;
+    --color-background: #e8e5f0;
+    /* Darker light mode background */
     --color-white: #ffffff;
     --color-black: #000000;
     --color-accent-light: rgba(106, 90, 205, 0.1);
@@ -155,10 +156,12 @@ body {
 
 /* Dark theme overrides */
 [data-theme="dark"] {
-    --color-background: #3c3c3c;
+    --color-background: #4a4a4a;
+    /* Lighter dark mode background */
     --color-primary-dark: #e0e0e0;
     --color-border-primary: var(--color-primary-dark);
-    --color-border-grid: #555555;
+    --color-border-grid: #666666;
+    /* Slightly lighter for better contrast */
     --color-border-grid-light: rgba(127, 139, 170, 0.6);
     --box-shadow-light: 0 -0.125rem 0.3125rem rgba(0, 0, 0, 0.4);
     --box-shadow-modal: 0 0 1.25rem rgba(255, 255, 255, 0.25);
@@ -200,6 +203,24 @@ body {
 }
 
 [data-theme="dark"] .day-click-area:hover::after {
+    color: var(--color-primary-dark) !important;
+}
+
+/* Additional --color-accent elements that need fixing in dark theme */
+[data-theme="dark"] .day-label-grid {
+    color: var(--color-primary-dark) !important;
+}
+
+[data-theme="dark"] .legend-item {
+    color: var(--color-primary-dark) !important;
+}
+
+[data-theme="dark"] .legend-text {
+    color: var(--color-primary-dark) !important;
+}
+
+[data-theme="dark"] .event-block-day:hover::after {
+    background-color: var(--color-background) !important;
     color: var(--color-primary-dark) !important;
 }
 
