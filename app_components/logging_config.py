@@ -83,47 +83,56 @@ def get_log_level() -> int:
 
 def _suppress_http_logs():
     """Suppress HTTP request/response logs from console output.
-    
+
     This function sets the logging level for common web server loggers
     to WARNING or higher, which prevents GET/POST request logs from
     appearing in the console while keeping them in log files.
-    
+
     Can be controlled by SUPPRESS_HTTP_LOGS environment variable (default: True).
     """
     # Check if HTTP log suppression is enabled (default: True)
-    suppress_enabled = os.getenv("SUPPRESS_HTTP_LOGS", "True").lower() in ("true", "1", "yes", "on")
-    
+    suppress_enabled = os.getenv("SUPPRESS_HTTP_LOGS", "True").lower() in (
+        "true",
+        "1",
+        "yes",
+        "on",
+    )
+
     if not suppress_enabled:
         return  # HTTP logs will be shown normally
-    
+
     # Common loggers that generate HTTP request logs
     http_loggers = [
-        'werkzeug',           # Flask/Dash development server
-        'waitress',           # Production WSGI server
-        'gunicorn.access',    # Gunicorn access logs
-        'uvicorn.access',     # FastAPI/Uvicorn access logs
-        'cherrypy.access',    # CherryPy access logs
+        "werkzeug",  # Flask/Dash development server
+        "waitress",  # Production WSGI server
+        "gunicorn.access",  # Gunicorn access logs
+        "uvicorn.access",  # FastAPI/Uvicorn access logs
+        "cherrypy.access",  # CherryPy access logs
     ]
-    
+
     suppressed_count = 0
     for logger_name in http_loggers:
         http_logger = logging.getLogger(logger_name)
         # Set console level to WARNING to suppress INFO level HTTP logs
         # but still allow ERROR logs through
         http_logger.setLevel(logging.WARNING)
-        
+
         # Remove any existing console handlers to prevent duplicate output
-        console_handlers = [h for h in http_logger.handlers if isinstance(h, logging.StreamHandler)]
+        console_handlers = [
+            h for h in http_logger.handlers if isinstance(h, logging.StreamHandler)
+        ]
         for handler in console_handlers:
             http_logger.removeHandler(handler)
             suppressed_count += 1
-    
+
     # Log suppression status (but not in a loop to avoid noise)
     if suppressed_count > 0:
         # Use print instead of logging to avoid circular dependencies
-        print(f"🔇 HTTP request logs suppressed for console output ({suppressed_count} handlers removed)")
+        print(
+            f"🔇 HTTP request logs suppressed for console output ({suppressed_count} handlers removed)"
+        )
     else:
-        print("🔇 HTTP request logs suppressed (set to WARNING level)")  
+        print("🔇 HTTP request logs suppressed (set to WARNING level)")
 
 
 def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
@@ -193,7 +202,7 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
     """
     # Suppress HTTP request logs from console
     _suppress_http_logs()
-    
+
     # Get log file from environment variable, fallback to default
     log_file_env = os.getenv("LOG_FILE")
     if not log_file_env:
