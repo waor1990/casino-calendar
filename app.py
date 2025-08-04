@@ -4,6 +4,7 @@ from dash import Dash
 # Load environment variables from .env file early
 try:
     from dotenv import load_dotenv
+
     load_dotenv()  # Load .env file before importing other modules
 except ImportError:
     pass
@@ -65,14 +66,15 @@ server = app.server
 if __name__ == "__main__":
     # Check environment for debug mode (defaults to False)
     import os
-    debug_mode = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes', 'on')
-    
+
+    debug_mode = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes", "on")
+
     if debug_mode:
         logger.info("Starting Casino Calendar application in development mode")
         logger.warning("Debug mode is enabled - not suitable for production")
     else:
         logger.info("Starting Casino Calendar application in production mode")
-    
+
     try:
         app.run(debug=debug_mode)
     except KeyboardInterrupt:
