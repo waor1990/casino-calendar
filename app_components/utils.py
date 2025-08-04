@@ -115,6 +115,15 @@ def build_event_info_rows(data: Iterable[tuple[str, Any]]) -> list[Any]:
 
     mapping = dict(data)
     emoji = offer_type_emoji(mapping.get("OfferType", ""))
+    casino_name = mapping.get("Casino", "")
+    
+    # Generate casino-specific CSS class for styling event details in dark theme
+    casino_class = ""
+    if casino_name:
+        # Convert casino name to CSS class format (lowercase, replace spaces/special chars with hyphens)
+        casino_slug = casino_name.lower().replace(" ", "-").replace("'", "").replace("&", "").replace(".", "").replace(",", "")
+        casino_class = f"event-detail-casino-{casino_slug}"
+    
     rows: list[Any] = [
         html.H2(f"{emoji} Promo Info {emoji}", className="event-label-title")
     ]
@@ -143,9 +152,14 @@ def build_event_info_rows(data: Iterable[tuple[str, Any]]) -> list[Any]:
                 except Exception:
                     pass
 
+            # Add casino-specific class to the value span for dark theme styling
+            span_class = casino_class if casino_class else None
             rows.append(
                 html.Div(
-                    [html.Strong(f"{display_label}: "), html.Span(value)],
+                    [
+                        html.Strong(f"{display_label}: "), 
+                        html.Span(value, className=span_class)
+                    ],
                     className="event-label",
                 )
             )
