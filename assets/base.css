@@ -142,87 +142,112 @@ body {
 
 /* Dark theme modal improvements */
 [data-theme="dark"] .modal-close {
-    background-color: var(--color-primary-dark);
-    color: var(--color-background);
+    background-color: var(--color-primary-dark) !important;
+    color: var(--color-background) !important;
 }
 
 /* Change --color-accent text to --color-primary-dark in dark theme */
-[data-theme="dark"] .event-label-title,
-[data-theme="dark"] .day-modal-title,
-[data-theme="dark"] .legend-title,
-[data-theme="dark"] .event-label strong,
-[data-theme="dark"] .no-events,
-[data-theme="dark"] .hour-label,
-[data-theme="dark"] .overflow-toggle,
+[data-theme="dark"] .event-label-title {
+    color: var(--color-primary-dark) !important;
+}
+
+[data-theme="dark"] .day-modal-title {
+    color: var(--color-primary-dark) !important;
+}
+
+[data-theme="dark"] .legend-title {
+    color: var(--color-primary-dark) !important;
+}
+
+[data-theme="dark"] .event-label strong {
+    color: var(--color-primary-dark) !important;
+}
+
+[data-theme="dark"] .no-events {
+    color: var(--color-primary-dark) !important;
+}
+
+[data-theme="dark"] .hour-label {
+    color: var(--color-primary-dark) !important;
+}
+
+[data-theme="dark"] .overflow-toggle {
+    color: var(--color-primary-dark) !important;
+}
+
 [data-theme="dark"] .day-click-area:hover::after {
-    color: var(--color-primary-dark);
+    color: var(--color-primary-dark) !important;
 }
 
 /* Casino-specific event detail colors for dark theme */
 [data-theme="dark"] .event-detail-casino-ilani {
-    color: #2c6f7f;
+    color: #2c6f7f !important;
 }
 
 [data-theme="dark"] .event-detail-casino-spirit-mountain-casino {
-    color: #a74321;
+    color: #a74321 !important;
 }
 
 [data-theme="dark"] .event-detail-casino-lucky-eagle-casino {
-    color: #862c8e;
+    color: #862c8e !important;
 }
 
 [data-theme="dark"] .event-detail-casino-muckleshoot-casino {
-    color: #9e9b9e; /* Lighter color for Muckleshoot since #1e1c29 is too dark */
+    color: #9e9b9e !important;
+    /* Lighter color for Muckleshoot since #1e1c29 is too dark */
 }
 
 [data-theme="dark"] .event-detail-casino-little-creek-casino {
-    color: #3086c3;
+    color: #3086c3 !important;
 }
 
 [data-theme="dark"] .event-detail-casino-red-wind-casino {
-    color: #e13332;
+    color: #e13332 !important;
 }
 
 [data-theme="dark"] .event-detail-casino-snoqualmie-casino {
-    color: #00a9e0;
+    color: #00a9e0 !important;
 }
 
 [data-theme="dark"] .event-detail-casino-angel-of-the-winds-casino {
-    color: #64c7cc;
+    color: #64c7cc !important;
 }
 
 [data-theme="dark"] .event-detail-casino-lucky-dog-casino {
-    color: #f07a22;
+    color: #f07a22 !important;
 }
 
 [data-theme="dark"] .event-detail-casino-legends-casino {
-    color: #ca9a41;
+    color: #ca9a41 !important;
 }
 
 [data-theme="dark"] .event-detail-casino-chinook-winds-casino {
-    color: #5c6166; /* Lighter version of #32373d */
+    color: #5c6166 !important;
+    /* Lighter version of #32373d */
 }
 
 [data-theme="dark"] .event-detail-casino-emerald-queen-casino {
-    color: #d62e52;
+    color: #d62e52 !important;
 }
 
 [data-theme="dark"] .event-detail-casino-rolling-hills-casino {
-    color: #8b4a4b; /* Lighter version of #5b1d1e */
+    color: #8b4a4b !important;
+    /* Lighter version of #5b1d1e */
 }
 
 [data-theme="dark"] .event-detail-casino-wildhorse-casino {
-    color: #d21245;
+    color: #d21245 !important;
 }
 
 [data-theme="dark"] .event-detail-casino-tulalip-casino {
-    color: #155e6d;
+    color: #155e6d !important;
 }
 
 [data-theme="dark"] .event-detail-casino-quil-ceda-creek-casino {
-    color: #c93335; /* Lighter version of #9a0709 */
+    color: #c93335 !important;
+    /* Lighter version of #9a0709 */
 }
 
 [data-theme="dark"] .event-detail-casino-seven-feathers-casino {
-    color: #41c5de;
+    color: #41c5de !important;
 }
