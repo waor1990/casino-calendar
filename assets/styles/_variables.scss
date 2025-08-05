@@ -156,16 +156,41 @@ body {
 
 /* Dark theme overrides */
 [data-theme="dark"] {
+    /* Background and base colors */
     --color-background: #2d2d30;
     /* Standard dark theme background - similar to VS Code dark theme */
     --color-primary-dark: #d4d4d4;
     /* Softer, less harsh than #e0e0e0 */
+
+    /* Override ALL color variables to work with dark theme */
+    --color-accent: #d4d4d4;
+    /* Make accent color readable on dark background */
+    --color-accent-dark: #b8b8b8;
+    /* Slightly darker accent for variety */
+    --color-accent-light: rgba(212, 212, 212, 0.15);
+    /* Light accent for dark theme backgrounds */
+    --color-day-header-text: #d4d4d4;
+    /* Day headers use accent color, so override */
+    --color-day-header-bg: #2d2d30;
+    /* Day header background should match dark theme */
+    --color-black: #d4d4d4;
+    /* Override black to be readable on dark background */
+    --color-white: #2d2d30;
+    /* Flip white to dark background color */
+
+    /* Border and grid colors */
     --color-border-primary: var(--color-primary-dark);
+    --color-border-accent: #d4d4d4;
+    /* Make accent borders readable */
     --color-border-grid: #555555;
     /* Standard dark theme border color */
     --color-border-grid-light: rgba(127, 139, 170, 0.4);
+
+    /* Shadows */
     --box-shadow-light: 0 -0.125rem 0.3125rem rgba(0, 0, 0, 0.5);
     --box-shadow-modal: 0 0 1.25rem rgba(0, 0, 0, 0.7);
+    --box-shadow-subtle: 0 -0.0625rem 0.3125rem rgba(212, 212, 212, 0.3);
+    /* Update subtle shadow for dark theme */
 
     /* Set base text color for dark theme */
     color: var(--color-primary-dark);
@@ -179,57 +204,6 @@ body {
 
 /* Fix modal content text color in dark theme */
 [data-theme="dark"] .modal-content {
-    color: var(--color-primary-dark) !important;
-}
-
-/* Change --color-accent text to --color-primary-dark in dark theme */
-[data-theme="dark"] .event-label-title {
-    color: var(--color-primary-dark) !important;
-}
-
-[data-theme="dark"] .day-modal-title {
-    color: var(--color-primary-dark) !important;
-}
-
-[data-theme="dark"] .legend-title {
-    color: var(--color-primary-dark) !important;
-}
-
-[data-theme="dark"] .event-label strong {
-    color: var(--color-primary-dark) !important;
-}
-
-[data-theme="dark"] .no-events {
-    color: var(--color-primary-dark) !important;
-}
-
-[data-theme="dark"] .hour-label {
-    color: var(--color-primary-dark) !important;
-}
-
-[data-theme="dark"] .overflow-toggle {
-    color: var(--color-primary-dark) !important;
-}
-
-[data-theme="dark"] .day-click-area:hover::after {
-    color: var(--color-primary-dark) !important;
-}
-
-/* Additional --color-accent elements that need fixing in dark theme */
-[data-theme="dark"] .day-label-grid {
-    color: var(--color-primary-dark) !important;
-}
-
-[data-theme="dark"] .legend-item {
-    color: var(--color-primary-dark) !important;
-}
-
-[data-theme="dark"] .legend-text {
-    color: var(--color-primary-dark) !important;
-}
-
-[data-theme="dark"] .event-block-day:hover::after {
-    background-color: var(--color-background) !important;
     color: var(--color-primary-dark) !important;
 }
 
