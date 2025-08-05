@@ -155,6 +155,17 @@
     z-index: 20;
 }
 
+[data-theme="dark"] {
+    .day-click-area:hover {
+        background-color: var(--color-primary-dark);
+    }
+
+    .day-click-area:hover::after {
+        background-color: var(--color-primary-dark);
+        box-shadow: var(--box-shadow-light);
+    }
+}
+
 
 /* 5. Left/Right overflow arrows */
 .event-block-grid.arrow-left::before {

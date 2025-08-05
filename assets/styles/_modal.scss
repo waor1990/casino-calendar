@@ -113,6 +113,20 @@
     pointer-events: none;
 }
 
+[data-theme="dark"] {
+    .modal-close {
+        background-color: var(--color-primary-dark);
+    }
+
+    .modal-content {
+        border: var(--border-thick) solid var(--color-primary-dark);
+    }
+
+    .event-block-day {
+        border: var(--border-event) solid var(--color-primary-dark);
+    }
+}
+
 /* Dynamic sizing for event modal */
 #event-modal-content {
     width: var(--modal-width);
