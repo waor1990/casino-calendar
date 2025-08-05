@@ -36,9 +36,9 @@
     --color-accent: #6A5ACD;
     --color-accent-dark: #483D8B;
     --color-background: #f5f3fa;
-    --color-white: #ffffff;
-    --color-black: #000000;
-    --color-accent-light: rgba(106, 90, 205, 0.1);
+    --color-white: #fff;
+    --color-black: #000;
+    --color-accent-light: rgb(106 90 205 / 10%);
 
     /* Day Header & Week Grid Colors */
     --color-day-header-text: var(--color-accent);
@@ -46,7 +46,7 @@
     --color-border-primary: var(--color-primary-dark);
     --color-border-accent: var(--color-accent);
     --color-border-grid: #7F8BAA;
-    --color-border-grid-light: rgba(127, 139, 170, 0.3);
+    --color-border-grid-light: rgb(127 139 170 / 30%);
 
     /* Borders and shadows */
     --border-radius-lg: 0.625rem;
@@ -74,7 +74,7 @@
     --day-modal-min-width: 18rem;
     --day-modal-max-width-desktop: 70rem;
     --day-modal-max-width-hd: 90rem;
-    --modal-overlay-color: rgba(0, 0, 0, 0.25);
+    --modal-overlay-color: rgb(0 0 0 / 25%);
     --modal-overlay-blur: 0.25rem;
 
     /* Animation distances */
@@ -92,7 +92,7 @@
 }
 
 /* Font and spacing adjustments for small screens */
-@media (max-width: 480px) {
+@media (width <= 480px) {
     :root {
         --font-xxs: 0.35rem;
         --font-xs: 0.45rem;
@@ -105,7 +105,7 @@
 }
 
 /* Slightly larger fonts for landscape phones */
-@media (max-width: 896px) and (orientation: landscape) {
+@media (width <= 896px) and (orientation: landscape) {
     :root {
         --font-xxs: 0.45rem;
         --font-xs: 0.55rem;
