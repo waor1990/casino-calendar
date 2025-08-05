@@ -90,8 +90,7 @@
     min-height: var(--event-row-height);
     padding: var(--padding-small);
     padding-bottom: var(--gap-week);
-    grid-row-start: var(--row);
-    grid-row-end: calc(var(--row) + 1);
+    grid-row: var(--row) / calc(var(--row) + 1);
     grid-column: 1 / -1;
     margin-left: var(--left, 0%);
     width: var(--width, 100%);
@@ -115,7 +114,7 @@
     padding-bottom: 0;
 }
 
-.event-block-grid__text {
+.event-block-grid-text {
     display: block;
     overflow: hidden;
     white-space: nowrap;

@@ -19,10 +19,10 @@
 
 
 .fade-text {
-    animation: fadeChange 1.2s ease-in-out;
+    animation: fade-change 1.2s ease-in-out;
 }
 
-@keyframes fadeChange {
+@keyframes fade-change {
     0% {
         opacity: 0;
         transform: translateY(-5px);
@@ -35,10 +35,10 @@
 }
 
 .slide-in {
-    animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: slide-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-@keyframes slideIn {
+@keyframes slide-in {
     from {
         transform: translateY(var(--slide-distance));
         opacity: 0;
@@ -50,7 +50,7 @@
     }
 }
 
-@keyframes slideOut {
+@keyframes slide-out {
     from {
         transform: translateY(0);
         opacity: 1;
