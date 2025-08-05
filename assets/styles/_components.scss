@@ -238,7 +238,7 @@ h1,
     .day-modal-title,
     .event-label strong,
     .no-events {
-        color: var(--color-primary-dark);
+        color: var(--color-white);
     }
 
     .legend-selected {
@@ -247,16 +247,16 @@ h1,
     }
 
     #hotel-booking-container a {
-        color: var(--color-primary-dark);
+        color: var(--color-white);
         border-color: var(--color-primary-dark);
 
         &:hover {
             background-color: var(--color-primary-dark);
-            color: var(--color-background);
+            color: var(--color-white);
         }
     }
 
     .overflow-toggle {
-        color: var(--color-primary-dark);
+        color: var(--color-white);
     }
 }
