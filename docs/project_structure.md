@@ -73,10 +73,10 @@ Contains the main Dash application logic:
 Auto-loaded by Dash for frontend resources:
 
 - `base.css` - Base CSS styles
-- `style.css` - Compiled main stylesheet
-- `style.scss` - Main SCSS source file
+- `style.css` - **AUTO-GENERATED** compiled stylesheet (**DO NOT EDIT DIRECTLY**)
+- `style.scss` - Main SCSS source file (edit this instead of style.css)
 - `theme-toggle.js` - Theme switching JavaScript
-- `styles/` - SCSS partials and modules
+- `styles/` - SCSS partials and modules (all CSS changes go here)
 
 ### Configuration (`config/`)
 
