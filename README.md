@@ -8,6 +8,14 @@ but are not tested.
 
 ---
 
+## ⚠️ CRITICAL CSS WARNING ⚠️
+
+**🚨 NEVER modify `assets/style.css` directly! It is auto-generated and will be overwritten! 🚨**
+
+**ALL CSS changes must be made in SCSS files in `assets/styles/` directory.** The `style.css` file is automatically compiled from SCSS when the app runs.
+
+---
+
 ## 🚀 Features
 
 - Weekly calendar view with color‑coded event blocks
@@ -88,7 +96,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 scripts/setup/setup.sh           # install Python and Node dependencies
 npm install
-npm run build:css  # compiles assets/style.scss to assets/style.css
+npm run build:css  # compiles assets/style.scss to assets/style.css (DO NOT EDIT style.css directly!)
 npm run lint:css
 pip install -r requirements.txt
 pre-commit install

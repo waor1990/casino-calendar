@@ -89,11 +89,16 @@ These tools are installed via `requirements.txt`.
 
 ### CSS
 
-- Use variables defined in `assets/base.css`.
-- Keep styles modular in `assets/*` and avoid global overrides.
-- Follow a BEM‑like naming style (e.g., `.week-grid`, `.event-block-grid`).
-- Compile SCSS with `npm run build:css` and watch with `npm run watch:css`.
-- Run `npm run lint:css` before committing style changes.
+**⚠️ CRITICAL WARNING: NEVER modify `assets/style.css` directly! It is auto-generated.**
+
+- **ALL CSS changes must be made in SCSS files** in `assets/styles/` directory
+- The `style.css` file is automatically generated and will be overwritten
+- Use variables defined in `_variables.scss` (not `assets/base.css`)
+- Keep styles modular and avoid global overrides
+- Follow a BEM‑like naming style (e.g., `.week-grid`, `.event-block-grid`)
+- Compile SCSS with `npm run build:css` and watch with `npm run watch:css`
+- Run `npm run lint:css` before committing style changes
+- **Remember: Any direct edits to `style.css` will be lost on next build**
 
 ## Programmatic checks
 

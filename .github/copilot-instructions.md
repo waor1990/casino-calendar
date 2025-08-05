@@ -65,10 +65,14 @@ run.bat    # calls tools\run_direct.bat
 
 ### CSS/SCSS Development
 
-- SCSS files in `assets/styles/` compile to `assets/style.css`
+**⚠️ CRITICAL: NEVER modify `assets/style.css` directly! It is auto-generated and will be overwritten.**
+
+- **ALL CSS changes must be made in SCSS files** in `assets/styles/` directory
+- SCSS files compile to `assets/style.css` automatically when the app runs
 - Use `npm run watch:css` for auto-compilation during development
 - Always run `npm run build:css` before committing
 - Follow BEM-like naming (`.week-grid`, `.event-block-grid`)
+- The `style.css` file is generated - any direct edits will be lost
 
 ### Testing and Quality
 
@@ -123,7 +127,10 @@ Use the predefined tasks:
 
 ### Styling Changes
 
-1. Edit SCSS files in `assets/styles/`
+**⚠️ WARNING: Never edit `assets/style.css` directly - it's auto-generated!**
+
+1. Edit SCSS files in `assets/styles/` directory only
 2. Use variables from `_variables.scss` and mixins from `_mixins.scss`
-3. Compile with `npm run build:css`
+3. Compile with `npm run build:css` (happens automatically when app runs)
 4. Test responsive behavior across device sizes
+5. Remember: `style.css` is overwritten on every build - SCSS changes only!
