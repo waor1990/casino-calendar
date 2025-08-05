@@ -1,5 +1,5 @@
-import re
 from pathlib import Path
+import re
 
 
 def test_dark_theme_uses_primary_dark_instead_of_accent():
