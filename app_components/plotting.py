@@ -139,7 +139,11 @@ def generate_day_view_html(
     ).dt.total_seconds() / 60
     events["end_offset_min"] = (events["adj_end"] - day_start).dt.total_seconds() / 60
     events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
-    events = events.sort_values(by=["start_offset_min", "duration_min"])
+
+    # Sort events for display order: start time, then casino, then category (OfferType)
+    events = events.sort_values(
+        by=["start_offset_min", "Casino", "OfferType", "duration_min"]
+    )
 
     # Minimum block height: even extremely short events should remain
     # visible and clickable in the grid. ``min_block_px`` defines the
