@@ -3,7 +3,6 @@ from typing import Any, cast
 
 import pandas as pd
 from dash import html
-
 from utils.colors import get_color
 from utils.data_parsing import prepare_week_events
 
@@ -147,7 +146,7 @@ def render_week_grid(
 
             event_blocks.append(
                 html.Button(
-                    html.Span(text, className="event-block-grid__text"),
+                    html.Span(text, className="event-block-grid-text"),
                     id=button_id,
                     n_clicks=0,
                     className=cls,
