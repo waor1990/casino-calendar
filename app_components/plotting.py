@@ -82,16 +82,24 @@ def generate_day_view_html(
     )
     ongoing_event_ids = set(ongoing_events.index) if not ongoing_events.empty else set()
 
-    # Original overlap logic: event overlaps if end > day_start AND start < day_end
-    # But exclude ongoing events that are shown in the overflow box
-    # AND limit to events that don't start more than 1 day before or end more than 1 day after
+    # Filter events that either start or end on the selected day
+    # Include events that:
+    # 1. End after or at day start AND start before day end (overlap with day)
+    # 2. Are not ongoing events (shown in overflow box)
+    # 3. Don't start too far before or end too far after (reasonable time window)
 
-    # Define time window: events can start up to 1 day before, end up to 1 day after
-    earliest_start = day_start - timedelta(days=1)  # Previous day
-    latest_end = day_end + timedelta(days=1)  # Next day
+    # Define time window: allow events within a reasonable range of the day
+    # This prevents very distant events from cluttering the day view while still
+    # showing events that meaningfully overlap with the selected day
+    earliest_start = day_start - timedelta(
+        days=2
+    )  # Allow events starting up to 2 days before
+    latest_end = day_end + timedelta(days=2)  # Allow events ending up to 2 days after
 
     events = events[
-        (events["EndDate"] > day_start)  # Event ends after day starts
+        (
+            events["EndDate"] >= day_start
+        )  # Event ends at or after day starts (includes boundary)
         & (events["StartDate"] < day_end)  # Event starts before day ends
         & (events["StartDate"] >= earliest_start)  # Event doesn't start too early
         & (events["EndDate"] <= latest_end)  # Event doesn't end too late
