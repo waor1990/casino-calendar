@@ -141,16 +141,30 @@ def generate_day_view_html(
     events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
     events = events.sort_values(by=["start_offset_min", "duration_min"])
 
-    # Ensure a minimum visual height and use it for track calculations
+    # Minimum block height: even extremely short events should remain
+    # visible and clickable in the grid. ``min_block_px`` defines the
+    # absolute pixel height and is converted to minutes so we can extend the
+    # event's *visual* span during layout calculations.
     min_block_px = 16
     min_block_min = min_block_px / hour_height * 60
+
+    # ``visual_end_offset_min`` extends events shorter than the minimum so
+    # track assignment treats them as having at least ``min_block_min``
+    # minutes of duration. This prevents tiny events from being placed in the
+    # same track as overlapping neighbours.
     events["visual_end_offset_min"] = events["end_offset_min"].where(
         events["duration_min"] >= min_block_min,
         events["start_offset_min"] + min_block_min,
     )
+
+    # Clamp the visual end to the end of the day so a late-night event does
+    # not overflow past the 24‑hour grid. The clamped value is used both for
+    # rendering and collision detection.
     events["visual_end_offset_min"] = events["visual_end_offset_min"].clip(
         upper=24 * 60
     )
+
+    # Precompute the adjusted duration which downstream calculations use.
     events["visual_duration_min"] = (
         events["visual_end_offset_min"] - events["start_offset_min"]
     )
@@ -240,8 +254,12 @@ def generate_day_view_html(
     for _, row in events.iterrows():
         top_px = row["start_offset_min"] / 60 * hour_height
         height_px = row["visual_duration_min"] / 60 * hour_height
+        # Mirror the minimum block height used in track assignment so the
+        # rendered element stays consistent with collision logic.
         height_px = max(16, height_px)
         if top_px + height_px > total_height_px:
+            # Clamp the block to the container's bottom edge to avoid
+            # overflow when a short event starts near midnight.
             height_px = total_height_px - top_px
         # Position blocks using proper track-based layout to prevent overlap
         left_pct = label_column_pct + row["overlap_index"] * width_pct
