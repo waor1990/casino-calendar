@@ -5,7 +5,6 @@ from typing import Any, Callable, List, Tuple
 import pandas as pd
 import plotly.graph_objs as go
 from dash import dcc, html
-
 from utils.colors import get_color
 
 from .utils import (
@@ -214,7 +213,7 @@ def generate_day_view_html(
         short_span = row["duration_min"] < 90
 
         if short_span:
-            children = [html.Span(emoji, className="event-block-day_text")]
+            children = [html.Span(emoji, className="event-block-day-text")]
         else:
             # Approximate number of text lines that can fit in the block
             line_height = 18
@@ -228,12 +227,12 @@ def generate_day_view_html(
             ]
 
             lines = [
-                html.Span(v, className="event-block-day_line")
+                html.Span(v, className="event-block-day-line")
                 for v in values[:max_lines]
                 if v
             ]
 
-            children = html.Div(lines, className="event-block-day_text")
+            children = html.Div(lines, className="event-block-day-text")
 
         block_classes = ["event-block-day"]
         if short_span:

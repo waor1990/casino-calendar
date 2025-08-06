@@ -6,7 +6,6 @@ import dash
 from dash import ALL, Input, Output, State, no_update
 from dash._callback import NoUpdate
 from pytz import timezone
-
 from utils.colors import get_color
 from utils.data_parsing import prepare_week_events  # noqa: F401
 
@@ -164,8 +163,13 @@ def register_callbacks(app, df) -> None:
                     row["EventName"] if "EventName" in row.index else "Unknown Event"
                 )
                 logger.info(f"Opening event modal for: {event_name}")
+                colors = get_color()
+                casino_colors = colors.get(
+                    row["Casino"], {"bg": "#000", "text": "#000"}
+                )
                 rows = build_event_info_rows(row.items())
-                return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
+                style = {"--bg": casino_colors["bg"]}
+                return (style, "modal show", rows, 0, {"display": "none"}, "", "")
 
             if (
                 isinstance(triggered_id, dict)

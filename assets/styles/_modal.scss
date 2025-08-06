@@ -4,29 +4,6 @@
 /* Modal Container & Behavior */
 .modal {
     position: fixed;
-    /* top: // Event blocks displayed in the day view modal
-.event-block-day {
-    position: absolute;
-    border: var(--border-event) solid var(--color-border-accent);
-    border-radius: var(--border-radius-sm);
-    box-sizing: border-box;
-    z-index: 10;
-    cursor: pointer;
-    font-size: inherit;
-    font-weight: var(--font-weight-normal);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--padding-xs);
-    margin-left: var(--padding-xxs); // Reduced spacing between blocks
-    overflow: visible;
-    background-color: var(--bg);
-    color: var(--fg);
-    box-shadow: var(--box-shadow-light);
-    white-space: nowrap;
-}
-    transform: translate(-50%, -50%);
-    */
     inset: 0;
     display: flex;
     justify-content: center;
@@ -50,13 +27,10 @@
 .modal.show::before {
     content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    -webkit-backdrop-filter: blur(var(--modal-overlay-blur));
-    backdrop-filter: blur(var(--modal-overlay-blur));
+    inset: 0;
     background-color: var(--modal-overlay-color);
+    /* backdrop-filter: blur(var(--modal-overlay-blur)); */
+    /* Commented out for compatibility */
     z-index: -1;
     pointer-events: none;
 }
@@ -78,6 +52,11 @@
     padding: var(--padding-button);
     border-radius: var(--border-radius-sm);
     cursor: pointer;
+
+    [data-theme="dark"] & {
+        background-color: var(--color-primary-dark);
+        color: var(--color-background);
+    }
 }
 
 /* Base styling for modal cards */
@@ -101,15 +80,19 @@
     transform-origin: center center;
     overflow-y: auto;
 
+    [data-theme="dark"] & {
+        border: var(--border-thick) solid var(--color-primary-dark);
+        color: var(--color-primary-dark);
+    }
 }
 
 .modal.show .modal-content {
-    animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: slide-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     pointer-events: auto;
 }
 
 .modal.closing .modal-content {
-    animation: slideOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: slide-out 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     pointer-events: none;
 }
 
@@ -141,8 +124,7 @@
 }
 
 #day-modal-body {
-    overflow-x: auto;
-    overflow-y: auto;
+    overflow: auto;
     padding: var(--padding-small);
     font-size: inherit;
     flex-grow: 1;
@@ -179,9 +161,14 @@
     background-color: var(--bg);
     color: var(--fg);
     box-shadow: var(--box-shadow-light);
+
+    [data-theme="dark"] & {
+        border: var(--border-event) solid var(--color-primary-dark);
+    }
 }
 
-.event-block-day_text {
+
+.event-block-day-text {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -198,7 +185,7 @@
     white-space: nowrap;
 }
 
-.event-block-day_line {
+.event-block-day-line {
     display: block;
     width: 100%;
     overflow: hidden;
@@ -208,7 +195,7 @@
 }
 
 @include mixins.mobile {
-    .event-block-day_text {
+    .event-block-day-text {
         font-size: var(--font-small); // Keep consistent with base size
     }
 
