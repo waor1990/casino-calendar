@@ -2,7 +2,7 @@
 REM Casino Calendar - Quick Setup Script
 REM Sets up Python virtual environment and installs all dependencies
 
-echo 🎰 Casino Calendar - Setup Script
+echo Casino Calendar - Setup Script
 echo ================================
 
 REM Navigate to project root (parent of tools directory)
@@ -24,7 +24,7 @@ call .\.venv\Scripts\activate.bat
 REM Install Python dependencies
 IF EXIST requirements.txt (
     echo Installing Python dependencies...
-    pip install --upgrade pip
+    python -m pip install --upgrade pip
     pip install -r requirements.txt
     if %ERRORLEVEL% NEQ 0 (
         echo Failed to install Python dependencies
@@ -42,7 +42,7 @@ where npm >nul 2>nul && (
         echo Failed to install Node.js dependencies
         exit /b 1
     )
-    echo ✓ Node.js dependencies installed (CSS will be built when running the app)
+    echo Node.js dependencies installed ^(CSS will be built when running the app^)
 ) || (
     echo Warning: npm not found, skipping Node.js dependencies
 )
@@ -56,7 +56,7 @@ where pre-commit >nul 2>nul && (
 )
 
 echo.
-echo ✅ Setup completed successfully!
+echo Setup completed successfully!
 echo.
 echo To run the application (CSS will be built automatically):
 echo   run_direct.bat
