@@ -54,7 +54,7 @@
 
     [data-theme="dark"] & {
         background-color: var(--color-primary-dark);
-        color: var(--color-white);
+        color: var(--color-primary-dark);
     }
 }
 
@@ -81,7 +81,7 @@
 
     [data-theme="dark"] & {
         border: var(--border-thick) solid var(--color-primary-dark);
-        color: var(--color-white);
+        color: var(--color-primary-dark);
     }
 }
 

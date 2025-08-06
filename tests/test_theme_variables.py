@@ -1,5 +1,5 @@
-from pathlib import Path
 import re
+from pathlib import Path
 
 
 def test_dark_theme_uses_primary_dark_instead_of_accent():
@@ -27,3 +27,9 @@ def test_dark_theme_uses_primary_dark_instead_of_accent():
             if "var(--color-primary-dark)" in block:
                 found_primary = True
     assert found_primary, "no primary dark usage in dark theme blocks"
+
+
+def test_event_detail_span_uses_bg_color():
+    content = Path("assets/styles/_components.scss").read_text(encoding="utf-8")
+    pattern = re.compile(r"\.event-label span\s*{[^}]*color:\s*var\(--bg\)")
+    assert pattern.search(content), "event detail span should use --bg color"

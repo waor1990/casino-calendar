@@ -7,7 +7,10 @@ from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 
-chromedriver_autoinstaller.install()
+try:
+    chromedriver_autoinstaller.install()
+except Exception:
+    pass
 
 
 def _webdriver_available() -> bool:
@@ -33,18 +36,27 @@ def test_accent_elements_switch_to_primary_dark(dash_duo, tmp_path):
                 [
                     html.Button("x", className="modal-close"),
                     html.Div("event", className="event-block-day"),
+                    html.Div(
+                        [
+                            html.Strong("Offer:"),
+                            html.Span("Free", id="event-detail"),
+                        ],
+                        className="event-label",
+                    ),
                 ],
                 className="modal-content",
             ),
             html.Div("Label", className="event-label-title", id="event-label"),
             html.Button("hover", className="day-click-area", id="hover-area"),
-        ]
+        ],
+        style={"--bg": "#123456"},
     )
     dash_duo.start_server(app)
 
     dash_duo.wait_for_element(".modal-close")
     modal_close = dash_duo.find_element(".modal-close")
     event_label = dash_duo.find_element("#event-label")
+    detail_span = dash_duo.find_element("#event-detail")
     event_block = dash_duo.find_element(".event-block-day")
     hover_area = dash_duo.find_element("#hover-area")
 
@@ -64,6 +76,7 @@ def test_accent_elements_switch_to_primary_dark(dash_duo, tmp_path):
     accent_rgb = css_var_to_rgb("--color-accent")
     assert get_color(modal_close, "backgroundColor") == accent_rgb
     assert get_color(event_label, "color") == accent_rgb
+    assert get_color(detail_span, "color") == css_var_to_rgb("--bg")
     assert get_color(event_block, "borderTopColor") == accent_rgb
 
     dash_duo.driver.save_screenshot(str(screenshot_dir / "light.png"))
@@ -74,9 +87,9 @@ def test_accent_elements_switch_to_primary_dark(dash_duo, tmp_path):
     ActionChains(dash_duo.driver).move_to_element(hover_area).perform()
 
     primary_dark_rgb = css_var_to_rgb("--color-primary-dark")
-    white_rgb = css_var_to_rgb("--color-white")
     assert get_color(modal_close, "backgroundColor") == primary_dark_rgb
-    assert get_color(event_label, "color") == white_rgb
+    assert get_color(event_label, "color") == primary_dark_rgb
+    assert get_color(detail_span, "color") == css_var_to_rgb("--bg")
     assert get_color(event_block, "borderTopColor") == primary_dark_rgb
     assert get_color(hover_area, "backgroundColor") == primary_dark_rgb
 

@@ -220,6 +220,10 @@ h1,
     color: var(--color-accent);
 }
 
+.event-label span {
+    color: var(--bg);
+}
+
 // Deprecated: modal event block styles moved to _modal.scss
 
 .no-events {
@@ -238,7 +242,7 @@ h1,
     .day-modal-title,
     .event-label strong,
     .no-events {
-        color: var(--color-white);
+        color: var(--color-primary-dark);
     }
 
     .legend-selected {
@@ -247,16 +251,16 @@ h1,
     }
 
     #hotel-booking-container a {
-        color: var(--color-white);
+        color: var(--color-primary-dark);
         border-color: var(--color-primary-dark);
 
         &:hover {
             background-color: var(--color-primary-dark);
-            color: var(--color-white);
+            color: var(--color-primary-dark);
         }
     }
 
     .overflow-toggle {
-        color: var(--color-white);
+        color: var(--color-primary-dark);
     }
 }

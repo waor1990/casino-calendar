@@ -156,8 +156,8 @@ body {
 /* Dark theme overrides */
 [data-theme="dark"] {
     --color-background: #2d2d30;
-    --color-border-grid: #555555;
-    --color-border-grid-light: rgba(127, 139, 170, 0.6);
-    --box-shadow-light: 0 -0.125rem 0.3125rem rgba(0, 0, 0, 0.4);
-    --box-shadow-modal: 0 0 1.25rem rgba(255, 255, 255, 0.25);
+    --color-border-grid: #555;
+    --color-border-grid-light: rgb(127 139 170 / 0.6);
+    --box-shadow-light: 0 -0.125rem 0.3125rem rgb(0 0 0 / 0.4);
+    --box-shadow-modal: 0 0 1.25rem rgb(255 255 255 / 0.25);
 }
