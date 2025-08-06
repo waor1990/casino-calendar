@@ -28,8 +28,9 @@
     content: "";
     position: fixed;
     inset: 0;
-    backdrop-filter: blur(var(--modal-overlay-blur));
     background-color: var(--modal-overlay-color);
+    /* backdrop-filter: blur(var(--modal-overlay-blur)); */
+    /* Commented out for compatibility */
     z-index: -1;
     pointer-events: none;
 }
@@ -54,7 +55,7 @@
 
     [data-theme="dark"] & {
         background-color: var(--color-primary-dark);
-        color: var(--color-primary-dark);
+        color: var(--color-background);
     }
 }
 

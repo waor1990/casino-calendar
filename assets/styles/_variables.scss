@@ -155,9 +155,57 @@ body {
 
 /* Dark theme overrides */
 [data-theme="dark"] {
+    /* Background */
     --color-background: #2d2d30;
-    --color-border-grid: #555;
-    --color-border-grid-light: rgb(127 139 170 / 0.6);
-    --box-shadow-light: 0 -0.125rem 0.3125rem rgb(0 0 0 / 0.4);
-    --box-shadow-modal: 0 0 1.25rem rgb(255 255 255 / 0.25);
+
+    /* Text colors - professional with more color */
+    --color-primary-dark: #a78bfa;
+    /* Soft purple - more colorful but easy on eyes */
+    --color-accent: #c4b5fd;
+    /* Lighter purple for secondary text */
+    --color-accent-dark: #8b5cf6;
+    /* Deeper purple for emphasis */
+    --color-black: #a78bfa;
+    /* Override black to match primary */
+    --color-white: #2d2d30;
+    /* Use background color for "white" elements */
+    --color-accent-light: rgba(167, 139, 250, 0.15);
+    /* Subtle purple accent background */
+
+    /* Header and border colors */
+    --color-day-header-text: #a78bfa;
+    --color-day-header-bg: #2d2d30;
+    --color-border-primary: #7dd3fc;
+    --color-border-accent: #c4b5fd;
+    --color-border-grid: #7dd3fc;
+    --color-border-grid-light: rgb(125 211 252 / 0.3);
+
+    /* Shadows - light blue-ish */
+    --box-shadow-light: 0 -0.125rem 0.3125rem rgb(125 211 252 / 0.4);
+    --box-shadow-modal: 0 0 1.25rem rgb(125 211 252 / 0.2);
+    --box-shadow-subtle: 0 -0.0625rem 0.3125rem rgba(125, 211, 252, 0.3);
+}
+
+/* Global override to soften casino colors in dark mode */
+[data-theme="dark"] {
+
+    .event-block-grid,
+    .event-block-day {
+        z-index: 25 !important;
+        /* Ensure event blocks sit above grid lines */
+        filter: brightness(0.8) saturate(0.7) !important;
+        /* Soften colors without transparency */
+    }
+
+    /* Lighten Muckleshoot Casino's too-dark color - try multiple formats */
+    .event-block-grid[style*="background-color: rgb(30, 28, 41)"],
+    .event-block-day[style*="background-color: rgb(30, 28, 41)"],
+    .event-block-grid[style*="background-color:#1e1c29"],
+    .event-block-day[style*="background-color:#1e1c29"],
+    .event-block-grid[style*="background-color: #1e1c29"],
+    .event-block-day[style*="background-color: #1e1c29"] {
+        background-color: #4a4458 !important;
+        filter: none !important;
+        /* Remove filter for the lightened color */
+    }
 }
