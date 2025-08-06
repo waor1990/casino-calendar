@@ -141,23 +141,50 @@ def generate_day_view_html(
     events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
     events = events.sort_values(by=["start_offset_min", "duration_min"])
 
-    # Assign tracks dynamically to avoid overlap
-    tracks = []
-    track_assignments = []
+    # Minimum block height: even extremely short events should remain
+    # visible and clickable in the grid. ``min_block_px`` defines the
+    # absolute pixel height and is converted to minutes so we can extend the
+    # event's *visual* span during layout calculations.
+    min_block_px = 16
+    min_block_min = min_block_px / hour_height * 60
+
+    # ``visual_end_offset_min`` extends events shorter than the minimum so
+    # track assignment treats them as having at least ``min_block_min``
+    # minutes of duration. This prevents tiny events from being placed in the
+    # same track as overlapping neighbours.
+    events["visual_end_offset_min"] = events["end_offset_min"].where(
+        events["duration_min"] >= min_block_min,
+        events["start_offset_min"] + min_block_min,
+    )
+
+    # Clamp the visual end to the end of the day so a late-night event does
+    # not overflow past the 24‑hour grid. The clamped value is used both for
+    # rendering and collision detection.
+    events["visual_end_offset_min"] = events["visual_end_offset_min"].clip(
+        upper=24 * 60
+    )
+
+    # Precompute the adjusted duration which downstream calculations use.
+    events["visual_duration_min"] = (
+        events["visual_end_offset_min"] - events["start_offset_min"]
+    )
+
+    # Assign tracks dynamically to avoid overlap using visual duration
+    tracks: list[list[tuple[float, float]]] = []
+    track_assignments: list[int] = []
 
     for _, event in events.iterrows():
         placed = False
+        start = event["start_offset_min"]
+        end = event["visual_end_offset_min"]
         for i, track in enumerate(tracks):
-            if all(
-                event["start_offset_min"] >= t[1] or event["end_offset_min"] <= t[0]
-                for t in track
-            ):
-                track.append((event["start_offset_min"], event["end_offset_min"]))
+            if all(start >= t[1] or end <= t[0] for t in track):
+                track.append((start, end))
                 track_assignments.append(i)
                 placed = True
                 break
         if not placed:
-            tracks.append([(event["start_offset_min"], event["end_offset_min"])])
+            tracks.append([(start, end)])
             track_assignments.append(len(tracks) - 1)
 
     events["overlap_index"] = track_assignments
@@ -179,10 +206,17 @@ def generate_day_view_html(
     width_pct = (100 - label_column_pct) / n_tracks
 
     color_map = get_color_fn()
-    hour_blocks = []
-    hour_lines = []
-    event_blocks = []
-    click_markers = []
+    hour_blocks: list[html.Div] = []
+    hour_lines: list[html.Div] = []
+    event_blocks: list[html.Div] = []
+    click_markers: list[go.Scatter] = []
+
+    track_width_pct = width_pct * 0.9  # leave small margin within track
+    max_track_width = f"{track_width_pct}%"
+    # Approximate track width in rem for width comparisons
+    track_width_rem = grid_min_width * track_width_pct / 100
+    CHAR_REM = 0.55
+    total_height_px = 24 * hour_height
 
     for hour in range(24):
         top_px = hour * hour_height
@@ -219,7 +253,14 @@ def generate_day_view_html(
         )  # Event blocks + invisible click markers
     for _, row in events.iterrows():
         top_px = row["start_offset_min"] / 60 * hour_height
-        height_px = max(16, row["duration_min"] / 60 * hour_height)
+        height_px = row["visual_duration_min"] / 60 * hour_height
+        # Mirror the minimum block height used in track assignment so the
+        # rendered element stays consistent with collision logic.
+        height_px = max(16, height_px)
+        if top_px + height_px > total_height_px:
+            # Clamp the block to the container's bottom edge to avoid
+            # overflow when a short event starts near midnight.
+            height_px = total_height_px - top_px
         # Position blocks using proper track-based layout to prevent overlap
         left_pct = label_column_pct + row["overlap_index"] * width_pct
 
@@ -267,10 +308,6 @@ def generate_day_view_html(
         event_name = str(row["EventName"])
         casino_name = str(row["Casino"])
 
-        # Calculate maximum width based on track allocation (leaving small margin)
-        track_width_pct = width_pct * 0.9  # Use 90% of track to leave margin
-        max_track_width = f"{track_width_pct}%"
-
         # Build the style dictionary with base properties
         style_dict = {
             "top": f"{top_px}px",
@@ -281,31 +318,41 @@ def generate_day_view_html(
         }
 
         if short_span:
-            # For short events, use character-based width when there are few events
-            if len(events) < 5:  # Few events - use character-based width
-                char_width = f"{len(event_name) + 2}ch"
-                style_dict["width"] = "auto"
-                style_dict["minWidth"] = char_width
-                style_dict["maxWidth"] = min(char_width, max_track_width)
+            if len(events) < 5:
+                char_len = len(event_name) + 2
+                char_width_rem = char_len * CHAR_REM
+                if char_width_rem <= track_width_rem:
+                    char_width = f"{char_len}ch"
+                    style_dict["width"] = "auto"
+                    style_dict["minWidth"] = char_width
+                    style_dict["maxWidth"] = char_width
+                else:
+                    style_dict["width"] = max_track_width
+                    style_dict["minWidth"] = max_track_width
+                    style_dict["maxWidth"] = max_track_width
             else:
-                # Many events - use minimal width based on emoji
                 style_dict["width"] = "auto"
-                style_dict["minWidth"] = "2.5rem"
-                style_dict["maxWidth"] = min(
-                    "3rem", max_track_width
-                )  # Constrain to track
+                if track_width_rem < 2.5:
+                    style_dict["minWidth"] = max_track_width
+                    style_dict["maxWidth"] = max_track_width
+                    style_dict["width"] = max_track_width
+                else:
+                    style_dict["minWidth"] = "2.5rem"
+                    style_dict["maxWidth"] = (
+                        max_track_width if track_width_rem < 3 else "3rem"
+                    )
         else:
-            # For longer events, use auto width with both character and track constraints
-            char_min = f"{min(len(event_name), len(casino_name))}ch"
-            char_max = (
-                f"{max(len(event_name), len(casino_name)) + 1}ch"  # Reduced padding
-            )
-
-            style_dict["width"] = "auto"
-            style_dict["minWidth"] = char_min
-            style_dict["maxWidth"] = (
-                f"min({char_max}, {max_track_width})"  # Respect track bounds
-            )
+            char_min_len = min(len(event_name), len(casino_name))
+            char_max_len = max(len(event_name), len(casino_name)) + 1
+            char_max_rem = char_max_len * CHAR_REM
+            if char_max_rem <= track_width_rem:
+                style_dict["width"] = "auto"
+                style_dict["minWidth"] = f"{char_min_len}ch"
+                style_dict["maxWidth"] = f"{char_max_len}ch"
+            else:
+                style_dict["width"] = max_track_width
+                style_dict["minWidth"] = max_track_width
+                style_dict["maxWidth"] = max_track_width
 
         block_kwargs: dict[str, Any] = dict(
             title=row["EventName"],
@@ -352,14 +399,14 @@ def generate_day_view_html(
             layout=go.Layout(
                 clickmode="event+select",
                 xaxis=dict(visible=False, range=[0, 1], fixedrange=True),
-                yaxis=dict(visible=False, range=[0, 24 * hour_height], fixedrange=True),
+                yaxis=dict(visible=False, range=[0, total_height_px], fixedrange=True),
                 margin=dict(l=0, r=0, t=0, b=0),
-                height=24 * hour_height,
+                height=total_height_px,
                 plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)",
             ),
         ),
-        style={"height": f"{24 * hour_height}px"},
+        style={"height": f"{total_height_px}px"},
         config={"displayModeBar": False},
     )
 
@@ -375,7 +422,7 @@ def generate_day_view_html(
             children=hour_blocks + hour_lines + event_blocks + [click_graph],
             className="day-grid",
             style={
-                "height": f"{24 * hour_height}px",
+                "height": f"{total_height_px}px",
                 "minWidth": f"{grid_min_width}rem",
             },
         ),
