@@ -161,22 +161,17 @@ body {
     /* Text colors - professional with more color */
     --color-primary-dark: #a78bfa;
     /* Soft purple - more colorful but easy on eyes */
-    --color-accent: #c4b5fd;
-    /* Lighter purple for secondary text */
-    --color-accent-dark: #8b5cf6;
-    /* Deeper purple for emphasis */
+    --color-primary-light: rgba(167, 139, 250, 0.15);
+    /* Subtle purple accent background */
     --color-black: #a78bfa;
     /* Override black to match primary */
     --color-white: #2d2d30;
     /* Use background color for "white" elements */
-    --color-accent-light: rgba(167, 139, 250, 0.15);
-    /* Subtle purple accent background */
 
     /* Header and border colors */
     --color-day-header-text: #a78bfa;
     --color-day-header-bg: #2d2d30;
     --color-border-primary: #7dd3fc;
-    --color-border-accent: #c4b5fd;
     --color-border-grid: #7dd3fc;
     --color-border-grid-light: rgb(125 211 252 / 0.3);
 

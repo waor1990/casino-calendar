@@ -123,9 +123,17 @@ def generate_day_view_html(
             placeholder_graph,
         ]
 
-    # Time math
-    events["adj_start"] = events["StartDate"].clip(lower=day_start, upper=day_end)
-    events["adj_end"] = events["EndDate"].clip(lower=day_start, upper=day_end)
+    # Time math - clip events to day boundaries
+    events["adj_start"] = events["StartDate"].where(
+        events["StartDate"] >= day_start, day_start
+    )
+    events["adj_start"] = events["adj_start"].where(
+        events["adj_start"] <= day_end, day_end
+    )
+    events["adj_end"] = events["EndDate"].where(
+        events["EndDate"] >= day_start, day_start
+    )
+    events["adj_end"] = events["adj_end"].where(events["adj_end"] <= day_end, day_end)
     events["start_offset_min"] = (
         events["adj_start"] - day_start
     ).dt.total_seconds() / 60
@@ -273,10 +281,19 @@ def generate_day_view_html(
         }
 
         if short_span:
-            # For short events, use minimal width based on emoji
-            style_dict["width"] = "auto"
-            style_dict["minWidth"] = "2.5rem"
-            style_dict["maxWidth"] = min("3rem", max_track_width)  # Constrain to track
+            # For short events, use character-based width when there are few events
+            if len(events) < 5:  # Few events - use character-based width
+                char_width = f"{len(event_name) + 2}ch"
+                style_dict["width"] = "auto"
+                style_dict["minWidth"] = char_width
+                style_dict["maxWidth"] = min(char_width, max_track_width)
+            else:
+                # Many events - use minimal width based on emoji
+                style_dict["width"] = "auto"
+                style_dict["minWidth"] = "2.5rem"
+                style_dict["maxWidth"] = min(
+                    "3rem", max_track_width
+                )  # Constrain to track
         else:
             # For longer events, use auto width with both character and track constraints
             char_min = f"{min(len(event_name), len(casino_name))}ch"
