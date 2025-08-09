@@ -236,8 +236,14 @@ h1,
 }
 
 [data-theme="dark"] {
+
     .legend-title,
     .hour-label,
+    .day-label,
+    .overflow-box {
+        color: var(--color-accent);
+    }
+
     .event-label-title,
     .day-modal-title,
     .event-label strong,
