@@ -37,11 +37,9 @@
 .slide-init {
     opacity: 0 !important;
     transform: translateY(var(--slide-distance)) !important;
-    visibility: hidden;
 }
 
 .slide-in {
-    visibility: visible;
     animation: slide-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
