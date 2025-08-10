@@ -157,6 +157,7 @@ def sticky_header(df):
                             html.Div(
                                 create_legend(df),
                                 className="legend-container slide-init slide-in stagger-3",
+                                style={"opacity": 0},
                             ),
                             # Hotel booking link that appears when a casino is selected
                             html.Div(
@@ -189,20 +190,20 @@ def sticky_header(df):
                     "display": "flex",
                     "justifyContent": "space-between",
                     "paddingBottom": "10px",
-                    "--slide-distance": "2rem",
+                    "--slide-distance": "6rem",
                 },
             ),
             # Week Label and dynamic day headers
             html.Div(
                 id="week-label",
                 className="week-label slide-init slide-in stagger-1",
-                style={"--slide-distance": "2rem"},
+                style={"--slide-distance": "6rem", "opacity": 0},
                 children="",
             ),
             html.Div(
                 id="day-label-row",
                 className="day-label-wrapper slide-init slide-in stagger-2",
-                style={"--slide-distance": "2rem"},
+                style={"--slide-distance": "6rem", "opacity": 0},
             ),
         ],
         className="sticky-header",

@@ -32,6 +32,8 @@
     }
 }
 
+
+// Elements start hidden and translated so they can slide into view
 .slide-init {
     opacity: 0;
     transform: translateY(var(--slide-distance));
@@ -42,15 +44,15 @@
 }
 
 .stagger-1 {
-    animation-delay: 0.2s;
+    animation-delay: 0.5s;
 }
 
 .stagger-2 {
-    animation-delay: 0.4s;
+    animation-delay: 1s;
 }
 
 .stagger-3 {
-    animation-delay: 0.6s;
+    animation-delay: 1.5s;
 }
 
 @keyframes slide-in {

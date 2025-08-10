@@ -265,6 +265,7 @@ def register_callbacks(app, df) -> None:
             children=[grid, overflow_toggle, overflow_box],
             id=f"week-chart-{week_offset}",
             className="slide-init slide-in week-chart-scroll",
+            style={"--slide-distance": "6rem", "opacity": 0},
             **data_attr,
         )
 
@@ -279,27 +280,34 @@ def register_callbacks(app, df) -> None:
     app.clientside_callback(
         """
         function(refresh) {
-            setTimeout(function() {
+            requestAnimationFrame(() => {
                 const container = document.getElementById('week-chart-container');
                 if (!container) { return; }
+
                 const weekLabel = document.getElementById('week-label');
                 if (weekLabel) {
-                    weekLabel.classList.remove('slide-in');
+                    weekLabel.style.opacity = '1';
+                    weekLabel.classList.remove('slide-in', 'slide-init');
                     void weekLabel.offsetWidth;
-                    weekLabel.classList.add('slide-in');
+                    weekLabel.classList.add('slide-init', 'slide-in');
                 }
+
                 const dayRow = document.getElementById('day-label-row');
                 if (dayRow) {
-                    dayRow.classList.remove('slide-in');
+                    dayRow.style.opacity = '1';
+                    dayRow.classList.remove('slide-in', 'slide-init');
                     void dayRow.offsetWidth;
-                    dayRow.classList.add('slide-in');
+                    dayRow.classList.add('slide-init', 'slide-in');
                 }
+
                 const chart = container.querySelector('.week-chart-scroll');
-                if (!chart) { return; }
-                chart.classList.remove('slide-in');
-                void chart.offsetWidth;
-                chart.classList.add('slide-in');
-            }, 0);
+                if (chart) {
+                    chart.style.opacity = '1';
+                    chart.classList.remove('slide-in', 'slide-init');
+                    void chart.offsetWidth;
+                    chart.classList.add('slide-init', 'slide-in');
+                }
+            });
             return '';
         }
         """,
