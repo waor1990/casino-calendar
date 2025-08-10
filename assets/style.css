@@ -1095,7 +1095,7 @@ h1,
 }
 .slide-init {
   opacity: 0 !important;
-  transform: translateY(-2rem) !important;
+  transform: translateY(-1rem) !important;
 }
 
 .slide-in {
@@ -1120,12 +1120,12 @@ h1,
 
 @keyframes slide-in {
   from {
-    transform: translateY(-2rem);
+    transform: translateY(-1rem);
     opacity: 0;
   }
   to {
     transform: translateY(0);
-    opacity: 1;
+    opacity: 1 !important;
   }
 }
 @keyframes slide-out {
