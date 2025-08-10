@@ -76,7 +76,7 @@
     font-size: var(--font-base);
     pointer-events: none;
     opacity: 0;
-    transform: translateY(-1rem);
+    transform: translateY(1rem);
     will-change: transform, opacity;
     transform-origin: center center;
     overflow-y: auto;
