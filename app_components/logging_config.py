@@ -26,7 +26,7 @@ except ImportError:
 
 # Import our custom log rotation utilities
 try:
-    from utils.log_rotation import setup_rotating_logger, cleanup_old_logs
+    from utils.log_rotation import cleanup_old_logs, setup_rotating_logger
 except ImportError:
     # Fallback if utils module not available
     setup_rotating_logger = None
@@ -129,7 +129,8 @@ def _suppress_http_logs():
     if suppressed_count > 0:
         # Use print instead of logging to avoid circular dependencies
         print(
-            f"🔇 HTTP request logs suppressed for console output ({suppressed_count} handlers removed)"
+            "🔇 HTTP request logs suppressed for console output "
+            f"({suppressed_count} handlers removed)"
         )
     else:
         print("🔇 HTTP request logs suppressed (set to WARNING level)")

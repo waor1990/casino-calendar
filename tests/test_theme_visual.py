@@ -74,8 +74,14 @@ def test_accent_elements_switch_to_primary_dark(dash_duo, tmp_path):
 
     def css_var_to_rgb(name):
         return dash_duo.driver.execute_script(
-            "var s=getComputedStyle(document.documentElement).getPropertyValue(arguments[0]).trim();"
-            "var d=document.createElement('div');d.style.color=s;document.body.appendChild(d);"
+            (
+                "var s=getComputedStyle(document.documentElement)"
+                ".getPropertyValue(arguments[0]).trim();"
+            ),
+            (
+                "var d=document.createElement('div');"
+                "d.style.color=s;document.body.appendChild(d);"
+            ),
             "var c=getComputedStyle(d).color;d.remove();return c;",
             name,
         )

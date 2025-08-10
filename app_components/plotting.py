@@ -33,7 +33,8 @@ def get_layout_config(screen_width: int) -> Tuple[int, int]:
     return hour_height, label_column_pct
 
 
-# Generate a responsive 24-hour vertical day view with absolutely positioned event blocks.
+# Generate a responsive 24-hour vertical day view with absolutely
+# positioned event blocks.
 def generate_day_view_html(
     events_df: pd.DataFrame,
     clicked_date: datetime,
@@ -503,7 +504,10 @@ def build_weekly_figure(events_df, screen_width, week_start):
             start_day = max(0, floor(visible_start))
             end_day = min(6, floor(visible_end - 1e-6))
 
-            recurring_key = f"{row['EventName']}|{row['Casino']}|{row['StartDate'].time()}|{row['EndDate'].time()}"
+            recurring_key = (
+                f"{row['EventName']}|{row['Casino']}|"
+                f"{row['StartDate'].time()}|{row['EndDate'].time()}"
+            )
             preferred_row = recurring_rows.get(recurring_key)
             row_assigned = False
 
@@ -563,7 +567,10 @@ def build_weekly_figure(events_df, screen_width, week_start):
                 shapes.append(
                     dict(
                         type="path",
-                        path=f"M 0,{y_center} L{ARROW_OFFSET},{y_center + 0.2} L{ARROW_OFFSET},{y_center - 0.2} Z",
+                        path=(
+                            f"M 0,{y_center} L{ARROW_OFFSET},{y_center + 0.2} "
+                            f"L{ARROW_OFFSET},{y_center - 0.2} Z"
+                        ),
                         fillcolor="black",
                         line=dict(color="black", width=1),
                         layer="above",
@@ -574,7 +581,10 @@ def build_weekly_figure(events_df, screen_width, week_start):
                 shapes.append(
                     dict(
                         type="path",
-                        path=f"M 7,{y_center} L{7 - ARROW_OFFSET},{y_center + 0.2} L{7 - ARROW_OFFSET},{y_center - 0.2} Z",
+                        path=(
+                            f"M 7,{y_center} L{7 - ARROW_OFFSET},{y_center + 0.2} "
+                            f"L{7 - ARROW_OFFSET},{y_center - 0.2} Z"
+                        ),
                         fillcolor="black",
                         line=dict(color="black", width=1),
                         layer="above",
@@ -643,7 +653,10 @@ def build_weekly_figure(events_df, screen_width, week_start):
                 tickmode="array",
                 tickvals=[i + 0.5 for i in range(7)],
                 ticktext=[
-                    f"<b style='color:#00008B;font-size:{event_font_size_px}px'>{label}</b>"
+                    (
+                        "<b style='color:#00008B;font-size:"
+                        f"{event_font_size_px}px'>{label}</b>"
+                    )
                     for label in tick_labels
                 ],
                 side="top",

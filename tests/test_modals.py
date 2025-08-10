@@ -2,10 +2,9 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
-from dash import Dash
-
 from app_components.callbacks import register_callbacks
 from app_components.utils import to_naive_utc
+from dash import Dash
 from utils import data_parsing
 
 
@@ -28,9 +27,12 @@ def _create_app(casino: str):
     )
     app = Dash(__name__)
     register_callbacks(app, df)
-    key = (
-        "..event-modal.style...event-modal.className...event-modal-body.children"
-        "...close-timer.n_intervals...day-modal.style...day-modal.className...day-modal-body.children.."
+    key = "".join(
+        [
+            "..event-modal.style...event-modal.className...event-modal-body.children",
+            "...close-timer.n_intervals...day-modal.style...day-modal.className...",
+            "day-modal-body.children..",
+        ]
     )
     func = app.callback_map[key]["callback"].__wrapped__
     return func

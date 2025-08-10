@@ -2,8 +2,8 @@
 """
 Simple test script to verify the Casino Calendar application can be imported and run.
 """
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add the project root to the Python path
