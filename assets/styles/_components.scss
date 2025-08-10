@@ -236,6 +236,7 @@ h1,
 }
 
 [data-theme="dark"] {
+
     .legend-title,
     .hour-label,
     .event-label-title,
@@ -262,10 +263,14 @@ h1,
 
     .legend-text[style*="color:#1e1c29"],
     .legend-text[style*="color: #1e1c29"],
+    .legend-text[style*="color:rgb(30, 28, 41)"],
+    .legend-text[style*="color: rgb(30, 28, 41)"],
     .legend-text[style*="color:rgb(30 28 41)"],
     .legend-text[style*="color: rgb(30 28 41)"],
     #event-modal[style*="--bg:#1e1c29"] .event-label span,
     #event-modal[style*="--bg: #1e1c29"] .event-label span,
+    #event-modal[style*="--bg:rgb(30, 28, 41)"] .event-label span,
+    #event-modal[style*="--bg: rgb(30, 28, 41)"] .event-label span,
     #event-modal[style*="--bg:rgb(30 28 41)"] .event-label span,
     #event-modal[style*="--bg: rgb(30 28 41)"] .event-label span {
         color: rgb(166 161 193) !important;

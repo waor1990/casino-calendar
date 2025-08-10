@@ -132,7 +132,8 @@ body {
 
 [data-theme="dark"] {
     --color-background: #3c3c3c;
-    --color-primary-dark: #e0e0e0;
+    --color-primary-dark: #6a5acd;
+    --color-accent: #a78bfa;
     --color-border-primary: var(--color-primary-dark);
     --color-border-grid: #555555;
     --color-border-grid-light: rgba(127, 139, 170, 0.6);
