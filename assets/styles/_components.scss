@@ -237,7 +237,6 @@ h1,
 
 [data-theme="dark"] {
 
-    .legend-title,
     .hour-label,
     .event-label-title,
     .day-modal-title,
@@ -261,6 +260,7 @@ h1,
         }
     }
 
+    // Override Muckleshoot Casino text color for better contrast in dark theme
     .legend-text[style*="color:#1e1c29"],
     .legend-text[style*="color: #1e1c29"],
     .legend-text[style*="color:rgb(30, 28, 41)"],
@@ -277,6 +277,6 @@ h1,
     }
 
     .overflow-toggle {
-        color: var(--color-primary-dark);
+        color: var(--color-accent);
     }
 }
