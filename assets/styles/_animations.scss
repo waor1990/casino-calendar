@@ -33,11 +33,11 @@
 }
 
 
-// Elements start hidden and translated so they can slide into view
-.slide-init {
-    opacity: 0;
-    transform: translateY(-1rem);
-}
+// Animation classes temporarily disabled for testing
+// .slide-init {
+//     opacity: 0;
+//     transform: translateY(-1rem);
+// }
 
 .slide-in {
     animation: slide-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
