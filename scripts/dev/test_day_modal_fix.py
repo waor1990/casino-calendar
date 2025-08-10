@@ -2,8 +2,9 @@
 """
 Quick test script to verify the day modal improvements.
 """
-import pandas as pd
 from datetime import datetime
+
+import pandas as pd
 from app_components.plotting import generate_day_view_html
 from utils.colors import get_color
 

@@ -236,11 +236,10 @@ h1,
 }
 
 [data-theme="dark"] {
-
     .hour-label,
     .day-label,
     .overflow-box {
-        color: var(--color-accent);
+        color: var(--color-primary-dark);
     }
 
     .event-label-title,

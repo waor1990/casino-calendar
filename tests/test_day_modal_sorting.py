@@ -3,8 +3,9 @@
 Test the sorting logic for event blocks in the day modal.
 """
 
-import pandas as pd
 from datetime import datetime
+
+import pandas as pd
 from app_components.plotting import generate_day_view_html
 from utils.colors import get_color
 
@@ -44,7 +45,8 @@ def test_day_modal_sorting():
             {
                 "EventName": "Same Casino Different Category 1",
                 "Casino": "Casino A",
-                "OfferType": "Free-Play",  # Should come before Point-Based alphabetically
+                "OfferType": "Free-Play",
+                # Should come before Point-Based alphabetically
                 "Offer": "Same casino category 1",
                 "StartDate": pd.Timestamp("2025-08-06 14:00:00"),  # 2 PM
                 "EndDate": pd.Timestamp("2025-08-06 16:00:00"),

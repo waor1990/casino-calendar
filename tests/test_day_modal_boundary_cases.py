@@ -2,12 +2,12 @@
 """
 Test script to verify day modal logic includes all boundary cases.
 """
-import pandas as pd
 from datetime import datetime, timedelta
 
+import pandas as pd
 from app_components.plotting import generate_day_view_html
-from utils.colors import get_color
 from app_components.utils import to_naive_utc
+from utils.colors import get_color
 
 
 def test_day_modal_boundary_cases():
@@ -94,7 +94,6 @@ def test_day_modal_boundary_cases():
     # Check that we generated the expected elements
     assert len(result) >= 2, "Should generate header and grid elements"
 
-    header = result[0]
     grid = result[1]
 
     # Check that we have the grid with event blocks
@@ -162,10 +161,12 @@ def test_day_modal_midnight_boundary_edge_case():
         and "event-block-day" in child.className
     ]
 
-    # Event ending exactly at midnight SHOULD be included (boundary is inclusive with >= operator)
-    assert (
-        len(event_blocks) == 1
-    ), f"Event ending exactly at midnight should be included with >= boundary, got {len(event_blocks)} events"
+    # Event ending exactly at midnight SHOULD be included
+    # boundary is inclusive with >= operator
+    assert len(event_blocks) == 1, (
+        "Event ending exactly at midnight should be included with >= boundary, "
+        f"got {len(event_blocks)} events"
+    )
 
 
 def test_day_modal_midnight_boundary_inclusive_case():
@@ -203,6 +204,7 @@ def test_day_modal_midnight_boundary_inclusive_case():
     ]
 
     # Event ending 1 minute into the day should be included
-    assert (
-        len(event_blocks) == 1
-    ), f"Event ending just after midnight should be included, got {len(event_blocks)} events"
+    assert len(event_blocks) == 1, (
+        "Event ending just after midnight should be included, "
+        f"got {len(event_blocks)} events"
+    )

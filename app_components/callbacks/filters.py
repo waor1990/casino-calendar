@@ -1,10 +1,10 @@
 import json
-import time
 from datetime import datetime, timedelta
 from typing import Any, Tuple, cast
 from uuid import uuid4
 
 import dash
+import pandas as pd
 from dash import ALL, Input, Output, State, html
 from pytz import timezone
 
@@ -223,10 +223,13 @@ def register_callbacks(app, df) -> None:
             week_start_pdt = to_pdt(week_start)
             week_end_pdt = to_pdt(week_end)
             is_open = bool(selected_casinos)
+            week_range = (
+                f"{week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
+            )
             toggle_text = (
-                f"\U0001f300 Hide Ongoing Events for {week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
+                f"\U0001f300 Hide Ongoing Events for {week_range}"
                 if is_open
-                else f"\U0001f300 Show Ongoing Events for {week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
+                else f"\U0001f300 Show Ongoing Events for {week_range}"
             )
             overflow_toggle = html.Button(
                 toggle_text,
@@ -234,6 +237,13 @@ def register_callbacks(app, df) -> None:
                 n_clicks=1 if is_open else 0,
                 className="overflow-toggle",
             )
+
+            def _format_overflow_item(row: pd.Series) -> html.Li:
+                start = to_pdt(cast(datetime, row["StartDate"])).strftime("%b %d")
+                end = to_pdt(cast(datetime, row["EndDate"])).strftime("%b %d")
+                text = f"{row['EventName']} ({row['Casino']}) - {start} to {end}"
+                return html.Li(text, style={"color": "#00008B"})
+
             overflow_box = html.Div(
                 id="overflow-box",
                 className="overflow-box-expand" + (" show" if is_open else ""),
@@ -245,12 +255,7 @@ def register_callbacks(app, df) -> None:
                     ),
                     html.Ul(
                         [
-                            html.Li(
-                                f"{row['EventName']} ({row['Casino']}) - "
-                                f"{to_pdt(cast(datetime, row['StartDate'])).strftime('%b %d')} to "
-                                f"{to_pdt(cast(datetime, row['EndDate'])).strftime('%b %d')}",
-                                style={"color": "#00008B"},
-                            )
+                            _format_overflow_item(row)
                             for _, row in overflow_df.iterrows()
                         ]
                     ),

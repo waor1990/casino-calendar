@@ -1,7 +1,7 @@
 import plotly.graph_objs as go
 from dash import dcc, html
-
 from utils.colors import get_color
+
 from .logging_config import setup_logger
 
 # Initialize module logger
@@ -35,7 +35,9 @@ def create_layout(app, df):
                                     color="#6A5ACD",
                                     children=html.Div(
                                         id="week-chart-container",
-                                        className="week-gap section-margin calendar-content",
+                                        className=(
+                                            "week-gap section-margin calendar-content"
+                                        ),
                                     ),
                                 ),
                             ],
