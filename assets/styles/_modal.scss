@@ -1,4 +1,4 @@
-@use 'mixins' as mixins;
+@use "mixins" as mixins;
 
 /* Modal windows and transitions */
 /* Modal Container & Behavior */
@@ -142,7 +142,7 @@
     border-radius: var(--border-radius-sm);
 }
 
-// Event blocks displayed in the day view modal
+/* Event blocks displayed in the day view modal */
 .event-block-day {
     position: absolute;
     border: var(--border-event) solid var(--color-border-accent);
@@ -156,7 +156,7 @@
     align-items: center;
     justify-content: center;
     padding: var(--padding-xs);
-    margin-right: var(--padding-xxs); // Small margin for minimal spacing
+    margin-right: var(--padding-xxs);
     overflow: visible;
     background-color: var(--bg);
     color: var(--fg);
@@ -173,14 +173,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0; // Remove gap to eliminate internal spacing
+    gap: 0;
     width: auto;
     height: 100%;
     overflow: hidden;
     text-align: center;
     line-height: 1.2;
     color: var(--fg);
-    font-size: var(--font-small); // Slightly larger font from var(--font-xs)
+    font-size: var(--font-small);
     /* Slightly larger font size */
     white-space: nowrap;
 }
@@ -191,16 +191,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    margin: 0; // Remove bottom margin to eliminate line spacing
+    margin: 0;
 }
 
 @include mixins.mobile {
     .event-block-day-text {
-        font-size: var(--font-small); // Keep consistent with base size
+        font-size: var(--font-small);
+        /* Keep consistent with base size */
     }
 
     .event-block-day {
-        margin-right: var(--padding-xxs); // Small margin on mobile too
+        margin-right: var(--padding-xxs);
+        /* Small margin on mobile too */
     }
 }
 
