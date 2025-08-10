@@ -159,12 +159,14 @@ body {
     --color-background: #2d2d30;
 
     /* Text colors - professional with more color */
-    --color-primary-dark: #a78bfa;
-    /* Soft purple - more colorful but easy on eyes */
-    --color-primary-light: rgba(167, 139, 250, 0.15);
-    /* Subtle purple accent background */
+    --color-primary-dark: #6a5acd;
+    /* SlateBlue for primary elements */
+    --color-accent: #a78bfa;
+    /* Light purple for accent elements */
+    --color-primary-light: rgba(106, 90, 205, 0.15);
+    /* Subtle accent background */
     --color-black: #a78bfa;
-    /* Override black to match primary */
+    /* Override black to match accent */
     --color-white: #2d2d30;
     /* Use background color for "white" elements */
 
