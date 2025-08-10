@@ -2,11 +2,10 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
-from dash import Dash
-from freezegun import freeze_time
-
 from app_components.callbacks import register_callbacks
 from app_components.utils import to_naive_utc
+from dash import Dash
+from freezegun import freeze_time
 
 
 class DummyCtx:
@@ -40,7 +39,10 @@ def test_update_week_offset_next(monkeypatch, casino):
     app = Dash(__name__)
     register_callbacks(app, df)
     func = app.callback_map[
-        "..week-offset.data...prev-button.disabled...next-button.disabled...next-button.title.."
+        (
+            "..week-offset.data...prev-button.disabled...next-button.disabled..."
+            "next-button.title.."
+        )
     ]["callback"].__wrapped__
 
     monkeypatch.setattr("dash.callback_context", DummyCtx("next-button"), raising=False)
@@ -68,7 +70,10 @@ def test_update_week_offset_no_next(monkeypatch, casino):
     app = Dash(__name__)
     register_callbacks(app, df)
     func = app.callback_map[
-        "..week-offset.data...prev-button.disabled...next-button.disabled...next-button.title.."
+        (
+            "..week-offset.data...prev-button.disabled...next-button.disabled..."
+            "next-button.title.."
+        )
     ]["callback"].__wrapped__
 
     monkeypatch.setattr("dash.callback_context", DummyCtx("next-button"), raising=False)

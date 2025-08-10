@@ -1,8 +1,7 @@
 import pandas as pd
+from app_components.callbacks import register_callbacks
 from dash import Dash
 from freezegun import freeze_time
-
-from app_components.callbacks import register_callbacks
 
 
 @freeze_time("2025-04-15")

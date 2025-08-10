@@ -9,7 +9,6 @@ body {
 }
 
 @include mixins.mobile {
-
     html,
     body {
         height: auto;
@@ -113,7 +112,7 @@ body {
     }
 
     // Disable sticky header for landscape phones //
-    @media (max-width: 896px) and (orientation: landscape) {
+    @media (width <= 896px) and (orientation: landscape) {
         position: static;
     }
 }

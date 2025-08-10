@@ -1,4 +1,5 @@
 import time
+
 from dash import Dash
 
 # Load environment variables from .env file early
