@@ -265,7 +265,6 @@ def register_callbacks(app, df) -> None:
             children=[grid, overflow_toggle, overflow_box],
             id=f"week-chart-{week_offset}",
             className="slide-init slide-in stagger-4 week-chart-scroll",
-            style={"--slide-distance": "8rem"},
             **data_attr,
         )
 
