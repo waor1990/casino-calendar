@@ -264,7 +264,7 @@ def register_callbacks(app, df) -> None:
         chart = html.Div(
             children=[grid, overflow_toggle, overflow_box],
             id=f"week-chart-{week_offset}",
-            className="slide-in week-chart-scroll",
+            className="slide-init slide-in week-chart-scroll",
             **data_attr,
         )
 
