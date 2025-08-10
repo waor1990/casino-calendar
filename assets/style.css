@@ -143,12 +143,14 @@ body {
   /* Background */
   --color-background: #2d2d30;
   /* Text colors - professional with more color */
-  --color-primary-dark: #a78bfa;
-  /* Soft purple - more colorful but easy on eyes */
-  --color-primary-light: rgba(167, 139, 250, 0.15);
-  /* Subtle purple accent background */
+  --color-primary-dark: #6a5acd;
+  /* SlateBlue for primary elements */
+  --color-accent: #a78bfa;
+  /* Light purple for accent elements */
+  --color-primary-light: rgba(106, 90, 205, 0.15);
+  /* Subtle accent background */
   --color-black: #a78bfa;
-  /* Override black to match primary */
+  /* Override black to match accent */
   --color-white: #2d2d30;
   /* Use background color for "white" elements */
   /* Header and border colors */
@@ -528,7 +530,6 @@ h1,
   z-index: 5;
 }
 
-[data-theme=dark] .legend-title,
 [data-theme=dark] .hour-label,
 [data-theme=dark] .day-label,
 [data-theme=dark] .overflow-box {
@@ -552,8 +553,22 @@ h1,
   background-color: var(--color-primary-dark);
   color: var(--color-primary-dark);
 }
+[data-theme=dark] .legend-text[style*="color:#1e1c29"],
+[data-theme=dark] .legend-text[style*="color: #1e1c29"],
+[data-theme=dark] .legend-text[style*="color:rgb(30, 28, 41)"],
+[data-theme=dark] .legend-text[style*="color: rgb(30, 28, 41)"],
+[data-theme=dark] .legend-text[style*="color:rgb(30 28 41)"],
+[data-theme=dark] .legend-text[style*="color: rgb(30 28 41)"],
+[data-theme=dark] #event-modal[style*="--bg:#1e1c29"] .event-label span,
+[data-theme=dark] #event-modal[style*="--bg: #1e1c29"] .event-label span,
+[data-theme=dark] #event-modal[style*="--bg:rgb(30, 28, 41)"] .event-label span,
+[data-theme=dark] #event-modal[style*="--bg: rgb(30, 28, 41)"] .event-label span,
+[data-theme=dark] #event-modal[style*="--bg:rgb(30 28 41)"] .event-label span,
+[data-theme=dark] #event-modal[style*="--bg: rgb(30 28 41)"] .event-label span {
+  color: rgb(166, 161, 193) !important;
+}
 [data-theme=dark] .overflow-toggle {
-  color: var(--color-primary-dark);
+  color: var(--color-accent);
 }
 
 /* Calendar week grid layout */
