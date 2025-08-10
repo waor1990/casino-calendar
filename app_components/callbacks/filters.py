@@ -282,6 +282,18 @@ def register_callbacks(app, df) -> None:
             setTimeout(function() {
                 const container = document.getElementById('week-chart-container');
                 if (!container) { return; }
+                const weekLabel = document.getElementById('week-label');
+                if (weekLabel) {
+                    weekLabel.classList.remove('slide-in');
+                    void weekLabel.offsetWidth;
+                    weekLabel.classList.add('slide-in');
+                }
+                const dayRow = document.getElementById('day-label-row');
+                if (dayRow) {
+                    dayRow.classList.remove('slide-in');
+                    void dayRow.offsetWidth;
+                    dayRow.classList.add('slide-in');
+                }
                 const chart = container.querySelector('.week-chart-scroll');
                 if (!chart) { return; }
                 chart.classList.remove('slide-in');
