@@ -36,8 +36,14 @@
         "PYTHONPATH": "${workspaceFolder}",
         "PROJECT_ROOT": "${workspaceFolder}"
     },
+    "terminal.integrated.scrollback": 10000,
+    "terminal.integrated.smoothScrolling": true,
+    "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.shellIntegration.enabled": true,
     "terminal.integrated.shellIntegration.showWelcome": false,
+    "terminal.integrated.shellIntegration.decorationsEnabled": "both",
+    "terminal.integrated.shellIntegration.history": 100,
+    "terminal.integrated.enableMultiLinePasteWarning": "never",
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
