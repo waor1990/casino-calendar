@@ -264,8 +264,8 @@ def register_callbacks(app, df) -> None:
         chart = html.Div(
             children=[grid, overflow_toggle, overflow_box],
             id=f"week-chart-{week_offset}",
-            className="slide-init slide-in week-chart-scroll",
-            style={"--slide-distance": "6rem", "opacity": 0},
+            className="slide-init slide-in stagger-4 week-chart-scroll",
+            style={"--slide-distance": "8rem"},
             **data_attr,
         )
 
@@ -286,7 +286,6 @@ def register_callbacks(app, df) -> None:
 
                 const weekLabel = document.getElementById('week-label');
                 if (weekLabel) {
-                    weekLabel.style.opacity = '1';
                     weekLabel.classList.remove('slide-in', 'slide-init');
                     void weekLabel.offsetWidth;
                     weekLabel.classList.add('slide-init', 'slide-in');
@@ -294,15 +293,20 @@ def register_callbacks(app, df) -> None:
 
                 const dayRow = document.getElementById('day-label-row');
                 if (dayRow) {
-                    dayRow.style.opacity = '1';
                     dayRow.classList.remove('slide-in', 'slide-init');
                     void dayRow.offsetWidth;
                     dayRow.classList.add('slide-init', 'slide-in');
                 }
 
+                const legendContainer = document.querySelector('.legend-container.slide-init');
+                if (legendContainer) {
+                    legendContainer.classList.remove('slide-in', 'slide-init');
+                    void legendContainer.offsetWidth;
+                    legendContainer.classList.add('slide-init', 'slide-in');
+                }
+
                 const chart = container.querySelector('.week-chart-scroll');
                 if (chart) {
-                    chart.style.opacity = '1';
                     chart.classList.remove('slide-in', 'slide-init');
                     void chart.offsetWidth;
                     chart.classList.add('slide-init', 'slide-in');
