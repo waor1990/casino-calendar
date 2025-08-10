@@ -156,7 +156,7 @@ def sticky_header(df):
                             ),
                             html.Div(
                                 create_legend(df),
-                                className="legend-container slide-init slide-in stagger-3",
+                                className="legend-container",
                                 style={"--slide-distance": "4rem"},
                             ),
                             # Hotel booking link that appears when a casino is selected
