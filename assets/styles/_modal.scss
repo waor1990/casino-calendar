@@ -76,6 +76,7 @@
     font-size: var(--font-base);
     pointer-events: none;
     opacity: 0;
+    transform: translateY(-1rem);
     will-change: transform, opacity;
     transform-origin: center center;
     overflow-y: auto;
@@ -89,6 +90,7 @@
 .modal.show .modal-content {
     animation: slide-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     pointer-events: auto;
+    opacity: 1 !important;
 }
 
 .modal.closing .modal-content {
