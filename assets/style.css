@@ -1094,8 +1094,8 @@ h1,
   }
 }
 .slide-init {
-  opacity: 0;
-  transform: translateY(var(--slide-distance));
+  opacity: 0 !important;
+  transform: translateY(-2rem) !important;
 }
 
 .slide-in {
@@ -1103,20 +1103,24 @@ h1,
 }
 
 .stagger-1 {
-  animation-delay: 0.5s;
+  animation-delay: 0.8s;
 }
 
 .stagger-2 {
-  animation-delay: 1s;
+  animation-delay: 1.6s;
 }
 
 .stagger-3 {
-  animation-delay: 1.5s;
+  animation-delay: 2.4s;
+}
+
+.stagger-4 {
+  animation-delay: 3.2s;
 }
 
 @keyframes slide-in {
   from {
-    transform: translateY(var(--slide-distance));
+    transform: translateY(-2rem);
     opacity: 0;
   }
   to {
