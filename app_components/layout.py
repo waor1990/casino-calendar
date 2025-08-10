@@ -139,7 +139,7 @@ def sticky_header(df):
             # Navigation & Legend
             html.Div(
                 id="header-container",
-                className="legend-container",
+                className="legend-container slide-in stagger-3",
                 children=[
                     html.Button(
                         "🎲",
@@ -186,11 +186,21 @@ def sticky_header(df):
                     "display": "flex",
                     "justifyContent": "space-between",
                     "paddingBottom": "10px",
+                    "--slide-distance": "1rem",
                 },
             ),
             # Week Label and dynamic day headers
-            html.Div(id="week-label", className="fade-text week-label", children=""),
-            html.Div(id="day-label-row", className="day-label-wrapper"),
+            html.Div(
+                id="week-label",
+                className="week-label slide-in stagger-1",
+                style={"--slide-distance": "1rem"},
+                children="",
+            ),
+            html.Div(
+                id="day-label-row",
+                className="day-label-wrapper slide-in stagger-2",
+                style={"--slide-distance": "1rem"},
+            ),
         ],
         className="sticky-header",
     )
