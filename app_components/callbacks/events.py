@@ -43,10 +43,13 @@ def register_callbacks(app, df) -> None:
 
             box_class = "overflow-box-expand show" if is_open else "overflow-box-expand"
 
+            date_range = (
+                f"{start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+            )
             button_text = (
-                f"\U0001f300 Hide Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+                f"\U0001f300 Hide Ongoing Events for {date_range}"
                 if is_open
-                else f"\U0001f300 Show Ongoing Events for {start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+                else f"\U0001f300 Show Ongoing Events for {date_range}"
             )
 
             logger.debug(f"Overflow toggled: is_open={is_open}, class={box_class}")
@@ -210,7 +213,8 @@ def register_callbacks(app, df) -> None:
                     df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
                 )
                 logger.debug(
-                    f"Filtered events to {len(filtered)} items based on selected casinos"
+                    "Filtered events to %d items based on selected casinos",
+                    len(filtered),
                 )
 
                 content = generate_day_view_html(
@@ -258,7 +262,8 @@ def register_callbacks(app, df) -> None:
                     clicked_date = week_start + timedelta(days=day_index)
 
                     logger.info(
-                        f"Opening day modal for day index {day_index}: {clicked_date.strftime('%Y-%m-%d')}"
+                        f"Opening day modal for day index {day_index}: "
+                        f"{clicked_date.strftime('%Y-%m-%d')}"
                     )
 
                     filtered = (
@@ -292,7 +297,8 @@ def register_callbacks(app, df) -> None:
                     ]
                 ):
                     logger.info(
-                        f"Opening event modal for: {data.get('EventName', 'Unknown Event')}"
+                        f"Opening event modal for: "
+                        f"{data.get('EventName', 'Unknown Event')}"
                     )
                     rows = build_event_info_rows(data.items())
                     return ({}, "modal show", rows, 0, {"display": "none"}, "", "")
@@ -300,7 +306,8 @@ def register_callbacks(app, df) -> None:
             logger.debug("No valid trigger found, preventing update")
             end_time = time.time()
             logger.debug(
-                f"show_event_modal callback completed in {end_time - start_time:.3f}s (PreventUpdate)"
+                f"show_event_modal callback completed in "
+                f"{end_time - start_time:.3f}s (PreventUpdate)"
             )
             raise dash.exceptions.PreventUpdate
 
@@ -308,7 +315,8 @@ def register_callbacks(app, df) -> None:
             # PreventUpdate is expected behavior, not an error - just re-raise it
             end_time = time.time()
             logger.debug(
-                f"show_event_modal callback completed in {end_time - start_time:.3f}s (PreventUpdate)"
+                f"show_event_modal callback completed in "
+                f"{end_time - start_time:.3f}s (PreventUpdate)"
             )
             raise
         except Exception as e:
@@ -316,7 +324,8 @@ def register_callbacks(app, df) -> None:
             # Log performance even on error
             end_time = time.time()
             logger.debug(
-                f"show_event_modal callback completed in {end_time - start_time:.3f}s (with error)"
+                f"show_event_modal callback completed in "
+                f"{end_time - start_time:.3f}s (with error)"
             )
             raise
 

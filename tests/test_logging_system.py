@@ -2,13 +2,13 @@
 
 import os
 import tempfile
-import pytest
 from unittest.mock import patch
 
+import pytest
 from app_components.logging_config import (
-    setup_logger,
-    get_log_level,
     CasinoCalendarFormatter,
+    get_log_level,
+    setup_logger,
 )
 
 
@@ -108,9 +108,9 @@ def test_app_import_with_logging():
     """Test that the main app can be imported with logging enabled."""
     # This is a basic smoke test to ensure our logging changes don't break imports
     try:
-        import app_components.logging_config
         import app_components.data
-        import utils.colors
+        import app_components.logging_config  # noqa: F401 - verify import side effects
+        import utils.colors  # noqa: F401 - verify import side effects
 
         # If we get here without exceptions, the test passes
         assert True

@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
-
 from app_components.utils import to_naive_utc
 from utils.data_parsing import prepare_week_events
 
