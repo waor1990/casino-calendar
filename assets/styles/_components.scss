@@ -148,12 +148,16 @@ h1,
     padding: var(--padding-base);
 }
 
+.overflow-title {
+    color: var(--color-accent);
+}
+
 .day-label {
     font-weight: var(--font-weight-normal);
     font-size: var(--font-base);
     margin-bottom: var(--padding-small);
     text-align: center;
-    color: var(--color-primary);
+    color: var(--color-accent);
     position: sticky;
     top: 0;
     z-index: 15;
@@ -239,7 +243,7 @@ h1,
 
     .day-label,
     .legend-title,
-    .overflow-box {
+    .overflow-title {
         color: var(--color-primary);
     }
 

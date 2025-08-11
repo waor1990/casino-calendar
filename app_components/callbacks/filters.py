@@ -250,8 +250,8 @@ def register_callbacks(app, df) -> None:
                 children=[
                     html.Strong(
                         "Ongoing Events This Week:",
-                        className="font-bold mb-section",
-                        style={"color": "#6A5ACD", "display": "block"},
+                        className="overflow-title font-bold mb-section",
+                        style={"display": "block"},
                     ),
                     html.Ul(
                         [
