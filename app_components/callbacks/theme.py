@@ -20,19 +20,25 @@ def register_callbacks(app, _df) -> None:
         # Cycle through: light -> dark1 -> dark2 -> dark3 -> dark4 -> dark5 -> light
         theme_cycle = ["light", "dark1", "dark2", "dark3", "dark4", "dark5"]
 
+        logger.info(f"Theme toggle called: n_clicks={_n_clicks}, current='{current}'")
+
         try:
             current_index = theme_cycle.index(current)
             next_index = (current_index + 1) % len(theme_cycle)
         except (ValueError, TypeError):
+            logger.warning(f"Invalid current theme '{current}', defaulting to dark1")
             next_index = 1  # Default to dark1 if current theme is invalid
 
         new_theme = theme_cycle[next_index]
-        logger.info(f"Theme cycled from '{current}' to '{new_theme}'")
+        logger.info(
+            f"Theme cycled from '{current}' to '{new_theme}' (index {current_index} -> {next_index})"
+        )
         return new_theme
 
     app.clientside_callback(
         """
         function(theme) {
+            console.log('[CasinoCalendar] Clientside callback received theme:', theme);
             var root = document.documentElement;
             var btn = document.getElementById('theme-toggle');
             
@@ -60,19 +66,26 @@ def register_callbacks(app, _df) -> None:
             root.style.removeProperty('--color-background-override');
             
             if (theme && theme.startsWith('dark')) {
+                console.log('[CasinoCalendar] Applying dark theme variant:', theme);
                 root.setAttribute('data-theme', 'dark');
                 var bgColor = backgrounds[theme];
                 if (bgColor) {
                     root.style.setProperty('--color-background-override', bgColor);
                     // Override the CSS variable
                     root.style.setProperty('--color-background', bgColor);
+                    console.log('[CasinoCalendar] Set background color to:', bgColor);
                 }
+            } else {
+                console.log('[CasinoCalendar] Applying light theme');
             }
             
             if (btn) {
                 btn.textContent = emojis[theme] || '🌙';
                 btn.title = theme === 'light' ? 'Switch to dark theme' : 
                            'Current: ' + theme + ' - Click to cycle backgrounds';
+                console.log('[CasinoCalendar] Updated button to:', btn.textContent, 'for theme:', theme);
+            } else {
+                console.log('[CasinoCalendar] Theme button not found');
             }
             
             return '';
