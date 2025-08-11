@@ -187,16 +187,8 @@ body {
     .event-block-day {
         z-index: 25 !important;
         /* Ensure event blocks sit above grid lines */
-        filter: brightness(0.75) saturate(0.6) contrast(0.9) !important;
-        /* Soften colors more for better dark theme integration */
-        opacity: 0.9;
-        /* Slight transparency for softer appearance */
-    }
-
-    /* Additional softening for legend color boxes */
-    .legend-color-box {
         filter: brightness(0.8) saturate(0.7) !important;
-        opacity: 0.85;
+        /* Soften colors without transparency */
     }
 
     /* Lighten Muckleshoot Casino's too-dark color - try multiple formats */
@@ -206,10 +198,8 @@ body {
     .event-block-day[style*="background-color:#1e1c29"],
     .event-block-grid[style*="background-color: #1e1c29"],
     .event-block-day[style*="background-color: #1e1c29"] {
-        background-color: #6b6477 !important;
-        /* Lighter, more visible color for dark backgrounds */
+        background-color: #4a4458 !important;
         filter: none !important;
-        opacity: 1 !important;
-        /* Remove softening filters for the manually lightened color */
+        /* Remove filter for the lightened color */
     }
 }
