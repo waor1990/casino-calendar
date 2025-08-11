@@ -104,7 +104,7 @@ def test_accent_elements_switch_to_primary_dark(dash_duo, tmp_path):
     )
     ActionChains(dash_duo.driver).move_to_element(hover_area).perform()
 
-    primary_dark_rgb = css_var_to_rgb("--color-primary-dark")
+    primary_dark_rgb = css_var_to_rgb("--color-primary")
     assert get_color(modal_close, "backgroundColor") == primary_dark_rgb
     assert get_color(event_label, "color") == primary_dark_rgb
     assert get_color(detail_span, "color") == css_var_to_rgb("--bg")

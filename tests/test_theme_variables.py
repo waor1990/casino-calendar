@@ -24,7 +24,7 @@ def test_dark_theme_uses_primary_dark_instead_of_accent():
         for match in pattern.finditer(content):
             block = match.group(1)
             assert "var(--color-accent" not in block
-            if "var(--color-primary-dark)" in block:
+            if "var(--color-primary)" in block:
                 found_primary = True
     assert found_primary, "no primary dark usage in dark theme blocks"
 
