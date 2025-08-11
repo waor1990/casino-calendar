@@ -17,8 +17,17 @@ def register_callbacks(app, _df) -> None:
         prevent_initial_call=True,
     )
     def toggle_theme(_n_clicks: int, current: str) -> str:
-        new_theme = "light" if current == "dark" else "dark"
-        logger.info(f"Theme toggled from '{current}' to '{new_theme}'")
+        # Cycle through: light -> dark1 -> dark2 -> dark3 -> dark4 -> dark5 -> light
+        theme_cycle = ["light", "dark1", "dark2", "dark3", "dark4", "dark5"]
+
+        try:
+            current_index = theme_cycle.index(current)
+            next_index = (current_index + 1) % len(theme_cycle)
+        except (ValueError, TypeError):
+            next_index = 1  # Default to dark1 if current theme is invalid
+
+        new_theme = theme_cycle[next_index]
+        logger.info(f"Theme cycled from '{current}' to '{new_theme}'")
         return new_theme
 
     app.clientside_callback(
@@ -26,15 +35,46 @@ def register_callbacks(app, _df) -> None:
         function(theme) {
             var root = document.documentElement;
             var btn = document.getElementById('theme-toggle');
-            var dark = theme === 'dark';
-            if (dark) {
+            
+            // Background color options for testing
+            var backgrounds = {
+                'light': null,  // Use default light theme
+                'dark1': '#1e1b22',  // Deep purple-gray (current)
+                'dark2': '#1a1a1c',  // Warm charcoal
+                'dark3': '#212121',  // Material Design dark
+                'dark4': '#1f2937',  // Tailwind gray-800
+                'dark5': '#252230'   // Lighter purple-gray
+            };
+            
+            var emojis = {
+                'light': '🌙',
+                'dark1': '🌑',
+                'dark2': '🌒', 
+                'dark3': '🌓',
+                'dark4': '🌔',
+                'dark5': '☀️'
+            };
+            
+            // Remove all theme attributes first
+            root.removeAttribute('data-theme');
+            root.style.removeProperty('--color-background-override');
+            
+            if (theme && theme.startsWith('dark')) {
                 root.setAttribute('data-theme', 'dark');
-            } else {
-                root.removeAttribute('data-theme');
+                var bgColor = backgrounds[theme];
+                if (bgColor) {
+                    root.style.setProperty('--color-background-override', bgColor);
+                    // Override the CSS variable
+                    root.style.setProperty('--color-background', bgColor);
+                }
             }
+            
             if (btn) {
-                btn.textContent = dark ? '☀️' : '🌙';
+                btn.textContent = emojis[theme] || '🌙';
+                btn.title = theme === 'light' ? 'Switch to dark theme' : 
+                           'Current: ' + theme + ' - Click to cycle backgrounds';
             }
+            
             return '';
         }
         """,

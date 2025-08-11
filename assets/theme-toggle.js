@@ -8,14 +8,42 @@
 
     function applyTheme(theme) {
         const root = document.documentElement;
-        if (theme === 'dark') {
-            root.setAttribute('data-theme', 'dark');
-            log('info', 'Applied dark theme');
-            return true;
-        }
+
+        // Background color options for testing
+        const backgrounds = {
+            'light': null,
+            'dark1': '#1e1b22',  // Deep purple-gray
+            'dark2': '#1a1a1c',  // Warm charcoal
+            'dark3': '#212121',  // Material Design dark
+            'dark4': '#1f2937',  // Tailwind gray-800
+            'dark5': '#252230'   // Lighter purple-gray
+        };
+
+        const emojis = {
+            'light': '🌙',
+            'dark1': '🌑',
+            'dark2': '🌒',
+            'dark3': '🌓',
+            'dark4': '🌔',
+            'dark5': '☀️'
+        };
+
+        // Remove all theme attributes first
         root.removeAttribute('data-theme');
+        root.style.removeProperty('--color-background-override');
+
+        if (theme && theme.startsWith('dark')) {
+            root.setAttribute('data-theme', 'dark');
+            const bgColor = backgrounds[theme];
+            if (bgColor) {
+                root.style.setProperty('--color-background', bgColor);
+            }
+            log('info', `Applied dark theme variant: ${theme} with background ${bgColor}`);
+            return theme;
+        }
+
         log('info', 'Applied light theme');
-        return false;
+        return 'light';
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -30,14 +58,24 @@
             log('error', `Failed to parse stored theme: ${e.message}`);
         }
 
-        const isDark = applyTheme(theme);
+        const currentTheme = applyTheme(theme);
 
         // Wait for Dash to render the button, with retry logic
         function findThemeButton(attempts = 0) {
             const button = document.getElementById('theme-toggle');
             if (button) {
-                button.textContent = isDark ? '☀️' : '🌙';
-                log('info', `Theme button found and updated: ${button.textContent}`);
+                const emojis = {
+                    'light': '🌙',
+                    'dark1': '🌑',
+                    'dark2': '🌒',
+                    'dark3': '🌓',
+                    'dark4': '🌔',
+                    'dark5': '☀️'
+                };
+                button.textContent = emojis[currentTheme] || '🌙';
+                button.title = currentTheme === 'light' ? 'Switch to dark theme' :
+                    'Current: ' + currentTheme + ' - Click to cycle backgrounds';
+                log('info', `Theme button found and updated: ${button.textContent} (${currentTheme})`);
                 return true;
             } else if (attempts < 10) {
                 // Retry up to 10 times with increasing delay
@@ -58,9 +96,19 @@
                 if (mutation.type === 'childList') {
                     const button = document.getElementById('theme-toggle');
                     if (button && !button.hasAttribute('data-theme-initialized')) {
-                        button.textContent = isDark ? '☀️' : '🌙';
+                        const emojis = {
+                            'light': '🌙',
+                            'dark1': '🌑',
+                            'dark2': '🌒',
+                            'dark3': '🌓',
+                            'dark4': '🌔',
+                            'dark5': '☀️'
+                        };
+                        button.textContent = emojis[currentTheme] || '🌙';
+                        button.title = currentTheme === 'light' ? 'Switch to dark theme' :
+                            'Current: ' + currentTheme + ' - Click to cycle backgrounds';
                         button.setAttribute('data-theme-initialized', 'true');
-                        log('info', `Theme button found via observer and updated: ${button.textContent}`);
+                        log('info', `Theme button found via observer and updated: ${button.textContent} (${currentTheme})`);
                         observer.disconnect(); // Stop observing once we find it
                     }
                 }
