@@ -6,7 +6,7 @@ h1,
 .calendar-title {
     font-size: clamp(var(--font-header), 4vw, var(--font-title-lg));
     text-align: center;
-    color: var(--color-primary);
+    color: var(--color-accent);
     background-color: var(--color-background);
     box-shadow: var(--box-shadow-light);
     border-radius: var(--border-radius-sm);
@@ -127,7 +127,7 @@ h1,
 /* Event related UI */
 
 .overflow-toggle {
-    color: var(--color-accent-dark);
+    color: var(--color-accent);
     display: inline-block;
     text-align: left;
     margin: var(--margin-section) auto calc(var(--margin-section) * 4) auto;
@@ -237,8 +237,8 @@ h1,
 
 [data-theme="dark"] {
 
-    .hour-label,
     .day-label,
+    .legend-title,
     .overflow-box {
         color: var(--color-primary);
     }
@@ -248,6 +248,11 @@ h1,
     .event-label strong,
     .no-events {
         color: var(--color-primary);
+    }
+
+    .hour-label,
+    .overflow-toggle {
+        color: var(--color-accent);
     }
 
     .legend-selected {
@@ -279,9 +284,5 @@ h1,
     #event-modal[style*="--bg:rgb(30 28 41)"] .event-label span,
     #event-modal[style*="--bg: rgb(30 28 41)"] .event-label span {
         color: rgb(166 161 193) !important;
-    }
-
-    .overflow-toggle {
-        color: var(--color-primary);
     }
 }
