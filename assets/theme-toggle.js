@@ -45,39 +45,20 @@
     function applyTheme(theme) {
         const root = document.documentElement;
 
-        // Background color options for testing
-        const backgrounds = {
-            'light': null,
-            'dark1': '#1e1b22',  // Deep purple-gray
-            'dark2': '#1a1a1c',  // Warm charcoal
-            'dark3': '#212121',  // Material Design dark
-            'dark4': '#1f2937',  // Tailwind gray-800
-            'dark5': '#252230'   // Lighter purple-gray
-        };
-
-        const emojis = {
-            'light': '🌙',
-            'dark1': '🌑',
-            'dark2': '🌒',
-            'dark3': '🌓',
-            'dark4': '🌔',
-            'dark5': '☀️'
-        };
-
-        // Remove all theme attributes first
+        // Remove any theme attributes first
         root.removeAttribute('data-theme');
         root.style.removeProperty('--color-background-override');
 
-        if (theme && theme.startsWith('dark')) {
+        if (theme === 'dark') {
             root.setAttribute('data-theme', 'dark');
-            const bgColor = backgrounds[theme];
-            if (bgColor) {
-                root.style.setProperty('--color-background', bgColor);
-            }
-            log('info', `Applied dark theme variant: ${theme} with background ${bgColor}`);
-            return theme;
+            // Set dark3 background color (#212121) as the standard dark theme
+            root.style.setProperty('--color-background', '#212121');
+            log('info', 'Applied dark theme with Material Design background');
+            return 'dark';
         }
 
+        // Remove any custom background override for light theme
+        root.style.removeProperty('--color-background');
         log('info', 'Applied light theme');
         return 'light';
     }
@@ -101,17 +82,8 @@
             function findThemeButton(attempts = 0) {
                 const button = document.getElementById('theme-toggle');
                 if (button) {
-                    const emojis = {
-                        'light': '🌙',
-                        'dark1': '🌑',
-                        'dark2': '🌒',
-                        'dark3': '🌓',
-                        'dark4': '🌔',
-                        'dark5': '☀️'
-                    };
-                    button.textContent = emojis[currentTheme] || '🌙';
-                    button.title = currentTheme === 'light' ? 'Switch to dark theme' :
-                        'Current: ' + currentTheme + ' - Click to cycle backgrounds';
+                    button.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+                    button.title = currentTheme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
                     log('info', `Theme button found and updated: ${button.textContent} (${currentTheme})`);
                     return true;
                 } else if (attempts < 10) {
@@ -133,17 +105,8 @@
                     if (mutation.type === 'childList') {
                         const button = document.getElementById('theme-toggle');
                         if (button && !button.hasAttribute('data-theme-initialized')) {
-                            const emojis = {
-                                'light': '🌙',
-                                'dark1': '🌑',
-                                'dark2': '🌒',
-                                'dark3': '🌓',
-                                'dark4': '🌔',
-                                'dark5': '☀️'
-                            };
-                            button.textContent = emojis[currentTheme] || '🌙';
-                            button.title = currentTheme === 'light' ? 'Switch to dark theme' :
-                                'Current: ' + currentTheme + ' - Click to cycle backgrounds';
+                            button.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+                            button.title = currentTheme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
                             button.setAttribute('data-theme-initialized', 'true');
                             log('info', `Theme button found via observer and updated: ${button.textContent} (${currentTheme})`);
                             observer.disconnect(); // Stop observing once we find it

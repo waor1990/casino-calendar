@@ -155,8 +155,8 @@ body {
 
 /* Dark theme overrides */
 [data-theme="dark"] {
-    /* Background */
-    --color-background: #1e1b22;
+    /* Background - using Material Design dark gray */
+    --color-background: #212121;
 
     /* Text colors - professional with more color */
     --color-primary: #6a5acd;

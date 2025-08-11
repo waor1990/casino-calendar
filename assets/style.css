@@ -140,8 +140,8 @@ body {
 
 /* Dark theme overrides */
 [data-theme=dark] {
-  /* Background */
-  --color-background: #2d2d30;
+  /* Background - using Material Design dark gray */
+  --color-background: #212121;
   /* Text colors - professional with more color */
   --color-primary: #6a5acd;
   /* SlateBlue for primary elements */
@@ -163,25 +163,6 @@ body {
   --box-shadow-light: 0 -0.125rem 0.3125rem rgb(125 211 252 / 40%);
   --box-shadow-modal: 0 0 1.25rem rgb(125 211 252 / 20%);
   --box-shadow-subtle: 0 -0.0625rem 0.3125rem rgb(125 211 252 / 30%);
-  /* Global override to soften casino colors in dark mode */
-  /* Lighten Muckleshoot Casino's too-dark color - try multiple formats */
-}
-[data-theme=dark] .event-block-grid,
-[data-theme=dark] .event-block-day {
-  z-index: 25 !important;
-  /* Ensure event blocks sit above grid lines */
-  filter: brightness(0.8) saturate(0.7) !important;
-  /* Soften colors without transparency */
-}
-[data-theme=dark] .event-block-grid[style*="background-color: rgb(30, 28, 41)"],
-[data-theme=dark] .event-block-day[style*="background-color: rgb(30, 28, 41)"],
-[data-theme=dark] .event-block-grid[style*="background-color:#1e1c29"],
-[data-theme=dark] .event-block-day[style*="background-color:#1e1c29"],
-[data-theme=dark] .event-block-grid[style*="background-color: #1e1c29"],
-[data-theme=dark] .event-block-day[style*="background-color: #1e1c29"] {
-  background-color: #4a4458 !important;
-  filter: none !important;
-  /* Remove filter for the lightened color */
 }
 
 /* Application layout structure */
@@ -533,21 +514,18 @@ h1,
 
 [data-theme=dark] .calendar-title,
 [data-theme=dark] .week-label,
-[data-theme=dark] .overflow-title {
-  color: var(--color-primary);
-}
+[data-theme=dark] .overflow-title,
 [data-theme=dark] .event-label-title,
 [data-theme=dark] .day-modal-title,
 [data-theme=dark] .event-label strong,
-[data-theme=dark] .no-events {
+[data-theme=dark] .no-events,
+[data-theme=dark] .hour-label {
   color: var(--color-primary);
 }
 [data-theme=dark] .day-label,
 [data-theme=dark] .legend-title,
-[data-theme=dark] .overflow-box {
-  color: var(--color-accent);
-}
-[data-theme=dark] .hour-label,
+[data-theme=dark] .overflow-box,
+[data-theme=dark] .day-label-grid,
 [data-theme=dark] .overflow-toggle {
   color: var(--color-accent);
 }
