@@ -533,18 +533,21 @@ h1,
 
 [data-theme=dark] .calendar-title,
 [data-theme=dark] .week-label,
-[data-theme=dark] .overflow-title,
+[data-theme=dark] .overflow-title {
+  color: var(--color-primary);
+}
 [data-theme=dark] .event-label-title,
 [data-theme=dark] .day-modal-title,
 [data-theme=dark] .event-label strong,
-[data-theme=dark] .no-events,
-[data-theme=dark] .hour-label {
+[data-theme=dark] .no-events {
   color: var(--color-primary);
 }
 [data-theme=dark] .day-label,
 [data-theme=dark] .legend-title,
-[data-theme=dark] .overflow-box,
-[data-theme=dark] .day-label-grid,
+[data-theme=dark] .overflow-box {
+  color: var(--color-accent);
+}
+[data-theme=dark] .hour-label,
 [data-theme=dark] .overflow-toggle {
   color: var(--color-accent);
 }
