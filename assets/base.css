@@ -26,26 +26,26 @@
     --font-title-lg: 2rem;
     --font-subtitle-lg: 1.5rem;
     /* Colors */
-    --color-primary-dark: #00008B;
+    --color-primary: #00008B;
     --color-accent: #6A5ACD;
     --color-accent-dark: #483D8B;
     --color-background: #f5f3fa;
     /* Day Header & Week Grid Colors */
     --color-day-header-text: var(--color-accent);
     --color-day-header-bg: var(--color-background);
-    --color-border-primary: var(--color-primary-dark);
+    --color-border-primary: var(--color-primary);
     --color-border-accent: var(--color-accent);
     --color-border-grid: #7F8BAA;
-    --color-border-grid-light: rgba(127, 139, 170, 0.3);
+    --color-border-grid-light: rgb(127 139 170 / 30%);
     /* Borders and shadows */
     --border-radius-lg: 0.625rem;
     --border-radius-sm: 0.3125rem;
     --border-radius-xs: 0.125rem;
     --border-thin: 1px;
     --border-thick: 0.125rem;
-    --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary-dark);
+    --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary);
     --box-shadow-subtle: 0 -0.0625rem 0.3125rem var(--color-accent);
-    --box-shadow-modal: 0 0 1.25rem var(--color-primary-dark);
+    --box-shadow-modal: 0 0 1.25rem var(--color-primary);
     /* Modal sizing */
     --modal-max-width: clamp(20rem, 90vw, 37.5rem);
     --modal-max-height: 80vh;
@@ -56,7 +56,7 @@
     --modal-max-height-mobile: 70vh;
     --event-modal-max-width-tablet: 31.25rem;
     --day-modal-max-width-tablet: 43.75rem;
-    --modal-overlay-color: rgba(0, 0, 0, 0.25);
+    --modal-overlay-color: rgb(0 0 0 / 25%);
     --modal-overlay-blur: 0.25rem;
     /* Animation distances */
     --slide-distance: 31.25rem;
@@ -69,7 +69,7 @@
 }
 
 /* Font and spacing adjustments for small screens */
-@media (max-width: 480px) {
+@media (width <=480px) {
     :root {
         --font-xxs: 0.35rem;
         --font-xs: 0.45rem;
@@ -82,7 +82,7 @@
 }
 
 /* Slightly larger fonts for landscape phones */
-@media (max-width: 896px) and (orientation: landscape) {
+@media (width <=896px) and (orientation: landscape) {
     :root {
         --font-xxs: 0.45rem;
         --font-xs: 0.55rem;
@@ -95,7 +95,7 @@
 }
 
 /* Font and spacing adjustments for tablets */
-@media (max-width: 768px) {
+@media (width <=768px) {
     :root {
         --font-xxs: 0.45rem;
         --font-xs: 0.55rem;
@@ -108,7 +108,7 @@
 }
 
 /* Desktop font adjustments */
-@media (min-width: 1024px) {
+@media (width >=1024px) {
     :root {
         --font-base: 1.05rem;
         --font-subtitle: 1.3rem;
@@ -117,7 +117,7 @@
     }
 }
 
-@media (min-width: 1440px) {
+@media (width >=1440px) {
     :root {
         --font-base: 1.125rem;
         --font-subtitle: 1.5rem;
@@ -132,12 +132,12 @@ body {
 
 [data-theme="dark"] {
     --color-background: #3c3c3c;
-    --color-primary-dark: #6a5acd;
-    --color-accent: #a78bfa;
-    --color-border-primary: var(--color-primary-dark);
-    --color-border-grid: #555555;
-    --color-border-grid-light: rgba(127, 139, 170, 0.6);
-    --box-shadow-light: 0 -0.125rem 0.3125rem rgba(0, 0, 0, 0.4);
-    --box-shadow-modal: 0 0 1.25rem rgba(255, 255, 255, 0.25);
+    --color-primary: #a78bfa;
+    --color-accent: #6a5acd;
+    --color-border-primary: var(--color-primary);
+    --color-border-grid: #555;
+    --color-border-grid-light: rgb(127 139 170 / 60%);
+    --box-shadow-light: 0 -0.125rem 0.3125rem rgb(0 0 0 / 40%);
+    --box-shadow-modal: 0 0 1.25rem rgb(255 255 255 / 25%);
     --color-day-header-text: var(--color-accent);
 }

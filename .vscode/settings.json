@@ -13,7 +13,11 @@
         "css",
         "scss"
     ],
-    "stylelint.configFile": ".stylelintrc.json",
+    "stylelint.configFile": "config/.stylelintrc.json",
+    "stylelint.autoFixOnSave": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.stylelint": "never"
+    },
     "python.pythonPath": ".venv/Scripts/python.exe",
     "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
     "python.envFile": "${workspaceFolder}/.env",
