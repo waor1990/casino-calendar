@@ -28,20 +28,20 @@
   --font-title-lg: 2rem;
   --font-subtitle-lg: 1.5rem;
   /* Colors */
-  --color-primary-dark: #00008B;
+  --color-primary: #00008B;
   --color-accent: #6A5ACD;
   --color-accent-dark: #483D8B;
   --color-background: #f5f3fa;
-  --color-white: #ffffff;
-  --color-black: #000000;
-  --color-accent-light: rgba(106, 90, 205, 0.1);
+  --color-white: #fff;
+  --color-black: #000;
+  --color-accent-light: rgb(106 90 205 / 10%);
   /* Day Header & Week Grid Colors */
   --color-day-header-text: var(--color-accent);
   --color-day-header-bg: var(--color-background);
-  --color-border-primary: var(--color-primary-dark);
+  --color-border-primary: var(--color-primary);
   --color-border-accent: var(--color-accent);
   --color-border-grid: #7F8BAA;
-  --color-border-grid-light: rgba(127, 139, 170, 0.3);
+  --color-border-grid-light: rgb(127 139 170 / 30%);
   /* Borders and shadows */
   --border-radius-lg: 0.625rem;
   --border-radius-sm: 0.3125rem;
@@ -49,9 +49,9 @@
   --border-thin: 1px;
   --border-thick: 0.125rem;
   --border-event: 0.1875rem;
-  --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary-dark);
+  --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary);
   --box-shadow-subtle: 0 -0.0625rem 0.3125rem var(--color-accent);
-  --box-shadow-modal: 0 0 1.25rem var(--color-primary-dark);
+  --box-shadow-modal: 0 0 1.25rem var(--color-primary);
   /* Modal sizing */
   --modal-max-width: clamp(20rem, 90vw, 37.5rem);
   --modal-max-height: 80vh;
@@ -67,7 +67,7 @@
   --day-modal-min-width: 18rem;
   --day-modal-max-width-desktop: 70rem;
   --day-modal-max-width-hd: 90rem;
-  --modal-overlay-color: rgba(0, 0, 0, 0.25);
+  --modal-overlay-color: rgb(0 0 0 / 25%);
   --modal-overlay-blur: 0.25rem;
   /* Animation distances */
   --slide-distance: 31.25rem;
@@ -82,7 +82,7 @@
 }
 
 /* Font and spacing adjustments for small screens */
-@media (max-width: 480px) {
+@media (width <= 480px) {
   :root {
     --font-xxs: 0.35rem;
     --font-xs: 0.45rem;
@@ -94,7 +94,7 @@
   }
 }
 /* Slightly larger fonts for landscape phones */
-@media (max-width: 896px) and (orientation: landscape) {
+@media (width <= 896px) and (orientation: landscape) {
   :root {
     --font-xxs: 0.45rem;
     --font-xs: 0.55rem;
@@ -106,7 +106,7 @@
   }
 }
 /* Font and spacing adjustments for tablets */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   :root {
     --font-xxs: 0.45rem;
     --font-xs: 0.55rem;
@@ -118,7 +118,7 @@
   }
 }
 /* Desktop font adjustments */
-@media (min-width: 1024px) {
+@media (width >= 1024px) {
   :root {
     --font-base: 1.05rem;
     --font-subtitle: 1.3rem;
@@ -126,7 +126,7 @@
     --font-title: 1.9rem;
   }
 }
-@media (min-width: 1440px) {
+@media (width >= 1440px) {
   :root {
     --font-base: 1.125rem;
     --font-subtitle: 1.5rem;
@@ -143,30 +143,27 @@ body {
   /* Background */
   --color-background: #2d2d30;
   /* Text colors - professional with more color */
-  --color-primary-dark: #6a5acd;
+  --color-primary: #6a5acd;
   /* SlateBlue for primary elements */
   --color-accent: #a78bfa;
   /* Light purple for accent elements */
-  --color-primary-light: rgba(106, 90, 205, 0.15);
-  /* Subtle accent background */
-  --color-black: #a78bfa;
-  /* Override black to match accent */
+  --color-primary-light: rgb(106 90 205 / 15%);
+  /* Subtle primary background */
+  --color-black: var(--color-primary);
+  /* Use primary tone for high-contrast text */
   --color-white: #2d2d30;
   /* Use background color for "white" elements */
   /* Header and border colors */
-  --color-day-header-text: #a78bfa;
+  --color-day-header-text: var(--color-primary);
   --color-day-header-bg: #2d2d30;
   --color-border-primary: #7dd3fc;
   --color-border-grid: #7dd3fc;
-  --color-border-grid-light: rgb(125 211 252 / 0.3);
+  --color-border-grid-light: rgb(125 211 252 / 30%);
   /* Shadows - light blue-ish */
-  --box-shadow-light: 0 -0.125rem 0.3125rem rgb(125 211 252 / 0.4);
-  --box-shadow-modal: 0 0 1.25rem rgb(125 211 252 / 0.2);
-  --box-shadow-subtle: 0 -0.0625rem 0.3125rem rgba(125, 211, 252, 0.3);
-}
-
-/* Global override to soften casino colors in dark mode */
-[data-theme=dark] {
+  --box-shadow-light: 0 -0.125rem 0.3125rem rgb(125 211 252 / 40%);
+  --box-shadow-modal: 0 0 1.25rem rgb(125 211 252 / 20%);
+  --box-shadow-subtle: 0 -0.0625rem 0.3125rem rgb(125 211 252 / 30%);
+  /* Global override to soften casino colors in dark mode */
   /* Lighten Muckleshoot Casino's too-dark color - try multiple formats */
 }
 [data-theme=dark] .event-block-grid,
@@ -195,7 +192,7 @@ body {
   overflow: hidden;
 }
 
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
+@media (width <= 480px), (width <= 896px) and (orientation: landscape) {
   html,
   body {
     height: auto;
@@ -244,7 +241,7 @@ body {
 }
 
 .week-label {
-  color: var(--color-primary-dark);
+  color: var(--color-accent);
   background-color: var(--color-background);
   box-shadow: var(--box-shadow-light);
   border-radius: var(--border-radius-sm);
@@ -256,7 +253,7 @@ body {
   margin: 0 var(--padding-base) var(--gap-legend);
 }
 
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
+@media (width <= 480px), (width <= 896px) and (orientation: landscape) {
   .week-label {
     font-size: var(--font-header);
     margin-left: 0;
@@ -287,12 +284,12 @@ body {
   z-index: 100;
   background-color: var(--color-background);
 }
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .sticky-header {
     position: static;
   }
 }
-@media (max-width: 896px) and (orientation: landscape) {
+@media (width <= 896px) and (orientation: landscape) {
   .sticky-header {
     position: static;
   }
@@ -304,7 +301,7 @@ h1,
 .calendar-title {
   font-size: clamp(var(--font-header), 4vw, var(--font-title-lg));
   text-align: center;
-  color: var(--color-primary-dark);
+  color: var(--color-accent);
   background-color: var(--color-background);
   box-shadow: var(--box-shadow-light);
   border-radius: var(--border-radius-sm);
@@ -314,7 +311,7 @@ h1,
   justify-content: center;
   position: relative;
 }
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
+@media (width <= 480px), (width <= 896px) and (orientation: landscape) {
   h1,
   .calendar-title {
     font-size: var(--font-header);
@@ -337,7 +334,7 @@ h1,
   margin-bottom: var(--padding-small);
   width: 100%;
 }
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
+@media (width <= 480px), (width <= 896px) and (orientation: landscape) {
   .legend-title {
     font-size: var(--font-subtitle);
   }
@@ -424,7 +421,7 @@ h1,
 
 /* Event related UI */
 .overflow-toggle {
-  color: var(--color-accent-dark);
+  color: var(--color-accent);
   display: inline-block;
   text-align: left;
   margin: var(--margin-section) auto calc(var(--margin-section) * 4) auto;
@@ -445,12 +442,16 @@ h1,
   padding: var(--padding-base);
 }
 
+.overflow-title {
+  color: var(--color-accent);
+}
+
 .day-label {
   font-weight: var(--font-weight-normal);
   font-size: var(--font-base);
   margin-bottom: var(--padding-small);
   text-align: center;
-  color: var(--color-primary-dark);
+  color: var(--color-accent);
   position: sticky;
   top: 0;
   z-index: 15;
@@ -530,28 +531,37 @@ h1,
   z-index: 5;
 }
 
-[data-theme=dark] .hour-label,
-[data-theme=dark] .day-label,
-[data-theme=dark] .overflow-box {
-  color: var(--color-accent);
+[data-theme=dark] .calendar-title,
+[data-theme=dark] .week-label,
+[data-theme=dark] .overflow-title {
+  color: var(--color-primary);
 }
 [data-theme=dark] .event-label-title,
 [data-theme=dark] .day-modal-title,
 [data-theme=dark] .event-label strong,
 [data-theme=dark] .no-events {
-  color: var(--color-primary-dark);
+  color: var(--color-primary);
+}
+[data-theme=dark] .day-label,
+[data-theme=dark] .legend-title,
+[data-theme=dark] .overflow-box {
+  color: var(--color-accent);
+}
+[data-theme=dark] .hour-label,
+[data-theme=dark] .overflow-toggle {
+  color: var(--color-accent);
 }
 [data-theme=dark] .legend-selected {
-  outline: var(--border-thin) solid var(--color-primary-dark);
-  background-color: var(--color-primary-dark);
+  outline: var(--border-thin) solid var(--color-primary);
+  background-color: var(--color-primary);
 }
 [data-theme=dark] #hotel-booking-container a {
-  color: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 [data-theme=dark] #hotel-booking-container a:hover {
-  background-color: var(--color-primary-dark);
-  color: var(--color-primary-dark);
+  background-color: var(--color-primary);
+  color: var(--color-primary);
 }
 [data-theme=dark] .legend-text[style*="color:#1e1c29"],
 [data-theme=dark] .legend-text[style*="color: #1e1c29"],
@@ -566,9 +576,6 @@ h1,
 [data-theme=dark] #event-modal[style*="--bg:rgb(30 28 41)"] .event-label span,
 [data-theme=dark] #event-modal[style*="--bg: rgb(30 28 41)"] .event-label span {
   color: rgb(166, 161, 193) !important;
-}
-[data-theme=dark] .overflow-toggle {
-  color: var(--color-accent);
 }
 
 /* Calendar week grid layout */
@@ -724,10 +731,10 @@ h1,
 }
 
 [data-theme=dark] .day-click-area:hover {
-  background-color: var(--color-primary-dark);
+  background-color: var(--color-primary);
 }
 [data-theme=dark] .day-click-area:hover::after {
-  background-color: var(--color-primary-dark);
+  background-color: var(--color-primary);
   box-shadow: var(--box-shadow-light);
 }
 
@@ -776,7 +783,7 @@ h1,
   border-right: var(--border-thick) solid var(--color-border-primary);
 }
 
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
+@media (width <= 480px), (width <= 896px) and (orientation: landscape) {
   .day-label-wrapper {
     margin-left: 0;
     margin-right: 0;
@@ -791,7 +798,7 @@ h1,
     border-right: none;
   }
 }
-@media (min-width: 1024px) {
+@media (width >= 1024px) {
   .day-label-grid {
     font-size: var(--font-base);
   }
@@ -850,7 +857,7 @@ h1,
   cursor: pointer;
 }
 [data-theme=dark] .modal-close {
-  background-color: var(--color-primary-dark);
+  background-color: var(--color-primary);
   color: var(--color-background);
 }
 
@@ -876,8 +883,8 @@ h1,
   overflow-y: auto;
 }
 [data-theme=dark] .modal-content {
-  border: var(--border-thick) solid var(--color-primary-dark);
-  color: var(--color-primary-dark);
+  border: var(--border-thick) solid var(--color-primary);
+  color: var(--color-primary);
 }
 
 .modal.show .modal-content {
@@ -936,6 +943,7 @@ h1,
   border-radius: var(--border-radius-sm);
 }
 
+/* Event blocks displayed in the day view modal */
 .event-block-day {
   position: absolute;
   border: var(--border-event) solid var(--color-border-accent);
@@ -956,7 +964,7 @@ h1,
   box-shadow: var(--box-shadow-light);
 }
 [data-theme=dark] .event-block-day {
-  border: var(--border-event) solid var(--color-primary-dark);
+  border: var(--border-event) solid var(--color-primary);
 }
 
 .event-block-day-text {
@@ -985,12 +993,14 @@ h1,
   margin: 0;
 }
 
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
+@media (width <= 480px), (width <= 896px) and (orientation: landscape) {
   .event-block-day-text {
     font-size: var(--font-small);
+    /* Keep consistent with base size */
   }
   .event-block-day {
     margin-right: var(--padding-xxs);
+    /* Small margin on mobile too */
   }
 }
 .event-block-day.short-span {
@@ -1020,7 +1030,7 @@ h1,
 }
 
 /* Modal Responsiveness */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   #event-modal-content {
     max-width: var(--event-modal-max-width-tablet);
   }
@@ -1031,7 +1041,7 @@ h1,
     max-height: none;
   }
 }
-@media (max-width: 480px), (max-width: 896px) and (orientation: landscape) {
+@media (width <= 480px), (width <= 896px) and (orientation: landscape) {
   #event-modal-content {
     width: var(--modal-width-mobile) !important;
   }
@@ -1048,7 +1058,7 @@ h1,
     font-size: var(--font-small);
   }
 }
-@media (min-width: 1024px) {
+@media (width >= 1024px) {
   #event-modal-content {
     max-width: 40rem;
   }
@@ -1056,7 +1066,7 @@ h1,
     max-width: var(--day-modal-max-width-desktop);
   }
 }
-@media (min-width: 1440px) {
+@media (width >= 1440px) {
   #event-modal-content {
     max-width: 45rem;
   }

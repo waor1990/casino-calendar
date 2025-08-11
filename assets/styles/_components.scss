@@ -241,20 +241,21 @@ h1,
 
 [data-theme="dark"] {
 
-    .day-label,
-    .legend-title,
-    .overflow-title {
-        color: var(--color-primary);
-    }
-
+    .calendar-title,
+    .week-label,
+    .overflow-title,
     .event-label-title,
     .day-modal-title,
     .event-label strong,
-    .no-events {
+    .no-events,
+    .hour-label {
         color: var(--color-primary);
     }
 
-    .hour-label,
+    .day-label,
+    .legend-title,
+    .overflow-box,
+    .day-label-grid,
     .overflow-toggle {
         color: var(--color-accent);
     }
