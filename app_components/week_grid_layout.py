@@ -3,6 +3,7 @@ from typing import Any, cast
 
 import pandas as pd
 from dash import html
+
 from utils.colors import get_color
 from utils.data_parsing import prepare_week_events
 

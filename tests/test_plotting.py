@@ -3,14 +3,10 @@ from datetime import datetime, timedelta
 import pandas as pd
 import plotly.graph_objs as go
 import pytest
-from app_components.plotting import (
-    DAY_MODAL_LABEL_REM,
-    DAY_MODAL_TRACK_REM,
-    DAY_MODAL_WIDE_REM,
-    build_weekly_figure,
-    generate_day_view_html,
-    get_layout_config,
-)
+
+from app_components.plotting import (DAY_MODAL_LABEL_REM, DAY_MODAL_TRACK_REM,
+                                     DAY_MODAL_WIDE_REM, build_weekly_figure,
+                                     generate_day_view_html, get_layout_config)
 from app_components.utils import to_naive_utc
 from utils.colors import get_color
 from utils.data_parsing import annotate_events_with_flags, filter_week_events

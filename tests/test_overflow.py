@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
+
 from app_components.utils import filter_long_spanning_events, to_naive_utc
 
 

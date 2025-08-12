@@ -5,15 +5,11 @@ from typing import Any, Callable, List, Tuple
 import pandas as pd
 import plotly.graph_objs as go
 from dash import dcc, html
+
 from utils.colors import get_color
 
-from .utils import (
-    filter_long_spanning_events,
-    offer_type_emoji,
-    to_naive_utc,
-    to_pdt,
-    trim_label,
-)
+from .utils import (filter_long_spanning_events, offer_type_emoji,
+                    to_naive_utc, to_pdt, trim_label)
 
 # Constants used to size the day modal dynamically
 DAY_MODAL_MIN_REM = 18
