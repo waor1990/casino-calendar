@@ -103,7 +103,7 @@ Comprehensive project documentation:
 - `organization_summary.md` - Historical organization improvements
 - `logging_system.md` - Logging system documentation
 - `handoff.md` - Project handoff documentation
-- `TODO.md` - Project tasks and improvements
+- `TODO.md` - Next steps and project improvements
 - `archived/` - Completed or historical documentation
 
 ### Scripts (`scripts/`)

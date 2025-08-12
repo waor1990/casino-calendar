@@ -50,11 +50,11 @@ config/                  # Tool configuration files
   .stylelintrc.json    # CSS linting config
 data/                    # CSV data files
   casino_events.csv
-docs/                    # Project documentation
-  archived/            # Completed/historical docs
-  handoff.md
-  TODO.md
-  logging_system.md
+  docs/                    # Project documentation
+    archived/            # Completed/historical docs
+    handoff.md
+    TODO.md              # Next steps and project improvements
+    logging_system.md
 logs/                    # Application log files
   archive/             # Archived log files
 scripts/                 # Utility scripts
