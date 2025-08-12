@@ -1,34 +1,20 @@
-import json
-from pathlib import Path
-
 from app_components.logging_config import setup_logger
+from utils.config_cache import get_config
 
 # Initialize module logger
 logger = setup_logger(__name__)
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+COLOR_MAP = get_config("casino_colors.json") or {}
+if COLOR_MAP:
+    logger.debug("Loaded casino colors for %d casinos", len(COLOR_MAP))
+else:
+    logger.warning("Casino colors unavailable, falling back to defaults")
 
-try:
-    with open(DATA_DIR / "casino_colors.json", encoding="utf-8") as f:
-        COLOR_MAP = json.load(f)
-    logger.debug(f"Loaded casino colors for {len(COLOR_MAP)} casinos")
-except FileNotFoundError:
-    logger.error(f"Casino colors file not found: {DATA_DIR / 'casino_colors.json'}")
-    COLOR_MAP = {}
-except json.JSONDecodeError as e:
-    logger.error(f"Invalid JSON in casino colors file: {e}", exc_info=True)
-    COLOR_MAP = {}
-
-try:
-    with open(DATA_DIR / "default_colors.json", encoding="utf-8") as f:
-        DEFAULT_COLORS = json.load(f)
-    logger.debug(f"Loaded {len(DEFAULT_COLORS)} default colors")
-except FileNotFoundError:
-    logger.error(f"Default colors file not found: {DATA_DIR / 'default_colors.json'}")
-    DEFAULT_COLORS = []
-except json.JSONDecodeError as e:
-    logger.error(f"Invalid JSON in default colors file: {e}", exc_info=True)
-    DEFAULT_COLORS = []
+DEFAULT_COLORS = get_config("default_colors.json") or []
+if DEFAULT_COLORS:
+    logger.debug("Loaded %d default colors", len(DEFAULT_COLORS))
+else:
+    logger.warning("Default colors unavailable")
 
 
 def get_color():
