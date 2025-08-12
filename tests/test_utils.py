@@ -1,12 +1,7 @@
 from datetime import datetime
 
-from app_components.utils import (
-    PDT,
-    get_week_range,
-    offer_type_emoji,
-    to_pdt,
-    trim_label,
-)
+from app_components.utils import (PDT, get_week_range, offer_type_emoji,
+                                  to_pdt, trim_label)
 
 
 def test_get_week_range_returns_sunday_bounds():

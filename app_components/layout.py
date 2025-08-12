@@ -1,5 +1,6 @@
 import plotly.graph_objs as go
 from dash import dcc, html
+
 from utils.colors import get_color
 
 from .logging_config import setup_logger

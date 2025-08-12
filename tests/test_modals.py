@@ -2,9 +2,10 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
+from dash import Dash
+
 from app_components.callbacks import register_callbacks
 from app_components.utils import to_naive_utc
-from dash import Dash
 from utils import data_parsing
 
 

@@ -12,11 +12,8 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from utils.log_rotation import (
-    archive_current_log,
-    cleanup_old_logs,
-    get_log_directory_info,
-)
+from utils.log_rotation import (archive_current_log, cleanup_old_logs,
+                                get_log_directory_info)
 
 
 def main():

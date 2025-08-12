@@ -3,6 +3,7 @@ from datetime import timedelta
 from math import floor
 
 import pandas as pd
+
 from app_components.logging_config import setup_logger
 
 # Initialize module logger

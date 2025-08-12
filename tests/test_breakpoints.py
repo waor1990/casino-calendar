@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytest
+
 from app_components.utils import to_naive_utc
 from app_components.week_grid_layout import _build_block
 
