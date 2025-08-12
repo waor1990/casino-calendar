@@ -28,11 +28,10 @@
     content: "";
     position: fixed;
     inset: 0;
-    background-color: var(--modal-overlay-color);
-    /* backdrop-filter: blur(var(--modal-overlay-blur)); */
-    /* Commented out for compatibility */
+    background-color: var(--modal-overlay-color-fallback);
     z-index: -1;
     pointer-events: none;
+    transition: background-color 0.3s ease-out;
 }
 
 .modal.closing {
@@ -66,7 +65,7 @@
     border-radius: var(--border-radius-lg, 10px);
     padding: var(--padding-small) var(--padding-base) var(--padding-base);
     /* Reduced top padding */
-    box-shadow: var(--box-shadow-modal);
+    box-shadow: var(--box-shadow-modal-enhanced);
     max-height: none;
     max-width: none;
     min-height: var(--modal-min-height);
@@ -79,10 +78,19 @@
     will-change: transform, opacity;
     transform-origin: center center;
     overflow-y: auto;
+    position: relative;
+
+    /* Enhanced border styling for better visibility */
+    outline: 0.0625rem solid rgb(255 255 255 / 30%);
+    outline-offset: -0.0625rem;
 
     [data-theme="dark"] & {
         border: var(--border-thick) solid var(--color-primary);
         color: var(--color-primary);
+        background-color: var(--color-background);
+        outline: 0.0625rem solid rgb(106 90 205 / 30%);
+        box-shadow: var(--box-shadow-modal-enhanced),
+            0 0 0 0.0625rem rgb(106 90 205 / 20%);
     }
 }
 
@@ -104,6 +112,15 @@
     display: flex;
     flex-direction: column;
     overflow-y: hidden;
+
+    /* Enhanced styling for event modals */
+    background: linear-gradient(135deg, var(--color-background) 0%, var(--color-background) 100%);
+    border-color: var(--color-accent);
+
+    [data-theme="dark"] & {
+        background: linear-gradient(135deg, var(--color-background) 0%, #1a1a1a 100%);
+        border-color: var(--color-primary);
+    }
 }
 
 #event-modal-body {
@@ -121,6 +138,15 @@
     font-size: clamp(var(--font-small), 2vw, var(--font-base));
     display: flex;
     flex-direction: column;
+
+    /* Enhanced styling for day modals - slightly different from event modals */
+    background: linear-gradient(145deg, var(--color-background) 0%, var(--color-background) 100%);
+    border-color: var(--color-primary);
+
+    [data-theme="dark"] & {
+        background: linear-gradient(145deg, var(--color-background) 0%, #1e1e1e 100%);
+        border-color: var(--color-accent);
+    }
 }
 
 #day-modal-body {

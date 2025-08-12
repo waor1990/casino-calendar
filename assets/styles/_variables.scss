@@ -57,7 +57,8 @@
     --border-event: 0.1875rem;
     --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary);
     --box-shadow-subtle: 0 -0.0625rem 0.3125rem var(--color-accent);
-    --box-shadow-modal: 0 0 1.25rem var(--color-primary);
+    --box-shadow-modal: 0 0.5rem 2rem rgb(0 0 0 / 25%), 0 0.25rem 1rem rgb(0 0 0 / 15%);
+    --box-shadow-modal-enhanced: 0 1rem 3rem rgb(0 0 0 / 35%), 0 0.5rem 1.5rem rgb(0 0 0 / 25%);
 
     /* Modal sizing */
     --modal-max-width: clamp(20rem, 90vw, 37.5rem);
@@ -74,8 +75,9 @@
     --day-modal-min-width: 18rem;
     --day-modal-max-width-desktop: 70rem;
     --day-modal-max-width-hd: 90rem;
-    --modal-overlay-color: rgb(0 0 0 / 25%);
-    --modal-overlay-blur: 0.25rem;
+    --modal-overlay-color: rgb(0 0 0 / 35%);
+    --modal-overlay-color-fallback: rgb(0 0 0 / 50%);
+    --modal-overlay-blur: 0.375rem;
 
     /* Animation distances */
     --slide-distance: 31.25rem;
@@ -180,5 +182,6 @@ body {
     /* Shadows - light blue-ish */
     --box-shadow-light: 0 -0.125rem 0.3125rem rgb(125 211 252 / 40%);
     --box-shadow-modal: 0 0 1.25rem rgb(125 211 252 / 20%);
+    --box-shadow-modal-enhanced: 0 1rem 3rem rgb(125 211 252 / 45%), 0 0.5rem 1.5rem rgb(125 211 252 / 35%);
     --box-shadow-subtle: 0 -0.0625rem 0.3125rem rgb(125 211 252 / 30%);
 }
