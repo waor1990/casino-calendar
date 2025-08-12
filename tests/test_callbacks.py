@@ -135,11 +135,17 @@ def test_hotel_booking_link_display(casino):
     assert style["display"] == "none"
 
     # Test with a casino that has a booking URL
-    # Mock the casino to be in the hotel booking sites data
-    import app_components.callbacks.filters as filters_module
+    # Mock the configuration cache to return booking sites data
+    from utils import config_cache
 
-    original_booking_sites = filters_module.HOTEL_BOOKING_SITES
-    filters_module.HOTEL_BOOKING_SITES = {casino: "https://example.com/booking"}
+    original_get_config = config_cache.get_config
+
+    def mock_get_config(filename):
+        if filename == "hotel_book_sites.json":
+            return {casino: "https://example.com/booking"}
+        return original_get_config(filename)
+
+    config_cache.get_config = mock_get_config
 
     try:
         children, style = func([casino])
@@ -148,16 +154,21 @@ def test_hotel_booking_link_display(casino):
         assert children[0].href == "https://example.com/booking"
         assert "Hotel Booking" in children[0].children
     finally:
-        # Restore original booking sites
-        filters_module.HOTEL_BOOKING_SITES = original_booking_sites
+        # Restore original get_config function
+        config_cache.get_config = original_get_config
 
     # Test with a casino that has N/A booking URL
-    filters_module.HOTEL_BOOKING_SITES = {casino: "N/A"}
+    def mock_get_config_na(filename):
+        if filename == "hotel_book_sites.json":
+            return {casino: "N/A"}
+        return original_get_config(filename)
+
+    config_cache.get_config = mock_get_config_na
 
     try:
         children, style = func([casino])
         assert children == []
         assert style["display"] == "none"
     finally:
-        # Restore original booking sites
-        filters_module.HOTEL_BOOKING_SITES = original_booking_sites
+        # Restore original get_config function
+        config_cache.get_config = original_get_config

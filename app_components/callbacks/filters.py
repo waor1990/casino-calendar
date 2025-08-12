@@ -17,16 +17,18 @@ PDT = timezone("America/Los_Angeles")
 # Initialize module logger
 logger = setup_logger(__name__)
 
-# Load hotel booking sites data
-try:
-    with open("data/hotel_book_sites.json", "r") as f:
-        HOTEL_BOOKING_SITES = json.load(f)
-except FileNotFoundError:
-    logger.warning("hotel_book_sites.json not found, hotel booking links disabled")
-    HOTEL_BOOKING_SITES = {}
-except json.JSONDecodeError as e:
-    logger.error(f"Error parsing hotel_book_sites.json: {e}")
-    HOTEL_BOOKING_SITES = {}
+
+def _get_hotel_booking_sites():
+    """Get hotel booking sites data from configuration cache."""
+    from utils.config_cache import get_config
+
+    sites = get_config("hotel_book_sites.json")
+    if not sites:
+        logger.warning(
+            "hotel_book_sites.json not available, hotel booking links disabled"
+        )
+        return {}
+    return sites
 
 
 def register_callbacks(app, df) -> None:
@@ -168,7 +170,8 @@ def register_callbacks(app, df) -> None:
             return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
 
         casino_name = selected_casinos[0]
-        booking_url = HOTEL_BOOKING_SITES.get(casino_name)
+        hotel_booking_sites = _get_hotel_booking_sites()
+        booking_url = hotel_booking_sites.get(casino_name)
 
         if booking_url and booking_url != "N/A":
             # Show the hotel booking link

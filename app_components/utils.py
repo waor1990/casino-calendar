@@ -7,15 +7,13 @@ import pandas as pd
 from dash import html
 from pytz import UTC, timezone
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-with open(DATA_DIR / "offer_type_emojis.json", encoding="utf-8") as f:
-    OFFER_TYPE_EMOJIS = json.load(f)
+from utils.config_cache import get_config
 
 
 def offer_type_emoji(offer_type: str) -> str:
     """Return emoji for the given ``offer_type`` or ellipsis for unknown."""
-
-    return OFFER_TYPE_EMOJIS.get(offer_type, "...")
+    emojis = get_config("offer_type_emojis.json") or {}
+    return emojis.get(offer_type, "...")
 
 
 PDT = timezone("America/Los_Angeles")
