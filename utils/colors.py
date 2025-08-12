@@ -1,42 +1,44 @@
-import json
-from pathlib import Path
-
 from app_components.logging_config import setup_logger
+from utils.config_cache import get_config
 
 # Initialize module logger
 logger = setup_logger(__name__)
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+# Cache for color data - populated lazily
+_color_map = None
+_default_colors = None
 
-try:
-    with open(DATA_DIR / "casino_colors.json", encoding="utf-8") as f:
-        COLOR_MAP = json.load(f)
-    logger.debug(f"Loaded casino colors for {len(COLOR_MAP)} casinos")
-except FileNotFoundError:
-    logger.error(f"Casino colors file not found: {DATA_DIR / 'casino_colors.json'}")
-    COLOR_MAP = {}
-except json.JSONDecodeError as e:
-    logger.error(f"Invalid JSON in casino colors file: {e}", exc_info=True)
-    COLOR_MAP = {}
 
-try:
-    with open(DATA_DIR / "default_colors.json", encoding="utf-8") as f:
-        DEFAULT_COLORS = json.load(f)
-    logger.debug(f"Loaded {len(DEFAULT_COLORS)} default colors")
-except FileNotFoundError:
-    logger.error(f"Default colors file not found: {DATA_DIR / 'default_colors.json'}")
-    DEFAULT_COLORS = []
-except json.JSONDecodeError as e:
-    logger.error(f"Invalid JSON in default colors file: {e}", exc_info=True)
-    DEFAULT_COLORS = []
+def _get_color_map():
+    """Get casino color mapping, loading from cache if needed."""
+    global _color_map
+    if _color_map is None:
+        _color_map = get_config("casino_colors.json") or {}
+        if _color_map:
+            logger.debug("Loaded casino colors for %d casinos", len(_color_map))
+        else:
+            logger.warning("Casino colors unavailable, falling back to defaults")
+    return _color_map
+
+
+def _get_default_colors():
+    """Get default color list, loading from cache if needed."""
+    global _default_colors
+    if _default_colors is None:
+        _default_colors = get_config("default_colors.json") or []
+        if _default_colors:
+            logger.debug("Loaded %d default colors", len(_default_colors))
+        else:
+            logger.warning("Default colors unavailable")
+    return _default_colors
 
 
 def get_color():
     """Return a mapping of casino names to color styles."""
     logger.debug("Generating color mapping for casinos")
 
-    color_map = COLOR_MAP
-    default_colors = DEFAULT_COLORS
+    color_map = _get_color_map()
+    default_colors = _get_default_colors()
 
     result = {}
     for casino, colors in color_map.items():
