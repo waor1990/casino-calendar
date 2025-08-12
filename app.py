@@ -14,7 +14,7 @@ from app_components.callbacks import register_callbacks
 from app_components.data import load_event_data
 from app_components.layout import create_layout
 from app_components.logging_config import setup_logger
-from utils.config_cache import get_config
+from utils.config_cache import warm_cache
 
 # Initialize application logger
 logger = setup_logger(__name__)
@@ -26,8 +26,13 @@ logger.info("Casino Calendar application starting up")
 logger.debug(f"Dash app initialized with title: {app.title}")
 
 # Preload configuration files so they are cached at startup
-get_config("casino_colors.json")
-get_config("default_colors.json")
+warm_cache(
+    "casino_colors.json",
+    "default_colors.json",
+    "offer_type_emojis.json",
+    "offer_keywords.json",
+    "hotel_book_sites.json",
+)
 
 app.index_string = """
 <!DOCTYPE html>

@@ -4,25 +4,41 @@ from utils.config_cache import get_config
 # Initialize module logger
 logger = setup_logger(__name__)
 
-COLOR_MAP = get_config("casino_colors.json") or {}
-if COLOR_MAP:
-    logger.debug("Loaded casino colors for %d casinos", len(COLOR_MAP))
-else:
-    logger.warning("Casino colors unavailable, falling back to defaults")
+# Cache for color data - populated lazily
+_color_map = None
+_default_colors = None
 
-DEFAULT_COLORS = get_config("default_colors.json") or []
-if DEFAULT_COLORS:
-    logger.debug("Loaded %d default colors", len(DEFAULT_COLORS))
-else:
-    logger.warning("Default colors unavailable")
+
+def _get_color_map():
+    """Get casino color mapping, loading from cache if needed."""
+    global _color_map
+    if _color_map is None:
+        _color_map = get_config("casino_colors.json") or {}
+        if _color_map:
+            logger.debug("Loaded casino colors for %d casinos", len(_color_map))
+        else:
+            logger.warning("Casino colors unavailable, falling back to defaults")
+    return _color_map
+
+
+def _get_default_colors():
+    """Get default color list, loading from cache if needed."""
+    global _default_colors
+    if _default_colors is None:
+        _default_colors = get_config("default_colors.json") or []
+        if _default_colors:
+            logger.debug("Loaded %d default colors", len(_default_colors))
+        else:
+            logger.warning("Default colors unavailable")
+    return _default_colors
 
 
 def get_color():
     """Return a mapping of casino names to color styles."""
     logger.debug("Generating color mapping for casinos")
 
-    color_map = COLOR_MAP
-    default_colors = DEFAULT_COLORS
+    color_map = _get_color_map()
+    default_colors = _get_default_colors()
 
     result = {}
     for casino, colors in color_map.items():
