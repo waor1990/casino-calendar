@@ -145,7 +145,7 @@
 /* Event blocks displayed in the day view modal */
 .event-block-day {
     position: absolute;
-    border: var(--border-event) solid var(--color-border-accent);
+    border: var(--border-event) solid var(--color-accent);
     border-radius: var(--border-radius-sm);
     box-sizing: border-box;
     z-index: 10;
@@ -161,10 +161,6 @@
     background-color: var(--bg);
     color: var(--fg);
     box-shadow: var(--box-shadow-light);
-
-    [data-theme="dark"] & {
-        border: var(--border-event) solid var(--color-primary);
-    }
 }
 
 
