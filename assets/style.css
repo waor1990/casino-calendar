@@ -48,7 +48,7 @@
   --border-radius-xs: 0.125rem;
   --border-thin: 1px;
   --border-thick: 0.125rem;
-  --border-event: 0.1875rem;
+  --border-event: 0.125rem;
   --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary);
   --box-shadow-subtle: 0 -0.0625rem 0.3125rem var(--color-accent);
   --box-shadow-modal: 0 0 1.25rem var(--color-primary);
@@ -67,8 +67,8 @@
   --day-modal-min-width: 18rem;
   --day-modal-max-width-desktop: 70rem;
   --day-modal-max-width-hd: 90rem;
-  --modal-overlay-color: rgb(0 0 0 / 25%);
-  --modal-overlay-blur: 0.25rem;
+  --modal-overlay-color: rgb(0 0 0 / 60%);
+  --modal-overlay-blur: 0.5rem;
   /* Animation distances */
   --slide-distance: 31.25rem;
   --overflow-expand-max-height: 31.25rem;
@@ -417,10 +417,11 @@ h1,
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.overflow-box {
+#overflow-box {
   width: 80%;
   font-size: clamp(var(--font-xs), 3.5vw, var(--font-base));
   padding: var(--padding-base);
+  color: var(--color-primary);
 }
 
 .overflow-title {
@@ -518,16 +519,19 @@ h1,
 [data-theme=dark] .event-label-title,
 [data-theme=dark] .day-modal-title,
 [data-theme=dark] .event-label strong,
-[data-theme=dark] .no-events,
-[data-theme=dark] .hour-label {
+[data-theme=dark] .no-events {
   color: var(--color-primary);
 }
 [data-theme=dark] .day-label,
 [data-theme=dark] .legend-title,
-[data-theme=dark] .overflow-box,
+[data-theme=dark] #overflow-box,
 [data-theme=dark] .day-label-grid,
-[data-theme=dark] .overflow-toggle {
+[data-theme=dark] .overflow-toggle,
+[data-theme=dark] .hour-label {
   color: var(--color-accent);
+}
+[data-theme=dark] .day-label.day-modal-title {
+  color: var(--color-primary);
 }
 [data-theme=dark] .legend-selected {
   outline: var(--border-thin) solid var(--color-primary);
@@ -810,8 +814,9 @@ h1,
   position: fixed;
   inset: 0;
   background-color: var(--modal-overlay-color);
-  /* backdrop-filter: blur(var(--modal-overlay-blur)); */
-  /* Commented out for compatibility */
+  backdrop-filter: blur(var(--modal-overlay-blur));
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-backdrop-filter: blur(var(--modal-overlay-blur));
   z-index: -1;
   pointer-events: none;
 }
@@ -924,7 +929,7 @@ h1,
 /* Event blocks displayed in the day view modal */
 .event-block-day {
   position: absolute;
-  border: var(--border-event) solid var(--color-border-accent);
+  border: var(--border-event) solid var(--color-accent);
   border-radius: var(--border-radius-sm);
   box-sizing: border-box;
   z-index: 10;
@@ -940,9 +945,6 @@ h1,
   background-color: var(--bg);
   color: var(--fg);
   box-shadow: var(--box-shadow-light);
-}
-[data-theme=dark] .event-block-day {
-  border: var(--border-event) solid var(--color-primary);
 }
 
 .event-block-day-text {
