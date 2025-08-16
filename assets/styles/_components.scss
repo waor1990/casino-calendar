@@ -146,6 +146,7 @@ h1,
     width: 80%;
     font-size: clamp(var(--font-xs), 3.5vw, var(--font-base));
     padding: var(--padding-base);
+    color: var(--color-primary);
 }
 
 .overflow-title {
@@ -262,10 +263,6 @@ h1,
 
     .day-label.day-modal-title {
         color: var(--color-primary);
-    }
-
-    .overflow-box .event-label span {
-        color: var(--color-accent);
     }
 
     .legend-selected {
