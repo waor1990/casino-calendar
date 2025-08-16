@@ -245,7 +245,7 @@ def register_callbacks(app, df) -> None:
                 start = to_pdt(cast(datetime, row["StartDate"])).strftime("%b %d")
                 end = to_pdt(cast(datetime, row["EndDate"])).strftime("%b %d")
                 text = f"{row['EventName']} ({row['Casino']}) - {start} to {end}"
-                return html.Li(text, style={"color": "#00008B"})
+                return html.Li(text)
 
             overflow_box = html.Div(
                 id="overflow-box",
