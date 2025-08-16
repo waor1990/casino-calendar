@@ -247,8 +247,7 @@ h1,
     .event-label-title,
     .day-modal-title,
     .event-label strong,
-    .no-events,
-    .hour-label {
+    .no-events {
         color: var(--color-primary);
     }
 
@@ -256,7 +255,16 @@ h1,
     .legend-title,
     .overflow-box,
     .day-label-grid,
-    .overflow-toggle {
+    .overflow-toggle,
+    .hour-label {
+        color: var(--color-accent);
+    }
+
+    .day-label.day-modal-title {
+        color: var(--color-primary);
+    }
+
+    .overflow-box .event-label span {
         color: var(--color-accent);
     }
 
