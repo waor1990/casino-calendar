@@ -29,8 +29,9 @@
     position: fixed;
     inset: 0;
     background-color: var(--modal-overlay-color);
-    /* backdrop-filter: blur(var(--modal-overlay-blur)); */
-    /* Commented out for compatibility */
+    backdrop-filter: blur(var(--modal-overlay-blur));
+    /* stylelint-disable-next-line property-no-vendor-prefix */
+    -webkit-backdrop-filter: blur(var(--modal-overlay-blur));
     z-index: -1;
     pointer-events: none;
 }
