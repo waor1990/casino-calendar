@@ -1,6 +1,5 @@
 import plotly.graph_objs as go
 from dash import dcc, html
-
 from utils.colors import get_color
 
 from .logging_config import setup_logger
@@ -19,6 +18,7 @@ def create_layout(app, df):
         layout = html.Div(
             className="main-layout",
             children=[
+                dcc.Location(id="home-url", refresh=True),
                 # Header section only (wrapped for height calc)
                 html.Div(
                     id="app-header",
@@ -128,7 +128,12 @@ def sticky_header(df):
         [
             html.H1(
                 [
-                    "🎰 Casino Event Calendar 📅",
+                    html.Button(
+                        "🎰 Casino Events Calendar 📅",
+                        id="home-button",
+                        n_clicks=0,
+                        className="calendar-title-home-button",
+                    ),
                     html.Button(
                         "🌙",
                         id="theme-toggle",
