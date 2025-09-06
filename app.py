@@ -20,7 +20,7 @@ from utils.config_cache import warm_cache
 logger = setup_logger(__name__)
 
 app = Dash(__name__, suppress_callback_exceptions=True)
-app.title = "Casino Event Calendar"
+app.title = "Casino Events Calendar"
 
 logger.info("Casino Calendar application starting up")
 logger.debug(f"Dash app initialized with title: {app.title}")
