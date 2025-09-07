@@ -128,7 +128,13 @@ def sticky_header(df):
         [
             html.H1(
                 [
-                    "🎰 Casino Event Calendar 📅",
+                    html.Button(
+                        "🎰 Casino Event Calendar 📅",
+                        id="home-button",
+                        n_clicks=0,
+                        className="calendar-title-home-button",
+                        title="Home",
+                    ),
                     html.Button(
                         "🌙",
                         id="theme-toggle",

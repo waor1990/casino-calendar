@@ -29,12 +29,11 @@ h1,
 }
 
 .calendar-title-home-button {
-    background: none;
-    border: none;
+    /* Make the button look like plain text */
+    all: unset;
     color: inherit;
     font: inherit;
     cursor: pointer;
-    padding: 0;
 }
 
 .calendar-title-home-button:focus {
