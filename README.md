@@ -3,8 +3,8 @@
 A personal Dash application that displays casino events on a responsive calendar.
 Weekly and daily views include interactive modals rendered with a CSS grid layout.
 
-The project targets **Python 3.11** and **Node 18**.  Other versions may work
-but are not tested.
+The project targets **Python 3.11** and **Node 22** (tested with **v22.9.0**).
+Other versions may work but are not tested.
 
 ---
 

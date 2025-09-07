@@ -1,6 +1,6 @@
 # Casino Calendar - AI Agent Instructions
 
-This is a Dash web application for displaying casino events in a calendar view. The app is designed for Python 3.11 and Node 18.
+This is a Dash web application for displaying casino events in a calendar view. The app is designed for Python 3.11 and Node 22 (tested with v22.9.0).
 
 **See `.github/copilot-instructions.md` for comprehensive development guidelines.**
 
