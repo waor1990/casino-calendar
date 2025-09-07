@@ -8,13 +8,16 @@ python -m py_compile app.py app_components/*.py
 
 # Run formatters and linter if installed
 if command -v black >/dev/null 2>&1; then
+    # Respect repository Black settings (via pyproject.toml)
     black --check .
 fi
 if command -v isort >/dev/null 2>&1; then
-    isort --check-only .
+    # Use the project isort settings to align with Black
+    isort --check-only --settings-path config/.isort.cfg .
 fi
 if command -v flake8 >/dev/null 2>&1; then
-    flake8 .
+    # Use the centralized flake8 config to avoid default 79 char limit
+    flake8 --config config/.flake8 .
 fi
 if command -v mypy >/dev/null 2>&1; then
     mypy .

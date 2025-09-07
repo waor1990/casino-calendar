@@ -21,9 +21,12 @@ jobs:
           npm install
       - name: Check style
         run: |
+          # Black reads settings from pyproject.toml (line-length=120)
           black --check .
-          isort --check-only .
-          flake8 .
+          # Ensure isort aligns with Black and project settings
+          isort --check-only --settings-path config/.isort.cfg .
+          # Use centralized flake8 config (max-line-length > 79)
+          flake8 --config config/.flake8 .
           python -m py_compile app.py app_components/*.py
       - name: Lint CSS
         run: npm run lint:css
