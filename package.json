@@ -3,6 +3,13 @@
     "version": "1.0.0",
     "description": "Dash casino event calendar assets",
     "private": true,
+    "engines": {
+        "node": "^22.9.0",
+        "npm": ">=10"
+    },
+    "volta": {
+        "node": "22.9.0"
+    },
     "scripts": {
         "build:css": "sass --no-source-map assets/style.scss assets/style.css",
         "watch:css": "sass --no-source-map --watch assets/style.scss assets/style.css",
