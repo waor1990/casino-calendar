@@ -8,12 +8,17 @@ import argparse
 import sys
 from pathlib import Path
 
-# Add project root to Python path
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+# Add project root to Python path (two levels up from scripts/maintenance)
+# __file__ = <repo>/scripts/maintenance/cleanup_logs.py
+# parent -> maintenance, parent.parent -> scripts, parent.parent.parent -> repo root
+project_root = Path(__file__).resolve().parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 from utils.log_rotation import (
     archive_current_log,
+    archive_and_trim_by_days,
+    archive_and_trim_by_month,
     cleanup_old_logs,
     get_log_directory_info,
 )
@@ -40,6 +45,18 @@ Examples:
         "--log-dir", type=str, default="logs", help="Log directory path (default: logs)"
     )
     parser.add_argument(
+        "--log-file",
+        type=str,
+        default=None,
+        help="Full path to log file (auto-detect if not provided)",
+    )
+    parser.add_argument(
+        "--archive-dir",
+        type=str,
+        default=None,
+        help="Archive directory (default: <log-dir>/archive)",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would be deleted without actually deleting",
@@ -52,11 +69,39 @@ Examples:
         action="store_true",
         help="Archive the current production log file",
     )
+    parser.add_argument(
+        "--archive-split-days",
+        type=int,
+        default=None,
+        help="Archive lines older than N days and trim current log",
+    )
+    parser.add_argument(
+        "--archive-by-month",
+        action="store_true",
+        help="Archive prior months and keep only current month in active log",
+    )
     parser.add_argument("--quiet", action="store_true", help="Reduce output verbosity")
 
     args = parser.parse_args()
 
     log_dir = Path(args.log_dir)
+
+    # Determine log file if not supplied
+    def resolve_log_file() -> Path:
+        if args.log_file:
+            return Path(args.log_file)
+        # Prefer LOG_FILE env var
+        import os
+
+        env_path = os.getenv("LOG_FILE")
+        if env_path:
+            return Path(env_path)
+        # Fallbacks: prefer prod name if it exists
+        prod_path = log_dir / "casino_calendar_prod.log"
+        default_path = log_dir / "casino_calendar.log"
+        if prod_path.exists():
+            return prod_path
+        return default_path
 
     # Show log directory info if requested
     if args.info:
@@ -82,7 +127,7 @@ Examples:
 
     # Archive current log if requested
     if args.archive_current:
-        current_log = log_dir / "casino_calendar_prod.log"
+        current_log = resolve_log_file()
         if current_log.exists():
             try:
                 archive_path = archive_current_log(str(current_log))
@@ -94,7 +139,53 @@ Examples:
             print(f"Current log file {current_log} does not exist")
         return 0
 
-    # Perform cleanup
+    # Archive split by days (trim current log)
+    if args.archive_split_days is not None:
+        log_file = resolve_log_file()
+        try:
+            summary = archive_and_trim_by_days(
+                str(log_file), days_to_keep=args.archive_split_days, archive_dir=args.archive_dir
+            )
+            if not args.quiet:
+                arch = summary.get("archive_path")
+                print(
+                    f"Archived {summary['archived_lines']} lines to {arch if arch else 'N/A'}; "
+                    f"kept {summary['kept_lines']} lines in {log_file}"
+                )
+            return 0
+        except PermissionError as e:
+            print(
+                f"Permission error writing to log file. Ensure the app is not locking the file.\n{e}"
+            )
+            return 1
+        except Exception as e:
+            print(f"Error during archive split by days: {e}")
+            return 1
+
+    # Archive by month (trim current log)
+    if args.archive_by_month:
+        log_file = resolve_log_file()
+        try:
+            summary = archive_and_trim_by_month(
+                str(log_file), archive_dir=args.archive_dir
+            )
+            if not args.quiet:
+                files = summary.get("archive_files", [])
+                print(
+                    f"Archived {summary['archived_lines']} lines to {len(files)} file(s); "
+                    f"kept {summary['kept_lines']} lines in {log_file}"
+                )
+            return 0
+        except PermissionError as e:
+            print(
+                f"Permission error writing to log file. Ensure the app is not locking the file.\n{e}"
+            )
+            return 1
+        except Exception as e:
+            print(f"Error during archive by month: {e}")
+            return 1
+
+    # Perform cleanup of old files
     if not log_dir.exists():
         print(f"Log directory {log_dir} does not exist")
         return 1
