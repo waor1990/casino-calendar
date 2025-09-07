@@ -270,7 +270,7 @@ h1,
     .day-label-grid,
     .overflow-toggle,
     .hour-label {
-        color: var(--color-accent);
+        color: var(--color-primary);
     }
 
     .day-label.day-modal-title {
@@ -288,7 +288,13 @@ h1,
 
         &:hover {
             background-color: var(--color-primary);
-            color: var(--color-primary);
+            color: var(--color-background);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-light);
+        }
+
+        &:active {
+            transform: translateY(0);
         }
     }
 
