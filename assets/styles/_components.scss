@@ -28,6 +28,18 @@ h1,
     transform: translateY(-50%);
 }
 
+.calendar-title-home-button {
+    /* Make the button look like plain text */
+    all: unset;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.calendar-title-home-button:focus {
+    outline: none;
+}
+
 .legend-title {
     font-size: clamp(var(--font-subtitle), 2.5vw, var(--font-header));
     font-weight: var(--font-weight-bold);
