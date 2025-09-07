@@ -8,6 +8,9 @@
     ],
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Path": "flake8",
+    "python.linting.flake8CategorySeverity.E": "Warning",
+    "python.linting.flake8CategorySeverity.W": "Warning",
+    "python.linting.flake8CategorySeverity.F": "Warning",
     "python.linting.pylintEnabled": false,
     "stylelint.validate": [
         "css",
