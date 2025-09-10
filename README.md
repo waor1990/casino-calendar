@@ -168,6 +168,16 @@ web: gunicorn app:server
 Please follow the development guidelines in `AGENTS.md` when proposing
 changes. Run the formatters and linters before committing and see
 `GIT-CHEATSHEET.md` for handy Git commands.
+ 
+### Git Helper: CSV Update Alias
+
+For quick commits when only `data/casino_events.csv` changes, add a repo‑local alias:
+
+- Create alias: `git config --local alias.csvupdate '!git add data/casino_events.csv && git commit -m "chore(data): update casino_events.csv"'`
+- Use it: `git csvupdate`
+- Optional (with push): `git config --local alias.csvupdate '!git add data/casino_events.csv && git commit -m "chore(data): update casino_events.csv" && git push'`
+
+See `GIT-CHEATSHEET.md` for editing/removing the alias and more details.
 VSCode users can take advantage of the included `.editorconfig` and
 `.vscode` files so formatting and linting run automatically on save.
 
