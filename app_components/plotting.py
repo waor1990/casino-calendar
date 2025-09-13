@@ -1,10 +1,14 @@
 from datetime import datetime, timedelta
 from math import floor
-from typing import Any, Callable, List, Tuple
+from typing import TYPE_CHECKING, Any, Callable
 
 import pandas as pd
 import plotly.graph_objs as go
 from dash import dcc, html
+
+if TYPE_CHECKING:
+    # Dash base component type for annotations only
+    from dash.development.base_component import Component
 
 from utils.colors import get_color
 
@@ -25,7 +29,7 @@ DAY_MODAL_TRACK_REM = 7
 
 
 # Layout config shared across functions
-def get_layout_config(screen_width: int) -> Tuple[int, int]:
+def get_layout_config(screen_width: int) -> tuple[int, int]:
     """Return hour height and label column width based on ``screen_width``."""
 
     # Reduce hour height to fit all 24 hours within modal height
@@ -39,9 +43,9 @@ def get_layout_config(screen_width: int) -> Tuple[int, int]:
 def generate_day_view_html(
     events_df: pd.DataFrame,
     clicked_date: datetime,
-    get_color_fn: Callable[[], dict],
+    get_color_fn: Callable[[], dict[str, dict[str, str]]],
     screen_width: int = 1024,
-) -> List[html.Div | dcc.Graph | html.H2]:
+) -> "list[Component]":
     """Return a list of HTML elements representing a single day's events."""
 
     hour_height, _ = get_layout_config(screen_width)
@@ -212,9 +216,9 @@ def generate_day_view_html(
     width_pct = (100 - label_column_pct) / n_tracks
 
     color_map = get_color_fn()
-    hour_blocks: list[html.Div] = []
-    hour_lines: list[html.Div] = []
-    event_blocks: list[html.Div] = []
+    hour_blocks: "list[Component]" = []
+    hour_lines: "list[Component]" = []
+    event_blocks: "list[Component]" = []
     click_markers: list[go.Scatter] = []
 
     track_width_pct = width_pct * 0.9  # leave small margin within track
@@ -275,6 +279,7 @@ def generate_day_view_html(
 
         short_span = row["duration_min"] < 90
 
+        children: Any
         if short_span:
             children = [html.Span(emoji, className="event-block-day-text")]
         else:
@@ -301,7 +306,7 @@ def generate_day_view_html(
         if short_span:
             block_classes.append("short-span")
 
-        def _fmt_time(ts: pd.Timestamp) -> str:
+        def _fmt_time(ts: datetime) -> str:
             """Return timestamp formatted as h:mm AM/PM without leading zero."""
             return ts.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
 
@@ -435,7 +440,9 @@ def generate_day_view_html(
     ]
 
 
-def build_weekly_figure(events_df, screen_width, week_start):
+def build_weekly_figure(
+    events_df: pd.DataFrame, screen_width: int, week_start: datetime
+) -> go.Figure:
     """Return the legacy Plotly weekly figure.
 
     This helper is retained for test coverage and reference while the
@@ -460,10 +467,10 @@ def build_weekly_figure(events_df, screen_width, week_start):
     row_unit_height = slot_height + slot_padding
     MIN_ROWS = 5
 
-    used_rows_by_day = {i: set() for i in range(7)}
-    recurring_rows = {}
-    row_nums = []
-    current_row = 0
+    used_rows_by_day: dict[int, set[int]] = {i: set() for i in range(7)}
+    recurring_rows: dict[str, int] = {}
+    row_nums: list[int] = []
+    current_row: int = 0
 
     tick_labels = [
         (week_start + timedelta(days=i)).strftime("%a")
@@ -511,6 +518,7 @@ def build_weekly_figure(events_df, screen_width, week_start):
             )
             preferred_row = recurring_rows.get(recurring_key)
             row_assigned = False
+            assigned_row: int | None = None
 
             if preferred_row is not None and all(
                 preferred_row not in used_rows_by_day[d]
@@ -529,12 +537,14 @@ def build_weekly_figure(events_df, screen_width, week_start):
                         row_assigned = True
                         break
 
-            if row_assigned:
+            if row_assigned and assigned_row is not None:
                 for d in range(start_day, end_day + 1):
                     used_rows_by_day[d].add(assigned_row)
                 row_nums.append(assigned_row)
-
-            row_num = assigned_row
+                row_num = assigned_row
+            else:
+                # Fallback: skip if no available row could be assigned
+                continue
             y_center = (row_num + 0.5) * row_unit_height
 
             adjusted_start = 0 + PADDING if row["has_left_arrow"] else visible_start
