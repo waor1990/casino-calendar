@@ -370,7 +370,7 @@ def generate_day_view_html(
         # Visible block
         event_blocks.append(html.Div(children, **block_kwargs))
 
-        # Invisible click marker for modal
+        # Click marker for modal (visible for debugging)
         center_y = top_px + height_px / 2
         center_x = left_pct + width_pct / 2
         event_data = row[
@@ -389,7 +389,7 @@ def generate_day_view_html(
                 x=[center_x / 100],
                 y=[center_y],
                 mode="markers",
-                marker=dict(size=30, opacity=0.001, color="rgba(255,255,255,0.01)"),
+                marker=dict(size=30, opacity=0.8, color="red"),
                 customdata=[[event_data]],
                 hoverinfo="skip",
                 showlegend=False,
