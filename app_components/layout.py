@@ -1,4 +1,3 @@
-import plotly.graph_objs as go
 from dash import dcc, html
 from utils.colors import get_color
 
@@ -59,16 +58,6 @@ def create_layout(app, df):
                 dcc.Interval(id="initial-trigger", interval=1, max_intervals=1),
                 dcc.Interval(
                     id="close-timer", interval=600, n_intervals=0, max_intervals=0
-                ),
-                # Invisible catcher for click events
-                dcc.Graph(
-                    id="day-event-catcher",
-                    figure=go.Figure(),
-                    style={
-                        "visibility": "hidden",
-                        "height": "0px",
-                        "pointerEvents": "none",
-                    },
                 ),
                 # Event Modal Popup
                 html.Div(
