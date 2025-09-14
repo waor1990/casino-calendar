@@ -1,10 +1,10 @@
-import json
+import re
 import time
 from datetime import timedelta
-from pathlib import Path
 
 import pandas as pd
 from pytz import UTC, AmbiguousTimeError, NonExistentTimeError
+from utils.config_cache import get_config
 
 from .logging_config import setup_logger
 from .utils import PDT
@@ -18,9 +18,6 @@ def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> 
 
     event_name = str(event_name).lower() if pd.notna(event_name) else ""
     offer = str(offer).lower() if pd.notna(offer) else ""
-
-    # Load keywords from configuration cache
-    from utils.config_cache import get_config
 
     keywords = get_config("offer_keywords.json")
     if not keywords:
@@ -61,6 +58,49 @@ def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> 
         return "Special-Events"
 
     return "Offer"
+
+
+def categorize_offer_types(df: pd.DataFrame) -> pd.Series:
+    """Vectorized offer type categorization for an entire DataFrame."""
+    logger.debug("Categorizing offer types using vectorized operations")
+
+    keywords = get_config("offer_keywords.json")
+    if not keywords:
+        logger.error("Could not load offer keywords configuration")
+        return pd.Series("Offer", index=df.index)
+
+    event_name = (
+        df.get("EventName", pd.Series(index=df.index, dtype=str)).fillna("").str.lower()
+    )
+    offer = df.get("Offer", pd.Series(index=df.index, dtype=str)).fillna("").str.lower()
+
+    category = pd.Series("Offer", index=df.index)
+
+    def match(keys: list[str]) -> pd.Series:
+        pattern = "|".join(map(re.escape, keys))
+        return event_name.str.contains(pattern) | offer.str.contains(pattern)
+
+    masks = {
+        "vehicle": match(keywords["vehicle_car_giveaway_keywords"]),
+        "giveaway": match(keywords["giveaway_keywords"]),
+        "free_play": match(keywords["free_play_cash_drawing_keywords"]),
+        "multiplier": match(keywords["multiplier_points_keywords"]),
+        "hospitality": match(keywords["hotel_travel_dining_shopping_keywords"]),
+        "special": match(keywords["special_event_keywords"]),
+    }
+
+    category[masks["vehicle"]] = "Giveaway"
+    category[masks["giveaway"] & ~masks["vehicle"]] = "Giveaway"
+    used = masks["vehicle"] | masks["giveaway"]
+    category[masks["free_play"] & ~used] = "Free-Play"
+    used |= masks["free_play"]
+    category[masks["multiplier"] & ~used] = "Point-Based"
+    used |= masks["multiplier"]
+    category[masks["hospitality"] & ~used] = "Hospitality-Rewards"
+    used |= masks["hospitality"]
+    category[masks["special"] & ~used] = "Special-Events"
+
+    return category
 
 
 def load_event_data(csv_path: str = "data/casino_events.csv") -> pd.DataFrame:
@@ -118,10 +158,7 @@ def load_event_data(csv_path: str = "data/casino_events.csv") -> pd.DataFrame:
 
     logger.debug("Categorizing offer types...")
     try:
-        df["OfferType"] = df.apply(
-            lambda row: categorize_offer_type_updated(row.get("EventName"), row.get("Offer")),
-            axis=1,
-        )
+        df["OfferType"] = categorize_offer_types(df)
 
         # Log offer type distribution
         offer_counts = df["OfferType"].value_counts()
