@@ -130,6 +130,7 @@ def register_callbacks(app, df) -> None:
         if not ctx.triggered_id:
             raise dash.exceptions.PreventUpdate
         clicked = ctx.triggered_id.get("index")
+        logger.debug(f"Casino legend clicked: {clicked}")
 
         if not selected:
             selected = []
@@ -140,6 +141,7 @@ def register_callbacks(app, df) -> None:
         else:
             selected_list.append(clicked)
 
+        logger.info(f"Selected casinos updated: {selected_list}")
         return selected_list
 
     @app.callback(
@@ -148,6 +150,7 @@ def register_callbacks(app, df) -> None:
         State({"type": "casino-filter", "index": ALL}, "id"),
     )
     def update_legend_classes(selected, ids):
+        logger.debug(f"Updating legend classes for casinos: {selected}")
         base = "legend-item legend-button"
         selected_set = set(selected or [])
         classes = []
@@ -165,8 +168,9 @@ def register_callbacks(app, df) -> None:
     )
     def update_hotel_booking_link(selected_casinos):
         """Update hotel booking link based on selected casino."""
+        logger.debug(f"Updating hotel booking link for selection: {selected_casinos}")
         if not selected_casinos or len(selected_casinos) != 1:
-            # Hide the container if no casino or multiple casinos are selected
+            logger.debug("Hotel booking link hidden due to selection count")
             return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
 
         casino_name = selected_casinos[0]
@@ -174,7 +178,7 @@ def register_callbacks(app, df) -> None:
         booking_url = hotel_booking_sites.get(casino_name)
 
         if booking_url and booking_url != "N/A":
-            # Show the hotel booking link
+            logger.info(f"Showing hotel booking link for {casino_name}")
             link_content = html.A(
                 "🏨 Hotel Booking",
                 href=booking_url,
@@ -185,9 +189,8 @@ def register_callbacks(app, df) -> None:
                 "textAlign": "center",
                 "marginTop": "10px",
             }
-        else:
-            # Hide the container if no booking URL or N/A
-            return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
+        logger.info(f"No booking URL for {casino_name}; hiding hotel booking link")
+        return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
 
     @app.callback(
         Output("week-chart-container", "children"),
@@ -210,6 +213,14 @@ def register_callbacks(app, df) -> None:
         selected_types: list[str] | None,
     ) -> Tuple[html.Div, list[html.Div], str, str, dict[str, Any]]:
         """Render a single week of events and overflow list."""
+        ctx = dash.callback_context
+        logger.debug(
+            "Rendering week chart: offset=%s casinos=%s types=%s triggered_by=%s",
+            week_offset,
+            selected_casinos,
+            selected_types,
+            ctx.triggered_id,
+        )
         today_pdt = datetime.now(PDT)
         current_sunday = today_pdt - timedelta(days=(today_pdt.weekday() + 1) % 7)
         week_start_pdt = current_sunday + timedelta(weeks=week_offset)
@@ -217,9 +228,12 @@ def register_callbacks(app, df) -> None:
 
         filtered_df = df
         if selected_casinos:
+            logger.debug(f"Filtering events by casinos: {selected_casinos}")
             filtered_df = filtered_df[filtered_df["Casino"].isin(selected_casinos)]
         if selected_types:
+            logger.debug(f"Filtering events by types: {selected_types}")
             filtered_df = filtered_df[filtered_df["OfferType"].isin(selected_types)]
+        logger.info(f"Filtered events count: {len(filtered_df)}")
 
         grid = render_week_grid(week_start, filtered_df, screen_width, selected_casinos)
         labels = render_day_labels(week_start)
