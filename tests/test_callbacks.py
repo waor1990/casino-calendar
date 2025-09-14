@@ -174,13 +174,22 @@ def test_event_type_filter(monkeypatch):
 
     monkeypatch.setattr(
         "dash.callback_context",
-        DummyCtx("event-type-filter"),
+        DummyCtx("selected-event-types"),
         raising=False,
     )
 
     func(600, 0, 1024, [], ["Giveaway"])
     assert len(captured["df"]) == 1
     assert captured["df"]["OfferType"].iloc[0] == "Giveaway"
+
+
+def test_update_event_type_filter():
+    app = Dash(__name__)
+    register_callbacks(app, pd.DataFrame())
+    func = app.callback_map["selected-event-types.data"]["callback"].__wrapped__
+
+    assert func(["Giveaway"]) == ["Giveaway"]
+    assert func(None) == []
 
 
 @pytest.mark.usefixtures("casino")
