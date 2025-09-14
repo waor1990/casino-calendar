@@ -15,7 +15,6 @@ logger = setup_logger(__name__)
 
 def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> str:
     """Return an offer type based on keywords found in ``event_name`` or ``offer``."""
-    logger.debug(f"Categorizing offer type for event: {event_name}, offer: {offer}")
 
     event_name = str(event_name).lower() if pd.notna(event_name) else ""
     offer = str(offer).lower() if pd.notna(offer) else ""
@@ -28,14 +27,10 @@ def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> 
         logger.error("Could not load offer keywords configuration")
         return "Offer"
 
-    logger.debug("Loaded offer keywords from configuration cache")
-
     giveaway_keywords = keywords["giveaway_keywords"]
     free_play_cash_drawing_keywords = keywords["free_play_cash_drawing_keywords"]
     multiplier_points_keywords = keywords["multiplier_points_keywords"]
-    hotel_travel_dining_shopping_keywords = keywords[
-        "hotel_travel_dining_shopping_keywords"
-    ]
+    hotel_travel_dining_shopping_keywords = keywords["hotel_travel_dining_shopping_keywords"]
     special_event_keywords = keywords["special_event_keywords"]
     vehicle_car_giveaway_keywords = keywords["vehicle_car_giveaway_keywords"]
 
@@ -43,41 +38,28 @@ def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> 
     if any(keyword in event_name for keyword in vehicle_car_giveaway_keywords) or any(
         keyword in offer for keyword in vehicle_car_giveaway_keywords
     ):
-        category = "Giveaway"
-        logger.debug(f"Categorized as {category} (vehicle/car keywords)")
-        return category
+        return "Giveaway"
     elif any(keyword in event_name for keyword in giveaway_keywords) or any(
         keyword in offer for keyword in giveaway_keywords
     ):
-        category = "Giveaway"
-        logger.debug(f"Categorized as {category} (giveaway keywords)")
-        return category
-    elif any(
-        keyword in event_name for keyword in free_play_cash_drawing_keywords
-    ) or any(keyword in offer for keyword in free_play_cash_drawing_keywords):
-        category = "Free-Play"
-        logger.debug(f"Categorized as {category} (free-play keywords)")
-        return category
+        return "Giveaway"
+    elif any(keyword in event_name for keyword in free_play_cash_drawing_keywords) or any(
+        keyword in offer for keyword in free_play_cash_drawing_keywords
+    ):
+        return "Free-Play"
     elif any(keyword in event_name for keyword in multiplier_points_keywords) or any(
         keyword in offer for keyword in multiplier_points_keywords
     ):
-        category = "Point-Based"
-        logger.debug(f"Categorized as {category} (points keywords)")
-        return category
-    elif any(
-        keyword in event_name for keyword in hotel_travel_dining_shopping_keywords
-    ) or any(keyword in offer for keyword in hotel_travel_dining_shopping_keywords):
-        category = "Hospitality-Rewards"
-        logger.debug(f"Categorized as {category} (hospitality keywords)")
-        return category
+        return "Point-Based"
+    elif any(keyword in event_name for keyword in hotel_travel_dining_shopping_keywords) or any(
+        keyword in offer for keyword in hotel_travel_dining_shopping_keywords
+    ):
+        return "Hospitality-Rewards"
     elif any(keyword in event_name for keyword in special_event_keywords) or any(
         keyword in offer for keyword in special_event_keywords
     ):
-        category = "Special-Events"
-        logger.debug(f"Categorized as {category} (special event keywords)")
-        return category
+        return "Special-Events"
 
-    logger.debug("No keywords matched, defaulting to 'Offer'")
     return "Offer"
 
 
@@ -88,9 +70,7 @@ def load_event_data(csv_path: str = "data/casino_events.csv") -> pd.DataFrame:
 
     try:
         df = pd.read_csv(csv_path)
-        logger.info(
-            f"Successfully loaded CSV with {len(df)} rows and {len(df.columns)} columns"
-        )
+        logger.info(f"Successfully loaded CSV with {len(df)} rows and {len(df.columns)} columns")
         logger.debug(f"CSV columns: {list(df.columns)}")
     except FileNotFoundError:
         logger.error(f"Event data file not found: {csv_path}")
@@ -139,9 +119,7 @@ def load_event_data(csv_path: str = "data/casino_events.csv") -> pd.DataFrame:
     logger.debug("Categorizing offer types...")
     try:
         df["OfferType"] = df.apply(
-            lambda row: categorize_offer_type_updated(
-                row.get("EventName"), row.get("Offer")
-            ),
+            lambda row: categorize_offer_type_updated(row.get("EventName"), row.get("Offer")),
             axis=1,
         )
 
