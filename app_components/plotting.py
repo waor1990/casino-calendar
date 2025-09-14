@@ -1,10 +1,14 @@
 from datetime import datetime, timedelta
 from math import floor
-from typing import Any, Callable, List, Tuple
+from typing import TYPE_CHECKING, Any, Callable
 
 import pandas as pd
 import plotly.graph_objs as go
 from dash import dcc, html
+
+if TYPE_CHECKING:
+    # Dash base component type for annotations only
+    from dash.development.base_component import Component
 
 from utils.colors import get_color
 
@@ -25,7 +29,7 @@ DAY_MODAL_TRACK_REM = 7
 
 
 # Layout config shared across functions
-def get_layout_config(screen_width: int) -> Tuple[int, int]:
+def get_layout_config(screen_width: int) -> tuple[int, int]:
     """Return hour height and label column width based on ``screen_width``."""
 
     # Reduce hour height to fit all 24 hours within modal height
@@ -39,9 +43,9 @@ def get_layout_config(screen_width: int) -> Tuple[int, int]:
 def generate_day_view_html(
     events_df: pd.DataFrame,
     clicked_date: datetime,
-    get_color_fn: Callable[[], dict],
+    get_color_fn: Callable[[], dict[str, dict[str, str]]],
     screen_width: int = 1024,
-) -> List[html.Div | dcc.Graph | html.H2]:
+) -> "list[Component]":
     """Return a list of HTML elements representing a single day's events."""
 
     hour_height, _ = get_layout_config(screen_width)
@@ -114,9 +118,9 @@ def generate_day_view_html(
     if events.empty:
         placeholder_graph = dcc.Graph(
             id="day-event-catcher",
-            figure=go.Figure(),
+            figure=build_day_overlay_figure(10, []),
             config={"displayModeBar": False},
-            style={"display": "none"},
+            style={"height": "0px", "pointerEvents": "none"},
         )
 
         return [
@@ -212,9 +216,9 @@ def generate_day_view_html(
     width_pct = (100 - label_column_pct) / n_tracks
 
     color_map = get_color_fn()
-    hour_blocks: list[html.Div] = []
-    hour_lines: list[html.Div] = []
-    event_blocks: list[html.Div] = []
+    hour_blocks: "list[Component]" = []
+    hour_lines: "list[Component]" = []
+    event_blocks: "list[Component]" = []
     click_markers: list[go.Scatter] = []
 
     track_width_pct = width_pct * 0.9  # leave small margin within track
@@ -257,7 +261,7 @@ def generate_day_view_html(
                 },
             )
         )  # Event blocks + invisible click markers
-    for _, row in events.iterrows():
+    for idx, row in events.iterrows():
         top_px = row["start_offset_min"] / 60 * hour_height
         height_px = row["visual_duration_min"] / 60 * hour_height
         # Mirror the minimum block height used in track assignment so the
@@ -275,6 +279,7 @@ def generate_day_view_html(
 
         short_span = row["duration_min"] < 90
 
+        children: Any
         if short_span:
             children = [html.Span(emoji, className="event-block-day-text")]
         else:
@@ -301,7 +306,7 @@ def generate_day_view_html(
         if short_span:
             block_classes.append("short-span")
 
-        def _fmt_time(ts: pd.Timestamp) -> str:
+        def _fmt_time(ts: datetime) -> str:
             """Return timestamp formatted as h:mm AM/PM without leading zero."""
             return ts.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
 
@@ -367,10 +372,17 @@ def generate_day_view_html(
             **{"data-tooltip": tooltip},
         )
 
-        # Visible block
-        event_blocks.append(html.Div(children, **block_kwargs))
+        # Visible block (clickable)
+        event_blocks.append(
+            html.Div(
+                children,
+                id={"type": "day-event", "index": int(idx) if isinstance(idx, (int, float)) else str(idx)},
+                n_clicks=0,
+                **block_kwargs,
+            )
+        )
 
-        # Invisible click marker for modal
+        # Click marker for modal (invisible but clickable)
         center_y = top_px + height_px / 2
         center_x = left_pct + width_pct / 2
         event_data = row[
@@ -388,34 +400,17 @@ def generate_day_view_html(
             go.Scatter(
                 x=[center_x / 100],
                 y=[center_y],
+                text=[str(row.get("EventName", ""))],
+                hoverinfo="text",
+                hovertemplate="%{text}<extra></extra>",
                 mode="markers",
-                marker=dict(size=30, opacity=0.001, color="rgba(255,255,255,0.01)"),
+                marker=dict(size=30, opacity=0.001, color="rgba(0,0,0,0)"),
                 customdata=[[event_data]],
-                hoverinfo="skip",
                 showlegend=False,
             )
         )
 
     # Clickable overlay graph
-    click_graph = dcc.Graph(
-        id="day-event-catcher",
-        className="day-event-catcher",
-        figure=go.Figure(
-            data=click_markers,
-            layout=go.Layout(
-                clickmode="event+select",
-                xaxis=dict(visible=False, range=[0, 1], fixedrange=True),
-                yaxis=dict(visible=False, range=[0, total_height_px], fixedrange=True),
-                margin=dict(l=0, r=0, t=0, b=0),
-                height=total_height_px,
-                plot_bgcolor="rgba(0,0,0,0)",
-                paper_bgcolor="rgba(0,0,0,0)",
-            ),
-        ),
-        style={"height": f"{total_height_px}px"},
-        config={"displayModeBar": False},
-    )
-
     # Sticky Add day label + scrollable grid container
     header = html.H2(
         header_text,
@@ -425,7 +420,7 @@ def generate_day_view_html(
     return [
         header,
         html.Div(
-            children=hour_blocks + hour_lines + event_blocks + [click_graph],
+            children=hour_blocks + hour_lines + event_blocks,
             className="day-grid",
             style={
                 "height": f"{total_height_px}px",
@@ -435,7 +430,335 @@ def generate_day_view_html(
     ]
 
 
-def build_weekly_figure(events_df, screen_width, week_start):
+def build_day_overlay_figure(
+    total_height_px: int, click_markers: list[go.Scatter]
+) -> go.Figure:
+    """Return a Plotly figure for the day overlay click catcher.
+
+    The x-axis is normalized to [0,1] and the y-axis to pixel height.
+    """
+    return go.Figure(
+        data=click_markers,
+        layout=go.Layout(
+            clickmode="event+select",
+            xaxis=dict(visible=False, range=[0, 1], fixedrange=True),
+            # Reverse Y so 0 is at the top to match CSS top-origin coordinates
+            yaxis=dict(
+                visible=False,
+                range=[total_height_px, 0],
+                fixedrange=True,
+            ),
+            margin=dict(l=0, r=0, t=0, b=0),
+            height=total_height_px,
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+        ),
+    )
+
+
+def generate_day_view_parts(
+    events_df: pd.DataFrame,
+    clicked_date: datetime,
+    get_color_fn: Callable[[], dict[str, dict[str, str]]],
+    screen_width: int = 1024,
+) -> tuple[str, "list[Component]", go.Figure, int]:
+    """Return (title_text, grid_children, overlay_figure, height_px) for the day modal."""
+
+    # Reuse the main function to compute content and also reconstruct markers.
+    # We replicate the marker-building logic by calling the same inner code
+    # path as above. To avoid double maintenance, this duplicates minimal parts
+    # near the end to assemble click_markers and height.
+
+    # Start by computing the same structures using the existing function,
+    # but we need access to markers and height; easiest approach is to
+    # recompute the latter segment. For clarity and minimal impact, we
+    # duplicate the final section below.
+
+    # The following block is derived from generate_day_view_html up to the
+    # creation of hour_blocks, hour_lines, event_blocks, and click_markers.
+
+    hour_height, _ = get_layout_config(screen_width)
+
+    # Normalize clicked_date
+    if clicked_date.tzinfo is None:
+        from pytz import timezone
+
+        PDT = timezone("America/Los_Angeles")
+        day_start = PDT.localize(
+            clicked_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+    else:
+        day_start = to_pdt(clicked_date).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+    day_end = day_start + timedelta(days=1)
+
+    events = events_df.copy()
+    events["StartDate"] = pd.to_datetime(events["StartDate"]).map(to_pdt)
+    events["EndDate"] = pd.to_datetime(events["EndDate"]).map(to_pdt)
+
+    days_from_sunday = day_start.weekday() + 1
+    if days_from_sunday == 7:
+        days_from_sunday = 0
+    week_start = day_start - timedelta(days=days_from_sunday)
+    week_end = week_start + timedelta(days=7)
+
+    ongoing_events = filter_long_spanning_events(
+        events_df, to_naive_utc(week_start), to_naive_utc(week_end)
+    )
+    ongoing_event_ids = set(ongoing_events.index) if not ongoing_events.empty else set()
+
+    earliest_start = day_start - timedelta(days=2)
+    latest_end = day_end + timedelta(days=2)
+
+    events = events[
+        (events["EndDate"] >= day_start)
+        & (events["StartDate"] < day_end)
+        & (events["StartDate"] >= earliest_start)
+        & (events["EndDate"] <= latest_end)
+        & (~events.index.isin(ongoing_event_ids))
+    ]
+
+    day_label = to_pdt(clicked_date).strftime("%A, %B %d")
+    header_text = f"Events for {day_label}"
+
+    if events.empty:
+        grid_children = [html.Div("No events scheduled.", className="no-events")]
+        return header_text, grid_children, build_day_overlay_figure(10, []), 10
+
+    events["adj_start"] = events["StartDate"].where(
+        events["StartDate"] >= day_start, day_start
+    )
+    events["adj_start"] = events["adj_start"].where(
+        events["adj_start"] <= day_end, day_end
+    )
+    events["adj_end"] = events["EndDate"].where(
+        events["EndDate"] >= day_start, day_start
+    )
+    events["adj_end"] = events["adj_end"].where(events["adj_end"] <= day_end, day_end)
+    events["start_offset_min"] = (
+        events["adj_start"] - day_start
+    ).dt.total_seconds() / 60
+    events["end_offset_min"] = (events["adj_end"] - day_start).dt.total_seconds() / 60
+    events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
+
+    events = events.sort_values(
+        by=["start_offset_min", "Casino", "OfferType", "duration_min"]
+    )
+
+    min_block_px = 16
+    min_block_min = min_block_px / hour_height * 60
+
+    events["visual_end_offset_min"] = events["end_offset_min"].where(
+        events["duration_min"] >= min_block_min,
+        events["start_offset_min"] + min_block_min,
+    )
+    events["visual_end_offset_min"] = events["visual_end_offset_min"].clip(
+        upper=24 * 60
+    )
+    events["visual_duration_min"] = (
+        events["visual_end_offset_min"] - events["start_offset_min"]
+    )
+
+    tracks: list[list[tuple[float, float]]] = []
+    track_assignments: list[int] = []
+    for _, event in events.iterrows():
+        placed = False
+        start = event["start_offset_min"]
+        end = event["visual_end_offset_min"]
+        for i, track in enumerate(tracks):
+            if all(start >= t[1] or end <= t[0] for t in track):
+                track.append((start, end))
+                track_assignments.append(i)
+                placed = True
+                break
+        if not placed:
+            tracks.append([(start, end)])
+            track_assignments.append(len(tracks) - 1)
+    events["overlap_index"] = track_assignments
+    n_tracks = max(len(tracks), 1)
+
+    min_width_rem = DAY_MODAL_WIDE_REM if len(events) < 5 else DAY_MODAL_MIN_REM
+    max_name_len = max((len(str(n)) for n in events["EventName"]), default=0)
+    char_rem = 0.4
+    track_width = max(4, min(6, max_name_len * char_rem))
+    label_and_names = DAY_MODAL_LABEL_REM + track_width * n_tracks
+    grid_min_width = max(min_width_rem, label_and_names)
+    label_column_pct = DAY_MODAL_LABEL_REM / grid_min_width * 100
+    width_pct = (100 - label_column_pct) / n_tracks
+
+    color_map = get_color_fn()
+    hour_blocks: "list[Component]" = []
+    hour_lines: "list[Component]" = []
+    event_blocks: "list[Component]" = []
+    click_markers: list[go.Scatter] = []
+
+    track_width_pct = width_pct * 0.9
+    max_track_width = f"{track_width_pct}%"
+    track_width_rem = grid_min_width * track_width_pct / 100
+    CHAR_REM = 0.55
+    total_height_px = 24 * hour_height
+
+    for hour in range(24):
+        top_px = hour * hour_height
+        label = (
+            datetime(2000, 1, 1, hour).strftime("%I %p").lstrip("0")
+            if hour % 3 == 0
+            else ""
+        )
+        hour_blocks.append(
+            html.Div(
+                label,
+                className="hour-label",
+                style={
+                    "top": f"{top_px}px",
+                    "height": f"{hour_height}px",
+                    "width": f"{label_column_pct}%",
+                },
+            )
+        )
+        hour_lines.append(
+            html.Div(
+                className="hour-grid-line",
+                style={
+                    "top": f"{top_px}px",
+                    "left": f"{label_column_pct}%",
+                    "width": f"{100 - label_column_pct}%",
+                },
+            )
+        )
+
+    for _, row in events.iterrows():
+        top_px = row["start_offset_min"] / 60 * hour_height
+        height_px = row["visual_duration_min"] / 60 * hour_height
+        height_px = max(16, height_px)
+        if top_px + height_px > total_height_px:
+            height_px = total_height_px - top_px
+        left_pct = label_column_pct + row["overlap_index"] * (100 - label_column_pct) / n_tracks
+        colors = color_map.get(row["Casino"], {"bg": "#aaa", "text": "#000"})
+        emoji = offer_type_emoji(row.get("OfferType", ""))
+        short_span = row["duration_min"] < 90
+
+        children: Any
+        if short_span:
+            children = [html.Span(emoji, className="event-block-day-text")]
+        else:
+            line_height = 18
+            max_lines = max(1, int(height_px // line_height))
+            values = [
+                str(row["EventName"]),
+                str(row["Casino"]),
+                str(row.get("Offer", "")),
+                emoji,
+            ]
+            lines = [
+                html.Span(v, className="event-block-day-line") for v in values[:max_lines] if v
+            ]
+            children = html.Div(lines, className="event-block-day-text")
+
+        block_classes = ["event-block-day"]
+        if short_span:
+            block_classes.append("short-span")
+
+        def _fmt_time(ts: datetime) -> str:
+            return ts.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
+
+        tooltip = (
+            f"{row['EventName']} ({row['Casino']}) - "
+            f"{_fmt_time(row['StartDate'])} to {_fmt_time(row['EndDate'])}"
+        )
+
+        event_name = str(row["EventName"])
+        casino_name = str(row["Casino"])
+        style_dict = {
+            "top": f"{top_px}px",
+            "left": f"{left_pct}%",
+            "height": f"{height_px}px",
+            "--bg": colors["bg"],
+            "--fg": colors["text"],
+        }
+        if short_span:
+            if len(events) < 5:
+                char_len = len(event_name) + 2
+                char_width_rem = char_len * CHAR_REM
+                if char_width_rem <= track_width_rem:
+                    char_width = f"{char_len}ch"
+                    style_dict["width"] = "auto"
+                    style_dict["minWidth"] = char_width
+                    style_dict["maxWidth"] = char_width
+                else:
+                    style_dict["width"] = max_track_width
+                    style_dict["minWidth"] = max_track_width
+                    style_dict["maxWidth"] = max_track_width
+            else:
+                style_dict["width"] = "auto"
+                if track_width_rem < 2.5:
+                    style_dict["minWidth"] = max_track_width
+                    style_dict["maxWidth"] = max_track_width
+                    style_dict["width"] = max_track_width
+                else:
+                    style_dict["minWidth"] = "2.5rem"
+                    style_dict["maxWidth"] = max_track_width if track_width_rem < 3 else "3rem"
+        else:
+            char_min_len = min(len(event_name), len(casino_name))
+            char_max_len = max(len(event_name), len(casino_name)) + 1
+            char_max_rem = char_max_len * CHAR_REM
+            if char_max_rem <= track_width_rem:
+                style_dict["width"] = "auto"
+                style_dict["minWidth"] = f"{char_min_len}ch"
+                style_dict["maxWidth"] = f"{char_max_len}ch"
+            else:
+                style_dict["width"] = max_track_width
+                style_dict["minWidth"] = max_track_width
+                style_dict["maxWidth"] = max_track_width
+
+        block_kwargs: dict[str, Any] = dict(
+            title=row["EventName"],
+            className=" ".join(block_classes),
+            style=style_dict,
+            **{"data-tooltip": tooltip},
+        )
+        event_blocks.append(
+            html.Div(
+                children,
+                id={"type": "day-event", "index": int(row.name) if isinstance(row.name, (int,)) else str(row.name)},
+                n_clicks=0,
+                **block_kwargs,
+            )
+        )
+
+        center_y = top_px + height_px / 2
+        center_x = left_pct + (100 - label_column_pct) / n_tracks / 2
+        event_data = row[["EventName", "Casino", "OfferType", "StartDate", "EndDate", "Offer"]].to_dict()
+        click_markers.append(
+            go.Scatter(
+                x=[center_x / 100],
+                y=[center_y],
+                text=[str(row.get("EventName", ""))],
+                hoverinfo="text",
+                hovertemplate="%{text}<extra></extra>",
+                mode="markers",
+                marker=dict(size=30, opacity=0.001, color="rgba(0,0,0,0)"),
+                customdata=[[event_data]],
+                showlegend=False,
+            )
+        )
+
+    grid = html.Div(
+        children=hour_blocks + hour_lines + event_blocks,
+        className="day-grid",
+        style={
+            "height": f"{total_height_px}px",
+            "minWidth": f"{grid_min_width}rem",
+        },
+    )
+    figure = build_day_overlay_figure(total_height_px, click_markers)
+    return header_text, [grid], figure, total_height_px
+
+
+def build_weekly_figure(
+    events_df: pd.DataFrame, screen_width: int, week_start: datetime
+) -> go.Figure:
     """Return the legacy Plotly weekly figure.
 
     This helper is retained for test coverage and reference while the
@@ -460,10 +783,10 @@ def build_weekly_figure(events_df, screen_width, week_start):
     row_unit_height = slot_height + slot_padding
     MIN_ROWS = 5
 
-    used_rows_by_day = {i: set() for i in range(7)}
-    recurring_rows = {}
-    row_nums = []
-    current_row = 0
+    used_rows_by_day: dict[int, set[int]] = {i: set() for i in range(7)}
+    recurring_rows: dict[str, int] = {}
+    row_nums: list[int] = []
+    current_row: int = 0
 
     tick_labels = [
         (week_start + timedelta(days=i)).strftime("%a")
@@ -511,6 +834,7 @@ def build_weekly_figure(events_df, screen_width, week_start):
             )
             preferred_row = recurring_rows.get(recurring_key)
             row_assigned = False
+            assigned_row: int | None = None
 
             if preferred_row is not None and all(
                 preferred_row not in used_rows_by_day[d]
@@ -529,12 +853,14 @@ def build_weekly_figure(events_df, screen_width, week_start):
                         row_assigned = True
                         break
 
-            if row_assigned:
+            if row_assigned and assigned_row is not None:
                 for d in range(start_day, end_day + 1):
                     used_rows_by_day[d].add(assigned_row)
                 row_nums.append(assigned_row)
-
-            row_num = assigned_row
+                row_num = assigned_row
+            else:
+                # Fallback: skip if no available row could be assigned
+                continue
             y_center = (row_num + 0.5) * row_unit_height
 
             adjusted_start = 0 + PADDING if row["has_left_arrow"] else visible_start
