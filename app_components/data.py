@@ -13,6 +13,19 @@ from .utils import PDT
 logger = setup_logger(__name__)
 
 
+def _build_keyword_pattern(keys: list[str]) -> str:
+    """Return a regex pattern matching keywords with whole-word boundaries."""
+
+    whole_words: list[str] = []
+    phrases: list[str] = []
+    for key in keys:
+        if re.fullmatch(r"[A-Za-z0-9]+", key):
+            whole_words.append(rf"(?<!\w){re.escape(key)}(?!\w)")
+        else:
+            phrases.append(re.escape(key))
+    return "|".join(whole_words + phrases)
+
+
 def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> str:
     """Return an offer type based on keywords found in ``event_name`` or ``offer``."""
 
@@ -33,30 +46,35 @@ def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> 
     special_event_keywords = keywords["special_event_keywords"]
     vehicle_car_giveaway_keywords = keywords["vehicle_car_giveaway_keywords"]
 
+    patterns = {
+        "vehicle": re.compile(_build_keyword_pattern(vehicle_car_giveaway_keywords)),
+        "giveaway": re.compile(_build_keyword_pattern(giveaway_keywords)),
+        "free_play": re.compile(
+            _build_keyword_pattern(free_play_cash_drawing_keywords)
+        ),
+        "multiplier": re.compile(_build_keyword_pattern(multiplier_points_keywords)),
+        "hospitality": re.compile(
+            _build_keyword_pattern(hotel_travel_dining_shopping_keywords)
+        ),
+        "special": re.compile(_build_keyword_pattern(special_event_keywords)),
+    }
+
     # Check for categories in a specific order of precedence
-    if any(keyword in event_name for keyword in vehicle_car_giveaway_keywords) or any(
-        keyword in offer for keyword in vehicle_car_giveaway_keywords
-    ):
+    if patterns["vehicle"].search(event_name) or patterns["vehicle"].search(offer):
         return "Giveaway"
-    elif any(keyword in event_name for keyword in giveaway_keywords) or any(
-        keyword in offer for keyword in giveaway_keywords
-    ):
+    if patterns["giveaway"].search(event_name) or patterns["giveaway"].search(offer):
         return "Giveaway"
-    elif any(
-        keyword in event_name for keyword in free_play_cash_drawing_keywords
-    ) or any(keyword in offer for keyword in free_play_cash_drawing_keywords):
+    if patterns["free_play"].search(event_name) or patterns["free_play"].search(offer):
         return "Free-Play"
-    elif any(keyword in event_name for keyword in multiplier_points_keywords) or any(
-        keyword in offer for keyword in multiplier_points_keywords
+    if patterns["multiplier"].search(event_name) or patterns["multiplier"].search(
+        offer
     ):
         return "Point-Based"
-    elif any(
-        keyword in event_name for keyword in hotel_travel_dining_shopping_keywords
-    ) or any(keyword in offer for keyword in hotel_travel_dining_shopping_keywords):
-        return "Hospitality-Rewards"
-    elif any(keyword in event_name for keyword in special_event_keywords) or any(
-        keyword in offer for keyword in special_event_keywords
+    if patterns["hospitality"].search(event_name) or patterns["hospitality"].search(
+        offer
     ):
+        return "Hospitality-Rewards"
+    if patterns["special"].search(event_name) or patterns["special"].search(offer):
         return "Special-Events"
 
     return "Offer"
@@ -79,8 +97,10 @@ def categorize_offer_types(df: pd.DataFrame) -> pd.Series:
     category = pd.Series("Offer", index=df.index)
 
     def match(keys: list[str]) -> pd.Series:
-        pattern = "|".join(map(re.escape, keys))
-        return event_name.str.contains(pattern) | offer.str.contains(pattern)
+        pattern = _build_keyword_pattern(keys)
+        return event_name.str.contains(pattern, regex=True) | offer.str.contains(
+            pattern, regex=True
+        )
 
     masks = {
         "vehicle": match(keywords["vehicle_car_giveaway_keywords"]),
