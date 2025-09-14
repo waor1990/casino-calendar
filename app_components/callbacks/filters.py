@@ -162,6 +162,16 @@ def register_callbacks(app, df) -> None:
         return classes
 
     @app.callback(
+        Output("selected-event-types", "data"),
+        Input("event-type-filter", "value"),
+        prevent_initial_call=True,
+    )
+    def update_event_type_filter(selected_types: list[str] | None) -> list[str]:
+        logger.debug(f"Event type filter changed: {selected_types}")
+        logger.info(f"Selected event types updated: {selected_types}")
+        return selected_types or []
+
+    @app.callback(
         Output("hotel-booking-container", "children"),
         Output("hotel-booking-container", "style"),
         Input("selected-casinos", "data"),
@@ -202,7 +212,7 @@ def register_callbacks(app, df) -> None:
         Input("week-offset", "data"),
         Input("screen-width", "data"),
         Input("selected-casinos", "data"),
-        Input("event-type-filter", "value"),
+        Input("selected-event-types", "data"),
         prevent_initial_call=True,
     )
     def render_single_week_chart(

@@ -12,6 +12,8 @@ from app_components.data import categorize_offer_type_updated, load_event_data
         ("", "free play bonus", "Free-Play"),
         ("Points Multiplier", "", "Point-Based"),
         ("Hotel Stay", "", "Hospitality-Rewards"),
+        ("Complimentary Night", "", "Hospitality-Rewards"),
+        ("Complimentary Stay", "", "Hospitality-Rewards"),
         ("Tournament", "", "Special-Events"),
         ("Generic Promo", "", "Offer"),
     ],
