@@ -1,3 +1,4 @@
+import plotly.graph_objs as go
 from dash import dcc, html
 from utils.colors import get_color
 
@@ -51,6 +52,8 @@ def create_layout(app, df):
                 dcc.Store(id="overflow-date"),
                 dcc.Store(id="animation-refresh"),
                 dcc.Store(id="selected-casinos", data=[]),
+                dcc.Store(id="last-day-date", data=None),
+                dcc.Store(id="reopen-day-on-close", data=False),
                 dcc.Store(id="theme-store", data="light", storage_type="local"),
                 html.Div(id="theme-dummy", style={"display": "none"}),
                 html.Div(id="animation-dummy", style={"display": "none"}),
@@ -89,7 +92,54 @@ def create_layout(app, df):
                             children=[
                                 html.Div(
                                     id="day-modal-body",
-                                    className="base-padding",
+                                    children=[
+                                        html.Div(
+                                            id="day-modal-content-container",
+                                            className="base-padding",
+                                            children=[
+                                                html.H2(
+                                                    id="day-modal-title",
+                                                    className="day-label day-modal-title",
+                                                ),
+                                                html.Div(
+                                                    id="day-grid-wrapper",
+                                                    style={"position": "relative"},
+                                                    children=[
+                                                        html.Div(id="day-grid-content"),
+                                                        dcc.Graph(
+                                                            id="day-event-catcher",
+                                                            className="day-event-catcher",
+                                                            figure=go.Figure(
+                                                                data=[],
+                                                                layout=go.Layout(
+                                                                    clickmode="event+select",
+                                                                    xaxis=dict(
+                                                                        visible=False,
+                                                                        range=[0, 1],
+                                                                        fixedrange=True,
+                                                                    ),
+                                                                    yaxis=dict(
+                                                                        visible=False,
+                                                                        range=[0, 1],
+                                                                        fixedrange=True,
+                                                                    ),
+                                                                    margin=dict(l=0, r=0, t=0, b=0),
+                                                                    height=10,
+                                                                    plot_bgcolor="rgba(0,0,0,0)",
+                                                                    paper_bgcolor="rgba(0,0,0,0)",
+                                                                ),
+                                                            ),
+                                                            config={"displayModeBar": False},
+                                                            style={
+                                                                "height": "0px",
+                                                                "pointerEvents": "none",
+                                                            },
+                                                        ),
+                                                    ],
+                                                ),
+                                            ],
+                                        )
+                                    ],
                                 ),
                                 html.Button(
                                     "Close",
