@@ -172,6 +172,12 @@ def test_event_type_filter(monkeypatch):
         )
     ]["callback"].__wrapped__
 
+    monkeypatch.setattr(
+        "dash.callback_context",
+        DummyCtx("event-type-filter"),
+        raising=False,
+    )
+
     func(600, 0, 1024, [], ["Giveaway"])
     assert len(captured["df"]) == 1
     assert captured["df"]["OfferType"].iloc[0] == "Giveaway"
