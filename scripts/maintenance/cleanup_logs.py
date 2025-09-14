@@ -15,7 +15,7 @@ project_root = Path(__file__).resolve().parent.parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from utils.log_rotation import (
+from utils.log_rotation import (  # noqa: E402
     archive_and_trim_by_days,
     archive_and_trim_by_month,
     archive_current_log,

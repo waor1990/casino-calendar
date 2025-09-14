@@ -332,7 +332,9 @@ def register_callbacks(app, df) -> None:
                                 id="day-grid-wrapper",
                                 style={"position": "relative"},
                                 children=[
-                                    html.Div(id="day-grid-content", children=grid_children),
+                                    html.Div(
+                                        id="day-grid-content", children=grid_children
+                                    ),
                                     dcc.Graph(
                                         id="day-event-catcher",
                                         className="day-event-catcher",

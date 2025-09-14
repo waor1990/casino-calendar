@@ -25,7 +25,7 @@ def demonstrate_error_logging():
     # Simulate an error without exc_info (old way)
     try:
         # This will raise a division by zero error
-        result = 10 / 0
+        _ = 10 / 0
     except Exception as e:
         print("1. Old error logging (without exc_info):")
         logger.error(f"Error in demo callback: {e}")
@@ -34,7 +34,7 @@ def demonstrate_error_logging():
     # Simulate an error with exc_info (new way)
     try:
         # This will raise a division by zero error with full traceback
-        result = 10 / 0
+        _ = 10 / 0
     except Exception as e:
         print("2. Enhanced error logging (with exc_info=True):")
         logger.error(f"Error in demo callback: {e}", exc_info=True)

@@ -3,7 +3,7 @@
 ## 📌 Overview
 
 A responsive Dash web application that visualizes casino events in a calendar layout.
-Built with Plotly Dash and deployed on Render.
+Built with Plotly Dash (Python 3.11, Node 22) and deployed on Render.
 
 The weekly view is rendered using a CSS grid while day modals are generated with
 absolute positioning.  Callback functions in `app_components/callbacks/` wire up the interactive elements and keep state in Dash stores.
@@ -18,39 +18,43 @@ absolute positioning.  Callback functions in `app_components/callbacks/` wire up
 - 🌀 Toggle to display long-spanning events
 - 📱 Responsive design across mobile, tablet and desktop
 - 🖼️ Custom CSS variables and layout utilities
-- 🏷️ Auto-categorizes offer types (Free-Play, Drawings, Giveaways)
+- 🏷️ Auto-categorizes offers (Giveaway, Free-Play, Point-Based, Hospitality-Rewards, Special-Events)
+- 🛎️ Hotel booking links when a casino is selected
+- 🪵 Comprehensive logging system for debugging and monitoring
 
 ---
 
 ### 📁 Project Structure Highlights
 
 casino_calendar/
-├── app_components/
-│   ├── layout.py            # Sticky header, modals, containers
+├── app.py                   # Dash entry point
+├── app_components/          # Layout, callbacks and helpers
 │   ├── callbacks/           # Modular callback handlers
 │   ├── data.py              # CSV loader with timezone handling
+│   ├── layout.py            # Sticky header, modals, containers
 │   ├── plotting.py          # Legacy Plotly helpers and modal builders
-│   ├── utils/               # General utilities
 │   └── week_grid_layout.py  # Pure CSS grid preview
-├── assets/
+├── assets/                  # Static assets
 │   ├── base.css             # Variables and resets
-│   └── styles/
-│       ├── animations.css     # Keyframes and transitions
-│       ├── calendar_grid.css  # Grid layout styles
-│       ├── components.css     # Event blocks and utilities
-│       ├── layout.css         # Page structure
-│       ├── modal.css          # Modal windows
-│       └── utilities.css      # Helper classes
+│   ├── style.scss           # SCSS entry (compiled to style.css)
+│   ├── style.css            # Auto-generated CSS
+│   └── styles/              # SCSS partials
+├── config/                  # Tool configuration files
 ├── data/
 │   └── casino_events.csv
-├── deploy/
-│   ├── Procfile                 # Render deployment file
-│   └── render.yaml
+├── docs/                    # Project documentation
 ├── scripts/
-│   └── setup.sh
-├── requirements.txt
-├── app.py                   # Dash entry point
-└── README.md
+│   └── setup/               # Installation scripts
+│       └── setup.sh
+├── tools/                   # User-facing batch files
+│   ├── cleanup_logs.bat
+│   ├── run_direct.bat
+│   └── setup.bat
+├── tests/                   # Test suite
+├── utils/                   # Shared utilities
+├── Procfile                 # Gunicorn deployment configuration
+├── render.yaml              # Render.com deployment file
+└── requirements.txt
 
 ---
 
@@ -97,10 +101,10 @@ modal is built by `generate_day_view_html` in `plotting.py`.
 
 ## 🚀 Deployment
 
-- Platform: [Render.com](https://render.com)
-- URL: [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
-- Python 3.11 / Dash 2.x
-- Gunicorn command in `deploy/Procfile`:
+  - Platform: [Render.com](https://render.com)
+  - URL: [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
+  - Python 3.11 / Dash 2.x
+  - Gunicorn command in `Procfile`:
 
 ```txt
 web: gunicorn app:server
