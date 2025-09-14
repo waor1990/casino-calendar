@@ -437,6 +437,7 @@ def build_day_overlay_figure(
 
     The x-axis is normalized to [0,1] and the y-axis to pixel height.
     """
+    safe_h = max(int(total_height_px or 0), 10)
     return go.Figure(
         data=click_markers,
         layout=go.Layout(
@@ -445,11 +446,11 @@ def build_day_overlay_figure(
             # Reverse Y so 0 is at the top to match CSS top-origin coordinates
             yaxis=dict(
                 visible=False,
-                range=[total_height_px, 0],
+                range=[safe_h, 0],
                 fixedrange=True,
             ),
             margin=dict(l=0, r=0, t=0, b=0),
-            height=total_height_px,
+            height=safe_h,
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
         ),
