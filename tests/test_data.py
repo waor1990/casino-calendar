@@ -2,7 +2,11 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from app_components.data import categorize_offer_type_updated, load_event_data
+from app_components.data import (
+    categorize_offer_type_updated,
+    categorize_offer_types,
+    load_event_data,
+)
 
 
 @pytest.mark.parametrize(
@@ -14,6 +18,9 @@ from app_components.data import categorize_offer_type_updated, load_event_data
         ("Hotel Stay", "", "Hospitality-Rewards"),
         ("Complimentary Night", "", "Hospitality-Rewards"),
         ("Complimentary Stay", "", "Hospitality-Rewards"),
+        ("RV Stay", "", "Hospitality-Rewards"),
+        ("Win an RV", "", "Giveaway"),
+        ("Reservation Bonus", "", "Offer"),
         ("Tournament", "", "Special-Events"),
         ("Generic Promo", "", "Offer"),
     ],
@@ -87,3 +94,18 @@ def test_load_event_data_handles_dst_fall(tmp_path: Path, casino):
 
     delta = result.loc[0, "EndDate"] - result.loc[0, "StartDate"]
     assert delta.total_seconds() == 10800
+
+
+def test_categorize_offer_types_word_boundaries():
+    df = pd.DataFrame(
+        {
+            "EventName": ["RV Stay", "Reservation Bonus", "Win an RV"],
+            "Offer": ["", "", ""],
+        }
+    )
+    result = categorize_offer_types(df)
+    assert list(result) == [
+        "Hospitality-Rewards",
+        "Offer",
+        "Giveaway",
+    ]
