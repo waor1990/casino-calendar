@@ -158,17 +158,19 @@ body {
     /* Background */
     --color-background: #2d2d30;
 
-    /* Text colors - professional with more color */
+    /* Primary color tokens used across dark theme */
+    --color-primary: #a78bfa;
+    /* Main primary used instead of accent in dark */
     --color-primary-dark: #6a5acd;
-    /* SlateBlue for primary elements */
-    --color-accent: #a78bfa;
-    /* Light purple for accent elements */
+    /* Supporting tone for shadows/borders */
     --color-primary-light: rgba(106, 90, 205, 0.15);
-    /* Subtle accent background */
+    /* Subtle primary-tinted backgrounds */
+
+    /* Base text/background tokens */
     --color-black: #a78bfa;
-    /* Override black to match accent */
+    /* Use primary for text that referenced black */
     --color-white: #2d2d30;
-    /* Use background color for "white" elements */
+    /* Use dark background as white equivalent */
 
     /* Header and border colors */
     --color-day-header-text: #a78bfa;
