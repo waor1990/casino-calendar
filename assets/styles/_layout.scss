@@ -41,8 +41,13 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 3000;
+    z-index: 1500;
     pointer-events: auto;
+}
+
+/* If the event modal is open, disable pointer events on the day catcher */
+#event-modal.show ~ #day-modal .day-event-catcher {
+    pointer-events: none;
 }
 
 .calendar-scroll-body {

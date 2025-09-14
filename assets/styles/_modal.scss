@@ -18,6 +18,15 @@
     transition: opacity 0.3s ease-out;
 }
 
+/* Ensure event modal stacks above day modal when both are present */
+#event-modal {
+    z-index: 4000;
+}
+
+#day-modal {
+    z-index: 3000;
+}
+
 .modal.show {
     opacity: 1;
     pointer-events: auto;
