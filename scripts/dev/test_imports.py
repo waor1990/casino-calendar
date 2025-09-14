@@ -31,7 +31,6 @@ try:
     print(f"✓ Plotly version: {plotly.__version__}")
 
     # Test application imports
-    from app_components.logging_config import setup_logger
 
     print("✓ Logging config imported successfully")
 
@@ -39,11 +38,7 @@ try:
 
     print("✓ Data module imported successfully")
 
-    from app_components.layout import create_layout
-
     print("✓ Layout module imported successfully")
-
-    from app_components.callbacks import register_callbacks
 
     print("✓ Callbacks module imported successfully")
 

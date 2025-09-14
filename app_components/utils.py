@@ -1,12 +1,9 @@
-import json
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any, Iterable, Tuple
 
 import pandas as pd
 from dash import html
 from pytz import UTC, timezone
-
 from utils.config_cache import get_config
 
 

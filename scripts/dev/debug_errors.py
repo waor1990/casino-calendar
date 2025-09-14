@@ -7,8 +7,6 @@ in the show_event_modal callback and other parts of the application.
 """
 
 import logging
-import traceback
-from datetime import datetime
 
 
 def demonstrate_error_logging():

@@ -27,7 +27,9 @@ def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> 
     giveaway_keywords = keywords["giveaway_keywords"]
     free_play_cash_drawing_keywords = keywords["free_play_cash_drawing_keywords"]
     multiplier_points_keywords = keywords["multiplier_points_keywords"]
-    hotel_travel_dining_shopping_keywords = keywords["hotel_travel_dining_shopping_keywords"]
+    hotel_travel_dining_shopping_keywords = keywords[
+        "hotel_travel_dining_shopping_keywords"
+    ]
     special_event_keywords = keywords["special_event_keywords"]
     vehicle_car_giveaway_keywords = keywords["vehicle_car_giveaway_keywords"]
 
@@ -40,17 +42,17 @@ def categorize_offer_type_updated(event_name: str | None, offer: str | None) -> 
         keyword in offer for keyword in giveaway_keywords
     ):
         return "Giveaway"
-    elif any(keyword in event_name for keyword in free_play_cash_drawing_keywords) or any(
-        keyword in offer for keyword in free_play_cash_drawing_keywords
-    ):
+    elif any(
+        keyword in event_name for keyword in free_play_cash_drawing_keywords
+    ) or any(keyword in offer for keyword in free_play_cash_drawing_keywords):
         return "Free-Play"
     elif any(keyword in event_name for keyword in multiplier_points_keywords) or any(
         keyword in offer for keyword in multiplier_points_keywords
     ):
         return "Point-Based"
-    elif any(keyword in event_name for keyword in hotel_travel_dining_shopping_keywords) or any(
-        keyword in offer for keyword in hotel_travel_dining_shopping_keywords
-    ):
+    elif any(
+        keyword in event_name for keyword in hotel_travel_dining_shopping_keywords
+    ) or any(keyword in offer for keyword in hotel_travel_dining_shopping_keywords):
         return "Hospitality-Rewards"
     elif any(keyword in event_name for keyword in special_event_keywords) or any(
         keyword in offer for keyword in special_event_keywords
@@ -110,7 +112,9 @@ def load_event_data(csv_path: str = "data/casino_events.csv") -> pd.DataFrame:
 
     try:
         df = pd.read_csv(csv_path)
-        logger.info(f"Successfully loaded CSV with {len(df)} rows and {len(df.columns)} columns")
+        logger.info(
+            f"Successfully loaded CSV with {len(df)} rows and {len(df.columns)} columns"
+        )
         logger.debug(f"CSV columns: {list(df.columns)}")
     except FileNotFoundError:
         logger.error(f"Event data file not found: {csv_path}")

@@ -1,4 +1,8 @@
 {
+    "black.args": [
+        "--config",
+        "config/pyproject.toml"
+    ],
     "editor.formatOnSave": true,
     "python.formatting.provider": "black",
     "python.sortImports.path": "isort",

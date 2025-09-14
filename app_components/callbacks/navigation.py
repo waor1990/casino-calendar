@@ -17,7 +17,9 @@ def register_callbacks(app, _df) -> None:
         Input("home-button", "n_clicks"),
         prevent_initial_call=True,
     )
-    def _navigate_home(_n_clicks: int) -> tuple[str, str]:  # pragma: no cover - simple redirect
+    def _navigate_home(
+        _n_clicks: int,
+    ) -> tuple[str, str]:  # pragma: no cover - simple redirect
         """Force a navigation to home and trigger a reload.
 
         Adding a unique query string ensures the app fully reloads, so

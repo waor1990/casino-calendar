@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import pandas as pd
 import plotly.graph_objs as go
 import pytest
-
 from app_components.plotting import (
     DAY_MODAL_LABEL_REM,
     DAY_MODAL_TRACK_REM,
@@ -106,7 +105,7 @@ def test_event_block_min_width_for_few_events():
     ]
 
     assert len(event_divs) == 2
-    for div, name in zip(event_divs, df["EventName"]):
+    for div, name in zip(event_divs, df["EventName"], strict=False):
         expected_width = f"{len(name) + 2}ch"
         min_width = div.style.get("minWidth")
         if min_width.endswith("ch"):
