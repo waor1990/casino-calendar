@@ -114,7 +114,7 @@ def build_event_info_rows(data: Iterable[tuple[str, Any]]) -> list[Any]:
     mapping = dict(data)
     emoji = offer_type_emoji(mapping.get("OfferType", ""))
     rows: list[Any] = [
-        html.H2(f"{emoji} Promo Info {emoji}", className="event-label-title")
+        html.H2(f"{emoji} Event Detail {emoji}", className="event-label-title")
     ]
 
     for label in [

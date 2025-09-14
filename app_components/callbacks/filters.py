@@ -272,7 +272,7 @@ def register_callbacks(app, df) -> None:
         chart = html.Div(
             children=[grid, overflow_toggle, overflow_box],
             id=f"week-chart-{week_offset}",
-            className="slide-in week-chart-scroll",
+            className="week-chart-scroll",
             **data_attr,
         )
 
@@ -287,15 +287,31 @@ def register_callbacks(app, df) -> None:
     app.clientside_callback(
         """
         function(refresh) {
-            setTimeout(function() {
+            requestAnimationFrame(() => {
                 const container = document.getElementById('week-chart-container');
                 if (!container) { return; }
+
+                const weekLabel = document.getElementById('week-label');
+                if (weekLabel) {
+                    weekLabel.classList.remove('slide-in', 'slide-init');
+                    void weekLabel.offsetWidth;
+                    weekLabel.classList.add('slide-init', 'slide-in');
+                }
+
+                const dayRow = document.getElementById('day-label-row');
+                if (dayRow) {
+                    dayRow.classList.remove('slide-in', 'slide-init');
+                    void dayRow.offsetWidth;
+                    dayRow.classList.add('slide-init', 'slide-in');
+                }
+
                 const chart = container.querySelector('.week-chart-scroll');
-                if (!chart) { return; }
-                chart.classList.remove('slide-in');
-                void chart.offsetWidth;
-                chart.classList.add('slide-in');
-            }, 0);
+                if (chart) {
+                    chart.classList.remove('slide-in', 'slide-init');
+                    void chart.offsetWidth;
+                    chart.classList.add('slide-init', 'slide-in');
+                }
+            });
             return '';
         }
         """,

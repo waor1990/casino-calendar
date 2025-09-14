@@ -234,6 +234,7 @@ def sticky_header(df):
                     "display": "flex",
                     "justifyContent": "space-between",
                     "paddingBottom": "10px",
+                    "--slide-distance": "8rem",
                 },
             ),
             # Week Label and dynamic day headers
