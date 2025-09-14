@@ -210,6 +210,17 @@ def sticky_header(df):
                                 className="legend-title legend-gap",
                             ),
                             html.Div(create_legend(df), className="legend-container"),
+                            dcc.Dropdown(
+                                id="event-type-filter",
+                                options=[
+                                    {"label": t, "value": t}
+                                    for t in sorted(df["OfferType"].dropna().unique())
+                                ],
+                                multi=True,
+                                placeholder="Filter by event type",
+                                className="event-type-dropdown",
+                                value=[],
+                            ),
                             # Hotel booking link that appears when a casino is selected
                             html.Div(
                                 id="hotel-booking-container",

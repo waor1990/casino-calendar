@@ -134,12 +134,13 @@ def register_callbacks(app, df) -> None:
         if not selected:
             selected = []
 
-        if clicked in selected:
-            selected = []
+        selected_list = list(selected)
+        if clicked in selected_list:
+            selected_list.remove(clicked)
         else:
-            selected = [clicked]
+            selected_list.append(clicked)
 
-        return selected
+        return selected_list
 
     @app.callback(
         Output({"type": "casino-filter", "index": ALL}, "className"),
@@ -198,6 +199,7 @@ def register_callbacks(app, df) -> None:
         Input("week-offset", "data"),
         Input("screen-width", "data"),
         Input("selected-casinos", "data"),
+        Input("event-type-filter", "value"),
         prevent_initial_call=True,
     )
     def render_single_week_chart(
@@ -205,6 +207,7 @@ def register_callbacks(app, df) -> None:
         week_offset: int,
         screen_width: int,
         selected_casinos: list[str] | None,
+        selected_types: list[str] | None,
     ) -> Tuple[html.Div, list[html.Div], str, str, dict[str, Any]]:
         """Render a single week of events and overflow list."""
         today_pdt = datetime.now(PDT)
@@ -212,9 +215,12 @@ def register_callbacks(app, df) -> None:
         week_start_pdt = current_sunday + timedelta(weeks=week_offset)
         week_start = to_naive_utc(week_start_pdt)
 
-        filtered_df = (
-            df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
-        )
+        filtered_df = df
+        if selected_casinos:
+            filtered_df = filtered_df[filtered_df["Casino"].isin(selected_casinos)]
+        if selected_types:
+            filtered_df = filtered_df[filtered_df["OfferType"].isin(selected_types)]
+
         grid = render_week_grid(week_start, filtered_df, screen_width, selected_casinos)
         labels = render_day_labels(week_start)
 
@@ -224,7 +230,7 @@ def register_callbacks(app, df) -> None:
         if not overflow_df.empty:
             week_start_pdt = to_pdt(week_start)
             week_end_pdt = to_pdt(week_end)
-            is_open = bool(selected_casinos)
+            is_open = bool(selected_casinos or selected_types)
             week_range = (
                 f"{week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
             )
