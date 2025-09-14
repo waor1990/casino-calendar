@@ -1,3 +1,5 @@
+import logging
+
 from app_components.logging_config import setup_logger
 from utils.config_cache import get_config
 
@@ -7,6 +9,7 @@ logger = setup_logger(__name__)
 # Cache for color data - populated lazily
 _color_map = None
 _default_colors = None
+_generated_log_emitted = False
 
 
 def _get_color_map():
@@ -35,7 +38,7 @@ def _get_default_colors():
 
 def get_color():
     """Return a mapping of casino names to color styles."""
-    logger.debug("Generating color mapping for casinos")
+    global _generated_log_emitted
 
     color_map = _get_color_map()
     default_colors = _get_default_colors()
@@ -50,5 +53,7 @@ def get_color():
         for casino_name, color in zip(dummy_casinos, default_colors):
             result[casino_name] = {"bg": color, "text": "#000000"}
 
-    logger.debug(f"Generated colors for {len(result)} casinos")
+    if logger.isEnabledFor(logging.DEBUG) and not _generated_log_emitted:
+        logger.debug("Generated colors for %d casinos", len(result))
+        _generated_log_emitted = True
     return result
