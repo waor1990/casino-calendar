@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 from app_components.callbacks import register_callbacks
 from app_components.utils import to_naive_utc
-from dash import Dash
+from dash import Dash, html
 from freezegun import freeze_time
 
 
@@ -98,19 +98,83 @@ def test_toggle_overflow(monkeypatch, casino):
 
 @pytest.mark.usefixtures("casino")
 def test_toggle_casino_filter(monkeypatch, casino):
-    df = pd.DataFrame({"EventName": ["E1"], "Casino": [casino]})
+    other = "Another Casino"
+    df = pd.DataFrame({"EventName": ["E1", "E2"], "Casino": [casino, other]})
     app = Dash(__name__)
     register_callbacks(app, df)
     func = app.callback_map["selected-casinos.data"]["callback"].__wrapped__
+
+    ids = [
+        {"type": "casino-filter", "index": casino},
+        {"type": "casino-filter", "index": other},
+    ]
 
     monkeypatch.setattr(
         "dash.callback_context",
         DummyCtx({"type": "casino-filter", "index": casino}),
         raising=False,
     )
+    selected = func([1, 0], ids, [])
+    assert selected == [casino]
 
-    result = func([1], [{"type": "casino-filter", "index": casino}], [])
-    assert result == [casino]
+    monkeypatch.setattr(
+        "dash.callback_context",
+        DummyCtx({"type": "casino-filter", "index": other}),
+        raising=False,
+    )
+    selected = func([1, 1], ids, selected)
+    assert set(selected) == {casino, other}
+
+    monkeypatch.setattr(
+        "dash.callback_context",
+        DummyCtx({"type": "casino-filter", "index": casino}),
+        raising=False,
+    )
+    selected = func([2, 1], ids, selected)
+    assert selected == [other]
+
+
+def test_event_type_filter(monkeypatch):
+    df = pd.DataFrame(
+        {
+            "EventName": ["E1", "E2"],
+            "Casino": ["A", "A"],
+            "Location": ["L", "L"],
+            "Offer": ["", ""],
+            "StartDate": [
+                to_naive_utc(datetime(2025, 4, 14)),
+                to_naive_utc(datetime(2025, 4, 14)),
+            ],
+            "EndDate": [
+                to_naive_utc(datetime(2025, 4, 15)),
+                to_naive_utc(datetime(2025, 4, 15)),
+            ],
+            "OfferType": ["Giveaway", "Free-Play"],
+        }
+    )
+
+    captured: dict[str, pd.DataFrame] = {}
+
+    def fake_render_week_grid(week_start, fdf, screen_width, selected_casinos):
+        captured["df"] = fdf
+        return html.Div()
+
+    app = Dash(__name__)
+    register_callbacks(app, df)
+    monkeypatch.setattr(
+        "app_components.callbacks.filters.render_week_grid",
+        fake_render_week_grid,
+    )
+    func = app.callback_map[
+        (
+            "..week-chart-container.children...day-label-row.children..."
+            "overflow-date.data...animation-refresh.data...calendar-scroll-body.style.."
+        )
+    ]["callback"].__wrapped__
+
+    func(600, 0, 1024, [], ["Giveaway"])
+    assert len(captured["df"]) == 1
+    assert captured["df"]["OfferType"].iloc[0] == "Giveaway"
 
 
 @pytest.mark.usefixtures("casino")
