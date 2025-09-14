@@ -3,7 +3,6 @@ from datetime import timedelta
 from math import floor
 
 import pandas as pd
-
 from app_components.logging_config import setup_logger
 
 # Initialize module logger
@@ -50,7 +49,7 @@ def annotate_events_with_flags(events_df, week_start, week_end):
         ascending=[True, True, True, False, True],
     ).reset_index(drop=True)
 
-    logger.debug(f"Events annotated and sorted successfully")
+    logger.debug("Events annotated and sorted successfully")
     return sorted_events
 
 

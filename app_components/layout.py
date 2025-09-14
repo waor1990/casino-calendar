@@ -123,13 +123,20 @@ def create_layout(app, df):
                                                                         range=[0, 1],
                                                                         fixedrange=True,
                                                                     ),
-                                                                    margin=dict(l=0, r=0, t=0, b=0),
+                                                                    margin=dict(
+                                                                        l=0,
+                                                                        r=0,
+                                                                        t=0,
+                                                                        b=0,
+                                                                    ),
                                                                     height=10,
                                                                     plot_bgcolor="rgba(0,0,0,0)",
                                                                     paper_bgcolor="rgba(0,0,0,0)",
                                                                 ),
                                                             ),
-                                                            config={"displayModeBar": False},
+                                                            config={
+                                                                "displayModeBar": False
+                                                            },
                                                             style={
                                                                 "height": "0px",
                                                                 "pointerEvents": "none",

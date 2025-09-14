@@ -376,7 +376,10 @@ def generate_day_view_html(
         event_blocks.append(
             html.Div(
                 children,
-                id={"type": "day-event", "index": int(idx) if isinstance(idx, (int, float)) else str(idx)},
+                id={
+                    "type": "day-event",
+                    "index": int(idx) if isinstance(idx, (int, float)) else str(idx),
+                },
                 n_clicks=0,
                 **block_kwargs,
             )
@@ -635,7 +638,10 @@ def generate_day_view_parts(
         height_px = max(16, height_px)
         if top_px + height_px > total_height_px:
             height_px = total_height_px - top_px
-        left_pct = label_column_pct + row["overlap_index"] * (100 - label_column_pct) / n_tracks
+        left_pct = (
+            label_column_pct
+            + row["overlap_index"] * (100 - label_column_pct) / n_tracks
+        )
         colors = color_map.get(row["Casino"], {"bg": "#aaa", "text": "#000"})
         emoji = offer_type_emoji(row.get("OfferType", ""))
         short_span = row["duration_min"] < 90
@@ -653,7 +659,9 @@ def generate_day_view_parts(
                 emoji,
             ]
             lines = [
-                html.Span(v, className="event-block-day-line") for v in values[:max_lines] if v
+                html.Span(v, className="event-block-day-line")
+                for v in values[:max_lines]
+                if v
             ]
             children = html.Div(lines, className="event-block-day-text")
 
@@ -699,7 +707,9 @@ def generate_day_view_parts(
                     style_dict["width"] = max_track_width
                 else:
                     style_dict["minWidth"] = "2.5rem"
-                    style_dict["maxWidth"] = max_track_width if track_width_rem < 3 else "3rem"
+                    style_dict["maxWidth"] = (
+                        max_track_width if track_width_rem < 3 else "3rem"
+                    )
         else:
             char_min_len = min(len(event_name), len(casino_name))
             char_max_len = max(len(event_name), len(casino_name)) + 1
@@ -722,7 +732,12 @@ def generate_day_view_parts(
         event_blocks.append(
             html.Div(
                 children,
-                id={"type": "day-event", "index": int(row.name) if isinstance(row.name, (int,)) else str(row.name)},
+                id={
+                    "type": "day-event",
+                    "index": (
+                        int(row.name) if isinstance(row.name, (int,)) else str(row.name)
+                    ),
+                },
                 n_clicks=0,
                 **block_kwargs,
             )
@@ -730,7 +745,9 @@ def generate_day_view_parts(
 
         center_y = top_px + height_px / 2
         center_x = left_pct + (100 - label_column_pct) / n_tracks / 2
-        event_data = row[["EventName", "Casino", "OfferType", "StartDate", "EndDate", "Offer"]].to_dict()
+        event_data = row[
+            ["EventName", "Casino", "OfferType", "StartDate", "EndDate", "Offer"]
+        ].to_dict()
         click_markers.append(
             go.Scatter(
                 x=[center_x / 100],

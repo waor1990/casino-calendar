@@ -5,7 +5,6 @@ Test script to verify day modal logic includes all boundary cases.
 from datetime import datetime, timedelta
 
 import pandas as pd
-
 from app_components.plotting import generate_day_view_html
 from app_components.utils import to_naive_utc
 from utils.colors import get_color

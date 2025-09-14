@@ -3,10 +3,9 @@ from datetime import datetime, timedelta
 from typing import Any, Tuple
 
 import dash
-from dash import ALL, Input, Output, State, no_update
+from dash import ALL, Input, Output, State, dcc, html, no_update
 from dash._callback import NoUpdate
 from pytz import timezone
-
 from utils.colors import get_color
 from utils.data_parsing import prepare_week_events  # noqa: F401
 
@@ -67,24 +66,16 @@ def register_callbacks(app, df) -> None:
         Output("close-timer", "n_intervals"),
         Output("day-modal", "style"),
         Output("day-modal", "className"),
-        Output("day-modal-title", "children"),
-        Output("day-grid-content", "children"),
-        Output("day-event-catcher", "figure"),
-        Output("day-event-catcher", "style"),
-        Output("last-day-date", "data"),
-        Output("reopen-day-on-close", "data"),
+        Output("day-modal-body", "children"),
         Input("day-event-catcher", "clickData"),
         Input("close-modal", "n_clicks"),
         Input("close-timer", "n_intervals"),
         Input("close-day-modal", "n_clicks"),
         Input({"type": "grid-event", "index": ALL}, "n_clicks"),
         Input({"type": "day-column", "index": ALL}, "n_clicks"),
-        Input({"type": "day-event", "index": ALL}, "n_clicks"),
         State("week-offset", "data"),
         State("screen-width", "data"),
         State("selected-casinos", "data"),
-        State("last-day-date", "data"),
-        State("reopen-day-on-close", "data"),
         prevent_initial_call=True,
     )
     def show_event_modal(
@@ -94,15 +85,10 @@ def register_callbacks(app, df) -> None:
         _close_day_clicks: int,
         _grid_clicks: list[int],
         _day_column_clicks: list[int],
-        _day_event_clicks: list[int],
         week_offset: int,
         screen_width: int,
         selected_casinos: list[str] | None,
-        last_day_date: str | None,
-        reopen_day_on_close: bool,
-    ) -> Tuple[
-        Any, Any, Any, int | NoUpdate, Any, Any, Any, Any, Any, Any, Any, Any
-    ]:
+    ) -> Tuple[Any, Any, Any, int | NoUpdate, Any, Any, Any]:
         """Handle modal open and close events.
 
         Unused parameters prefixed with an underscore are included solely so the
@@ -125,42 +111,11 @@ def register_callbacks(app, df) -> None:
                     0,
                     {"display": "none"},
                     "",
-                    "",
                     [],
-                    no_update,
-                    {"height": "0px", "pointerEvents": "none"},
-                    last_day_date,
-                    False,
                 )
 
             if triggered_id == "close-modal":
                 logger.debug("Closing event modal")
-                # If opened from a day modal, restore it
-                if reopen_day_on_close and last_day_date:
-                    try:
-                        restore_date = to_naive_utc(datetime.strptime(last_day_date, "%Y-%m-%d"))
-                        title_text, grid_children, figure, height_px = generate_day_view_parts(
-                            df if not selected_casinos else df[df["Casino"].isin(selected_casinos)],
-                            restore_date,
-                            get_color,
-                            screen_width,
-                        )
-                        return (
-                            no_update,
-                            "modal closing",
-                            no_update,
-                            1,
-                            {},
-                            "modal show",
-                            title_text,
-                            grid_children,
-                            figure,
-                            {"height": f"{height_px}px", "pointerEvents": "auto"},
-                            last_day_date,
-                            False,
-                        )
-                    except Exception:
-                        logger.exception("Failed to restore day modal after closing event modal")
                 return (
                     no_update,
                     "modal closing",
@@ -168,12 +123,7 @@ def register_callbacks(app, df) -> None:
                     1,
                     {"display": "none"},
                     no_update,
-                    no_update,
                     [],
-                    no_update,
-                    {"height": "0px", "pointerEvents": "none"},
-                    last_day_date,
-                    False,
                 )
 
             if triggered_id == "close-day-modal":
@@ -185,17 +135,11 @@ def register_callbacks(app, df) -> None:
                     no_update,
                     {"display": "none"},
                     "modal closing",
-                    "",
                     [],
-                    no_update,
-                    {"height": "0px", "pointerEvents": "none"},
-                    None,
-                    False,
                 )
 
-            if (
-                isinstance(triggered_id, dict)
-                and triggered_id.get("type") in ("grid-event", "day-event")
+            if isinstance(triggered_id, dict) and triggered_id.get("type") in (
+                "grid-event",
             ):
                 logger.debug(f"Grid event clicked: {triggered_id}")
                 try:
@@ -221,12 +165,7 @@ def register_callbacks(app, df) -> None:
                         no_update,
                         no_update,
                         no_update,
-                        no_update,
                         [],
-                        no_update,
-                        {"height": "0px", "pointerEvents": "none"},
-                        last_day_date,
-                        False,
                     )
 
                 row = df.loc[idx]
@@ -247,12 +186,7 @@ def register_callbacks(app, df) -> None:
                     0,
                     {"display": "none"},
                     "",
-                    "",
                     [],
-                    no_update,
-                    {"height": "0px", "pointerEvents": "none"},
-                    None,
-                    False,
                 )
 
             if (
@@ -282,7 +216,7 @@ def register_callbacks(app, df) -> None:
                         no_update,
                         no_update,
                         no_update,
-                        no_update,
+                        [],
                     )
 
                 clicked_date = to_naive_utc(datetime.strptime(date_str, "%Y-%m-%d"))
@@ -301,6 +235,34 @@ def register_callbacks(app, df) -> None:
                 title_text, grid_children, figure, height_px = generate_day_view_parts(
                     filtered, clicked_date, get_color, screen_width
                 )
+                day_modal_children = html.Div(
+                    id="day-modal-content-container",
+                    className="base-padding",
+                    children=[
+                        html.H2(
+                            id="day-modal-title",
+                            className="day-label day-modal-title",
+                            children=title_text,
+                        ),
+                        html.Div(
+                            id="day-grid-wrapper",
+                            style={"position": "relative"},
+                            children=[
+                                html.Div(id="day-grid-content", children=grid_children),
+                                dcc.Graph(
+                                    id="day-event-catcher",
+                                    className="day-event-catcher",
+                                    figure=figure,
+                                    config={"displayModeBar": False},
+                                    style={
+                                        "height": f"{height_px}px",
+                                        "pointerEvents": "auto",
+                                    },
+                                ),
+                            ],
+                        ),
+                    ],
+                )
 
                 return (
                     no_update,
@@ -309,12 +271,7 @@ def register_callbacks(app, df) -> None:
                     no_update,
                     {},
                     "modal show",
-                    title_text,
-                    grid_children,
-                    figure,
-                    {"height": f"{height_px}px", "pointerEvents": "auto"},
-                    clicked_date.strftime("%Y-%m-%d"),
-                    False,
+                    day_modal_children,
                 )
 
             click_data = None
@@ -339,7 +296,7 @@ def register_callbacks(app, df) -> None:
                             no_update,
                             no_update,
                             no_update,
-                            no_update,
+                            [],
                         )
 
                     today = datetime.utcnow()
@@ -357,8 +314,38 @@ def register_callbacks(app, df) -> None:
                         if selected_casinos
                         else df
                     )
-                    title_text, grid_children, figure, height_px = generate_day_view_parts(
-                        filtered, clicked_date, get_color, screen_width
+                    title_text, grid_children, figure, height_px = (
+                        generate_day_view_parts(
+                            filtered, clicked_date, get_color, screen_width
+                        )
+                    )
+                    day_modal_children = html.Div(
+                        id="day-modal-content-container",
+                        className="base-padding",
+                        children=[
+                            html.H2(
+                                id="day-modal-title",
+                                className="day-label day-modal-title",
+                                children=title_text,
+                            ),
+                            html.Div(
+                                id="day-grid-wrapper",
+                                style={"position": "relative"},
+                                children=[
+                                    html.Div(id="day-grid-content", children=grid_children),
+                                    dcc.Graph(
+                                        id="day-event-catcher",
+                                        className="day-event-catcher",
+                                        figure=figure,
+                                        config={"displayModeBar": False},
+                                        style={
+                                            "height": f"{height_px}px",
+                                            "pointerEvents": "auto",
+                                        },
+                                    ),
+                                ],
+                            ),
+                        ],
                     )
 
                     return (
@@ -368,12 +355,7 @@ def register_callbacks(app, df) -> None:
                         no_update,
                         {},
                         "modal show",
-                        title_text,
-                        grid_children,
-                        figure,
-                        {"height": f"{height_px}px", "pointerEvents": "auto"},
-                        clicked_date.strftime("%Y-%m-%d"),
-                        False,
+                        day_modal_children,
                     )
 
                 if data and all(
@@ -392,7 +374,6 @@ def register_callbacks(app, df) -> None:
                         f"{data.get('EventName', 'Unknown Event')}"
                     )
                     rows = build_event_info_rows(data.items())
-                    # If this click came from a day modal context, keep last_day_date and set reopen flag
                     return (
                         {},
                         "modal show",
@@ -400,12 +381,7 @@ def register_callbacks(app, df) -> None:
                         0,
                         {"display": "none"},
                         "",
-                        "",
                         [],
-                        no_update,
-                        {"height": "0px", "pointerEvents": "none"},
-                        last_day_date,
-                        True,
                     )
 
             logger.debug("No valid trigger found, preventing update")

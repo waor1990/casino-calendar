@@ -5,7 +5,6 @@ import tempfile
 from unittest.mock import patch
 
 import pytest
-
 from app_components.logging_config import (
     CasinoCalendarFormatter,
     get_log_level,

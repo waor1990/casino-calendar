@@ -16,9 +16,9 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from utils.log_rotation import (
-    archive_current_log,
     archive_and_trim_by_days,
     archive_and_trim_by_month,
+    archive_current_log,
     cleanup_old_logs,
     get_log_directory_info,
 )
@@ -144,7 +144,9 @@ Examples:
         log_file = resolve_log_file()
         try:
             summary = archive_and_trim_by_days(
-                str(log_file), days_to_keep=args.archive_split_days, archive_dir=args.archive_dir
+                str(log_file),
+                days_to_keep=args.archive_split_days,
+                archive_dir=args.archive_dir,
             )
             if not args.quiet:
                 arch = summary.get("archive_path")

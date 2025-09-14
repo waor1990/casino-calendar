@@ -50,7 +50,7 @@ def get_color():
     if not result:
         logger.warning("No casino colors found, using default colors")
         dummy_casinos = [f"Casino {i}" for i in range(len(default_colors))]
-        for casino_name, color in zip(dummy_casinos, default_colors):
+        for casino_name, color in zip(dummy_casinos, default_colors, strict=False):
             result[casino_name] = {"bg": color, "text": "#000000"}
 
     if logger.isEnabledFor(logging.DEBUG) and not _generated_log_emitted:

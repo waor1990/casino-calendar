@@ -2,11 +2,10 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
-from dash import Dash
-from freezegun import freeze_time
-
 from app_components.callbacks import register_callbacks
 from app_components.utils import to_naive_utc
+from dash import Dash
+from freezegun import freeze_time
 
 
 class DummyCtx:
