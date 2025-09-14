@@ -50,11 +50,14 @@ config/                  # Tool configuration files
   .stylelintrc.json    # CSS linting config
 data/                    # CSV data files
   casino_events.csv
-  docs/                    # Project documentation
-    archived/            # Completed/historical docs
-    handoff.md
-    TODO.md              # Next steps and project improvements
-    logging_system.md
+docs/                    # Project documentation
+  README.md              # Documentation index
+  archived/              # Completed/historical docs
+  handoff.md
+  log_management.md
+  logging_system.md
+  project_structure.md
+  TODO.md                # Next steps and project improvements
 logs/                    # Application log files
   archive/             # Archived log files
 scripts/                 # Utility scripts
@@ -69,7 +72,7 @@ tools/                   # User-facing utility scripts
 utils/                   # Shared utilities
 requirements.txt         # Python dependencies
 package.json             # NPM scripts for Sass
-Procfile                 # Heroku deployment configuration  
+Procfile                 # Gunicorn deployment configuration
 render.yaml              # Render.com deployment configuration
 ```
 

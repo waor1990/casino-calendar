@@ -100,7 +100,7 @@ Project data files and resources:
 
 Comprehensive project documentation:
 
-- `organization_summary.md` - Historical organization improvements
+- `archived/organization_summary.md` - Historical organization improvements
 - `logging_system.md` - Logging system documentation
 - `handoff.md` - Project handoff documentation
 - `TODO.md` - Next steps and project improvements
@@ -201,4 +201,4 @@ When referencing paths in scripts or documentation:
 
 ---
 
-*For historical information about the organization improvements made to achieve this structure, see [organization_summary.md](organization_summary.md).*
+*For historical information about the organization improvements made to achieve this structure, see [archived/organization_summary.md](archived/organization_summary.md).*

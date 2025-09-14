@@ -34,11 +34,11 @@ def register_callbacks(app, _df) -> None:
             console.log('[CasinoCalendar] Theme toggle:', theme);
             var root = document.documentElement;
             var btn = document.getElementById('theme-toggle');
-            
+
             // Remove any theme attributes first
             root.removeAttribute('data-theme');
             root.style.removeProperty('--color-background-override');
-            
+
             if (theme === 'dark') {
                 console.log('[CasinoCalendar] Applying dark theme');
                 root.setAttribute('data-theme', 'dark');
@@ -49,13 +49,13 @@ def register_callbacks(app, _df) -> None:
                 // Remove any custom background override for light theme
                 root.style.removeProperty('--color-background');
             }
-            
+
             if (btn) {
                 btn.textContent = theme === 'dark' ? '☀️' : '🌙';
                 btn.title = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
                 console.log('[CasinoCalendar] Updated button for theme:', theme);
             }
-            
+
             return '';
         }
         """,
