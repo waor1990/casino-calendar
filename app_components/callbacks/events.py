@@ -7,7 +7,6 @@ from dash import ALL, Input, Output, State, dcc, html, no_update
 from dash._callback import NoUpdate
 from pytz import timezone
 from utils.colors import get_color
-from utils.data_parsing import prepare_week_events  # noqa: F401
 
 from ..logging_config import setup_logger
 from ..plotting import generate_day_view_parts
