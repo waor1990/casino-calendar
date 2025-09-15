@@ -12,6 +12,7 @@ cd /d "%~dp0\.."
 
 REM Set environment variables
 set PYTHONPATH=%CD%
+set PYTHONIOENCODING=utf-8
 
 REM Check if virtual environment exists
 if not exist ".venv\Scripts\python.exe" (
@@ -23,7 +24,7 @@ if not exist ".venv\Scripts\python.exe" (
 
 echo [OK] Virtual environment found
 echo [OK] Python executable: %CD%\.venv\Scripts\python.exe
-echo [OK] Environment variables set
+echo [OK] Environment variables set (UTF-8 console enabled)
 echo.
 
 REM Build CSS if npm is available
