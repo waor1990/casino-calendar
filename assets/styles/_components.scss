@@ -86,6 +86,24 @@ h1,
     background-color: var(--color-accent-light);
 }
 
+/* stylelint-disable selector-class-pattern */
+.event-type-dropdown {
+    width: 100%;
+
+    .Select-control,
+    .Select-menu-outer,
+    .Select-menu {
+        background-color: var(--color-background);
+    }
+
+    .Select-value-label,
+    .Select-placeholder,
+    .Select-option {
+        color: var(--color-accent);
+    }
+}
+/* stylelint-enable selector-class-pattern */
+
 /* Hotel booking link styles */
 #hotel-booking-container a {
     display: inline-block;
@@ -281,6 +299,22 @@ h1,
         outline: var(--border-thin) solid var(--color-primary);
         background-color: var(--color-primary);
     }
+
+    /* stylelint-disable selector-class-pattern */
+    .event-type-dropdown {
+        .Select-control,
+        .Select-menu-outer,
+        .Select-menu {
+            background-color: var(--color-background);
+        }
+
+        .Select-value-label,
+        .Select-placeholder,
+        .Select-option {
+            color: var(--color-primary);
+        }
+    }
+    /* stylelint-enable selector-class-pattern */
 
     #hotel-booking-container a {
         color: var(--color-primary);
