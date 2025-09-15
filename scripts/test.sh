@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Run style checks and unit tests.
 
+# Ensure Python uses UTF-8 for stdout/stderr to avoid encoding issues
+export PYTHONIOENCODING=utf-8
+
 set -e
 
 # Compile Python modules

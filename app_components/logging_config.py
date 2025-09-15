@@ -13,7 +13,7 @@ import os
 import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 # Load environment variables from .env file
 try:
@@ -24,13 +24,24 @@ except ImportError:
     # python-dotenv not installed, continue without it
     pass
 
-# Import our custom log rotation utilities
+# Import our custom log rotation utilities with safe typing
+CleanupFn = Callable[[str, int], int]
+SetupFn = Callable[[str, str, int, int, int, bool], logging.Logger]
+
+# Declare optional callables; assign within try/except to satisfy mypy
+cleanup_old_logs: Optional[CleanupFn]
+setup_rotating_logger: Optional[SetupFn]
+
 try:
-    from utils.log_rotation import cleanup_old_logs, setup_rotating_logger
+    from utils.log_rotation import (
+        cleanup_old_logs as _cleanup_old_logs,
+        setup_rotating_logger as _setup_rotating_logger,
+    )
+    cleanup_old_logs = _cleanup_old_logs
+    setup_rotating_logger = _setup_rotating_logger
 except ImportError:
-    # Fallback if utils module not available
-    setup_rotating_logger = None
     cleanup_old_logs = None
+    setup_rotating_logger = None
 
 
 class CasinoCalendarFormatter(logging.Formatter):
@@ -128,12 +139,19 @@ def _suppress_http_logs():
     # Log suppression status (but not in a loop to avoid noise)
     if suppressed_count > 0:
         # Use print instead of logging to avoid circular dependencies
-        print(
-            "🔇 HTTP request logs suppressed for console output "
+        msg = (
+            "HTTP request logs suppressed for console output "
             f"({suppressed_count} handlers removed)"
         )
     else:
-        print("🔇 HTTP request logs suppressed (set to WARNING level)")
+        msg = "HTTP request logs suppressed (set to WARNING level)"
+
+    # Avoid printing Unicode symbols that may fail on Windows consoles
+    try:
+        print(msg)
+    except Exception:
+        # As a last resort, write bytes safely
+        sys.stdout.buffer.write((msg + "\n").encode(errors="ignore"))
 
 
 def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
@@ -216,23 +234,23 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
     # Clean up old logs (keep last 30 days)
-    if cleanup_old_logs:
+    if cleanup_old_logs is not None:
         try:
-            deleted_count = cleanup_old_logs(str(log_file.parent), days_to_keep=30)
+            deleted_count = cleanup_old_logs(str(log_file.parent), 30)
             if deleted_count > 0:
                 print(f"Cleaned up {deleted_count} old log files")
         except Exception as e:
             print(f"Warning: Could not clean up old logs: {e}")
 
     # Use custom rotating logger if available, otherwise fallback
-    if setup_rotating_logger:
+    if setup_rotating_logger is not None:
         logger = setup_rotating_logger(
-            name=name,
-            log_file=str(log_file),
-            level=logging.INFO,  # Production level
-            max_bytes=10 * 1024 * 1024,  # 10MB
-            backup_count=5,
-            console_output=True,
+            name,
+            str(log_file),
+            logging.INFO,  # Production level
+            10 * 1024 * 1024,  # 10MB
+            5,
+            True,
         )
         logger.info("Production logging initialized with rotation")
     else:

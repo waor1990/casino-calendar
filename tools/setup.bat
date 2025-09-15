@@ -21,6 +21,9 @@ IF NOT EXIST .venv (
 echo Activating virtual environment...
 call .\.venv\Scripts\activate.bat
 
+REM Force UTF-8 for Python output to avoid Windows console encoding issues
+set PYTHONIOENCODING=utf-8
+
 REM Install Python dependencies
 IF EXIST requirements.txt (
     echo Installing Python dependencies...
