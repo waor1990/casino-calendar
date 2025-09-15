@@ -1,6 +1,0 @@
-[flake8]
-max-line-length = 188
-extend-ignore = E203, W503, E508, E501
-exclude =
-    .venv,
-    node_modules
