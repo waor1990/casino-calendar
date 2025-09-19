@@ -37,8 +37,10 @@ if "%STALE_VENV%"=="1" (
   echo Detected a stale or moved virtual environment at:
   echo   %EXPECTED_VENV%
   if defined ACTUAL_VENV echo Actual VIRTUAL_ENV is: %ACTUAL_VENV%
-  set /p RECREATE_VENV=Recreate the virtual environment now? (Y/N): 
-  if /I "%RECREATE_VENV%"=="Y" (
+  set /p RECREATE_VENV=Recreate the virtual environment now? ^(Y/N^): 
+  set "ANS_RECREATE="
+  call set "ANS_RECREATE=%%RECREATE_VENV:~0,1%%"
+  if /I "%ANS_RECREATE%"=="Y" (
     echo Removing old virtual environment...
     rmdir /s /q "%EXPECTED_VENV%"
     if ERRORLEVEL 1 (
@@ -97,9 +99,21 @@ if not "%REQS_OUT_OF_SYNC%"=="0" (
     type "%ROOT_DIR%\.tmp_requirements_diff.txt"
     echo.
     set "UPDATE_REQS="
+    set "ANS_UPD="
     set /p UPDATE_REQS=Update environment to match requirements.txt now? ^(Y/N^)?
-    set "ANS_UPD=%UPDATE_REQS:~0,1%"
+    call set "ANS_UPD=%%UPDATE_REQS:~0,1%%"
     if /I "%ANS_UPD%"=="Y" (
+        echo Running dependency resolver dry-run to check for conflicts...
+        "%PYTHON_EXE%" -m pip install --dry-run -r "%ROOT_DIR%\requirements.txt" > "%ROOT_DIR%\.tmp_pip_dry_run.log" 2>&1
+        if %ERRORLEVEL% NEQ 0 (
+            echo Dependency resolver found issues:
+            type "%ROOT_DIR%\.tmp_pip_dry_run.log"
+            del /f /q "%ROOT_DIR%\.tmp_pip_dry_run.log" 2>nul
+            echo Resolve the reported conflicts before rerunning setup.
+            del /f /q "%ROOT_DIR%\.tmp_requirements_diff.txt" 2>nul
+            exit /b 1
+        )
+        del /f /q "%ROOT_DIR%\.tmp_pip_dry_run.log" 2>nul
         echo Installing Python dependencies to match requirements.txt...
         "%PYTHON_EXE%" -m pip install -r "%ROOT_DIR%\requirements.txt"
         if %ERRORLEVEL% NEQ 0 (
@@ -151,11 +165,11 @@ echo   run_direct.bat
 echo   or use VSCode task: "Run Casino Calendar App"
 echo.
 echo Note: CSS is now built automatically when running the app for convenience.
-
 echo.
 set "OPEN_VENV="
+set "ANS_OPEN="
 set /p OPEN_VENV=Open a new CMD window activated in the virtual environment now? ^(Y/N^): 
-set "ANS_OPEN=%OPEN_VENV:~0,1%"
+call set "ANS_OPEN=%%OPEN_VENV:~0,1%%"
 if /I "%ANS_OPEN%"=="Y" (
     echo Launching a new CMD window with the venv activated...
     start "Casino Calendar venv" cmd.exe /k "%EXPECTED_VENV%\Scripts\activate.bat & title Casino Calendar venv"
