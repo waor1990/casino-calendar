@@ -8,7 +8,7 @@ The Casino Calendar application implements a comprehensive logging system to fac
 
 ### 🎯 Centralized Configuration
 
-- Single configuration module (`app_components/logging_config.py`)
+- Single configuration module (`casino_calendar/logging/config.py`)
 - Environment variable-based log level control
 - Consistent formatting across all modules
 
@@ -108,16 +108,16 @@ LOG_FILE=logs/casino_calendar_dev.log
 
 ```
 2025-07-29 10:15:30 | INFO     | app                  | Casino Calendar application starting up
-2025-07-29 10:15:30 | DEBUG    | app_components.data  | Loading event data from data/casino_events.csv
-2025-07-29 10:15:31 | INFO     | app_components.data  | Event data loaded successfully in 0.234s
+2025-07-29 10:15:30 | DEBUG    | casino_calendar.dash_app.data.loader  | Loading event data from data/casino_events.csv
+2025-07-29 10:15:31 | INFO     | casino_calendar.dash_app.data.loader  | Event data loaded successfully in 0.234s
 ```
 
 ### File Output (no colors)
 
 ```
 2025-07-29 10:15:30 | INFO     | app                  | Casino Calendar application starting up
-2025-07-29 10:15:30 | DEBUG    | app_components.data  | Loading event data from data/casino_events.csv
-2025-07-29 10:15:31 | INFO     | app_components.data  | Event data loaded successfully in 0.234s
+2025-07-29 10:15:30 | DEBUG    | casino_calendar.dash_app.data.loader  | Loading event data from data/casino_events.csv
+2025-07-29 10:15:31 | INFO     | casino_calendar.dash_app.data.loader  | Event data loaded successfully in 0.234s
 ```
 
 ## JavaScript Logging
@@ -137,9 +137,9 @@ View these logs in the browser's Developer Tools (F12) → Console tab.
 ### Application Modules
 
 - `app.py`: Application lifecycle events
-- `app_components/data.py`: Data loading and processing
-- `app_components/layout.py`: UI component creation
-- `app_components/callbacks/`: User interaction events
+- `dash_app/data/loader.py`: Data loading and processing
+- `dash_app/layout/root.py`: UI component creation
+- `dash_app/callbacks/`: User interaction events
 - `utils/`: Utility function operations
 
 ### Key Operations Logged
@@ -221,10 +221,10 @@ File logging includes automatic rotation:
 python -c "import os; print(f'LOG_LEVEL={os.getenv(\"LOG_LEVEL\", \"INFO\")}')"
 
 # Test logging configuration
-python -c "from app_components.logging_config import app_logger; app_logger.info('Test message')"
+python -c "from casino_calendar.logging.config import app_logger; app_logger.info('Test message')"
 
 # Verify file logging
-LOG_FILE=test.log python -c "from app_components.logging_config import setup_logger; setup_logger('test', 'test.log').info('Test file logging')"
+LOG_FILE=test.log python -c "from casino_calendar.logging.config import setup_logger; setup_logger('test', 'test.log').info('Test file logging')"
 ```
 
 ## Extending the Logging System
@@ -232,7 +232,7 @@ LOG_FILE=test.log python -c "from app_components.logging_config import setup_log
 ### Adding New Modules
 
 ```python
-from app_components.logging_config import setup_logger
+from casino_calendar.logging.config import setup_logger
 
 # Initialize module logger
 logger = setup_logger(__name__)
@@ -261,7 +261,7 @@ logger.business = lambda msg: logger.log(35, msg)
 
 ```python
 import time
-from app_components.logging_config import log_performance
+from casino_calendar.logging.config import log_performance
 
 start_time = time.time()
 # ... your operation ...

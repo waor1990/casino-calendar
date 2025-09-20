@@ -3,7 +3,7 @@ REM Casino Calendar - Quick Setup Launcher
 REM Calls the setup script from tools directory
 
 echo Running Casino Calendar Setup...
-call "tools\setup.bat"
+call "scripts\windows\setup.bat"
 set "SETUP_EXIT=%ERRORLEVEL%"
 if not "%SETUP_EXIT%"=="0" goto END_SETUP
 

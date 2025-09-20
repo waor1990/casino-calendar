@@ -12,4 +12,4 @@ This directory collects project guides and reference material.
 
 ## Additional Resources
 
-- [archived/](archived/) – Historical or superseded documents
+- [legacy/](legacy/) – Historical or superseded documents

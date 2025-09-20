@@ -25,7 +25,7 @@ The application now includes automatic log rotation and cleanup features to prev
 
 ```bash
 # Using batch file
-tools\cleanup_logs.bat --info
+scripts\windows\cleanup_logs.bat --info
 
 # Using Python directly
 python scripts\maintenance\cleanup_logs.py --info
@@ -35,7 +35,7 @@ python scripts\maintenance\cleanup_logs.py --info
 
 ```bash
 # Show files older than 30 days (default)
-tools\cleanup_logs.bat --dry-run
+scripts\windows\cleanup_logs.bat --dry-run
 
 # Show files older than 7 days
 python scripts\maintenance\cleanup_logs.py --days 7 --dry-run
@@ -45,7 +45,7 @@ python scripts\maintenance\cleanup_logs.py --days 7 --dry-run
 
 ```bash
 # Clean logs older than 30 days
-tools\cleanup_logs.bat
+scripts\windows\cleanup_logs.bat
 
 # Clean logs older than specific days
 python scripts\maintenance\cleanup_logs.py --days 7
@@ -55,7 +55,7 @@ python scripts\maintenance\cleanup_logs.py --days 7
 
 ```bash
 # Archive the current production log
-tools\cleanup_logs.bat --archive
+scripts\windows\cleanup_logs.bat --archive
 
 # Archive with custom name
 python scripts\maintenance\cleanup_logs.py --archive-current

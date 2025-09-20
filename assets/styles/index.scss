@@ -1,0 +1,12 @@
+// Central export for style modules
+// Use in style.scss via @use 'styles/index';
+// Provides design tokens, mixins, layout and component styles.
+
+@forward 'partials/mixins';
+@forward 'partials/variables';
+@forward 'partials/layout';
+@forward 'partials/components';
+@forward 'partials/calendar_grid';
+@forward 'partials/modal';
+@forward 'partials/animations';
+@forward 'partials/utilities';

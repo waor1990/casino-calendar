@@ -6,7 +6,7 @@ A responsive Dash web application that visualizes casino events in a calendar la
 Built with Plotly Dash (Python 3.11, Node 22) and deployed on Render.
 
 The weekly view is rendered using a CSS grid while day modals are generated with
-absolute positioning.  Callback functions in `app_components/callbacks/` wire up the interactive elements and keep state in Dash stores.
+absolute positioning.  Callback functions in `casino_calendar.dash_app/callbacks/` wire up the interactive elements and keep state in Dash stores.
 
 ---
 
@@ -26,36 +26,43 @@ absolute positioning.  Callback functions in `app_components/callbacks/` wire up
 
 ### 📁 Project Structure Highlights
 
-casino_calendar/
-├── app.py                   # Dash entry point
-├── app_components/          # Layout, callbacks and helpers
+src/casino_calendar/
+├── dash_app/                # Dash app package
+│   ├── app.py               # create_dash_app() factory
 │   ├── callbacks/           # Modular callback handlers
-│   ├── data.py              # CSV loader with timezone handling
-│   ├── layout.py            # Sticky header, modals, containers
-│   ├── plotting.py          # Legacy Plotly helpers and modal builders
-│   └── week_grid_layout.py  # Pure CSS grid preview
-├── assets/                  # Static assets
-│   ├── base.css             # Variables and resets
-│   ├── style.scss           # SCSS entry (compiled to style.css)
-│   ├── style.css            # Auto-generated CSS
-│   └── styles/              # SCSS partials
-├── config/                  # Tool configuration files
-├── data/
-│   └── casino_events.csv
-├── docs/                    # Project documentation
-├── scripts/
-│   └── setup/               # Installation scripts
-│       └── setup.sh
-├── tools/                   # User-facing batch files
-│   ├── cleanup_logs.bat
-│   ├── run_direct.bat
-│   └── setup.bat
-├── tests/                   # Test suite
-├── utils/                   # Shared utilities
-├── Procfile                 # Gunicorn deployment configuration
-├── render.yaml              # Render.com deployment file
-└── requirements.txt
+│   ├── data/                # CSV loader, repositories, transforms
+│   ├── layout/              # Layout factory and component helpers
+│   ├── services/            # Layout/callback utilities
+│   └── visualization/       # Plotly chart builders
+├── logging/                 # Logging configuration & rotation
+├── services/                # Shared services (config cache, colours)
+└── settings.py              # Environment + path helpers
 
+assets/
+├── styles/index.scss        # Sass entry point
+├── styles/partials/         # Modular SCSS partials
+├── scripts/theme-toggle.js  # Theme toggle helper
+└── dist/style.css           # Generated CSS output
+
+data/
+├── raw/casino_events.csv    # Primary dataset
+├── lookups/                 # Lookup JSON tables
+└── cache/                   # Runtime cache placeholder
+
+config/formatting/.isort.cfg # Import sorter config
+config/linting/.flake8       # Flake8 configuration
+config/linting/.stylelintrc.json # Stylelint rules
+config/typing/mypy.ini       # Static typing configuration
+
+scripts/
+├── python/                  # Python maintenance utilities
+├── shell/                   # Bash helpers (setup/test)
+├── node/                    # Scriptable/Node utilities
+└── windows/                 # Windows launchers
+
+deploy/                      # Procfile, render.yaml, gunicorn.conf.py
+requirements.txt             # Python dependencies
+package.json                 # Node & Sass tooling
 ---
 
 ## 🧠 Recent Refactors

@@ -10,9 +10,9 @@ Other versions may work but are not tested.
 
 ## ⚠️ CRITICAL CSS WARNING ⚠️
 
-**🚨 NEVER modify `assets/style.css` directly! It is auto-generated and will be overwritten! 🚨**
+**🚨 NEVER modify `assets/dist/style.css` directly! It is auto-generated and will be overwritten! 🚨**
 
-**ALL CSS changes must be made in SCSS files in `assets/styles/` directory.** The `style.css` file is automatically compiled from SCSS when the app runs.
+**ALL CSS changes must be made in SCSS files inside `assets/styles/`.** The `index.scss` entry compiles to `assets/dist/style.css` during the npm build step.
 
 ---
 
@@ -36,44 +36,56 @@ Other versions may work but are not tested.
 > For detailed project structure documentation, see [docs/project_structure.md](docs/project_structure.md).
 
 ```text
-app.py                   # Dash entry point
-app_components/          # Core logic modules
-  callbacks/             # Dash callback handlers
-  utils/                 # Shared helper functions
-assets/                  # Static assets auto-loaded by Dash
-archive/                 # Archived files and directories
-  old_batch_files/       # Deprecated batch scripts
-config/                  # Tool configuration files
-  .flake8              # Python linting config
-  .isort.cfg           # Import sorting config
-  mypy.ini             # Type checking config
-  .stylelintrc.json    # CSS linting config
-data/                    # CSV data files
-  casino_events.csv
-docs/                    # Project documentation
-  README.md              # Documentation index
-  archived/              # Completed/historical docs
-  handoff.md
-  log_management.md
-  logging_system.md
-  project_structure.md
-  TODO.md                # Next steps and project improvements
+app.py                   # Dash entry point exposing Dash server
+wsgi.py                  # Optional WSGI shim exporting application
+deploy/                  # Deployment descriptors
+  Procfile
+  render.yaml
+  gunicorn.conf.py
+src/
+  casino_calendar/       # Primary Python package
+    settings.py          # Environment and path helpers
+    dash_app/            # Dash application modules
+      app.py             # create_dash_app factory
+      callbacks/         # Callback groups (events, filters, theme, navigation)
+      data/              # Loader, repositories, transforms
+      layout/            # Layout factory and component helpers
+      services/          # Dash-specific services (layout state, etc.)
+      visualization/     # Plotly figure builders
+    logging/             # Logging configuration and rotation utilities
+    services/            # General-purpose services (colors, config cache)
+assets/
+  dist/style.css        # Compiled CSS (do not edit)
+  scripts/theme-toggle.js
+  styles/index.scss     # Sass entry point
+  styles/partials/      # Reusable Sass modules
+config/
+  formatting/           # Formatting tool configuration
+    pyproject.toml
+    .isort.cfg
+  linting/              # Linting configuration
+    .flake8
+    .stylelintrc.json
+  typing/               # Static typing configuration
+    mypy.ini
+data/
+  raw/casino_events.csv # Primary dataset
+  lookups/              # JSON lookup tables (colors, keywords, etc.)
+  cache/                # Runtime cache artifacts
+docs/
+  legacy/               # Historical documentation and archived notes
+scripts/
+  python/               # Python maintenance utilities
+  shell/                # Bash helpers (setup, test)
+  node/                 # Scriptable/Node automation helpers
+  windows/              # Windows batch launchers
 logs/                    # Application log files
-  archive/             # Archived log files
-scripts/                 # Utility scripts
-  dev/                 # Development tools
-  maintenance/         # Log cleanup and maintenance
-  setup/               # Setup and installation scripts
-tests/                   # Test suite
-tools/                   # User-facing utility scripts
-  setup.bat            # Environment setup
-  run_direct.bat       # Application launcher
-  cleanup_logs.bat     # Log management
-utils/                   # Shared utilities
+tests/
+  unit/
+  integration/
+  e2e/
 requirements.txt         # Python dependencies
-package.json             # NPM scripts for Sass
-Procfile                 # Gunicorn deployment configuration
-render.yaml              # Render.com deployment configuration
+package.json             # NPM scripts for Sass/CSS pipeline
 ```
 
 ## 🧪 Try It Locally
@@ -82,14 +94,16 @@ render.yaml              # Render.com deployment configuration
 
 ```cmd
 # Quick setup - runs everything needed
-tools\setup.bat
+scripts\windows\setup.bat
 
-# Run the application  
-tools\run_direct.bat
+# Run the application
+scripts\windows
+un_direct.bat
 
 # Or use convenience launchers
-setup.bat  # calls tools\setup.bat
-run.bat    # calls tools\run_direct.bat
+setup.bat  # calls scripts\windows\setup.bat
+run.bat    # calls scripts\windows
+un_direct.bat
 ```
 
 ### Linux/Mac
@@ -97,26 +111,27 @@ run.bat    # calls tools\run_direct.bat
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-scripts/setup/setup.sh           # install Python and Node dependencies
+scripts/shell/setup.sh           # install Python and Node dependencies
 npm install
-npm run build:css  # compiles assets/style.scss to assets/style.css (DO NOT EDIT style.css directly!)
+npm run build:css  # compiles assets/styles/index.scss to assets/dist/style.css (edit SCSS only)
 npm run lint:css
 pip install -r requirements.txt
 pre-commit install
 pre-commit run --all-files
-python -m py_compile app.py app_components/*.py
-scripts/test.sh                  # run linters and tests
+python -m compileall src
+scripts/shell/test.sh             # run linters and tests
 python app.py
 ```
 
-On Windows you can run everything from one command by executing `tools\run_direct.bat`
-or the convenience launcher `run.bat` in a Command Prompt or the VSCode terminal:
+On Windows you can run everything from one command by executing `scripts\windowsun_direct.bat`
+or the convenience launcher `run.bat` in a Command Prompt or the VS Code terminal:
 
 ```cmd
-tools\run_direct.bat
+scripts\windowsun_direct.bat
 # Or use the convenience launcher:
 run.bat
 ```
+
 
 ## 📊 Logging System
 
@@ -171,7 +186,7 @@ web: gunicorn app:server
 Please follow the development guidelines in `AGENTS.md` when proposing
 changes. Run the formatters and linters before committing and see
 `GIT-CHEATSHEET.md` for handy Git commands.
- 
+
 ### Git Helper: CSV Update Alias
 
 For quick commits when only `data/casino_events.csv` changes, add a repo‑local alias:
