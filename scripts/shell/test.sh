@@ -23,7 +23,7 @@ if command -v flake8 >/dev/null 2>&1; then
     flake8 --config config/linting/.flake8 .
 fi
 if command -v mypy >/dev/null 2>&1; then
-    mypy .
+    mypy --config-file config/typing/mypy.ini .
 fi
 if command -v bandit >/dev/null 2>&1; then
     bandit -r .

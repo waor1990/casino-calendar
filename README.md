@@ -33,7 +33,7 @@ Other versions may work but are not tested.
 
 ## 📁 Project Layout
 
-> For detailed project structure documentation, see [docs/project_structure.md](docs/project_structure.md).
+> For detailed project structure documentation, see [docs/architecture/project_structure.md](docs/architecture/project_structure.md).
 
 ```text
 app.py                   # Dash entry point exposing Dash server
@@ -55,7 +55,7 @@ src/
     logging/             # Logging configuration and rotation utilities
     services/            # General-purpose services (colors, config cache)
 assets/
-  dist/style.css        # Compiled CSS (do not edit)
+  dist/                 # Compiled CSS artifacts (generated)
   scripts/theme-toggle.js
   styles/index.scss     # Sass entry point
   styles/partials/      # Reusable Sass modules
@@ -143,7 +143,7 @@ The application includes a comprehensive logging system for debugging and monito
 # Run with default logging (INFO level, console output)
 python app.py
 
-# Enable debug logging
+For detailed documentation, see [`docs/architecture/logging_system.md`](docs/architecture/logging_system.md).
 LOG_LEVEL=DEBUG python app.py
 
 # Enable file logging

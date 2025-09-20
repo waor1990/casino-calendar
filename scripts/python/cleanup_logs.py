@@ -15,13 +15,7 @@ for candidate in (src_dir, project_root):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
-from casino_calendar.logging.rotation import (  # noqa: E402
-    archive_and_trim_by_days,
-    archive_and_trim_by_month,
-    archive_current_log,
-    cleanup_old_logs,
-    get_log_directory_info,
-)
+from casino_calendar.logging import rotation  # noqa: E402
 
 
 def main():
@@ -105,7 +99,7 @@ Examples:
 
     # Show log directory info if requested
     if args.info:
-        info = get_log_directory_info(args.log_dir)
+        info = rotation.get_log_directory_info(args.log_dir)
         if not info["exists"]:
             print(f"Log directory {log_dir} does not exist")
             return 1
@@ -130,7 +124,7 @@ Examples:
         current_log = resolve_log_file()
         if current_log.exists():
             try:
-                archive_path = archive_current_log(str(current_log))
+                archive_path = rotation.archive_current_log(str(current_log))
                 print(f"Archived current log to: {archive_path}")
             except Exception as e:
                 print(f"Error archiving current log: {e}")
@@ -143,7 +137,7 @@ Examples:
     if args.archive_split_days is not None:
         log_file = resolve_log_file()
         try:
-            summary = archive_and_trim_by_days(
+            summary = rotation.archive_and_trim_by_days(
                 str(log_file),
                 days_to_keep=args.archive_split_days,
                 archive_dir=args.archive_dir,
@@ -168,7 +162,7 @@ Examples:
     if args.archive_by_month:
         log_file = resolve_log_file()
         try:
-            summary = archive_and_trim_by_month(
+            summary = rotation.archive_and_trim_by_month(
                 str(log_file), archive_dir=args.archive_dir
             )
             if not args.quiet:
@@ -219,7 +213,7 @@ Examples:
         else:
             print("No files found that match deletion criteria")
     else:
-        deleted_count = cleanup_old_logs(args.log_dir, args.days)
+        deleted_count = rotation.cleanup_old_logs(args.log_dir, args.days)
         if not args.quiet:
             if deleted_count > 0:
                 print(f"Deleted {deleted_count} old log files")

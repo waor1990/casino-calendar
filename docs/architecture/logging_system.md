@@ -140,7 +140,7 @@ View these logs in the browser's Developer Tools (F12) → Console tab.
 - `dash_app/data/loader.py`: Data loading and processing
 - `dash_app/layout/root.py`: UI component creation
 - `dash_app/callbacks/`: User interaction events
-- `utils/`: Utility function operations
+- `casino_calendar/services/`: Shared service utilities
 
 ### Key Operations Logged
 

@@ -33,12 +33,10 @@ cleanup_old_logs: Optional[CleanupFn]
 setup_rotating_logger: Optional[SetupFn]
 
 try:
-    from casino_calendar.logging.rotation import (
-        cleanup_old_logs as _cleanup_old_logs,
-        setup_rotating_logger as _setup_rotating_logger,
-    )
-    cleanup_old_logs = _cleanup_old_logs
-    setup_rotating_logger = _setup_rotating_logger
+    from casino_calendar.logging import rotation as rotation_utils
+
+    cleanup_old_logs = rotation_utils.cleanup_old_logs
+    setup_rotating_logger = rotation_utils.setup_rotating_logger
 except ImportError:
     cleanup_old_logs = None
     setup_rotating_logger = None

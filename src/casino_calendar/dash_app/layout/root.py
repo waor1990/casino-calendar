@@ -2,19 +2,14 @@
 
 from __future__ import annotations
 
+from casino_calendar.logging import config as logging_config
 from dash import Dash, dcc, html
 
-from casino_calendar.logging.config import setup_logger
+from .components import header as header_components
+from .components import modals as modal_components
+from .components import stores as store_components
 
-from .components.header import build_header
-from .components.modals import build_day_modal, build_event_modal
-from .components.stores import (
-    build_hidden_helpers,
-    build_intervals,
-    build_state_stores,
-)
-
-logger = setup_logger(__name__)
+logger = logging_config.setup_logger(__name__)
 
 
 def create_layout(app: Dash, events) -> html.Div:
@@ -31,7 +26,7 @@ def create_layout(app: Dash, events) -> html.Div:
                 html.Div(
                     id="app-header",
                     children=[
-                        build_header(events),
+                        header_components.build_header(events),
                         html.Div(
                             id="calendar-scroll-body",
                             className="calendar-scroll-body",
@@ -49,11 +44,11 @@ def create_layout(app: Dash, events) -> html.Div:
                         ),
                     ],
                 ),
-                *build_state_stores(),
-                *build_hidden_helpers(),
-                *build_intervals(),
-                build_event_modal(),
-                build_day_modal(),
+                *store_components.build_state_stores(),
+                *store_components.build_hidden_helpers(),
+                *store_components.build_intervals(),
+                modal_components.build_event_modal(),
+                modal_components.build_day_modal(),
             ],
         )
 

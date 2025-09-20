@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 
 import pytest
-from casino_calendar.dash_app.services.layout_state import offer_type_emoji, to_naive_utc
 from casino_calendar.dash_app.layout.week_grid import _build_block
+from casino_calendar.dash_app.services import layout_state
 
 LONG_TEXT = "This is a very long event name for overflow testing"
 
@@ -28,7 +28,7 @@ COLORS = {
 
 @pytest.mark.usefixtures("offer_type", "casino")
 def test_build_block_adds_ellipsis_on_narrow_screen(casino, offer_type):
-    week_start = to_naive_utc(datetime(2025, 7, 6))
+    week_start = layout_state.to_naive_utc(datetime(2025, 7, 6))
     week_end = week_start + timedelta(days=7)
     row = _row(
         week_start + timedelta(days=1),
@@ -43,7 +43,7 @@ def test_build_block_adds_ellipsis_on_narrow_screen(casino, offer_type):
 
 @pytest.mark.usefixtures("offer_type", "casino")
 def test_build_block_uses_emoji_when_too_small(casino, offer_type):
-    week_start = to_naive_utc(datetime(2025, 7, 6))
+    week_start = layout_state.to_naive_utc(datetime(2025, 7, 6))
     week_end = week_start + timedelta(days=7)
     row = _row(
         week_start + timedelta(days=1),
@@ -53,4 +53,4 @@ def test_build_block_uses_emoji_when_too_small(casino, offer_type):
     )
 
     text, _, _ = _build_block(row, week_start, week_end, 100, COLORS)
-    assert text == offer_type_emoji(offer_type)
+    assert text == layout_state.offer_type_emoji(offer_type)

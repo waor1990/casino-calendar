@@ -2,12 +2,12 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
-from casino_calendar.dash_app.services.layout_state import filter_long_spanning_events, to_naive_utc
+from casino_calendar.dash_app.services import layout_state
 
 
 @pytest.mark.usefixtures("casino")
 def test_filter_long_spanning_events(casino):
-    week_start = to_naive_utc(datetime(2025, 7, 6))
+    week_start = layout_state.to_naive_utc(datetime(2025, 7, 6))
     week_end = week_start + timedelta(days=7)
     df = pd.DataFrame(
         {
@@ -28,5 +28,5 @@ def test_filter_long_spanning_events(casino):
         }
     )
 
-    result = filter_long_spanning_events(df, week_start, week_end)
+    result = layout_state.filter_long_spanning_events(df, week_start, week_end)
     assert list(result["EventName"]) == ["A", "D"]

@@ -47,3 +47,5 @@ dist/
 node_modules/
 
 .fake
+# Generated Dash assets
+assets/dist/*.css

@@ -6,4 +6,5 @@ exclude =
     node_modules,
     _tmp_branch,
     logs,
-    archive
+    docs/legacy,
+    assets/dist
