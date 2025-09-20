@@ -9,15 +9,15 @@ repos:
     rev: v5.13.2
     hooks:
       - id: isort
-        args: ["--profile", "black", "--settings-path", "config/.isort.cfg"]
+        args: ["--profile", "black", "--settings-path", "config/formatting/.isort.cfg"]
 
   - repo: https://github.com/pycqa/flake8
     rev: 6.1.0
     hooks:
       - id: flake8
-        args: ["--config", "config/.flake8"]
+        args: ["--config", "config/linting/.flake8"]
 
   - id: python-check
     name: py_compile
-    entry: python -m py_compile app.py app_components/*.py
+    entry: python -m compileall src
     language: python

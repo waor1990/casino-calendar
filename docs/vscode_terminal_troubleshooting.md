@@ -271,5 +271,5 @@ echo %PATH%
 pip show pip
 
 # Test import paths
-python -c "import app_components; print('Success')"
+python -c "import casino_calendar; print('Success')"
 ```

@@ -1,136 +1,124 @@
 # Casino Calendar - Copilot Instructions
 
-This is a Dash web application for displaying casino events in a calendar view. The app is designed for Python 3.11 and Node 18.
+This Dash web application renders casino events on a responsive calendar. The stack targets Python 3.11 and Node 22 (tested with Node 22.9.0).
 
 ## Architecture Overview
 
-The app follows a modular Dash pattern:
-
-- **`app.py`** - Entry point that loads data, creates layout, and registers callbacks
-- **`app_components/`** - Core application modules with separation of concerns:
-  - `layout.py` - Main UI layout generation
-  - `callbacks/` - Event handlers split by domain (events, filters, theme)
-  - `data.py` - CSV data loading and processing
-  - `logging_config.py` - Centralized logging setup
-- **`utils/`** - Shared utilities (colors, data parsing, log rotation)
-- **`assets/`** - Static assets with SCSS compilation to CSS
+- **`app.py`** – Thin entry point that instantiates the Dash app via the package factory.
+- **`src/casino_calendar/`** – Primary Python package:
+  - **`dash_app/app.py`** – `create_dash_app()` factory returning the Dash application and Flask server.
+  - **`dash_app/callbacks/`** – Domain-specific callback modules (events, filters, navigation, theme) aggregated in `callbacks/__init__.py`.
+  - **`dash_app/data/`** – CSV loader (`loader.py`), repository wrapper, and vectorised transforms.
+  - **`dash_app/layout/`** – Layout factory plus component helpers under `layout/components/`.
+  - **`dash_app/services/`** – Helpers used by callbacks/layout (timezone conversions, offer formatting, etc.).
+  - **`dash_app/visualization/`** – Plotly chart builders powering the day modal and overlays.
+  - **`logging/`** – Centralised logging config (`config.py`) and rotation helpers.
+  - **`services/`** – Shared services (config cache, colors, data parsing utilities).
+- **`assets/`** – Static assets auto-loaded by Dash:
+  - Source Sass lives under `assets/styles/` with partials in `styles/partials/`.
+  - Compiled CSS is written to `assets/dist/style.css`.
+  - Client-side helpers (e.g., theme toggle) live in `assets/scripts/`.
+- **`config/`** – Tooling configuration split into `formatting/`, `linting/`, and `typing/`.
+- **`data/`** – `raw/` CSVs plus lookup JSON files consumed by the services layer.
+- **`scripts/`** – Utility scripts grouped by runtime (`python/`, `shell/`, `node/`, `windows/`).
+- **`deploy/`** – Procfile, Render configuration, and Gunicorn settings.
 
 ## Key Patterns
 
 ### Data Flow
 
-Events are loaded from `data/casino_events.csv` into a pandas DataFrame with columns: EventName, Casino, Location, Offer, StartDate, EndDate. The data flows through:
+1. `load_event_data()` in `dash_app/data/loader.py` loads `data/raw/casino_events.csv` and normalises timestamps.
+2. Transforms in `dash_app/data/transforms.py` categorise offers and perform vectorised cleanup.
+3. `create_layout()` in `dash_app/layout/root.py` builds the component tree.
+4. Callbacks from `dash_app/callbacks/` drive interactivity.
 
-1. `load_event_data()` in `data.py` - CSV parsing and datetime conversion
-2. `create_layout()` in `layout.py` - UI generation with event data
-3. Callback functions in `callbacks/` - Interactive updates
+### Callback Organisation
 
-### Callback Organization
-
-Callbacks are split across modules and registered via `register_callbacks()`:
-
-- `callbacks/events.py` - Modal dialogs and event interactions
-- `callbacks/filters.py` - Casino filtering and date range selection
-- `callbacks/theme.py` - Theme switching functionality
-
-### Color System
-
-Casino colors are managed through JSON files in `data/`:
-
-- `casino_colors.json` - Casino-specific color mappings
-- `default_colors.json` - Fallback color palette
-- Access via `utils.colors.get_color(casino_name)`
+- `callbacks/events.py` – Modal dialog behaviour and day-event interactions.
+- `callbacks/filters.py` – Casino filters, responsive sizing, and hotel links.
+- `callbacks/navigation.py` – Home button redirects and week navigation persistence.
+- `callbacks/theme.py` – Theme toggle and clientside application.
 
 ### Logging
 
-Comprehensive logging system using `app_components.logging_config`:
-
-- Environment variable `LOG_LEVEL` controls verbosity (DEBUG, INFO, WARNING, ERROR)
-- Optional file logging via `LOG_FILE` environment variable
-- All modules use `setup_logger(__name__)` for consistent formatting
+- Use `casino_calendar.logging.config.setup_logger()` in every module.
+- `LOG_LEVEL` and `LOG_FILE` environment variables control verbosity and file output.
+- Rotation helpers live in `casino_calendar.logging.rotation` and are wired automatically by `setup_logger`.
 
 ## Development Workflow
 
 ### Setup and Running
 
 ```cmd
-# Windows (recommended)
-tools\setup.bat      # Creates venv, installs dependencies, builds CSS
-tools\run_direct.bat # Launches app with proper environment
+scripts\windows\setup.bat      # Creates venv, installs deps, builds CSS
+scripts\windowsun_direct.bat # Builds CSS and launches the Dash app
 
-# Or use convenience launchers
-setup.bat  # calls tools\setup.bat
-run.bat    # calls tools\run_direct.bat
+# Convenience launchers
+setup.bat  # proxies to scripts\windows\setup.bat
+run.bat    # proxies to scripts\windowsun_direct.bat
 ```
 
-### CSS/SCSS Development
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+scripts/shell/setup.sh           # install Python and Node dependencies
+npm install
+npm run build:css  # compiles assets/styles/index.scss to assets/dist/style.css
+npm run lint:css
+pip install -r requirements.txt
+pre-commit install
+pre-commit run --all-files
+python -m compileall src
+scripts/shell/test.sh             # run linters and tests
+python app.py
+```
 
-**⚠️ CRITICAL: NEVER modify `assets/style.css` directly! It is auto-generated and will be overwritten.**
+### CSS / Sass
 
-- **ALL CSS changes must be made in SCSS files** in `assets/styles/` directory
-- SCSS files compile to `assets/style.css` automatically when the app runs
-- Use `npm run watch:css` for auto-compilation during development
-- Always run `npm run build:css` before committing
-- Follow BEM-like naming (`.week-grid`, `.event-block-grid`)
-- The `style.css` file is generated - any direct edits will be lost
+- **Never edit `assets/dist/style.css` directly.**
+- Author styles in `assets/styles/index.scss` and partials under `assets/styles/partials/`.
+- Use `npm run watch:css` for development, `npm run build:css` before commit.
+- Variables/mixins live in `_variables.scss` and `_mixins.scss`.
 
-### Testing and Quality
+### Testing & Quality
 
-- Run `scripts/test.sh` before commits (wraps linting and tests)
-- Python: Black formatting, isort imports, flake8 linting
-- CSS: stylelint with config in `config/.stylelintrc.json`
-- Tests in `tests/` use pytest with fixtures in `conftest.py`
+- Execute `scripts/shell/test.sh` prior to commits (runs Black, isort, flake8, pytest, CSS lint).
+- CSS lint uses Stylelint config at `config/linting/.stylelintrc.json`.
+- Pytest suites live under `tests/unit`, `tests/integration`, and `tests/e2e`.
 
 ### VS Code Tasks
 
-Use the predefined tasks:
-
-- "Run Casino Calendar App" - Background server with logging
-- "Run Tests" - Execute pytest suite
-- "Install Dependencies" - Update Python packages
+- "Run Casino Calendar App" – launches Dash via the factory with logging.
+- "Run Tests" – executes pytest with coverage.
+- "Install Dependencies" – installs Python requirements and Node packages.
 
 ## Project Conventions
 
-### File Organization
-
-- Configuration files centralized in `config/` (`.flake8`, `.isort.cfg`, `mypy.ini`)
-- Documentation in `docs/` with archived completed docs in `docs/archived/`
-- User-facing tools in `tools/` with root-level convenience launchers
-- Log files in `logs/` with automatic archiving
-
-### Import Style
-
-- Use relative imports within `app_components/`
-- Import utilities with full paths: `from utils.colors import get_color`
-- Type hints preferred, especially for function signatures
-
-### Error Handling
-
-- Use structured logging for errors with context
-- Graceful fallbacks for missing data files (see `utils/colors.py`)
-- Exception logging includes stack traces via `exc_info=True`
+- Prefer package imports from `casino_calendar...` rather than relative paths outside each module.
+- For shared helpers use `casino_calendar.services` and `casino_calendar.dash_app.services`.
+- Honour type hints in public interfaces to keep mypy happy.
 
 ## Common Operations
 
-### Adding New Callbacks
+### Adding a Callback
 
-1. Create callback function in appropriate `callbacks/` module
-2. Add registration call to module's `register_callbacks()` function
-3. Import and call in `callbacks/__init__.py`
+1. Implement logic inside the appropriate module under `dash_app/callbacks/`.
+2. Expose the callback via the module-level `register_callbacks()`.
+3. Import and wire it in `dash_app/callbacks/__init__.py`.
 
-### Modifying Data Structure
+### Updating Data Schema
 
-1. Update CSV headers in `data/casino_events.csv`
-2. Modify parsing logic in `app_components/data.py`
-3. Update affected layout and callback functions
-4. Add/update tests in `tests/`
+1. Edit `data/raw/casino_events.csv` (or provide new data sources).
+2. Update parsing in `dash_app/data/loader.py` and transforms in `dash_app/data/transforms.py`.
+3. Adjust layout/callback expectations and corresponding tests.
 
 ### Styling Changes
 
-**⚠️ WARNING: Never edit `assets/style.css` directly - it's auto-generated!**
+1. Modify SCSS in `assets/styles/partials/` or `index.scss`.
+2. Rebuild CSS via `npm run build:css` (automatically emits `assets/dist/style.css`).
+3. Verify responsive behaviour across breakpoints.
 
-1. Edit SCSS files in `assets/styles/` directory only
-2. Use variables from `_variables.scss` and mixins from `_mixins.scss`
-3. Compile with `npm run build:css` (happens automatically when app runs)
-4. Test responsive behavior across device sizes
-5. Remember: `style.css` is overwritten on every build - SCSS changes only!
+### Logging Checks
+
+- Use `LOG_LEVEL=DEBUG python app.py` for verbose output.
+- Check rotating logs under `logs/`; archive helpers live in `scripts/python/cleanup_logs.py` and `scripts/windows/cleanup_logs.bat`.

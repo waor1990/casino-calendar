@@ -14,7 +14,7 @@ jobs:
           python-version: '3.11'
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
@@ -24,9 +24,9 @@ jobs:
           # Black reads settings from pyproject.toml (line-length=120)
           black --check .
           # Ensure isort aligns with Black and project settings
-          isort --check-only --settings-path config/.isort.cfg .
+          isort --check-only --settings-path config/formatting/.isort.cfg .
           # Use centralized flake8 config (max-line-length > 79)
-          flake8 --config config/.flake8 .
-          python -m py_compile app.py app_components/*.py
+          flake8 --config config/linting/.flake8 .
+          python -m compileall src
       - name: Lint CSS
         run: npm run lint:css
