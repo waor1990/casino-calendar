@@ -11,8 +11,8 @@ REM Navigate to project root (two levels above this script)
 cd /d "%~dp0\..\.."
 
 REM Set environment variables
-set PYTHONPATH=%CD%
-set PYTHONIOENCODING=utf-8
+set "PYTHONPATH=%CD%\src;%CD%;%PYTHONPATH%"
+set "PYTHONIOENCODING=utf-8"
 
 REM Check if virtual environment exists
 if not exist ".venv\Scripts\python.exe" (
