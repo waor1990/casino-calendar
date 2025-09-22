@@ -87,9 +87,7 @@ def build_day_modal() -> html.Div:
                             )
                         ],
                     ),
-                    html.Button(
-                        "Close", id="close-day-modal", className="modal-close"
-                    ),
+                    html.Button("Close", id="close-day-modal", className="modal-close"),
                 ],
             )
         ],

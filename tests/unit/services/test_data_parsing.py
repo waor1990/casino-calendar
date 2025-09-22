@@ -2,11 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from casino_calendar.dash_app.data.loader import load_event_data
-from casino_calendar.dash_app.data.transforms import (
-    categorize_offer_type,
-    categorize_offer_types,
-)
+from casino_calendar.dash_app.data import loader, transforms
 
 
 @pytest.mark.parametrize(
@@ -26,11 +22,11 @@ from casino_calendar.dash_app.data.transforms import (
     ],
 )
 def test_categorize_offer_type_basic(event_name, offer, expected):
-    assert categorize_offer_type(event_name, offer) == expected
+    assert transforms.categorize_offer_type(event_name, offer) == expected
 
 
 def test_categorize_offer_type_handles_missing():
-    assert categorize_offer_type(None, None) == "Offer"
+    assert transforms.categorize_offer_type(None, None) == "Offer"
 
 
 @pytest.mark.usefixtures("casino")
@@ -48,7 +44,7 @@ def test_load_event_data_localizes_dates(tmp_path: Path, casino):
     )
     df.to_csv(csv_path, index=False)
 
-    result = load_event_data(csv_path)
+    result = loader.load_event_data(csv_path)
 
     assert result["StartDate"].dt.tz is None
     assert result.loc[0, "OfferType"] == "Free-Play"
@@ -69,7 +65,7 @@ def test_load_event_data_handles_dst(tmp_path: Path, casino):
     )
     df.to_csv(csv_path, index=False)
 
-    result = load_event_data(csv_path)
+    result = loader.load_event_data(csv_path)
 
     delta = result.loc[0, "EndDate"] - result.loc[0, "StartDate"]
     assert delta.total_seconds() == 3600
@@ -90,7 +86,7 @@ def test_load_event_data_handles_dst_fall(tmp_path: Path, casino):
     )
     df.to_csv(csv_path, index=False)
 
-    result = load_event_data(csv_path)
+    result = loader.load_event_data(csv_path)
 
     delta = result.loc[0, "EndDate"] - result.loc[0, "StartDate"]
     assert delta.total_seconds() == 10800
@@ -103,7 +99,7 @@ def test_categorize_offer_types_word_boundaries():
             "Offer": ["", "", ""],
         }
     )
-    result = categorize_offer_types(df)
+    result = transforms.categorize_offer_types(df)
     assert list(result) == [
         "Hospitality-Rewards",
         "Offer",

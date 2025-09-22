@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import pandas as pd
 import plotly.graph_objs as go
-from dash import dcc, html
 from casino_calendar.settings import APP_TIMEZONE
+from dash import dcc, html
 
 if TYPE_CHECKING:
     # Dash base component type for annotations only

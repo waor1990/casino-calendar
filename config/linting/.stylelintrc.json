@@ -6,6 +6,7 @@
         "@stylistic/stylelint-plugin"
     ],
     "ignoreFiles": [
+        "assets/dist/**/*.css",
         "assets/style.css",
         "assets/base.css"
     ],

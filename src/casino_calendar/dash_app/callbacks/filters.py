@@ -4,15 +4,12 @@ from uuid import uuid4
 
 import dash
 import pandas as pd
-from dash import ALL, Input, Output, State, html
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.settings import APP_TIMEZONE
-from ..services.layout_state import (
-    filter_long_spanning_events,
-    to_naive_utc,
-    to_pdt,
-)
+from dash import ALL, Input, Output, State, html
+
 from ..layout.week_grid import render_day_labels, render_week_grid
+from ..services import layout_state
 
 PDT = APP_TIMEZONE
 
@@ -106,7 +103,7 @@ def register_callbacks(app, df) -> None:
 
         next_week_offset = desired_offset + 1
         next_week_start_pdt = current_sunday + timedelta(weeks=next_week_offset)
-        next_week_start = to_naive_utc(next_week_start_pdt)
+        next_week_start = layout_state.to_naive_utc(next_week_start_pdt)
         next_week_end = next_week_start + timedelta(days=7)
 
         has_next_week_events = not df[
@@ -237,7 +234,7 @@ def register_callbacks(app, df) -> None:
         today_pdt = datetime.now(PDT)
         current_sunday = today_pdt - timedelta(days=(today_pdt.weekday() + 1) % 7)
         week_start_pdt = current_sunday + timedelta(weeks=week_offset)
-        week_start = to_naive_utc(week_start_pdt)
+        week_start = layout_state.to_naive_utc(week_start_pdt)
 
         filtered_df = df
         if selected_casinos:
@@ -252,11 +249,13 @@ def register_callbacks(app, df) -> None:
         labels = render_day_labels(week_start)
 
         week_end = week_start + timedelta(days=7)
-        overflow_df = filter_long_spanning_events(filtered_df, week_start, week_end)
+        overflow_df = layout_state.filter_long_spanning_events(
+            filtered_df, week_start, week_end
+        )
 
         if not overflow_df.empty:
-            week_start_pdt = to_pdt(week_start)
-            week_end_pdt = to_pdt(week_end)
+            week_start_pdt = layout_state.to_pdt(week_start)
+            week_end_pdt = layout_state.to_pdt(week_end)
             is_open = bool(selected_casinos or selected_types)
             week_range = (
                 f"{week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
@@ -274,8 +273,12 @@ def register_callbacks(app, df) -> None:
             )
 
             def _format_overflow_item(row: pd.Series) -> html.Li:
-                start = to_pdt(cast(datetime, row["StartDate"])).strftime("%b %d")
-                end = to_pdt(cast(datetime, row["EndDate"])).strftime("%b %d")
+                start = layout_state.to_pdt(cast(datetime, row["StartDate"])).strftime(
+                    "%b %d"
+                )
+                end = layout_state.to_pdt(cast(datetime, row["EndDate"])).strftime(
+                    "%b %d"
+                )
                 text = f"{row['EventName']} ({row['Casino']}) - {start} to {end}"
                 return html.Li(text)
 

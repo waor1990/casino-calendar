@@ -3,14 +3,14 @@ from datetime import datetime, timedelta
 from typing import Any, Tuple
 
 import dash
-from dash import ALL, Input, Output, State, dcc, html, no_update
-from dash._callback import NoUpdate
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color
 from casino_calendar.settings import APP_TIMEZONE
+from dash import ALL, Input, Output, State, dcc, html, no_update
+from dash._callback import NoUpdate
 
 from ..services.layout_state import build_event_info_rows, to_naive_utc
-from ..visualization.charts import generate_day_view_parts
+from ..visualization import charts as day_charts
 
 PDT = APP_TIMEZONE
 
@@ -236,8 +236,10 @@ def register_callbacks(app, df) -> None:
                     len(filtered),
                 )
 
-                title_text, grid_children, figure, height_px = generate_day_view_parts(
-                    filtered, clicked_date, get_color, screen_width
+                title_text, grid_children, figure, height_px = (
+                    day_charts.generate_day_view_parts(
+                        filtered, clicked_date, get_color, screen_width
+                    )
                 )
                 day_modal_children = html.Div(
                     id="day-modal-content-container",
@@ -319,7 +321,7 @@ def register_callbacks(app, df) -> None:
                         else df
                     )
                     title_text, grid_children, figure, height_px = (
-                        generate_day_view_parts(
+                        day_charts.generate_day_view_parts(
                             filtered, clicked_date, get_color, screen_width
                         )
                     )

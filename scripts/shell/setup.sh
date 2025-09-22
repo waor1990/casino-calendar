@@ -4,7 +4,7 @@
 
 set -e
 
-# Creat and activate a virtual environment if not already present
+# Create and activate a virtual environment if not already present
 if [ ! -d ".venv" ]; then
     python3 -m venv .venv
 fi
