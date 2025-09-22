@@ -1,6 +1,18 @@
-"""WSGI entrypoint for compatible hosting environments."""
+﻿"""WSGI entrypoint for compatible hosting environments."""
 
-from casino_calendar.dash_app import create_dash_app
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+SRC_DIR = PROJECT_ROOT / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from casino_calendar.dash_app import create_dash_app  # noqa: E402
 
 app, server = create_dash_app()
 application = server
