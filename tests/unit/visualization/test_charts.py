@@ -3,17 +3,13 @@ from datetime import datetime, timedelta
 import pandas as pd
 import plotly.graph_objs as go
 import pytest
-from casino_calendar.dash_app.visualization.charts import (
-    DAY_MODAL_LABEL_REM,
-    DAY_MODAL_TRACK_REM,
-    DAY_MODAL_WIDE_REM,
-    build_weekly_figure,
-    generate_day_view_html,
-    get_layout_config,
-)
 from casino_calendar.dash_app.services.layout_state import to_naive_utc
+from casino_calendar.dash_app.visualization import charts as day_charts
 from casino_calendar.services.colors import get_color
-from casino_calendar.services.data_parsing import annotate_events_with_flags, filter_week_events
+from casino_calendar.services.data_parsing import (
+    annotate_events_with_flags,
+    filter_week_events,
+)
 
 
 @pytest.mark.usefixtures("casino", "offer_type")
@@ -33,7 +29,7 @@ def test_build_weekly_figure_structure(casino, offer_type):
     annot = annotate_events_with_flags(
         events, week_start, week_start + timedelta(days=7)
     )
-    fig = build_weekly_figure(annot, 1024, week_start)
+    fig = day_charts.build_weekly_figure(annot, 1024, week_start)
 
     assert isinstance(fig, go.Figure)
     assert fig.layout.shapes
@@ -62,14 +58,14 @@ def test_generate_day_view_width_scales_with_tracks():
         }
     )
 
-    result = generate_day_view_html(df, clicked, get_color, 1024)
+    result = day_charts.generate_day_view_html(df, clicked, get_color, 1024)
     grid_style = result[1].style
     char_rem = 0.55
     max_len = max(len(n) for n in df["EventName"])
     expected = max(
-        DAY_MODAL_WIDE_REM,
-        DAY_MODAL_LABEL_REM + DAY_MODAL_TRACK_REM * 3,
-        DAY_MODAL_LABEL_REM + char_rem * (max_len + 2) * 3,
+        day_charts.DAY_MODAL_WIDE_REM,
+        day_charts.DAY_MODAL_LABEL_REM + day_charts.DAY_MODAL_TRACK_REM * 3,
+        day_charts.DAY_MODAL_LABEL_REM + char_rem * (max_len + 2) * 3,
     )
     assert grid_style["minWidth"] == f"{expected}rem"
 
@@ -96,7 +92,7 @@ def test_event_block_min_width_for_few_events():
         }
     )
 
-    result = generate_day_view_html(df, clicked, get_color, 1024)
+    result = day_charts.generate_day_view_html(df, clicked, get_color, 1024)
     grid_children = result[1].children
     event_divs = [
         c
@@ -133,8 +129,10 @@ def test_day_view_includes_overlapping_events():
         }
     )
 
-    sun_result = generate_day_view_html(df, sunday, get_color, 1024)
-    mon_result = generate_day_view_html(df, sunday + timedelta(days=1), get_color, 1024)
+    sun_result = day_charts.generate_day_view_html(df, sunday, get_color, 1024)
+    mon_result = day_charts.generate_day_view_html(
+        df, sunday + timedelta(days=1), get_color, 1024
+    )
 
     for result in (sun_result, mon_result):
         grid_children = result[1].children
@@ -165,7 +163,7 @@ def test_short_events_near_midnight_do_not_overlap_or_overflow():
         }
     )
 
-    result = generate_day_view_html(df, clicked, get_color, 1024)
+    result = day_charts.generate_day_view_html(df, clicked, get_color, 1024)
     grid_children = result[1].children
     event_divs = [
         c
@@ -174,7 +172,7 @@ def test_short_events_near_midnight_do_not_overlap_or_overflow():
     ]
     assert len(event_divs) == 2
 
-    hour_height, _ = get_layout_config(1024)
+    hour_height, _ = day_charts.get_layout_config(1024)
     total_height = 24 * hour_height
     lefts = set()
     for div in event_divs:

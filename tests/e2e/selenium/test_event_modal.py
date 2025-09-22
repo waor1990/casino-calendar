@@ -1,12 +1,12 @@
 from pathlib import Path
 
 import pytest
-
-chromedriver_autoinstaller = pytest.importorskip("chromedriver_autoinstaller")
 from dash import Dash, html
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
+
+chromedriver_autoinstaller = pytest.importorskip("chromedriver_autoinstaller")
 
 try:
     chromedriver_autoinstaller.install()
@@ -14,21 +14,12 @@ except Exception:
     pass
 
 
-def _webdriver_available() -> bool:
-    try:
-        opts = Options()
-        opts.add_argument("--headless=new")
-        driver = Chrome(options=opts)
-        driver.quit()
-        return True
-    except Exception:
-        return False
-
-
-@pytest.mark.skip(
+pytestmark = pytest.mark.skip(
     reason="Visual tests require browser setup and may have threading issues on Windows"
 )
-def test_accent_elements_switch_to_primary_dark(dash_duo, tmp_path):
+
+
+def test_event_modal_theme_switch(dash_duo, tmp_path):
     screenshot_dir = Path(tmp_path) / "screenshots"
     screenshot_dir.mkdir()
 

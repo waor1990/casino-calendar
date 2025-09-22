@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
-SRC_DIR = ROOT_DIR / 'src'
+SRC_DIR = ROOT_DIR / "src"
 for candidate in (SRC_DIR, ROOT_DIR):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
@@ -14,7 +14,7 @@ for candidate in (SRC_DIR, ROOT_DIR):
 from datetime import datetime
 
 import pandas as pd
-from casino_calendar.dash_app.visualization.charts import generate_day_view_html
+from casino_calendar.dash_app.visualization import charts as day_charts
 from casino_calendar.services.colors import get_color
 
 # Create test data
@@ -44,7 +44,9 @@ clicked_date = datetime(2025, 7, 30)
 screen_width = 1024
 
 try:
-    result = generate_day_view_html(test_events, clicked_date, get_color, screen_width)
+    result = day_charts.generate_day_view_html(
+        test_events, clicked_date, get_color, screen_width
+    )
 
     print("✅ Day modal generation successful!")
     print(f"Generated {len(result)} elements")

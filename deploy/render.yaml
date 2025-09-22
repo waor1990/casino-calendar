@@ -5,11 +5,7 @@ services:
     buildCommand: |
       pip install -r requirements.txt
       npm ci
-      python -m py_compile \
-        app.py \
-        app_components/*.py \
-        app_components/callbacks/*.py \
-        utils/*.py
+      python -m compileall src
       black --check .
       isort --check-only --settings-path config/formatting/.isort.cfg .
       flake8 --config config/linting/.flake8 .
