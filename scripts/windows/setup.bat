@@ -89,7 +89,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 del /f /q "%ROOT_DIR%\.tmp_requirements_diff.txt" 2>nul
-"%PYTHON_EXE%" "%ROOT_DIR%\scripts\verify_requirements.py" > "%ROOT_DIR%\.tmp_requirements_diff.txt"
+"%PYTHON_EXE%" "%ROOT_DIR%\scripts\python\verify_requirements.py" > "%ROOT_DIR%\.tmp_requirements_diff.txt"
 set "REQS_OUT_OF_SYNC=%ERRORLEVEL%"
 set "REQS_OUT_OF_SYNC=%ERRORLEVEL%"
 
