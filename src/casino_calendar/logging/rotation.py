@@ -254,9 +254,7 @@ def archive_and_trim_by_days(
     }
 
 
-def archive_and_trim_by_month(
-    log_file: str, archive_dir: Optional[str] = None
-) -> Dict[str, object]:
+def archive_and_trim_by_month(log_file: str, archive_dir: Optional[str] = None) -> Dict[str, object]:
     """
     Archive log lines into per-month files (YYYY-MM) and keep only the current
     month's logs in the active file. Returns a summary dict.

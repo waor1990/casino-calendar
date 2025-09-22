@@ -8,7 +8,6 @@ to any non-empty value.
 
 import json
 import os
-from pathlib import Path
 from typing import Any, Dict
 
 from casino_calendar.logging.config import setup_logger

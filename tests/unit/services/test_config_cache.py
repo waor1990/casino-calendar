@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 
 from casino_calendar.services import config_cache
 

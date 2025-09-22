@@ -127,9 +127,7 @@ def _suppress_http_logs():
         http_logger.setLevel(logging.WARNING)
 
         # Remove any existing console handlers to prevent duplicate output
-        console_handlers = [
-            h for h in http_logger.handlers if isinstance(h, logging.StreamHandler)
-        ]
+        console_handlers = [h for h in http_logger.handlers if isinstance(h, logging.StreamHandler)]
         for handler in console_handlers:
             http_logger.removeHandler(handler)
             suppressed_count += 1
@@ -137,10 +135,7 @@ def _suppress_http_logs():
     # Log suppression status (but not in a loop to avoid noise)
     if suppressed_count > 0:
         # Use print instead of logging to avoid circular dependencies
-        msg = (
-            "HTTP request logs suppressed for console output "
-            f"({suppressed_count} handlers removed)"
-        )
+        msg = "HTTP request logs suppressed for console output " f"({suppressed_count} handlers removed)"
     else:
         msg = "HTTP request logs suppressed (set to WARNING level)"
 
@@ -189,9 +184,7 @@ def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
         max_bytes = 10 * 1024 * 1024  # 10MB per file
         backup_count = 5  # Keep 5 backup files
 
-        file_handler = RotatingFileHandler(
-            file_path, maxBytes=max_bytes, backupCount=backup_count, encoding="utf-8"
-        )
+        file_handler = RotatingFileHandler(file_path, maxBytes=max_bytes, backupCount=backup_count, encoding="utf-8")
         file_handler.setLevel(logging.DEBUG)  # File gets all levels
         file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
         logger.addHandler(file_handler)
@@ -265,9 +258,7 @@ def log_function_call(logger: logging.Logger, func_name: str, **kwargs):
     logger.debug(f"Calling {func_name}({params})")
 
 
-def log_performance(
-    logger: logging.Logger, operation: str, start_time: float, end_time: float
-):
+def log_performance(logger: logging.Logger, operation: str, start_time: float, end_time: float):
     """Log performance metrics for operations."""
     duration = end_time - start_time
     logger.info(f"Performance: {operation} completed in {duration:.3f}s")

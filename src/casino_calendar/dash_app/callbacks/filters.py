@@ -23,9 +23,7 @@ def _get_hotel_booking_sites():
 
     sites = get_config("lookups/hotel_book_sites.json")
     if not sites:
-        logger.warning(
-            "hotel_book_sites.json not available, hotel booking links disabled"
-        )
+        logger.warning("hotel_book_sites.json not available, hotel booking links disabled")
         return {}
     return sites
 
@@ -64,8 +62,7 @@ def register_callbacks(app, df) -> None:
             week_end_pdt = week_start_pdt + timedelta(days=6)
 
             label = (
-                f"Events for the Week of {week_start_pdt.strftime('%B %d')} - "
-                f"{week_end_pdt.strftime('%B %d, %Y')}"
+                f"Events for the Week of {week_start_pdt.strftime('%B %d')} - " f"{week_end_pdt.strftime('%B %d, %Y')}"
             )
             logger.debug(f"Generated week label: {label}")
             return label
@@ -106,9 +103,7 @@ def register_callbacks(app, df) -> None:
         next_week_start = layout_state.to_naive_utc(next_week_start_pdt)
         next_week_end = next_week_start + timedelta(days=7)
 
-        has_next_week_events = not df[
-            (df["EndDate"] > next_week_start) & (df["StartDate"] < next_week_end)
-        ].empty
+        has_next_week_events = not df[(df["EndDate"] > next_week_start) & (df["StartDate"] < next_week_end)].empty
 
         if not has_next_week_events and desired_offset > current_offset:
             desired_offset = current_offset
@@ -249,17 +244,13 @@ def register_callbacks(app, df) -> None:
         labels = render_day_labels(week_start)
 
         week_end = week_start + timedelta(days=7)
-        overflow_df = layout_state.filter_long_spanning_events(
-            filtered_df, week_start, week_end
-        )
+        overflow_df = layout_state.filter_long_spanning_events(filtered_df, week_start, week_end)
 
         if not overflow_df.empty:
             week_start_pdt = layout_state.to_pdt(week_start)
             week_end_pdt = layout_state.to_pdt(week_end)
             is_open = bool(selected_casinos or selected_types)
-            week_range = (
-                f"{week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
-            )
+            week_range = f"{week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
             toggle_text = (
                 f"\U0001f300 Hide Ongoing Events for {week_range}"
                 if is_open
@@ -273,12 +264,8 @@ def register_callbacks(app, df) -> None:
             )
 
             def _format_overflow_item(row: pd.Series) -> html.Li:
-                start = layout_state.to_pdt(cast(datetime, row["StartDate"])).strftime(
-                    "%b %d"
-                )
-                end = layout_state.to_pdt(cast(datetime, row["EndDate"])).strftime(
-                    "%b %d"
-                )
+                start = layout_state.to_pdt(cast(datetime, row["StartDate"])).strftime("%b %d")
+                end = layout_state.to_pdt(cast(datetime, row["EndDate"])).strftime("%b %d")
                 text = f"{row['EventName']} ({row['Casino']}) - {start} to {end}"
                 return html.Li(text)
 
@@ -291,12 +278,7 @@ def register_callbacks(app, df) -> None:
                         className="overflow-title font-bold mb-section",
                         style={"display": "block"},
                     ),
-                    html.Ul(
-                        [
-                            _format_overflow_item(row)
-                            for _, row in overflow_df.iterrows()
-                        ]
-                    ),
+                    html.Ul([_format_overflow_item(row) for _, row in overflow_df.iterrows()]),
                 ],
             )
         else:
@@ -311,11 +293,7 @@ def register_callbacks(app, df) -> None:
             **data_attr,
         )
 
-        style = (
-            {"height": f"{usable_height}px"}
-            if screen_width >= 768
-            else {"minHeight": f"{usable_height}px"}
-        )
+        style = {"height": f"{usable_height}px"} if screen_width >= 768 else {"minHeight": f"{usable_height}px"}
 
         return chart, labels, week_start.strftime("%Y-%m-%d"), str(uuid4()), style
 

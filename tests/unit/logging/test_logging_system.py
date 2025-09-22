@@ -1,6 +1,5 @@
 """Tests for the logging system implementation."""
 
-import logging
 import os
 import tempfile
 from unittest.mock import patch
@@ -23,7 +22,7 @@ def test_get_log_level_from_env():
         assert level == 10  # logging.DEBUG
 
     with patch.dict(os.environ, {"LOG_LEVEL": "WARNING"}):
-        level = get_log_level()
+        level = logging_config.get_log_level()
         assert level == 30  # logging.WARNING
 
 

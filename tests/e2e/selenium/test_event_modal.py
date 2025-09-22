@@ -2,8 +2,6 @@ from pathlib import Path
 
 import pytest
 from dash import Dash, html
-from selenium.webdriver import Chrome
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 
 chromedriver_autoinstaller = pytest.importorskip("chromedriver_autoinstaller")
@@ -14,9 +12,7 @@ except Exception:
     pass
 
 
-pytestmark = pytest.mark.skip(
-    reason="Visual tests require browser setup and may have threading issues on Windows"
-)
+pytestmark = pytest.mark.skip(reason="Visual tests require browser setup and may have threading issues on Windows")
 
 
 def test_event_modal_theme_switch(dash_duo, tmp_path):
@@ -50,9 +46,7 @@ def test_event_modal_theme_switch(dash_duo, tmp_path):
     try:
         dash_duo.start_server(app, debug=False, use_reloader=False, use_debugger=False)
     except Exception as e:
-        if "threaded server failed to start" in str(
-            e
-        ) or "signal only works in main thread" in str(e):
+        if "threaded server failed to start" in str(e) or "signal only works in main thread" in str(e):
             pytest.skip(f"Skipping test due to threading/signal issues on Windows: {e}")
         else:
             raise
@@ -66,22 +60,14 @@ def test_event_modal_theme_switch(dash_duo, tmp_path):
 
     def css_var_to_rgb(name):
         return dash_duo.driver.execute_script(
-            (
-                "var s=getComputedStyle(document.documentElement)"
-                ".getPropertyValue(arguments[0]).trim();"
-            ),
-            (
-                "var d=document.createElement('div');"
-                "d.style.color=s;document.body.appendChild(d);"
-            ),
+            ("var s=getComputedStyle(document.documentElement)" ".getPropertyValue(arguments[0]).trim();"),
+            ("var d=document.createElement('div');" "d.style.color=s;document.body.appendChild(d);"),
             "var c=getComputedStyle(d).color;d.remove();return c;",
             name,
         )
 
     def get_color(el, prop):
-        return dash_duo.driver.execute_script(
-            "return getComputedStyle(arguments[0])[arguments[1]];", el, prop
-        )
+        return dash_duo.driver.execute_script("return getComputedStyle(arguments[0])[arguments[1]];", el, prop)
 
     accent_rgb = css_var_to_rgb("--color-accent")
     assert get_color(modal_close, "backgroundColor") == accent_rgb
@@ -91,9 +77,7 @@ def test_event_modal_theme_switch(dash_duo, tmp_path):
 
     dash_duo.driver.save_screenshot(str(screenshot_dir / "light.png"))
 
-    dash_duo.driver.execute_script(
-        "document.documentElement.setAttribute('data-theme','dark');"
-    )
+    dash_duo.driver.execute_script("document.documentElement.setAttribute('data-theme','dark');")
     ActionChains(dash_duo.driver).move_to_element(hover_area).perform()
 
     primary_dark_rgb = css_var_to_rgb("--color-primary")
