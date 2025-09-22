@@ -1,16 +1,20 @@
-services:
+﻿services:
   - type: web
     name: casino-calendar
     runtime: python
     buildCommand: |
-      pip install -r requirements.txt
-      npm ci
-      python -m compileall src
-      black --check .
-      isort --check-only --settings-path config/formatting/.isort.cfg .
-      flake8 --config config/linting/.flake8 .
+      pip install -r requirements.txt &&
+      python scripts/python/verify_requirements.py requirements.txt &&
+      npm ci &&
+      python -m compileall app.py src &&
+      black --check --config config/formatting/pyproject.toml . &&
+      isort --check-only --settings-path config/formatting/.isort.cfg . &&
+      flake8 --config config/linting/.flake8 . &&
+      npm run lint:css &&
       npm run build:css
     startCommand: gunicorn app:server
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.11
+      - key: PYTHONPATH
+        value: .:src

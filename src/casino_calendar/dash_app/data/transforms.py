@@ -41,22 +41,16 @@ def categorize_offer_type(event_name: str | None, offer: str | None) -> str:
     giveaway_keywords = keywords["giveaway_keywords"]
     free_play_cash_drawing_keywords = keywords["free_play_cash_drawing_keywords"]
     multiplier_points_keywords = keywords["multiplier_points_keywords"]
-    hotel_travel_dining_shopping_keywords = keywords[
-        "hotel_travel_dining_shopping_keywords"
-    ]
+    hotel_travel_dining_shopping_keywords = keywords["hotel_travel_dining_shopping_keywords"]
     special_event_keywords = keywords["special_event_keywords"]
     vehicle_car_giveaway_keywords = keywords["vehicle_car_giveaway_keywords"]
 
     patterns = {
         "vehicle": re.compile(_build_keyword_pattern(vehicle_car_giveaway_keywords)),
         "giveaway": re.compile(_build_keyword_pattern(giveaway_keywords)),
-        "free_play": re.compile(
-            _build_keyword_pattern(free_play_cash_drawing_keywords)
-        ),
+        "free_play": re.compile(_build_keyword_pattern(free_play_cash_drawing_keywords)),
         "multiplier": re.compile(_build_keyword_pattern(multiplier_points_keywords)),
-        "hospitality": re.compile(
-            _build_keyword_pattern(hotel_travel_dining_shopping_keywords)
-        ),
+        "hospitality": re.compile(_build_keyword_pattern(hotel_travel_dining_shopping_keywords)),
         "special": re.compile(_build_keyword_pattern(special_event_keywords)),
     }
 
@@ -67,13 +61,9 @@ def categorize_offer_type(event_name: str | None, offer: str | None) -> str:
         return "Giveaway"
     if patterns["free_play"].search(event_name) or patterns["free_play"].search(offer):
         return "Free-Play"
-    if patterns["multiplier"].search(event_name) or patterns["multiplier"].search(
-        offer
-    ):
+    if patterns["multiplier"].search(event_name) or patterns["multiplier"].search(offer):
         return "Point-Based"
-    if patterns["hospitality"].search(event_name) or patterns["hospitality"].search(
-        offer
-    ):
+    if patterns["hospitality"].search(event_name) or patterns["hospitality"].search(offer):
         return "Hospitality-Rewards"
     if patterns["special"].search(event_name) or patterns["special"].search(offer):
         return "Special-Events"
@@ -90,18 +80,14 @@ def categorize_offer_types(df: pd.DataFrame) -> pd.Series:
         logger.error("Could not load offer keywords configuration")
         return pd.Series("Offer", index=df.index)
 
-    event_name = (
-        df.get("EventName", pd.Series(index=df.index, dtype=str)).fillna("").str.lower()
-    )
+    event_name = df.get("EventName", pd.Series(index=df.index, dtype=str)).fillna("").str.lower()
     offer = df.get("Offer", pd.Series(index=df.index, dtype=str)).fillna("").str.lower()
 
     category = pd.Series("Offer", index=df.index)
 
     def match(keys: list[str]) -> pd.Series:
         pattern = _build_keyword_pattern(keys)
-        return event_name.str.contains(pattern, regex=True) | offer.str.contains(
-            pattern, regex=True
-        )
+        return event_name.str.contains(pattern, regex=True) | offer.str.contains(pattern, regex=True)
 
     masks = {
         "vehicle": match(keywords["vehicle_car_giveaway_keywords"]),
@@ -141,9 +127,7 @@ def to_naive_utc(timestamp: pd.Timestamp) -> pd.Timestamp:
             logger.warning("Ambiguous time encountered, using DST=False: %s", timestamp)
         except NonExistentTimeError:
             localized = APP_TIMEZONE.localize(timestamp + timedelta(hours=1))
-            logger.warning(
-                "Non-existent time encountered, adding 1 hour: %s", timestamp
-            )
+            logger.warning("Non-existent time encountered, adding 1 hour: %s", timestamp)
     else:
         localized = timestamp.astimezone(APP_TIMEZONE)
 

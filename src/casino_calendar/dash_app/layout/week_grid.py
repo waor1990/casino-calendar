@@ -21,12 +21,8 @@ def _normalize(dt):
 def _build_block(row, week_start, week_end, screen_width, colors):
     """Return button text, classes and style variables for a calendar block."""
 
-    start_delta = (
-        _normalize(row["StartDate"]) - _normalize(week_start)
-    ).total_seconds() / (24 * 3600)
-    end_delta = (
-        _normalize(row["EndDate"]) - _normalize(week_start)
-    ).total_seconds() / (24 * 3600)
+    start_delta = (_normalize(row["StartDate"]) - _normalize(week_start)).total_seconds() / (24 * 3600)
+    end_delta = (_normalize(row["EndDate"]) - _normalize(week_start)).total_seconds() / (24 * 3600)
 
     visible_start = max(start_delta, 0)
     visible_end = min(end_delta, 7)
@@ -40,11 +36,7 @@ def _build_block(row, week_start, week_end, screen_width, colors):
         width_pct = 100 - left_pct
     width_pct = max(width_pct, 0)
 
-    font_px = (
-        12
-        if screen_width < 480
-        else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
-    )
+    font_px = 12 if screen_width < 480 else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
     approx_char_px = font_px * 0.6
     block_px = screen_width * (span_days / 7) * 0.95
     max_chars = max(int(block_px / approx_char_px), 0)
@@ -134,9 +126,7 @@ def render_week_grid(
         )
     else:
         for idx, row in df_assigned.iterrows():
-            text, cls, style = _build_block(
-                row, week_start, week_end, screen_width, colors
-            )
+            text, cls, style = _build_block(row, week_start, week_end, screen_width, colors)
 
             button_id = {"type": "grid-event", "index": row.get("orig_index", idx)}
             if row.get("is_duplicate"):
@@ -157,9 +147,7 @@ def render_week_grid(
                         {
                             "data-eventname": row["EventName"],
                             "data-casino": row["Casino"],
-                            "data-start": row["StartDate"].strftime(
-                                "%Y-%m-%dT%H:%M:%SZ"
-                            ),
+                            "data-start": row["StartDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
                             "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
                             "data-offer": row["Offer"],
                         },

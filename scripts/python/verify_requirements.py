@@ -55,9 +55,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     for name, req_ver in pinned.items():
         inst_ver = installed.get(name)
         if inst_ver != req_ver:
-            mismatches.append(
-                f"- {name} required {req_ver}, installed {inst_ver or 'not installed'}"
-            )
+            mismatches.append(f"- {name} required {req_ver}, installed {inst_ver or 'not installed'}")
 
     if mismatches:
         print("\n".join(mismatches))

@@ -42,9 +42,7 @@ def demonstrate_error_logging():
 
     print("=== Key Differences ===")
     print("- Old way: Only shows the error message")
-    print(
-        "- New way: Shows full traceback with file names, line numbers, and call stack"
-    )
+    print("- New way: Shows full traceback with file names, line numbers, and call stack")
     print("- This helps identify exactly where the error occurred and why")
 
 

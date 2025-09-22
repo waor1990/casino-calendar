@@ -32,12 +32,8 @@ Examples:
         """,
     )
 
-    parser.add_argument(
-        "--days", type=int, default=30, help="Number of days to keep logs (default: 30)"
-    )
-    parser.add_argument(
-        "--log-dir", type=str, default="logs", help="Log directory path (default: logs)"
-    )
+    parser.add_argument("--days", type=int, default=30, help="Number of days to keep logs (default: 30)")
+    parser.add_argument("--log-dir", type=str, default="logs", help="Log directory path (default: logs)")
     parser.add_argument(
         "--log-file",
         type=str,
@@ -55,9 +51,7 @@ Examples:
         action="store_true",
         help="Show what would be deleted without actually deleting",
     )
-    parser.add_argument(
-        "--info", action="store_true", help="Show information about log directory"
-    )
+    parser.add_argument("--info", action="store_true", help="Show information about log directory")
     parser.add_argument(
         "--archive-current",
         action="store_true",
@@ -106,17 +100,13 @@ Examples:
 
         print(f"Log Directory: {log_dir.absolute()}")
         print(f"Total files: {info['file_count']}")
-        print(
-            f"Total size: {info['total_size_mb']:.2f} MB ({info['total_size_bytes']:,} bytes)"
-        )
+        print(f"Total size: {info['total_size_mb']:.2f} MB ({info['total_size_bytes']:,} bytes)")
         print()
 
         if info["files"]:
             print("Files (newest first):")
             for file_info in info["files"]:
-                print(
-                    f"  {file_info['name']:<30} {file_info['size_mb']:>8.2f} MB  {file_info['modified']}"
-                )
+                print(f"  {file_info['name']:<30} {file_info['size_mb']:>8.2f} MB  {file_info['modified']}")
         return 0
 
     # Archive current log if requested
@@ -150,9 +140,7 @@ Examples:
                 )
             return 0
         except PermissionError as e:
-            print(
-                f"Permission error writing to log file. Ensure the app is not locking the file.\n{e}"
-            )
+            print(f"Permission error writing to log file. Ensure the app is not locking the file.\n{e}")
             return 1
         except Exception as e:
             print(f"Error during archive split by days: {e}")
@@ -162,9 +150,7 @@ Examples:
     if args.archive_by_month:
         log_file = resolve_log_file()
         try:
-            summary = rotation.archive_and_trim_by_month(
-                str(log_file), archive_dir=args.archive_dir
-            )
+            summary = rotation.archive_and_trim_by_month(str(log_file), archive_dir=args.archive_dir)
             if not args.quiet:
                 files = summary.get("archive_files", [])
                 print(
@@ -173,9 +159,7 @@ Examples:
                 )
             return 0
         except PermissionError as e:
-            print(
-                f"Permission error writing to log file. Ensure the app is not locking the file.\n{e}"
-            )
+            print(f"Permission error writing to log file. Ensure the app is not locking the file.\n{e}")
             return 1
         except Exception as e:
             print(f"Error during archive by month: {e}")

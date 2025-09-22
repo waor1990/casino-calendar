@@ -20,10 +20,7 @@ class DummyCtx:
 
 
 def _navigation_callback(app):
-    key = (
-        "..week-offset.data...prev-button.disabled...next-button.disabled..."
-        "next-button.title.."
-    )
+    key = "..week-offset.data...prev-button.disabled...next-button.disabled..." "next-button.title.."
     return app.callback_map[key]["callback"].__wrapped__
 
 

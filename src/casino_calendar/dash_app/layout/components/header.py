@@ -57,16 +57,12 @@ def build_header(events: pd.DataFrame) -> html.Div:
                                 "Casino Legend:",
                                 className="legend-title legend-gap",
                             ),
-                            html.Div(
-                                create_legend(events), className="legend-container"
-                            ),
+                            html.Div(create_legend(events), className="legend-container"),
                             dcc.Dropdown(
                                 id="event-type-filter",
                                 options=[
                                     {"label": offer_type, "value": offer_type}
-                                    for offer_type in sorted(
-                                        events["OfferType"].dropna().unique()
-                                    )
+                                    for offer_type in sorted(events["OfferType"].dropna().unique())
                                 ],
                                 multi=True,
                                 placeholder="Filter by event type",
