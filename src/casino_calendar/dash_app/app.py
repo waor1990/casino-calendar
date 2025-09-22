@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from pathlib import Path
 from typing import Any, Tuple
 
 from casino_calendar.logging.config import setup_logger
@@ -48,7 +49,16 @@ def create_dash_app() -> Tuple[Dash, Any]:
 
     logger.info("Casino Calendar application starting up")
 
-    app = Dash(__name__, suppress_callback_exceptions=True)
+    project_root = Path(__file__).resolve().parents[3]
+    assets_path = project_root / "assets"
+    logger.debug("Assets folder configured at %s", assets_path)
+
+    app = Dash(
+        __name__,
+        suppress_callback_exceptions=True,
+        assets_folder=str(assets_path),
+        assets_ignore=r".*\.scss$",
+    )
     app.title = "Casino Events Calendar"
     app.index_string = _build_index_string()
     logger.debug("Dash app initialized with title: %s", app.title)
