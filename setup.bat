@@ -1,6 +1,6 @@
 @echo off
-REM Casino Calendar - Quick Setup Launcher  
-REM Calls the setup script from tools directory
+REM Casino Calendar - Quick Setup Launcher
+REM Proxies to the Windows setup script in scripts\windows
 
 echo Running Casino Calendar Setup...
 call "scripts\windows\setup.bat"
