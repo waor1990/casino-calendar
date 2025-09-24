@@ -4,6 +4,11 @@
         "config/pyproject.toml"
     ],
     "editor.formatOnSave": true,
+    "eslint.workingDirectories": [
+        {
+            "mode": "auto"
+        }
+    ],
     "python.formatting.provider": "black",
     "python.sortImports.path": "isort",
     "python.sortImports.args": [

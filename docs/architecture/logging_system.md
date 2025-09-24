@@ -106,7 +106,7 @@ LOG_FILE=logs/casino_calendar_dev.log
 
 ### Console Output (with colors)
 
-```
+```log
 2025-07-29 10:15:30 | INFO     | app                  | Casino Calendar application starting up
 2025-07-29 10:15:30 | DEBUG    | casino_calendar.dash_app.data.loader  | Loading event data from data/casino_events.csv
 2025-07-29 10:15:31 | INFO     | casino_calendar.dash_app.data.loader  | Event data loaded successfully in 0.234s
@@ -114,7 +114,7 @@ LOG_FILE=logs/casino_calendar_dev.log
 
 ### File Output (no colors)
 
-```
+```log
 2025-07-29 10:15:30 | INFO     | app                  | Casino Calendar application starting up
 2025-07-29 10:15:30 | DEBUG    | casino_calendar.dash_app.data.loader  | Loading event data from data/casino_events.csv
 2025-07-29 10:15:31 | INFO     | casino_calendar.dash_app.data.loader  | Event data loaded successfully in 0.234s
