@@ -96,13 +96,17 @@ h1,
         background-color: var(--color-background);
     }
 
+    .Select-control,
+    .Select-value,
     .Select-value-label,
     .Select-placeholder,
-    .Select-option {
+    .Select-option,
+    .Select-input > input {
         color: var(--color-accent);
     }
 
-    .Select-input > input {
+    .Select--single > .Select-control .Select-value,
+    .Select--single > .Select-control .Select-value-label {
         color: var(--color-accent);
     }
 }
@@ -312,13 +316,17 @@ h1,
             background-color: var(--color-background);
         }
 
+        .Select-control,
+        .Select-value,
         .Select-value-label,
         .Select-placeholder,
-        .Select-option {
+        .Select-option,
+        .Select-input > input {
             color: var(--color-primary);
         }
 
-        .Select-input > input {
+        .Select--single > .Select-control .Select-value,
+        .Select--single > .Select-control .Select-value-label {
             color: var(--color-primary);
         }
     }
