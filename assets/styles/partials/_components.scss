@@ -98,11 +98,17 @@ h1,
 
     .Select-value-label,
     .Select-placeholder,
-    .Select-option {
+    .Select-option,
+    .VirtualizedSelectOption,
+    .Select-input input {
         color: var(--color-accent);
     }
 }
 /* stylelint-enable selector-class-pattern */
+
+[id^="react-select-"][id$="--list"] .VirtualizedSelectOption {
+    color: var(--color-accent);
+}
 
 /* Hotel booking link styles */
 #hotel-booking-container a {
@@ -310,11 +316,17 @@ h1,
 
         .Select-value-label,
         .Select-placeholder,
-        .Select-option {
+        .Select-option,
+        .VirtualizedSelectOption,
+        .Select-input input {
             color: var(--color-primary);
         }
     }
     /* stylelint-enable selector-class-pattern */
+
+    [id^="react-select-"][id$="--list"] .VirtualizedSelectOption {
+        color: var(--color-primary);
+    }
 
     #hotel-booking-container a {
         color: var(--color-primary);
