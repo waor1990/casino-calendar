@@ -100,11 +100,18 @@ h1,
     .Select-value,
     .Select-value-label,
     .Select-placeholder,
-    .Select-option,
-    .Select-option.is-focused,
-    .Select-option.is-selected,
-    .Select-option.is-disabled,
     .Select-input > input {
+        color: var(--color-accent);
+    }
+
+    .Select-option,
+    .Select-option *,
+    .Select-option.is-focused,
+    .Select-option.is-focused *,
+    .Select-option.is-selected,
+    .Select-option.is-selected *,
+    .Select-option.is-disabled,
+    .Select-option.is-disabled * {
         color: var(--color-accent);
     }
 
@@ -323,11 +330,18 @@ h1,
         .Select-value,
         .Select-value-label,
         .Select-placeholder,
-        .Select-option,
-        .Select-option.is-focused,
-        .Select-option.is-selected,
-        .Select-option.is-disabled,
         .Select-input > input {
+            color: var(--color-primary);
+        }
+
+        .Select-option,
+        .Select-option *,
+        .Select-option.is-focused,
+        .Select-option.is-focused *,
+        .Select-option.is-selected,
+        .Select-option.is-selected *,
+        .Select-option.is-disabled,
+        .Select-option.is-disabled * {
             color: var(--color-primary);
         }
 
