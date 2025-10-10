@@ -86,27 +86,25 @@ h1,
     background-color: var(--color-accent-light);
 }
 
-/* stylelint-disable selector-class-pattern */
 .event-type-dropdown {
     width: 100%;
 
-    .Select-control,
-    .Select-menu-outer,
-    .Select-menu {
+    [class~="Select-control"],
+    [class~="Select-menu-outer"],
+    [class~="Select-menu"] {
         background-color: var(--color-background);
     }
 
-    .Select-value-label,
-    .Select-placeholder,
-    .Select-option,
-    .VirtualizedSelectOption,
-    .Select-input input {
+    [class~="Select-value-label"],
+    [class~="Select-placeholder"],
+    [class~="Select-option"],
+    [class~="VirtualizedSelectOption"],
+    [class~="Select-input"] input {
         color: var(--color-accent);
     }
 }
-/* stylelint-enable selector-class-pattern */
 
-[id^="react-select-"][id$="--list"] .VirtualizedSelectOption {
+[id^="react-select-"][id$="--list"] [class~="VirtualizedSelectOption"] {
     color: var(--color-accent);
 }
 
@@ -306,25 +304,23 @@ h1,
         background-color: var(--color-primary);
     }
 
-    /* stylelint-disable selector-class-pattern */
     .event-type-dropdown {
-        .Select-control,
-        .Select-menu-outer,
-        .Select-menu {
+        [class~="Select-control"],
+        [class~="Select-menu-outer"],
+        [class~="Select-menu"] {
             background-color: var(--color-background);
         }
 
-        .Select-value-label,
-        .Select-placeholder,
-        .Select-option,
-        .VirtualizedSelectOption,
-        .Select-input input {
+        [class~="Select-value-label"],
+        [class~="Select-placeholder"],
+        [class~="Select-option"],
+        [class~="VirtualizedSelectOption"],
+        [class~="Select-input"] input {
             color: var(--color-primary);
         }
     }
-    /* stylelint-enable selector-class-pattern */
 
-    [id^="react-select-"][id$="--list"] .VirtualizedSelectOption {
+    [id^="react-select-"][id$="--list"] [class~="VirtualizedSelectOption"] {
         color: var(--color-primary);
     }
 
