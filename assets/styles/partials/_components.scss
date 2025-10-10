@@ -101,6 +101,10 @@ h1,
     .Select-option {
         color: var(--color-accent);
     }
+
+    .Select-input > input {
+        color: var(--color-accent);
+    }
 }
 /* stylelint-enable selector-class-pattern */
 
@@ -311,6 +315,10 @@ h1,
         .Select-value-label,
         .Select-placeholder,
         .Select-option {
+            color: var(--color-primary);
+        }
+
+        .Select-input > input {
             color: var(--color-primary);
         }
     }
