@@ -1,6 +1,6 @@
-# iOS Scriptable Scripts
+# Node Scripts
 
-This directory contains JavaScript modules used by the iOS Scriptable app that manage casino event data as part of the Casino Calendar workflow.
+This directory contains JavaScript utilities that support the Casino Calendar workflow. Some of the scripts are designed for the iOS Scriptable app while others provide local development tooling.
 
 ## Scripts
 
@@ -22,13 +22,22 @@ This directory contains JavaScript modules used by the iOS Scriptable app that m
 - **Usage**: Run periodically in Scriptable app (manually or via automation)
 - **Safety**: Preserves events with invalid dates, shows detailed removal summary
 
+### `cleanup-node-modules.mjs`
+
+- **Purpose**: Removes stale npm staging directories that trigger `npm warn cleanup` messages on Windows
+- **Platform**: Local development (Node.js 18+)
+- **Usage**: `npm run clean:node-modules` or `node scripts/node/cleanup-node-modules.mjs`
+- **Notes**: Automatically runs as part of `scripts\windows\setup.bat` and the `npm run setup` workflow to ensure clean dependency installs.
+
 ## Integration
 
-These scripts integrate with the main Casino Calendar application by:
+The iOS automation scripts integrate with the main Casino Calendar application by:
 
-- **Data Source**: Both scripts work with `iCloud/CasinoEvents/casino_events.csv`
+- **Data Source**: Both iOS scripts work with `iCloud/CasinoEvents/casino_events.csv`
 - **Compatibility**: CSV format matches what the Dash app expects in `data/casino_events.csv`
 - **Workflow**: Complete data lifecycle from addition (`append-casino-event.mjs`) to cleanup (`trim-old-casino-events.mjs`)
+
+The `cleanup-node-modules.mjs` utility keeps the local `node_modules` tree tidy so that Windows developers can run `npm install` without cleanup warnings.
 
 ## Setup
 

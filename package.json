@@ -14,7 +14,8 @@
         "build:css": "sass --no-source-map assets/styles/index.scss assets/dist/style.css",
         "watch:css": "sass --no-source-map --watch assets/styles/index.scss assets/dist/style.css",
         "lint:css": "stylelint --config config/linting/.stylelintrc.json 'assets/**/*.scss'",
-        "setup": "npm install && npm run build:css",
+        "clean:node-modules": "node scripts/node/cleanup-node-modules.mjs",
+        "setup": "npm run clean:node-modules && npm install && npm run build:css",
         "dev": "npm run watch:css"
     },
     "devDependencies": {

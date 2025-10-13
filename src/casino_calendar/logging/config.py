@@ -14,7 +14,7 @@ import os
 import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Iterable, Optional
 
 # Load environment variables from .env file
 try:
@@ -57,6 +57,14 @@ _MINIMAL_LOG_PREFIXES = (
     "Logging system shutting down",
 )
 
+_HTTP_LOGGER_NAMES = (
+    "werkzeug",
+    "waitress",
+    "gunicorn.access",
+    "uvicorn.access",
+    "cherrypy.access",
+)
+
 
 def _is_minimal_log_mode() -> bool:
     value = os.getenv("CASINO_MINIMAL_TEST_LOG", "").lower()
@@ -81,6 +89,54 @@ class _MinimalTestFilter(logging.Filter):
             return True
         message = record.getMessage()
         return message.startswith(_MINIMAL_LOG_PREFIXES)
+
+
+class _HttpSuppressionFilter(logging.Filter):
+    """Filter that suppresses HTTP access logs and emits a single notice."""
+
+    def __init__(self, logger_names: Iterable[str]):
+        super().__init__()
+        self._logger_names = tuple(logger_names)
+        self._notified = False
+
+    def _matches(self, record: logging.LogRecord) -> bool:
+        return any(
+            record.name == name or record.name.startswith(f"{name}.")
+            for name in self._logger_names
+        )
+
+    def filter(self, record: logging.LogRecord) -> bool:  # type: ignore[override]
+        if self._matches(record) and record.levelno < logging.WARNING:
+            if not self._notified:
+                self._emit_notice(record)
+                self._notified = True
+            return False
+        return True
+
+    def _emit_notice(self, record: logging.LogRecord) -> None:
+        message = (
+            "HTTP request log suppressed from "
+            f"{record.name} (set SUPPRESS_HTTP_LOGS=false to view HTTP traffic)"
+        )
+        try:
+            print(message)
+        except Exception:
+            try:
+                sys.stdout.write(message + "\n")
+            except Exception:
+                pass
+
+
+_HTTP_SUPPRESSION_FILTER: Optional[_HttpSuppressionFilter] = None
+
+
+def _get_http_suppression_filter() -> _HttpSuppressionFilter:
+    global _HTTP_SUPPRESSION_FILTER
+    if _HTTP_SUPPRESSION_FILTER is None:
+        _HTTP_SUPPRESSION_FILTER = _HttpSuppressionFilter(_HTTP_LOGGER_NAMES)
+    else:
+        _HTTP_SUPPRESSION_FILTER._notified = False
+    return _HTTP_SUPPRESSION_FILTER
 
 
 class CasinoCalendarFormatter(logging.Formatter):
@@ -132,7 +188,7 @@ def get_log_level(env_var: str = "LOG_LEVEL", default: str = "INFO") -> int:
     return fallback
 
 
-def _suppress_http_logs():
+def _suppress_http_logs() -> Optional[logging.Filter]:
     """Suppress HTTP request/response logs from console output.
 
     This function sets the logging level for common web server loggers
@@ -150,43 +206,20 @@ def _suppress_http_logs():
     )
 
     if not suppress_enabled:
-        return  # HTTP logs will be shown normally
+        global _HTTP_SUPPRESSION_FILTER
+        _HTTP_SUPPRESSION_FILTER = None
+        return None  # HTTP logs will be shown normally
 
-    # Common loggers that generate HTTP request logs
-    http_loggers = [
-        "werkzeug",  # Flask/Dash development server
-        "waitress",  # Production WSGI server
-        "gunicorn.access",  # Gunicorn access logs
-        "uvicorn.access",  # FastAPI/Uvicorn access logs
-        "cherrypy.access",  # CherryPy access logs
-    ]
+    filter_instance = _get_http_suppression_filter()
 
-    suppressed_count = 0
-    for logger_name in http_loggers:
+    for logger_name in _HTTP_LOGGER_NAMES:
         http_logger = logging.getLogger(logger_name)
-        # Set console level to WARNING to suppress INFO level HTTP logs
-        # but still allow ERROR logs through
-        http_logger.setLevel(logging.WARNING)
-
-        # Remove any existing console handlers to prevent duplicate output
+        http_logger.propagate = True
         console_handlers = [h for h in http_logger.handlers if isinstance(h, logging.StreamHandler)]
         for handler in console_handlers:
             http_logger.removeHandler(handler)
-            suppressed_count += 1
 
-    # Log suppression status (but not in a loop to avoid noise)
-    if suppressed_count > 0:
-        # Use print instead of logging to avoid circular dependencies
-        msg = "HTTP request logs suppressed for console output " f"({suppressed_count} handlers removed)"
-    else:
-        msg = "HTTP request logs suppressed (set to WARNING level)"
-
-    # Avoid printing Unicode symbols that may fail on Windows consoles
-    try:
-        print(msg)
-    except Exception:
-        # As a last resort, write bytes safely
-        sys.stdout.buffer.write((msg + "\n").encode(errors="ignore"))
+    return filter_instance
 
 
 def setup_logger(name: str, log_file: Optional[str] = None, level: Optional[int] = None) -> logging.Logger:
@@ -210,12 +243,14 @@ def setup_logger(name: str, log_file: Optional[str] = None, level: Optional[int]
     logger.setLevel(resolved_level)
 
     # Suppress noisy HTTP request logs from console (but keep in file)
-    _suppress_http_logs()
+    http_filter = _suppress_http_logs()
 
     # Console handler
     console_handler = logging.StreamHandler(sys.stderr)
     console_handler.setLevel(resolved_level)
     console_handler.setFormatter(CasinoCalendarFormatter(use_colors=True))
+    if http_filter is not None:
+        console_handler.addFilter(http_filter)
     logger.addHandler(console_handler)
 
     # File handler - use log_file parameter or fall back to LOG_FILE env var
@@ -257,7 +292,7 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
         Configured logger instance
     """
     # Suppress HTTP request logs from console
-    _suppress_http_logs()
+    http_filter = _suppress_http_logs()
 
     # Get log file from environment variable, fallback to default
     log_file_env = os.getenv("LOG_FILE")
@@ -316,6 +351,10 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
             5,
             True,
         )
+        if http_filter is not None:
+            for handler in logger.handlers:
+                if isinstance(handler, logging.StreamHandler):
+                    handler.addFilter(http_filter)
         if minimal_filter:
             for handler in logger.handlers:
                 if isinstance(handler, RotatingFileHandler) and Path(handler.baseFilename).name == log_file.name:
@@ -381,9 +420,13 @@ def setup_maintenance_logger(name: str = "casino_calendar.maintenance") -> loggi
     file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
     logger.addHandler(file_handler)
 
+    http_filter = _suppress_http_logs()
+
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(level)
     console_handler.setFormatter(logging.Formatter("%(message)s"))
+    if http_filter is not None:
+        console_handler.addFilter(http_filter)
     logger.addHandler(console_handler)
 
     logger.propagate = False
