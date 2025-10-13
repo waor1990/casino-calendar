@@ -38,7 +38,7 @@ def _event_modal_callback(casino: str):
     key = "".join(
         [
             "..event-modal.style...event-modal.className...event-modal-body.children",
-            "...close-timer.n_intervals...day-modal.style...day-modal.className...",
+            "...close-timer.n_intervals...close-timer.disabled...day-modal.style...day-modal.className...",
             "day-modal-body.children..",
         ]
     )
@@ -61,7 +61,8 @@ def test_show_event_modal_handles_duplicate(monkeypatch, casino):
 
     result = callback(None, 0, 0, 0, [1], [0], 0, 1024, [])
     assert result[1] == "modal show"
-    assert result[4] == {"display": "none"}
+    assert result[4] is True
+    assert result[5] == {"display": "none"}
 
 
 @pytest.mark.usefixtures("casino")
@@ -71,7 +72,8 @@ def test_show_event_modal_close(monkeypatch, casino):
 
     result = callback(None, 1, 0, 0, [0], [0], 0, 1024, [])
     assert result[1] == "modal closing"
-    assert result[3] == 1
+    assert result[3] == 0
+    assert result[4] is False
 
 
 def _build_boundary_events(clicked_date):
