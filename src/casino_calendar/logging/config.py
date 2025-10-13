@@ -320,16 +320,16 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
             for handler in logger.handlers:
                 if isinstance(handler, RotatingFileHandler) and Path(handler.baseFilename).name == log_file.name:
                     handler.addFilter(minimal_filter)
-        logger.info("Production logging initialized with rotation")
+        logger.info("Configured production logging with rotation")
     else:
         # Fallback to standard setup
         logger = setup_logger(name, str(log_file))
-        logger.info("Standard logging initialized")
+        logger.info("Configured standard logging")
 
     if not getattr(logger, "_casino_shutdown_registered", False):
         def _log_shutdown() -> None:
             if logger.handlers:
-                logger.info("Logging system shutting down")
+                logger.info("Shutting down logging system")
 
         atexit.register(_log_shutdown)
         logger._casino_shutdown_registered = True  # type: ignore[attr-defined]
@@ -393,22 +393,30 @@ def setup_maintenance_logger(name: str = "casino_calendar.maintenance") -> loggi
 
 def log_function_call(logger: logging.Logger, func_name: str, **kwargs):
     """Log function call with parameters (for debugging)."""
-    params = ", ".join(f"{k}={v}" for k, v in kwargs.items())
-    logger.debug(f"Calling {func_name}({params})")
+    if kwargs:
+        logger.debug("%s called with %d parameter(s)", func_name, len(kwargs))
+        for key, value in kwargs.items():
+            logger.debug("%s parameter %s=%r", func_name, key, value)
+    else:
+        logger.debug("%s called with no parameters", func_name)
 
 
 def log_performance(logger: logging.Logger, operation: str, start_time: float, end_time: float):
     """Log performance metrics for operations."""
     duration = end_time - start_time
-    logger.info(f"Performance: {operation} completed in {duration:.3f}s")
+    logger.info("%s completed in %.3f seconds", operation, duration)
 
 
 def log_dataframe_info(logger: logging.Logger, df, description: str = "DataFrame"):
     """Log useful information about a pandas DataFrame."""
     if df is not None and hasattr(df, "shape"):
-        logger.debug(f"{description} shape: {df.shape}, columns: {list(df.columns)}")
+        rows, cols = df.shape
+        logger.debug("%s size: %d rows x %d columns", description, rows, cols)
+        if hasattr(df, "columns"):
+            column_names = ", ".join(str(col) for col in df.columns)
+            logger.debug("%s columns: %s", description, column_names)
     else:
-        logger.warning(f"{description} is None or invalid")
+        logger.warning("%s is None or invalid", description)
 
 
 # Global application logger instance - use production setup
@@ -416,4 +424,4 @@ app_logger = setup_production_logger("casino_calendar")
 
 # Log startup
 app_logger.info("Logging system initialized")
-app_logger.debug(f"Log level set to: {logging.getLevelName(get_log_level())}")
+app_logger.debug("Log level: %s", logging.getLevelName(get_log_level()))

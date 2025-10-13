@@ -17,7 +17,7 @@ LEGEND_CASINOS: list[str] = []
 def build_header(events: pd.DataFrame) -> html.Div:
     """Return the sticky page header composed of controls and legend."""
 
-    logger.debug("Creating sticky header component")
+    logger.debug("Building sticky header")
 
     return html.Div(
         [
@@ -110,14 +110,14 @@ def build_header(events: pd.DataFrame) -> html.Div:
 def create_legend(df: pd.DataFrame) -> list[Any]:
     """Return the casino legend buttons."""
 
-    logger.debug("Creating casino legend")
+    logger.debug("Building casino legend")
     legend_items: list[Any] = []
     LEGEND_CASINOS.clear()
 
     try:
         colors = get_color()
         unique_casinos = df["Casino"].unique()
-        logger.debug("Found %d unique casinos in data", len(unique_casinos))
+        logger.debug("Unique casinos found: %d", len(unique_casinos))
 
         for casino, color in colors.items():
             if casino in unique_casinos:
@@ -141,11 +141,11 @@ def create_legend(df: pd.DataFrame) -> list[Any]:
                     )
                 )
 
-        logger.info("Created legend with %d casino items", len(legend_items))
+        logger.info("Generated %d legend entries", len(legend_items))
         return legend_items
 
     except Exception as exc:  # pragma: no cover - defensive logging
-        logger.error("Error creating legend: %s", exc, exc_info=True)
+        logger.error("Failed to build legend: %s", exc, exc_info=True)
         return []
 
 

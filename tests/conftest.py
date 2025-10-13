@@ -1,14 +1,13 @@
 """Pytest configuration, fixtures, and logging hooks for Casino Calendar tests."""
 
+import os
+import sys
 from pathlib import Path
 from typing import Optional
 
-import os
-import sys
-
 import pytest
 
-os.environ.setdefault('CASINO_MINIMAL_TEST_LOG', '1')
+os.environ.setdefault("CASINO_MINIMAL_TEST_LOG", "1")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = PROJECT_ROOT / "src"
@@ -45,17 +44,20 @@ def offer_type() -> str:
 def pytest_sessionstart(session: pytest.Session) -> None:
     """Log the start of a pytest session."""
 
-    MAINTENANCE_LOGGER.info(
-        "=== pytest session start: options=%s ===",
-        session.config.invocation_params,
-    )
+    MAINTENANCE_LOGGER.info("Pytest session started.")
 
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     """Log the end of a pytest session."""
 
-    MAINTENANCE_LOGGER.info("=== pytest session finish: status=%s ===", exitstatus)
+    try:
+        exit_code = pytest.ExitCode(exitstatus)
+        status_label = exit_code.name.replace("_", " ").lower()
+    except ValueError:
+        status_label = f"exit status {exitstatus}"
+
+    MAINTENANCE_LOGGER.info("Pytest session finished with %s.", status_label)
 
 
 @pytest.hookimpl
@@ -65,7 +67,12 @@ def pytest_runtest_logreport(report: pytest.TestReport) -> None:
     if report.when != "call":
         return
 
-    MAINTENANCE_LOGGER.info("Test %s -> %s", report.nodeid, report.outcome.upper())
+    if getattr(report, "wasxfail", False):
+        outcome = "expected fail" if report.outcome == "failed" else "unexpected pass"
+    else:
+        outcome = report.outcome
+
+    MAINTENANCE_LOGGER.info("Test %s %s.", report.nodeid, outcome)
     if report.failed:
         failure_details: Optional[str] = getattr(report, "longreprtext", None)
         if not failure_details and getattr(report, "longrepr", None):
@@ -86,6 +93,6 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config) -> None:  # ty
         if items:
             label = "errors" if outcome == "error" else outcome
             parts.append(f"{len(items)} {label}")
-    summary_body = ", ".join(parts) if parts else "no tests run"
+    summary_body = ", ".join(parts) if parts else "no tests ran"
     duration = getattr(terminalreporter._session, "duration", 0.0)
-    MAINTENANCE_LOGGER.info("=== Summary: %s in %.2fs ===", summary_body, duration)
+    MAINTENANCE_LOGGER.info("Pytest summary: %s in %.2fs.", summary_body, duration)

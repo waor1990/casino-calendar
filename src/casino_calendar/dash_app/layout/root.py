@@ -15,8 +15,8 @@ logger = logging_config.setup_logger(__name__)
 def create_layout(app: Dash, events) -> html.Div:
     """Return the root layout for the Dash application."""
 
-    logger.info("Creating application layout")
-    logger.debug("Creating layout for %d events", len(events))
+    logger.info("Building application layout")
+    logger.debug("Preparing layout for %d events", len(events))
 
     try:
         layout = html.Div(
@@ -52,11 +52,11 @@ def create_layout(app: Dash, events) -> html.Div:
             ],
         )
 
-        logger.info("Application layout created successfully")
+        logger.info("Application layout ready")
         return layout
 
     except Exception as exc:  # pragma: no cover - defensive logging
-        logger.error("Error creating layout: %s", exc, exc_info=True)
+        logger.error("Failed to build layout: %s", exc, exc_info=True)
         raise
 
 

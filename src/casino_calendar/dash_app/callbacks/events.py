@@ -20,7 +20,7 @@ logger = setup_logger(__name__)
 
 def register_callbacks(app, df) -> None:
     """Register event related callbacks on the given Dash ``app``."""
-    logger.info("Registering event-related callbacks")
+    logger.info("Registering event callbacks")
 
     @app.callback(
         Output("overflow-box", "className"),
@@ -31,7 +31,7 @@ def register_callbacks(app, df) -> None:
     )
     def toggle_overflow(n_clicks: int, start_date_str: str) -> Tuple[str, str]:
         """Toggle visibility of the overflow list for the selected week."""
-        logger.debug(f"Toggle overflow called with n_clicks={n_clicks}, date={start_date_str}")
+        logger.debug("Overflow toggle received %s click(s) for %s", n_clicks, start_date_str)
 
         try:
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
@@ -47,11 +47,11 @@ def register_callbacks(app, df) -> None:
                 else f"\U0001f300 Show Ongoing Events for {date_range}"
             )
 
-            logger.debug(f"Overflow toggled: is_open={is_open}, class={box_class}")
+            logger.debug("Overflow toggle state open %s with class %s", is_open, box_class)
             return box_class, button_text
 
         except Exception as e:
-            logger.error(f"Error in toggle_overflow callback: {e}", exc_info=True)
+            logger.error("toggle_overflow callback failed: %s", e, exc_info=True)
             raise
 
     @app.callback(
@@ -97,7 +97,7 @@ def register_callbacks(app, df) -> None:
         try:
             ctx = dash.callback_context
             triggered_id = ctx.triggered_id
-            logger.debug(f"Triggered by: {triggered_id}")
+            logger.debug("Trigger source: %s", triggered_id)
 
             if triggered_id == "close-timer":
                 logger.debug("Closing modal via timer")
@@ -139,7 +139,7 @@ def register_callbacks(app, df) -> None:
                 )
 
             if isinstance(triggered_id, dict) and triggered_id.get("type") in ("grid-event",):
-                logger.debug(f"Grid event clicked: {triggered_id}")
+                logger.debug("Grid event clicked: %s", triggered_id)
                 try:
                     triggered_n = ctx.triggered[0]["value"] if ctx.triggered and len(ctx.triggered) > 0 else None
                 except (IndexError, KeyError, TypeError):
@@ -151,7 +151,7 @@ def register_callbacks(app, df) -> None:
                 idx = triggered_id.get("index")
 
                 if idx is None or idx not in df.index:
-                    logger.warning(f"Invalid event index: {idx}")
+                    logger.warning("Invalid event index: %s", idx)
                     return (
                         no_update,
                         no_update,
@@ -164,7 +164,7 @@ def register_callbacks(app, df) -> None:
 
                 row = df.loc[idx]
                 event_name = row["EventName"] if "EventName" in row.index else "Unknown Event"
-                logger.info(f"Opening event modal for: {event_name}")
+                logger.info("Opening event modal for %s", event_name)
                 colors = get_color()
                 casino_colors = colors.get(row["Casino"], {"bg": "#000", "text": "#000"})
                 rows = build_event_info_rows(row.items())
@@ -180,7 +180,7 @@ def register_callbacks(app, df) -> None:
                 )
 
             if isinstance(triggered_id, dict) and triggered_id.get("type") == "day-column":
-                logger.debug(f"Day column clicked: {triggered_id}")
+                logger.debug("Day column clicked: %s", triggered_id)
                 try:
                     triggered_n = ctx.triggered[0]["value"] if ctx.triggered and len(ctx.triggered) > 0 else None
                 except (IndexError, KeyError, TypeError):
@@ -203,7 +203,7 @@ def register_callbacks(app, df) -> None:
                     )
 
                 clicked_date = to_naive_utc(datetime.strptime(date_str, "%Y-%m-%d"))
-                logger.info(f"Opening day modal for: {clicked_date.strftime('%Y-%m-%d')}")
+                logger.info("Opening day modal for %s", clicked_date.strftime("%Y-%m-%d"))
 
                 filtered = df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
                 logger.debug(
@@ -262,7 +262,7 @@ def register_callbacks(app, df) -> None:
                 try:
                     data = click_data["points"][0].get("customdata", [None])[0]
                 except (IndexError, KeyError, TypeError) as e:
-                    logger.warning(f"Error accessing click data: {e}")
+                    logger.warning("Error accessing click data: %s", e)
                     data = None
                 if data and data.get("type") == "day_click":
                     day_index = data.get("day_index")
@@ -283,7 +283,11 @@ def register_callbacks(app, df) -> None:
                     week_start = current_sunday + timedelta(weeks=week_offset)
                     clicked_date = week_start + timedelta(days=day_index)
 
-                    logger.info(f"Opening day modal for day index {day_index}: " f"{clicked_date.strftime('%Y-%m-%d')}")
+                    logger.info(
+                        "Opening day modal for index %s on %s",
+                        day_index,
+                        clicked_date.strftime("%Y-%m-%d"),
+                    )
 
                     filtered = df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
                     title_text, grid_children, figure, height_px = day_charts.generate_day_view_parts(
@@ -339,7 +343,8 @@ def register_callbacks(app, df) -> None:
                         "Offer",
                     ]
                 ):
-                    logger.info(f"Opening event modal for: " f"{data.get('EventName', 'Unknown Event')}")
+                    event_name = data.get("EventName", "Unknown Event")
+                    logger.info("Opening event modal for %s", event_name)
                     rows = build_event_info_rows(data.items())
                     return (
                         {},
@@ -353,19 +358,28 @@ def register_callbacks(app, df) -> None:
 
             logger.debug("No valid trigger found, preventing update")
             end_time = time.time()
-            logger.debug(f"show_event_modal callback completed in " f"{end_time - start_time:.3f}s (PreventUpdate)")
+            logger.debug(
+                "show_event_modal callback finished in %.3f seconds (PreventUpdate)",
+                end_time - start_time,
+            )
             raise dash.exceptions.PreventUpdate
 
         except dash.exceptions.PreventUpdate:
             # PreventUpdate is expected behavior, not an error - just re-raise it
             end_time = time.time()
-            logger.debug(f"show_event_modal callback completed in " f"{end_time - start_time:.3f}s (PreventUpdate)")
+            logger.debug(
+                "show_event_modal callback finished in %.3f seconds (PreventUpdate)",
+                end_time - start_time,
+            )
             raise
         except Exception as e:
-            logger.error(f"Error in show_event_modal callback: {e}", exc_info=True)
+            logger.error("show_event_modal callback failed: %s", e, exc_info=True)
             # Log performance even on error
             end_time = time.time()
-            logger.debug(f"show_event_modal callback completed in " f"{end_time - start_time:.3f}s (with error)")
+            logger.debug(
+                "show_event_modal callback finished in %.3f seconds (error)",
+                end_time - start_time,
+            )
             raise
 
-    logger.info("Event callbacks registered successfully")
+    logger.info("Event callbacks ready")

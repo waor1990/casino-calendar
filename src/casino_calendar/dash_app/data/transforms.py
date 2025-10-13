@@ -121,13 +121,13 @@ def to_naive_utc(timestamp: pd.Timestamp) -> pd.Timestamp:
     if timestamp.tzinfo is None:
         try:
             localized = APP_TIMEZONE.localize(timestamp, is_dst=None)
-            logger.debug("Successfully localized timestamp: %s", timestamp)
+            logger.debug("Successfully localized timestamp %s", timestamp)
         except AmbiguousTimeError:
             localized = APP_TIMEZONE.localize(timestamp, is_dst=False)
-            logger.warning("Ambiguous time encountered, using DST=False: %s", timestamp)
+            logger.warning("Ambiguous time encountered for %s; using DST=False", timestamp)
         except NonExistentTimeError:
             localized = APP_TIMEZONE.localize(timestamp + timedelta(hours=1))
-            logger.warning("Non-existent time encountered, adding 1 hour: %s", timestamp)
+            logger.warning("Non-existent time encountered for %s; adding 1 hour", timestamp)
     else:
         localized = timestamp.astimezone(APP_TIMEZONE)
 

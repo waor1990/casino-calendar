@@ -47,11 +47,11 @@ def _build_index_string() -> str:
 def create_dash_app() -> Tuple[Dash, Any]:
     """Create and configure the Dash application."""
 
-    logger.info("Casino Calendar application starting up")
+    logger.info("Starting Casino Calendar application")
 
     project_root = Path(__file__).resolve().parents[3]
     assets_path = project_root / "assets"
-    logger.debug("Assets folder configured at %s", assets_path)
+    logger.debug("Assets folder: %s", assets_path)
 
     app = Dash(
         __name__,
@@ -61,7 +61,7 @@ def create_dash_app() -> Tuple[Dash, Any]:
     )
     app.title = "Casino Events Calendar"
     app.index_string = _build_index_string()
-    logger.debug("Dash app initialized with title: %s", app.title)
+    logger.debug("Dash app title set to %s", app.title)
 
     # Preload configuration files so they are cached at startup
     warm_cache(
@@ -74,20 +74,20 @@ def create_dash_app() -> Tuple[Dash, Any]:
 
     repository = EventRepository()
 
-    logger.info("Loading event data...")
+    logger.info("Loading event data")
     start_time = time.time()
     events = repository.load_events()
     load_time = time.time() - start_time
-    logger.info("Event data loaded successfully in %.3fs", load_time)
-    logger.debug("Loaded %d events from data source", len(events))
+    logger.info("Loaded event data in %.3f seconds", load_time)
+    logger.debug("Event count: %d", len(events))
 
-    logger.info("Creating application layout...")
+    logger.info("Building application layout")
     app.layout = create_layout(app, events)
-    logger.debug("Application layout created successfully")
+    logger.debug("Application layout ready")
 
-    logger.info("Registering callbacks...")
+    logger.info("Registering callbacks")
     register_callbacks(app, events)
-    logger.debug("Callbacks registered successfully")
+    logger.debug("Callbacks ready")
 
     return app, app.server
 
@@ -101,20 +101,20 @@ def run_app(app: Dash | None = None) -> None:
     debug_mode = get_env_bool("DEBUG", False)
 
     if debug_mode:
-        logger.info("Starting Casino Calendar application in development mode")
-        logger.warning("Debug mode is enabled - not suitable for production")
+        logger.info("Starting development server")
+        logger.warning("Debug mode is enabled; avoid using in production")
     else:
-        logger.info("Starting Casino Calendar application in production mode")
+        logger.info("Starting production server")
 
     try:
         app.run(debug=debug_mode)
     except KeyboardInterrupt:  # pragma: no cover - manual shutdown
-        logger.info("Application stopped by user")
+        logger.info("Server stopped by user")
     except Exception as exc:  # pragma: no cover - defensive logging
-        logger.critical("Application failed to start: %s", exc)
+        logger.critical("Server failed to start: %s", exc)
         raise
     finally:
-        logger.info("Application shutdown complete")
+        logger.info("Server shutdown complete")
 
 
 __all__ = ["create_dash_app", "run_app"]

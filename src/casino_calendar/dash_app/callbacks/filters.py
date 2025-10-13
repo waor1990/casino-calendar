@@ -48,12 +48,12 @@ def register_callbacks(app, df) -> None:
         Output("usable-height", "data"),
         Input("initial-trigger", "n_intervals"),
     )
-    logger.debug("Registered clientside callback for screen dimensions")
+    logger.debug("Clientside screen dimension callback registered")
 
     @app.callback(Output("week-label", "children"), Input("week-offset", "data"))
     def update_week_label(week_offset: int) -> str:
         """Return a label for the currently selected week."""
-        logger.debug(f"Updating week label for offset: {week_offset}")
+        logger.debug("Updating week label for offset %s", week_offset)
 
         try:
             today_pdt = datetime.now(PDT)
@@ -64,11 +64,11 @@ def register_callbacks(app, df) -> None:
             label = (
                 f"Events for the Week of {week_start_pdt.strftime('%B %d')} - " f"{week_end_pdt.strftime('%B %d, %Y')}"
             )
-            logger.debug(f"Generated week label: {label}")
+            logger.debug("Week label generated: %s", label)
             return label
 
         except Exception as e:
-            logger.error(f"Error generating week label: {e}", exc_info=True)
+            logger.error("Failed to generate week label: %s", e, exc_info=True)
             return "Events for Current Week"
 
     @app.callback(
@@ -125,7 +125,7 @@ def register_callbacks(app, df) -> None:
         if not ctx.triggered_id:
             raise dash.exceptions.PreventUpdate
         clicked = ctx.triggered_id.get("index")
-        logger.debug(f"Casino legend clicked: {clicked}")
+        logger.debug("Casino legend clicked: %s", clicked)
 
         if not selected:
             selected = []
@@ -136,7 +136,7 @@ def register_callbacks(app, df) -> None:
         else:
             selected_list.append(clicked)
 
-        logger.info(f"Selected casinos updated: {selected_list}")
+        logger.info("Selected casinos updated: %s", selected_list)
         return selected_list
 
     @app.callback(
@@ -145,7 +145,7 @@ def register_callbacks(app, df) -> None:
         State({"type": "casino-filter", "index": ALL}, "id"),
     )
     def update_legend_classes(selected, ids):
-        logger.debug(f"Updating legend classes for casinos: {selected}")
+        logger.debug("Updating legend classes for casinos: %s", selected)
         base = "legend-item legend-button"
         selected_set = set(selected or [])
         classes = []
@@ -162,8 +162,8 @@ def register_callbacks(app, df) -> None:
         prevent_initial_call=True,
     )
     def update_event_type_filter(selected_types: list[str] | None) -> list[str]:
-        logger.debug(f"Event type filter changed: {selected_types}")
-        logger.info(f"Selected event types updated: {selected_types}")
+        logger.debug("Event type filter changed: %s", selected_types)
+        logger.info("Selected event types updated: %s", selected_types)
         return selected_types or []
 
     @app.callback(
@@ -173,7 +173,7 @@ def register_callbacks(app, df) -> None:
     )
     def update_hotel_booking_link(selected_casinos):
         """Update hotel booking link based on selected casino."""
-        logger.debug(f"Updating hotel booking link for selection: {selected_casinos}")
+        logger.debug("Updating hotel booking link for selection: %s", selected_casinos)
         if not selected_casinos or len(selected_casinos) != 1:
             logger.debug("Hotel booking link hidden due to selection count")
             return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
@@ -183,7 +183,7 @@ def register_callbacks(app, df) -> None:
         booking_url = hotel_booking_sites.get(casino_name)
 
         if booking_url and booking_url != "N/A":
-            logger.info(f"Showing hotel booking link for {casino_name}")
+            logger.info("Showing hotel booking link for %s", casino_name)
             link_content = html.A(
                 "🏨 Hotel Booking",
                 href=booking_url,
@@ -194,7 +194,7 @@ def register_callbacks(app, df) -> None:
                 "textAlign": "center",
                 "marginTop": "10px",
             }
-        logger.info(f"No booking URL for {casino_name}; hiding hotel booking link")
+        logger.info("Hiding hotel booking link for %s; URL not available", casino_name)
         return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
 
     @app.callback(
@@ -220,7 +220,7 @@ def register_callbacks(app, df) -> None:
         """Render a single week of events and overflow list."""
         ctx = dash.callback_context
         logger.debug(
-            "Rendering week chart: offset=%s casinos=%s types=%s triggered_by=%s",
+            "Rendering week chart with offset %s, casinos %s, types %s, trigger %s",
             week_offset,
             selected_casinos,
             selected_types,
@@ -233,12 +233,12 @@ def register_callbacks(app, df) -> None:
 
         filtered_df = df
         if selected_casinos:
-            logger.debug(f"Filtering events by casinos: {selected_casinos}")
+            logger.debug("Filtering events by casinos: %s", selected_casinos)
             filtered_df = filtered_df[filtered_df["Casino"].isin(selected_casinos)]
         if selected_types:
-            logger.debug(f"Filtering events by types: {selected_types}")
+            logger.debug("Filtering events by types: %s", selected_types)
             filtered_df = filtered_df[filtered_df["OfferType"].isin(selected_types)]
-        logger.info(f"Filtered events count: {len(filtered_df)}")
+        logger.info("Filtered events count: %d", len(filtered_df))
 
         grid = render_week_grid(week_start, filtered_df, screen_width, selected_casinos)
         labels = render_day_labels(week_start)

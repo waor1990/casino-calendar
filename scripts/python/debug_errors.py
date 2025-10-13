@@ -24,82 +24,50 @@ logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.debug_
 def demonstrate_error_logging():
     """Demonstrate how exc_info=True provides full tracebacks."""
 
-    logger.info("=== Error Logging Demonstration ===")
+    logger.info("Starting error logging demonstration")
 
     # Simulate an error without exc_info (old way)
     try:
         _ = 10 / 0  # noqa: B018 - deliberate exception for demonstration
     except Exception as exc:
-        logger.info("1. Old error logging (without exc_info):")
+        logger.info("Legacy logging without traceback")
         logger.error("Error in demo callback: %s", exc)
 
     # Simulate an error with exc_info (new way)
     try:
         _ = 10 / 0  # noqa: B018 - deliberate exception for demonstration
     except Exception as exc:
-        logger.info("2. Enhanced error logging (with exc_info=True):")
+        logger.info("Enhanced logging with traceback")
         logger.error("Error in demo callback: %s", exc, exc_info=True)
 
-    logger.info("=== Key Differences ===")
-    logger.info("- Old way: Only shows the error message")
-    logger.info("- New way: Shows full traceback with file names, line numbers, and call stack")
-    logger.info("- This helps identify exactly where the error occurred and why")
+    logger.info("Legacy logging only reports the exception message")
+    logger.info("Enhanced logging includes file names, line numbers, and stack details")
+    logger.info("Full tracebacks make it easier to pinpoint the failure")
 
 
 def monitoring_tips():
     """Provide tips for monitoring the application for errors."""
 
-    logger.info("")
-    logger.info("=== Error Monitoring Tips ===")
-    logger.info("1. Real-time log monitoring:")
-    logger.info("   tail -f logs/casino_calendar_prod.log")
-    logger.info("")
-    logger.info("2. Filter for errors only:")
-    logger.info("   grep 'ERROR' logs/casino_calendar_prod.log")
-    logger.info("")
-    logger.info("3. Look for specific callback errors:")
-    logger.info("   grep 'show_event_modal callback' logs/casino_calendar_prod.log")
-    logger.info("")
-    logger.info("4. In VS Code, you can:")
-    logger.info("   - Use Ctrl+F to search for 'ERROR' in the log file")
-    logger.info("   - Look for 'Traceback' entries that follow ERROR messages")
-    logger.info("   - Check line numbers mentioned in tracebacks")
-    logger.info("")
-    logger.info("5. Common error triggers to test:")
-    logger.info("   - Click on an event in the calendar grid")
-    logger.info("   - Click on a day column header")
-    logger.info("   - Use the navigation buttons")
-    logger.info("   - Toggle the overflow events")
+    logger.info("Error monitoring tips")
+    logger.info("Monitor logs in real time: tail -f logs/casino_calendar_prod.log")
+    logger.info("Filter for errors only: grep 'ERROR' logs/casino_calendar_prod.log")
+    logger.info("Search for callback errors: grep 'show_event_modal callback' logs/casino_calendar_prod.log")
+    logger.info("In VS Code use Ctrl+F for 'ERROR' and review Traceback sections")
+    logger.info("Pay attention to line numbers referenced in tracebacks")
+    logger.info("Common triggers to reproduce: click events, day headers, navigation, and overflow toggles")
 
 
 def debugging_steps():
     """Provide step-by-step debugging guidance."""
 
-    logger.info("")
-    logger.info("=== Debugging Steps for show_event_modal Error ===")
-    logger.info("Step 1: Run the application")
-    logger.info("   python app.py")
-    logger.info("")
-    logger.info("Step 2: Trigger the error")
-    logger.info("   - Open the application in your browser")
-    logger.info("   - Try clicking on different calendar elements")
-    logger.info("   - Look for actions that cause the modal to open")
-    logger.info("")
-    logger.info("Step 3: Check the logs")
-    logger.info("   - Look at logs/casino_calendar_prod.log")
-    logger.info("   - Search for 'ERROR' messages")
-    logger.info("   - Look for the full traceback after 'show_event_modal callback:'")
-    logger.info("")
-    logger.info("Step 4: Analyze the traceback")
-    logger.info("   - Note the file and line number where the error occurred")
-    logger.info("   - Check the exception type (ValueError, KeyError, etc.)")
-    logger.info("   - Review the code at that location")
-    logger.info("")
-    logger.info("Step 5: Common issues to check:")
-    logger.info("   - Missing data in the DataFrame")
-    logger.info("   - Invalid date formats")
-    logger.info("   - Null/None values in expected data")
-    logger.info("   - Mismatched data types")
+    logger.info("Debugging steps for show_event_modal errors")
+    logger.info("Run the application: python app.py")
+    logger.info("Trigger the issue by interacting with calendar elements")
+    logger.info("Review logs at logs/casino_calendar_prod.log and search for 'ERROR'")
+    logger.info("Check for tracebacks following the show_event_modal callback entry")
+    logger.info("Capture the file, line number, and exception type from the traceback")
+    logger.info("Inspect the referenced code to confirm data assumptions")
+    logger.info("Common causes include missing data, invalid dates, null values, or mismatched types")
 
 
 if __name__ == "__main__":
