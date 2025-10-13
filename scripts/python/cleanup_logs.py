@@ -29,11 +29,7 @@ def _file_contains_only_date(file_path: Path, target: str) -> bool:
     except Exception:
         return False
 
-    dates = {
-        line[:10]
-        for line in lines
-        if line.strip() and len(line) >= 10
-    }
+    dates = {line[:10] for line in lines if line.strip() and len(line) >= 10}
     return dates == {target}
 
 

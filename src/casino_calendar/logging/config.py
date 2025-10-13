@@ -100,10 +100,7 @@ class _HttpSuppressionFilter(logging.Filter):
         self._notified = False
 
     def _matches(self, record: logging.LogRecord) -> bool:
-        return any(
-            record.name == name or record.name.startswith(f"{name}.")
-            for name in self._logger_names
-        )
+        return any(record.name == name or record.name.startswith(f"{name}.") for name in self._logger_names)
 
     def filter(self, record: logging.LogRecord) -> bool:  # type: ignore[override]
         if self._matches(record) and record.levelno < logging.WARNING:
@@ -115,8 +112,7 @@ class _HttpSuppressionFilter(logging.Filter):
 
     def _emit_notice(self, record: logging.LogRecord) -> None:
         message = (
-            "HTTP request log suppressed from "
-            f"{record.name} (set SUPPRESS_HTTP_LOGS=false to view HTTP traffic)"
+            "HTTP request log suppressed from " f"{record.name} (set SUPPRESS_HTTP_LOGS=false to view HTTP traffic)"
         )
         try:
             print(message)
@@ -366,6 +362,7 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
         logger.info("Configured standard logging")
 
     if not getattr(logger, "_casino_shutdown_registered", False):
+
         def _log_shutdown() -> None:
             if logger.handlers:
                 logger.info("Shutting down logging system")

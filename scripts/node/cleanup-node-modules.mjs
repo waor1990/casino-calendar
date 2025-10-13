@@ -30,6 +30,8 @@ const PRESERVE_DIRS = new Set([
 ]);
 
 const STALE_DIR_REGEX = /^\.[^\\/]+-[A-Za-z0-9]{4,}$/;
+const MAX_RETRY_ATTEMPTS = 5;
+const RETRY_DELAY_MS = 200;
 
 function formatRelative(targetPath) {
     return path.relative(PROJECT_ROOT, targetPath) || ".";
@@ -78,18 +80,110 @@ async function findDirectoriesWithDots(startDir) {
     return stalePaths;
 }
 
+async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function ensureWritable(target) {
+    let stats;
+
+    try {
+        stats = await fs.stat(target);
+    } catch (error) {
+        if (error.code === "ENOENT") {
+            return;
+        }
+        throw error;
+    }
+
+    const desiredMode = stats.isDirectory() ? 0o777 : 0o666;
+
+    if ((stats.mode & 0o222) === 0) {
+        try {
+            await fs.chmod(target, desiredMode);
+        } catch (error) {
+            if (error.code !== "ENOENT") {
+                throw error;
+            }
+            return;
+        }
+    }
+
+    if (!stats.isDirectory()) {
+        return;
+    }
+
+    let entries;
+    try {
+        entries = await fs.readdir(target, { withFileTypes: true });
+    } catch (error) {
+        if (error.code === "ENOENT") {
+            return;
+        }
+        throw error;
+    }
+
+    await Promise.all(
+        entries
+            .filter(entry => !entry.isSymbolicLink())
+            .map(entry => ensureWritable(path.join(target, entry.name))),
+    );
+}
+
 async function removeDirectories(directories) {
     const failures = [];
 
     directories.sort((a, b) => b.length - a.length);
 
     for (const directory of directories) {
-        try {
-            await fs.rm(directory, { recursive: true, force: true });
-            console.log(`  ✔ Removed ${formatRelative(directory)}`);
-        } catch (error) {
-            failures.push({ directory, error });
-            console.warn(`  ✖ Failed to remove ${formatRelative(directory)} (${error.code ?? error.message})`);
+        let attempt = 0;
+        let lastError = null;
+
+        while (attempt < MAX_RETRY_ATTEMPTS) {
+            try {
+                await fs.rm(directory, {
+                    recursive: true,
+                    force: true,
+                    maxRetries: 0,
+                });
+                console.log(`  ✔ Removed ${formatRelative(directory)}`);
+                lastError = null;
+                break;
+            } catch (error) {
+                if (error.code === "ENOENT") {
+                    console.log(`  ✔ Removed ${formatRelative(directory)}`);
+                    lastError = null;
+                    break;
+                }
+
+                lastError = error;
+                attempt += 1;
+
+                if (attempt >= MAX_RETRY_ATTEMPTS) {
+                    break;
+                }
+
+                if (error.code === "EPERM" || error.code === "EACCES") {
+                    try {
+                        await ensureWritable(directory);
+                    } catch (chmodError) {
+                        // If we cannot adjust permissions, surface the original failure.
+                        lastError = error;
+                        break;
+                    }
+                }
+
+                await sleep(RETRY_DELAY_MS * attempt);
+            }
+        }
+
+        if (lastError) {
+            const attemptCount = attempt;
+            const attemptLabel = attemptCount === 1 ? "attempt" : "attempts";
+            failures.push({ directory, error: lastError });
+            console.warn(
+                `  ✖ Failed to remove ${formatRelative(directory)} (${lastError.code ?? lastError.message}) after ${attemptCount} ${attemptLabel}`,
+            );
         }
     }
 
