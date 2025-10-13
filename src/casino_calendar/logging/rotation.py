@@ -176,6 +176,23 @@ def _parse_log_timestamp(line: str) -> Optional[datetime]:
         return None
 
 
+def _replace_with_retry(src: Path, dest: Path, attempts: int = 5, delay: float = 0.2) -> None:
+    """Replace ``dest`` with ``src`` retrying on ``PermissionError`` (Windows)."""
+
+    last_exc: Optional[PermissionError] = None
+    for attempt in range(1, attempts + 1):
+        try:
+            src.replace(dest)
+            return
+        except PermissionError as exc:  # pragma: no cover - platform specific
+            last_exc = exc
+            if attempt == attempts:
+                break
+            time.sleep(delay)
+    if last_exc is not None:
+        raise last_exc
+
+
 def archive_and_trim_by_days(
     log_file: str,
     days_to_keep: int = 30,
@@ -239,7 +256,7 @@ def archive_and_trim_by_days(
     try:
         with tmp_path.open("w", encoding="utf-8") as tf:
             tf.writelines(recent_lines)
-        tmp_path.replace(log_path)
+        _replace_with_retry(tmp_path, log_path)
     finally:
         if tmp_path.exists():
             try:
@@ -303,7 +320,7 @@ def archive_and_trim_by_month(log_file: str, archive_dir: Optional[str] = None) 
     try:
         with tmp_path.open("w", encoding="utf-8") as tf:
             tf.writelines(kept_lines)
-        tmp_path.replace(log_path)
+        _replace_with_retry(tmp_path, log_path)
     finally:
         if tmp_path.exists():
             try:
