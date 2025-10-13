@@ -134,7 +134,16 @@ del /f /q "%ROOT_DIR%\.tmp_requirements_diff.txt" 2>nul
 
 REM Install Node dependencies (CSS build moved to run_direct.bat)
 set "NODE_CLEAN_SCRIPT=%ROOT_DIR%\scripts\node\cleanup-node-modules.mjs"
+set "NODE_PACKAGE_VALIDATOR=%ROOT_DIR%\scripts\node\verify-package-json.mjs"
 where npm >nul 2>nul && (
+    if exist "%NODE_PACKAGE_VALIDATOR%" (
+        echo Validating package.json...
+        node "%NODE_PACKAGE_VALIDATOR%" --quiet
+        if ERRORLEVEL 1 (
+            echo package.json validation failed. Resolve the issues above and rerun setup.
+            exit /b 1
+        )
+    )
     if exist "%NODE_CLEAN_SCRIPT%" (
         echo Removing stale npm staging directories...
         node "%NODE_CLEAN_SCRIPT%"

@@ -27,7 +27,14 @@ This directory contains JavaScript utilities that support the Casino Calendar wo
 - **Purpose**: Removes stale npm staging directories that trigger `npm warn cleanup` messages on Windows
 - **Platform**: Local development (Node.js 18+)
 - **Usage**: `npm run clean:node-modules` or `node scripts/node/cleanup-node-modules.mjs`
-- **Notes**: Automatically runs as part of `scripts\windows\setup.bat` and the `npm run setup` workflow to ensure clean dependency installs.
+- **Notes**: Retries deletions that fail with `EPERM/EACCES` by resetting permissions, and runs automatically via npm's `preinstall` hook (including during `npm ci`), the Windows setup script, and the `npm run setup` workflow.
+
+### `verify-package-json.mjs`
+
+- **Purpose**: Ensures `package.json` remains valid JSON and free of Git merge conflict markers before installations.
+- **Platform**: Local development (Node.js 18+)
+- **Usage**: `npm run lint:package-json` or `node scripts/node/verify-package-json.mjs`
+- **Notes**: The Windows setup script runs this validator automatically and exits early with guidance if a merge conflict is detected.
 
 ## Integration
 
