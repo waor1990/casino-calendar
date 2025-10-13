@@ -133,10 +133,19 @@ del /f /q "%ROOT_DIR%\.tmp_requirements_diff.txt" 2>nul
 :SkipPythonDeps
 
 REM Install Node dependencies (CSS build moved to run_direct.bat)
+set "NODE_CLEAN_SCRIPT=%ROOT_DIR%\scripts\node\cleanup-node-modules.mjs"
 where npm >nul 2>nul && (
+    if exist "%NODE_CLEAN_SCRIPT%" (
+        echo Removing stale npm staging directories...
+        node "%NODE_CLEAN_SCRIPT%"
+        if ERRORLEVEL 1 (
+            echo Failed to clean stale Node.js directories. Resolve the issues above and rerun setup.
+            exit /b 1
+        )
+    )
     echo Installing Node.js dependencies...
     npm install
-    if %ERRORLEVEL% NEQ 0 (
+    if ERRORLEVEL 1 (
         echo Failed to install Node.js dependencies
         exit /b 1
     )
