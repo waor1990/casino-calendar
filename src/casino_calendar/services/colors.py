@@ -1,4 +1,5 @@
 import logging
+from typing import Dict
 
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.config_cache import get_config
@@ -10,6 +11,7 @@ logger = setup_logger(__name__)
 _color_map = None
 _default_colors = None
 _generated_log_emitted = False
+_fallback_color_cache: Dict[str, dict[str, str]] = {}
 
 
 def _get_color_map():
@@ -57,3 +59,48 @@ def get_color():
         logger.debug("Generated colors for %d casinos", len(result))
         _generated_log_emitted = True
     return result
+
+
+def _is_perceived_light(color: str) -> bool:
+    """Return True when ``color`` is considered light for contrast decisions."""
+
+    hex_value = color.lstrip("#")
+    if len(hex_value) == 3:
+        hex_value = "".join(c * 2 for c in hex_value)
+
+    try:
+        red = int(hex_value[0:2], 16)
+        green = int(hex_value[2:4], 16)
+        blue = int(hex_value[4:6], 16)
+    except (ValueError, IndexError):
+        return True
+
+    brightness = 0.299 * red + 0.587 * green + 0.114 * blue
+    return brightness >= 150
+
+
+def resolve_casino_color(
+    casino_name: str,
+    palette: dict[str, dict[str, str]] | None = None,
+) -> dict[str, str]:
+    """Return a color style for ``casino_name`` with resilient fallbacks."""
+
+    color_palette = palette or get_color()
+    if casino_name in color_palette:
+        return color_palette[casino_name]
+
+    if casino_name in _fallback_color_cache:
+        return _fallback_color_cache[casino_name]
+
+    default_colors = _get_default_colors()
+    if default_colors:
+        index = abs(hash(casino_name)) % len(default_colors)
+        bg_color = default_colors[index]
+    else:
+        bg_color = "#627D98"
+
+    text_color = "#000000" if _is_perceived_light(bg_color) else "#ffffff"
+    style = {"bg": bg_color, "text": text_color}
+    _fallback_color_cache[casino_name] = style
+    logger.debug("Assigned fallback color for %s -> %s", casino_name, style)
+    return style

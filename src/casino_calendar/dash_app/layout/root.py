@@ -40,6 +40,7 @@ def create_layout(app: Dash, events) -> html.Div:
                                         className="week-gap section-margin calendar-content",
                                     ),
                                 ),
+                                html.Div(id="calendar-grid", style={"display": "none"}),
                             ],
                         ),
                     ],

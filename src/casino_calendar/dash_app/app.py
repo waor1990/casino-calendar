@@ -82,7 +82,10 @@ def create_dash_app() -> Tuple[Dash, Any]:
     logger.debug("Event count: %d", len(events))
 
     logger.info("Building application layout")
-    app.layout = create_layout(app, events)
+    def _serve_layout():
+        return create_layout(app, events)
+
+    app.layout = _serve_layout
     logger.debug("Application layout ready")
 
     logger.info("Registering callbacks")
