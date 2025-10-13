@@ -11,7 +11,12 @@ logger = setup_logger(__name__)
 
 def annotate_events_with_flags(events_df, week_start, week_end):
     """Return events annotated with overflow flags and sorted for rendering."""
-    logger.debug(f"Annotating {len(events_df)} events with flags for week {week_start} to {week_end}")
+    logger.debug(
+        "Annotating %d events with flags for week %s to %s",
+        len(events_df),
+        week_start,
+        week_end,
+    )
 
     events_df = events_df.copy()
     events_df["orig_index"] = events_df.index
@@ -25,7 +30,12 @@ def annotate_events_with_flags(events_df, week_start, week_end):
     right_arrows = events_df["has_right_arrow"].sum()
     both_arrows = (events_df["has_left_arrow"] & events_df["has_right_arrow"]).sum()
 
-    logger.debug(f"Event overflow flags: {left_arrows} left arrows, {right_arrows} right arrows, {both_arrows} both")
+    logger.debug(
+        "Overflow flags counted: left=%d right=%d both=%d",
+        left_arrows,
+        right_arrows,
+        both_arrows,
+    )
 
     def get_overflow_priority(row):
         if row["has_left_arrow"] and row["has_right_arrow"]:
@@ -49,7 +59,7 @@ def annotate_events_with_flags(events_df, week_start, week_end):
 
 def filter_week_events(events_df, week_start, week_end):
     """Return events that intersect the current week."""
-    logger.debug(f"Filtering events for week {week_start} to {week_end}")
+    logger.debug("Filtering events for week %s to %s", week_start, week_end)
 
     filtered = events_df[
         (events_df["EndDate"] > week_start)
@@ -58,13 +68,13 @@ def filter_week_events(events_df, week_start, week_end):
         & ~((events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end))
     ].copy()
 
-    logger.debug(f"Filtered to {len(filtered)} events for current week")
+    logger.debug("Filtered to %d events for current week", len(filtered))
     return filtered
 
 
 def assign_event_rows(events_df, week_start):
     """Assign vertical grid rows to events without overlap."""
-    logger.debug(f"Assigning grid rows for {len(events_df)} events")
+    logger.debug("Assigning grid rows for %d events", len(events_df))
 
     used_rows_by_day = {i: set() for i in range(7)}
     recurring_rows = defaultdict(int)

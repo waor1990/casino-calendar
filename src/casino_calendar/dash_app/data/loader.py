@@ -30,7 +30,7 @@ def load_event_data(csv_path: str | Path | None = None) -> pd.DataFrame:
             len(df),
             len(df.columns),
         )
-        logger.debug("CSV columns: %s", list(df.columns))
+        logger.debug("CSV columns: %s", ", ".join(map(str, df.columns)))
     except FileNotFoundError:
         logger.error("Event data file not found: %s", path)
         raise
@@ -62,5 +62,5 @@ def load_event_data(csv_path: str | Path | None = None) -> pd.DataFrame:
     logger.info("Offer type distribution: %s", offer_counts.to_dict())
 
     load_time = time.time() - start_time
-    logger.info("Event data processing completed in %.3fs", load_time)
+    logger.info("Processed event data in %.3f seconds", load_time)
     return df

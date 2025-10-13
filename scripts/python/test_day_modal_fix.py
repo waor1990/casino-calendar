@@ -49,8 +49,8 @@ screen_width = 1024
 try:
     result = day_charts.generate_day_view_html(test_events, clicked_date, get_color, screen_width)
 
-    logger.info("[OK] Day modal generation successful.")
-    logger.info("Generated %s elements", len(result))
+    logger.info("Day modal generated successfully")
+    logger.info("Generated %s elements for modal", len(result))
 
     if len(result) >= 2:
         header = result[0]
@@ -59,28 +59,28 @@ try:
         header_text = header.children if hasattr(header, "children") else "OK"
         class_name = grid.className if hasattr(grid, "className") else "day-grid"
 
-        logger.info("[OK] Header text: %s", header_text)
-        logger.info("[OK] Grid container class: %s", class_name)
+        logger.info("Header text: %s", header_text)
+        logger.info("Grid container class: %s", class_name)
 
         if hasattr(grid, "style") and "height" in getattr(grid, "style", {}):
             height_str = grid.style["height"]
-            logger.info("[OK] Grid height: %s", height_str)
+            logger.info("Grid height: %s", height_str)
             height_px = int(height_str.replace("px", ""))
             expected_max = 24 * 24  # 24 hours * 24px max height
             if height_px <= expected_max:
                 logger.info(
-                    "[OK] Grid height %s px is within expected range (<= %s px)",
+                    "Grid height %s px is within %s px limit",
                     height_px,
                     expected_max,
                 )
             else:
                 logger.warning(
-                    "[WARN] Grid height %s px may exceed expected maximum (%s px)",
+                    "Grid height %s px may exceed expected maximum %s px",
                     height_px,
                     expected_max,
                 )
 
-    logger.info("[OK] All day modal checks completed.")
+    logger.info("Day modal checks completed")
 
 except Exception:
-    logger.exception("[ERROR] Day modal verification failed.")
+    logger.exception("Day modal verification failed")

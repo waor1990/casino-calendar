@@ -52,7 +52,7 @@ def get_config(filename: str, *, bust_cache: bool = False) -> Any:
         logger.debug("Loaded configuration %s", filename)
         return data
     except FileNotFoundError:
-        logger.error("Configuration file not found: %s", path)
+        logger.error("Configuration file missing: %s", path)
     except json.JSONDecodeError as e:
         logger.error("Invalid JSON in %s: %s", path, e, exc_info=True)
 

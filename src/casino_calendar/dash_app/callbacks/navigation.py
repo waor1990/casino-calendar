@@ -24,7 +24,7 @@ def register_callbacks(app, _df) -> None:
         Adding a unique query string ensures the app fully reloads, so
         in-memory stores reset to defaults (week offset, filters, etc.).
         """
-        logger.debug(f"Home button clicked: {_n_clicks}")
+        logger.debug("Home button clicked %s time(s)", _n_clicks)
         return "/", f"?r={uuid4()}"
 
-    logger.info("Navigation callbacks registered successfully")
+    logger.info("Navigation callbacks ready")

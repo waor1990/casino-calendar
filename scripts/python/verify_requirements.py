@@ -64,26 +64,31 @@ def main(argv: Sequence[str] | None = None) -> int:
         req_path = Path(__file__).resolve().parent.parent / "requirements.txt"
 
     if not req_path.exists():
-        logger.error("requirements.txt not found at %s", req_path)
+        logger.error("Requirements file not found: %s", req_path)
         return 2
 
-    logger.info("Comparing installed packages to %s", req_path)
+    logger.info("Comparing installed packages with %s", req_path)
     pinned = load_pinned(req_path)
     installed = installed_versions()
 
-    mismatches: list[str] = []
+    mismatches: list[tuple[str, str, str]] = []
     for name, req_ver in pinned.items():
         inst_ver = installed.get(name)
         if inst_ver != req_ver:
-            mismatches.append(f"- {name} requires {req_ver}, installed {inst_ver or 'not installed'}")
+            mismatches.append((name, req_ver, inst_ver or "not installed"))
 
     if mismatches:
-        logger.warning("Detected package version mismatches:")
+        logger.warning("Detected %d package mismatch(es)", len(mismatches))
         for mismatch in mismatches:
-            logger.warning(mismatch)
+            logger.warning(
+                "Package %s requires %s but %s is installed",
+                mismatch[0],
+                mismatch[1],
+                mismatch[2],
+            )
         return 1
 
-    logger.info("All installed packages match requirements.txt.")
+    logger.info("Installed packages match requirements file")
     return 0
 
 

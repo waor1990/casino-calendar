@@ -7,7 +7,7 @@ logger = setup_logger(__name__)
 
 def register_callbacks(app, _df) -> None:
     """Register theme toggle callbacks."""
-    logger.info("Registering theme toggle callbacks")
+    logger.info("Registering theme callbacks")
 
     @app.callback(
         Output("theme-store", "data"),
@@ -17,20 +17,20 @@ def register_callbacks(app, _df) -> None:
     )
     def toggle_theme(_n_clicks: int, current: str) -> str:
         # Simple light/dark toggle with dark3 as the dark theme
-        logger.info(f"Theme toggle called: n_clicks={_n_clicks}, current='{current}'")
+        logger.debug("Theme toggle clicked %s time(s); current theme %s", _n_clicks, current)
 
         if current == "light":
             new_theme = "dark"
         else:
             new_theme = "light"
 
-        logger.info(f"Theme toggled from '{current}' to '{new_theme}'")
+        logger.info("Theme changed from %s to %s", current, new_theme)
         return new_theme
 
     app.clientside_callback(
         """
         function(theme) {
-            console.log('[CasinoCalendar] Theme toggle:', theme);
+            console.log('[CasinoCalendar] Theme toggle received', theme);
             var root = document.documentElement;
             var btn = document.getElementById('theme-toggle');
 
@@ -52,7 +52,7 @@ def register_callbacks(app, _df) -> None:
             if (btn) {
                 btn.textContent = theme === 'dark' ? '☀️' : '🌙';
                 btn.title = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
-                console.log('[CasinoCalendar] Updated button for theme:', theme);
+                console.log('[CasinoCalendar] Updated button for theme', theme);
             }
 
             return '';
@@ -61,6 +61,6 @@ def register_callbacks(app, _df) -> None:
         Output("theme-dummy", "children"),
         Input("theme-store", "data"),
     )
-    logger.debug("Registered clientside callback for theme application")
+    logger.debug("Clientside theme callback registered")
 
-    logger.info("Theme callbacks registered successfully")
+    logger.info("Theme callbacks ready")
