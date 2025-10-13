@@ -38,12 +38,7 @@ def build_intervals() -> list[dcc.Interval]:
 
     return [
         dcc.Interval(id="initial-trigger", interval=1, max_intervals=1),
-        dcc.Interval(
-            id="close-timer",
-            interval=600,
-            n_intervals=0,
-            disabled=True,
-        ),
+        dcc.Interval(id="close-timer", interval=600, n_intervals=0, max_intervals=0),
     ]
 
 
