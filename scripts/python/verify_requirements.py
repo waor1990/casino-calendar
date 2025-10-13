@@ -6,13 +6,26 @@ from collections.abc import Sequence
 from importlib import metadata
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SRC_DIR = PROJECT_ROOT / "src"
+for candidate in (SRC_DIR, PROJECT_ROOT):
+    if str(candidate) not in sys.path:
+        sys.path.insert(0, str(candidate))
+
+from casino_calendar.logging import config as logging_config  # noqa: E402
+
+logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.verify_requirements")
+
 
 def normalize(name: str) -> str:
-    # Normalize according to PEP 503 so ``requests`` and ``Requests`` match
+    """Normalize package names according to PEP 503."""
+
     return re.sub(r"[-_.]+", "-", name).lower()
 
 
 def load_pinned(req_path: Path) -> dict[str, str]:
+    """Load pinned package versions from a requirements file."""
+
     pinned: dict[str, str] = {}
     for raw_line in req_path.read_text(encoding="utf-8").splitlines():
         line = raw_line.split("#", 1)[0].strip()
@@ -29,6 +42,8 @@ def load_pinned(req_path: Path) -> dict[str, str]:
 
 
 def installed_versions() -> dict[str, str]:
+    """Gather installed package versions."""
+
     result: dict[str, str] = {}
     for dist in metadata.distributions():
         orig_name = dist.name
@@ -40,14 +55,19 @@ def installed_versions() -> dict[str, str]:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    """Compare pinned requirements against the current environment."""
+
     args = list(sys.argv[1:] if argv is None else argv)
     if args:
         req_path = Path(args[0]).expanduser()
     else:
         req_path = Path(__file__).resolve().parent.parent / "requirements.txt"
+
     if not req_path.exists():
-        print("requirements.txt not found", file=sys.stderr)
+        logger.error("requirements.txt not found at %s", req_path)
         return 2
+
+    logger.info("Comparing installed packages to %s", req_path)
     pinned = load_pinned(req_path)
     installed = installed_versions()
 
@@ -55,11 +75,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     for name, req_ver in pinned.items():
         inst_ver = installed.get(name)
         if inst_ver != req_ver:
-            mismatches.append(f"- {name} required {req_ver}, installed {inst_ver or 'not installed'}")
+            mismatches.append(f"- {name} requires {req_ver}, installed {inst_ver or 'not installed'}")
 
     if mismatches:
-        print("\n".join(mismatches))
+        logger.warning("Detected package version mismatches:")
+        for mismatch in mismatches:
+            logger.warning(mismatch)
         return 1
+
+    logger.info("All installed packages match requirements.txt.")
     return 0
 
 

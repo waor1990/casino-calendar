@@ -8,6 +8,7 @@ This module provides centralized logging setup with the following features:
 - Production-ready setup with log cleanup
 """
 
+import atexit
 import logging
 import os
 import sys
@@ -40,6 +41,46 @@ try:
 except ImportError:
     cleanup_old_logs = None
     setup_rotating_logger = None
+
+
+_LEVEL_MAP = {
+    "DEBUG": logging.DEBUG,
+    "INFO": logging.INFO,
+    "WARNING": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "CRITICAL": logging.CRITICAL,
+}
+
+_MINIMAL_LOG_PREFIXES = (
+    "Production logging initialized",
+    "Logging system initialized",
+    "Logging system shutting down",
+)
+
+
+def _is_minimal_log_mode() -> bool:
+    value = os.getenv("CASINO_MINIMAL_TEST_LOG", "").lower()
+    return value not in ("", "0", "false", "off", "no")
+
+
+def _should_apply_minimal_filter(log_path: Path) -> bool:
+    if not _is_minimal_log_mode():
+        return False
+    configured = os.getenv("LOG_FILE")
+    candidates = {"casino_calendar.log", "casino_calendar_prod.log"}
+    if configured:
+        candidates.add(Path(configured).name)
+    return log_path.name in candidates
+
+
+class _MinimalTestFilter(logging.Filter):
+    """Filter that keeps only bootstrap/shutdown log lines in test mode."""
+
+    def filter(self, record: logging.LogRecord) -> bool:  # type: ignore[override]
+        if not _is_minimal_log_mode():
+            return True
+        message = record.getMessage()
+        return message.startswith(_MINIMAL_LOG_PREFIXES)
 
 
 class CasinoCalendarFormatter(logging.Formatter):
@@ -75,19 +116,20 @@ class CasinoCalendarFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def get_log_level() -> int:
-    """Get log level from environment variable or default to INFO."""
-    level_str = os.getenv("LOG_LEVEL", "INFO").upper()
+def _coerce_log_level(level_name: str, fallback: int = logging.INFO) -> int:
+    """Convert level name to logging constant with fallback."""
 
-    level_map = {
-        "DEBUG": logging.DEBUG,
-        "INFO": logging.INFO,
-        "WARNING": logging.WARNING,
-        "ERROR": logging.ERROR,
-        "CRITICAL": logging.CRITICAL,
-    }
+    return _LEVEL_MAP.get(level_name.upper(), fallback)
 
-    return level_map.get(level_str, logging.INFO)
+
+def get_log_level(env_var: str = "LOG_LEVEL", default: str = "INFO") -> int:
+    """Get log level from an environment variable with optional override."""
+
+    configured = os.getenv(env_var)
+    fallback = _coerce_log_level(default, logging.INFO)
+    if configured:
+        return _coerce_log_level(configured, fallback)
+    return fallback
 
 
 def _suppress_http_logs():
@@ -147,12 +189,13 @@ def _suppress_http_logs():
         sys.stdout.buffer.write((msg + "\n").encode(errors="ignore"))
 
 
-def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
+def setup_logger(name: str, log_file: Optional[str] = None, level: Optional[int] = None) -> logging.Logger:
     """Setup and configure a logger with console and optional file output.
 
     Args:
         name: Logger name (typically __name__)
         log_file: Optional file path for log output
+        level: Optional explicit logging level for the logger/console
 
     Returns:
         Configured logger instance
@@ -163,14 +206,15 @@ def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
     if logger.handlers:
         return logger
 
-    logger.setLevel(get_log_level())
+    resolved_level = level if level is not None else get_log_level()
+    logger.setLevel(resolved_level)
 
     # Suppress noisy HTTP request logs from console (but keep in file)
     _suppress_http_logs()
 
     # Console handler
     console_handler = logging.StreamHandler(sys.stderr)
-    console_handler.setLevel(get_log_level())
+    console_handler.setLevel(resolved_level)
     console_handler.setFormatter(CasinoCalendarFormatter(use_colors=True))
     logger.addHandler(console_handler)
 
@@ -187,6 +231,8 @@ def setup_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
         file_handler = RotatingFileHandler(file_path, maxBytes=max_bytes, backupCount=backup_count, encoding="utf-8")
         file_handler.setLevel(logging.DEBUG)  # File gets all levels
         file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
+        if _should_apply_minimal_filter(log_path):
+            file_handler.addFilter(_MinimalTestFilter())
         logger.addHandler(file_handler)
 
     # Prevent propagation to root logger to avoid duplicate messages
@@ -224,6 +270,29 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
     # Ensure log directory exists
     log_file.parent.mkdir(parents=True, exist_ok=True)
 
+    archive_directory = log_file.parent / "archive"
+    archive_mode = os.getenv("ARCHIVE_APP_LOG_ON_STARTUP", "false").lower()
+    if log_file.exists() and setup_rotating_logger is not None:
+        try:
+            if archive_mode in {"true", "1", "yes", "on", "move"}:
+                archived_path = rotation_utils.archive_current_log(
+                    str(log_file),
+                    archive_dir=str(archive_directory),
+                    move=True,
+                )
+                print(f"Archived existing log to: {archived_path}")
+            elif archive_mode == "copy":
+                archived_path = rotation_utils.copy_current_log(
+                    str(log_file),
+                    archive_dir=str(archive_directory),
+                )
+                print(f"Copied existing log to: {archived_path}")
+            # Always ensure archive structure is normalised, but do not
+            # move the active log unless explicitly requested.
+            rotation_utils.normalise_archives(str(log_file), str(archive_directory))
+        except Exception as exc:
+            print(f"Warning: Could not process archive for {log_file}: {exc}")
+
     # Clean up old logs (keep last 30 days)
     if cleanup_old_logs is not None:
         try:
@@ -234,6 +303,10 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
             print(f"Warning: Could not clean up old logs: {e}")
 
     # Use custom rotating logger if available, otherwise fallback
+    minimal_filter: Optional[_MinimalTestFilter] = None
+    if _should_apply_minimal_filter(log_file):
+        minimal_filter = _MinimalTestFilter()
+
     if setup_rotating_logger is not None:
         logger = setup_rotating_logger(
             name,
@@ -243,11 +316,77 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
             5,
             True,
         )
+        if minimal_filter:
+            for handler in logger.handlers:
+                if isinstance(handler, RotatingFileHandler) and Path(handler.baseFilename).name == log_file.name:
+                    handler.addFilter(minimal_filter)
         logger.info("Production logging initialized with rotation")
     else:
         # Fallback to standard setup
         logger = setup_logger(name, str(log_file))
         logger.info("Standard logging initialized")
+
+    if not getattr(logger, "_casino_shutdown_registered", False):
+        def _log_shutdown() -> None:
+            if logger.handlers:
+                logger.info("Logging system shutting down")
+
+        atexit.register(_log_shutdown)
+        logger._casino_shutdown_registered = True  # type: ignore[attr-defined]
+
+    return logger
+
+
+def get_maintenance_log_level() -> int:
+    """Return the configured maintenance log level (defaults to INFO)."""
+
+    return get_log_level("MAINTENANCE_LOG_LEVEL", default="INFO")
+
+
+def get_maintenance_log_path() -> Path:
+    """Resolve the maintenance log file path, ensuring the directory exists."""
+
+    override = os.getenv("MAINTENANCE_LOG_FILE")
+    if override:
+        path = Path(override).expanduser()
+    else:
+        path = Path("logs") / "casino_calendar_maintenance.log"
+
+        legacy_path = Path("logs") / "maintenance" / "casino_calendar_maintenance.log"
+        if legacy_path.exists() and not path.exists():
+            try:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                legacy_path.rename(path)
+            except Exception:
+                path = legacy_path
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def setup_maintenance_logger(name: str = "casino_calendar.maintenance") -> logging.Logger:
+    """Configure a logger for setup, cleanup, and maintenance scripts."""
+
+    logger = logging.getLogger(name)
+    if logger.handlers:
+        return logger
+
+    level = get_maintenance_log_level()
+    logger.setLevel(logging.DEBUG)
+
+    log_path = get_maintenance_log_path()
+
+    file_handler = RotatingFileHandler(str(log_path), maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8")
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
+    logger.addHandler(file_handler)
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(level)
+    console_handler.setFormatter(logging.Formatter("%(message)s"))
+    logger.addHandler(console_handler)
+
+    logger.propagate = False
 
     return logger
 

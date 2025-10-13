@@ -12,6 +12,7 @@ The application now includes automatic log rotation and cleanup features to prev
 
 - **Main log**: `logs/casino_calendar.log` (with automatic rotation)
 - **Legacy log**: `logs/casino_calendar_prod.log` (to be phased out)
+- **Maintenance log**: `logs/casino_calendar_maintenance.log` (records setup, cleanup, and utility scripts)
 
 ### Rotation Settings
 
@@ -60,6 +61,35 @@ scripts\windows\cleanup_logs.bat --archive
 # Archive with custom name
 python scripts\maintenance\cleanup_logs.py --archive-current
 ```
+
+## Maintenance Logging
+
+- Maintenance and utility scripts (e.g., `cleanup_logs.py`, `verify_requirements.py`, `debug_errors.py`) write to the maintenance log while mirroring messages to the terminal.
+- Pytest automatically records session summaries and per-test outcomes to the same maintenance log (`tests/conftest.py`).
+- Automated test runs set `CASINO_MINIMAL_TEST_LOG=1`, ensuring the primary production log only records initialization messages during tests.
+- Override defaults with environment variables:
+  - `MAINTENANCE_LOG_FILE` - custom path for the maintenance log.
+  - `MAINTENANCE_LOG_LEVEL` - log level for console output (`DEBUG`, `INFO`, `WARNING`, etc.).
+  - `ARCHIVE_APP_LOG_ON_STARTUP` - control startup archiving (`move`, `copy`, or `false`; default: `false`).
+- Each archive keeps two layers:
+  - Monthly files per log type, e.g. `casino_calendar_prod_2025-09.log`.
+  - A cumulative file named `<base>_all.log` (e.g. `casino_calendar_prod_all.log`) containing every archived message without duplicates.
+
+### Interactive Cleanup Options
+
+Running `cleanup.bat` now prompts for the target log file (`casino_calendar_prod.log` or `casino_calendar_maintenance.log`) and displays the following actions:
+
+```
+[2] Archive by month (keep only current month in active log)
+[3] Copy current log file into archive folder
+[4] Show log directory info
+[5] Custom days: copy-and-archive (enter days)
+[6] Exit
+```
+
+- Option 2 removes prior months from the active log after archiving them into per-month files.
+- Option 3 copies the entire log into the archive (without trimming the active file).
+- Option 5 copies entries older than the specified number of days while leaving the active file untouched.
 
 ## Automated Cleanup
 

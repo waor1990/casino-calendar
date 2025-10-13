@@ -7,14 +7,18 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
-from casino_calendar.dash_app.visualization import charts as day_charts
-from casino_calendar.services.colors import get_color
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 SRC_DIR = ROOT_DIR / "src"
 for candidate in (SRC_DIR, ROOT_DIR):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
+
+from casino_calendar.dash_app.visualization import charts as day_charts  # noqa: E402
+from casino_calendar.logging import config as logging_config  # noqa: E402
+from casino_calendar.services.colors import get_color  # noqa: E402
+
+logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.test_day_modal_fix")
 
 # Create test data
 test_events = pd.DataFrame(
@@ -45,33 +49,38 @@ screen_width = 1024
 try:
     result = day_charts.generate_day_view_html(test_events, clicked_date, get_color, screen_width)
 
-    print("✅ Day modal generation successful!")
-    print(f"Generated {len(result)} elements")
+    logger.info("[OK] Day modal generation successful.")
+    logger.info("Generated %s elements", len(result))
 
-    # Check that we have the expected elements
     if len(result) >= 2:
         header = result[0]
         grid = result[1]
 
-        print(f"✅ Header text: {header.children if hasattr(header, 'children') else 'OK'}")
-        print(f"✅ Grid container with class: {grid.className if hasattr(grid, 'className') else 'day-grid'}")
+        header_text = header.children if hasattr(header, "children") else "OK"
+        class_name = grid.className if hasattr(grid, "className") else "day-grid"
 
-        # Check grid height - should be reasonable for modal (24 hours * reduced hour_height)
-        if hasattr(grid, "style") and "height" in grid.style:
+        logger.info("[OK] Header text: %s", header_text)
+        logger.info("[OK] Grid container class: %s", class_name)
+
+        if hasattr(grid, "style") and "height" in getattr(grid, "style", {}):
             height_str = grid.style["height"]
-            print(f"✅ Grid height: {height_str}")
-            # Extract height value
+            logger.info("[OK] Grid height: %s", height_str)
             height_px = int(height_str.replace("px", ""))
             expected_max = 24 * 24  # 24 hours * 24px max height
             if height_px <= expected_max:
-                print(f"✅ Grid height {height_px}px is within expected range (≤{expected_max}px)")
+                logger.info(
+                    "[OK] Grid height %s px is within expected range (<= %s px)",
+                    height_px,
+                    expected_max,
+                )
             else:
-                print(f"⚠️  Grid height {height_px}px might be too large")
+                logger.warning(
+                    "[WARN] Grid height %s px may exceed expected maximum (%s px)",
+                    height_px,
+                    expected_max,
+                )
 
-        print("✅ All tests passed!")
+    logger.info("[OK] All day modal checks completed.")
 
-except Exception as e:
-    print(f"❌ Error: {e}")
-    import traceback
-
-    traceback.print_exc()
+except Exception:
+    logger.exception("[ERROR] Day modal verification failed.")
