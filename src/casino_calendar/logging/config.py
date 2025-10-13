@@ -66,6 +66,44 @@ _HTTP_LOGGER_NAMES = (
 )
 
 
+_HTTP_FILE_HANDLERS: list[logging.FileHandler] = []
+
+
+def _http_logs_are_suppressed() -> bool:
+    return os.getenv("SUPPRESS_HTTP_LOGS", "True").lower() in (
+        "true",
+        "1",
+        "yes",
+        "on",
+    )
+
+
+def _register_http_file_handler(handler: logging.FileHandler) -> None:
+    if not isinstance(handler, logging.FileHandler):
+        return
+
+    for existing in _HTTP_FILE_HANDLERS:
+        if existing is handler:
+            break
+    else:
+        _HTTP_FILE_HANDLERS.append(handler)
+
+    _configure_http_log_file_routing()
+
+
+def _configure_http_log_file_routing() -> None:
+    if not _HTTP_FILE_HANDLERS:
+        return
+
+    for logger_name in _HTTP_LOGGER_NAMES:
+        http_logger = logging.getLogger(logger_name)
+        http_logger.propagate = True
+
+        for handler in _HTTP_FILE_HANDLERS:
+            if handler not in http_logger.handlers:
+                http_logger.addHandler(handler)
+
+
 def _is_minimal_log_mode() -> bool:
     value = os.getenv("CASINO_MINIMAL_TEST_LOG", "").lower()
     return value not in ("", "0", "false", "off", "no")
@@ -194,16 +232,12 @@ def _suppress_http_logs() -> Optional[logging.Filter]:
     Can be controlled by SUPPRESS_HTTP_LOGS environment variable (default: True).
     """
     # Check if HTTP log suppression is enabled (default: True)
-    suppress_enabled = os.getenv("SUPPRESS_HTTP_LOGS", "True").lower() in (
-        "true",
-        "1",
-        "yes",
-        "on",
-    )
+    suppress_enabled = _http_logs_are_suppressed()
 
     if not suppress_enabled:
         global _HTTP_SUPPRESSION_FILTER
         _HTTP_SUPPRESSION_FILTER = None
+        _configure_http_log_file_routing()
         return None  # HTTP logs will be shown normally
 
     filter_instance = _get_http_suppression_filter()
@@ -265,6 +299,7 @@ def setup_logger(name: str, log_file: Optional[str] = None, level: Optional[int]
         if _should_apply_minimal_filter(log_path):
             file_handler.addFilter(_MinimalTestFilter())
         logger.addHandler(file_handler)
+        _register_http_file_handler(file_handler)
 
     # Prevent propagation to root logger to avoid duplicate messages
     logger.propagate = False
@@ -351,6 +386,9 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
             for handler in logger.handlers:
                 if isinstance(handler, logging.StreamHandler):
                     handler.addFilter(http_filter)
+        for handler in logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                _register_http_file_handler(handler)
         if minimal_filter:
             for handler in logger.handlers:
                 if isinstance(handler, RotatingFileHandler) and Path(handler.baseFilename).name == log_file.name:
@@ -416,6 +454,7 @@ def setup_maintenance_logger(name: str = "casino_calendar.maintenance") -> loggi
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
     logger.addHandler(file_handler)
+    _register_http_file_handler(file_handler)
 
     http_filter = _suppress_http_logs()
 

@@ -1,5 +1,6 @@
 """Tests for the logging system implementation."""
 
+import logging
 import os
 import tempfile
 from pathlib import Path
@@ -98,6 +99,41 @@ def test_setup_logger_with_file():
                 os.unlink(log_file)
             except PermissionError:
                 pass  # Windows file locking issue
+
+
+def test_http_access_logs_written_when_not_suppressed(tmp_path, monkeypatch):
+    """HTTP access logs should be routed into log files when suppression is disabled."""
+
+    monkeypatch.setenv("SUPPRESS_HTTP_LOGS", "false")
+
+    http_logger = logging.getLogger("werkzeug")
+    original_handlers = http_logger.handlers[:]
+    for handler in original_handlers:
+        http_logger.removeHandler(handler)
+
+    log_path = tmp_path / "http.log"
+    logger = logging_config.setup_logger("test_http_logging", log_file=str(log_path))
+
+    try:
+        http_logger.info("Werkzeug served GET /ping 200")
+
+        for handler in logger.handlers:
+            if hasattr(handler, "flush"):
+                handler.flush()
+
+        assert log_path.exists(), "Expected application log file to be created"
+        content = log_path.read_text(encoding="utf-8")
+        assert "Werkzeug served GET /ping 200" in content
+    finally:
+        for handler in http_logger.handlers[:]:
+            http_logger.removeHandler(handler)
+
+        for handler in original_handlers:
+            http_logger.addHandler(handler)
+
+        for handler in logger.handlers[:]:
+            logger.removeHandler(handler)
+            handler.close()
 
 
 def test_setup_maintenance_logger_writes_file(tmp_path, monkeypatch):
