@@ -38,6 +38,9 @@ The Casino Calendar application implements a comprehensive logging system to fac
 |----------|-------------|---------|---------|
 | `LOG_LEVEL` | Sets the minimum log level | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` |
 | `LOG_FILE` | Optional file output path | None | `logs/casino_calendar.log` |
+| `MAINTENANCE_LOG_LEVEL` | Console level for maintenance scripts | `INFO` | `WARNING` |
+| `MAINTENANCE_LOG_FILE` | File path for maintenance log output | `logs/casino_calendar_maintenance.log` | `C:/logs/maintenance.log` |
+| `ARCHIVE_APP_LOG_ON_STARTUP` | Archive/copy main log before configuring handlers (`move`, `copy`, or `false`) | `false` | `move` |
 
 ### Usage Examples
 
@@ -118,6 +121,21 @@ LOG_FILE=logs/casino_calendar_dev.log
 2025-07-29 10:15:30 | INFO     | app                  | Casino Calendar application starting up
 2025-07-29 10:15:30 | DEBUG    | casino_calendar.dash_app.data.loader  | Loading event data from data/casino_events.csv
 2025-07-29 10:15:31 | INFO     | casino_calendar.dash_app.data.loader  | Event data loaded successfully in 0.234s
+```
+
+## Maintenance Logging
+
+- Maintenance tasks use `setup_maintenance_logger` to write to `logs/casino_calendar_maintenance.log` while echoing clean messages to the terminal.
+- Configure log level and destination via `MAINTENANCE_LOG_LEVEL`, `MAINTENANCE_LOG_FILE`, and `ARCHIVE_APP_LOG_ON_STARTUP` (use `move` to relocate or `copy` to duplicate on startup; default `false` leaves the active file intact).
+- Archived output is organised into monthly files (e.g. `casino_calendar_prod_2025-09.log`) plus a cumulative `<base>_all.log` file that deduplicates every message historically.
+- Set `CASINO_MINIMAL_TEST_LOG=1` (done automatically by the pytest configuration) to restrict test runs to the startup log entries only.
+- Examples:
+
+```python
+from casino_calendar.logging import config as logging_config
+
+logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.cleanup")
+logger.info("Starting cleanup script")
 ```
 
 ## JavaScript Logging

@@ -2,9 +2,11 @@
 
 import os
 import tempfile
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+
 from casino_calendar.logging import config as logging_config
 
 
@@ -26,11 +28,51 @@ def test_get_log_level_from_env():
         assert level == 30  # logging.WARNING
 
 
+def test_get_maintenance_log_level_defaults():
+    """Maintenance log level falls back to INFO and honors overrides."""
+    with patch.dict(os.environ, {}, clear=True):
+        assert logging_config.get_maintenance_log_level() == 20  # logging.INFO
+
+    with patch.dict(os.environ, {"MAINTENANCE_LOG_LEVEL": "ERROR"}):
+        assert logging_config.get_maintenance_log_level() == 40  # logging.ERROR
+
+
+def test_get_maintenance_log_path_default_moves_legacy(tmp_path, monkeypatch):
+    """Legacy maintenance log is moved into the new default location."""
+    monkeypatch.chdir(tmp_path)
+    legacy_dir = Path("logs") / "maintenance"
+    legacy_dir.mkdir(parents=True)
+    legacy_file = legacy_dir / "casino_calendar_maintenance.log"
+    legacy_file.write_text("legacy")
+
+    monkeypatch.delenv("MAINTENANCE_LOG_FILE", raising=False)
+    resolved = logging_config.get_maintenance_log_path()
+
+    assert resolved == Path("logs") / "casino_calendar_maintenance.log"
+    assert resolved.exists()
+    assert not legacy_file.exists()
+
+
+def test_get_maintenance_log_path_override(tmp_path, monkeypatch):
+    """Maintenance log path uses override and creates parent directory."""
+    custom_path = tmp_path / "maintenance" / "custom.log"
+    monkeypatch.setenv("MAINTENANCE_LOG_FILE", str(custom_path))
+
+    resolved = logging_config.get_maintenance_log_path()
+
+    assert resolved == custom_path
+    assert resolved.parent.exists()
+
+
 def test_setup_logger_basic():
     """Test basic logger setup."""
     logger = logging_config.setup_logger("test_logger")
     assert logger.name == "test_logger"
     assert len(logger.handlers) > 0
+
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+        handler.close()
 
 
 def test_setup_logger_with_file():
@@ -42,16 +84,16 @@ def test_setup_logger_with_file():
         logger = logging_config.setup_logger("test_file_logger", log_file=log_file)
         assert len(logger.handlers) == 2  # Console + file handlers
 
-        # Test that we can write to the log
         logger.info("Test log message")
 
-        # Check file exists and has content
-        with open(log_file, "r") as f:
-            content = f.read()
+        with open(log_file, "r", encoding="utf-8") as file_handle:
+            content = file_handle.read()
             assert "Test log message" in content
-
     finally:
-        # Clean up
+        for handler in logger.handlers[:]:
+            logger.removeHandler(handler)
+            handler.close()
+
         if os.path.exists(log_file):
             try:
                 os.unlink(log_file)
@@ -59,11 +101,63 @@ def test_setup_logger_with_file():
                 pass  # Windows file locking issue
 
 
+def test_setup_maintenance_logger_writes_file(tmp_path, monkeypatch):
+    """Maintenance logger writes to file and installs expected handlers."""
+    log_path = tmp_path / "maintenance.log"
+    monkeypatch.setenv("MAINTENANCE_LOG_FILE", str(log_path))
+    monkeypatch.setenv("MAINTENANCE_LOG_LEVEL", "INFO")
+
+    logger = logging_config.setup_maintenance_logger("test_maintenance_logger")
+
+    try:
+        logger.info("maintenance info message")
+        logger.debug("maintenance debug message")
+
+        assert log_path.exists()
+        content = log_path.read_text(encoding="utf-8")
+        assert "maintenance info message" in content
+        assert "maintenance debug message" in content
+
+        assert len(logger.handlers) == 2
+    finally:
+        for handler in logger.handlers[:]:
+            logger.removeHandler(handler)
+            handler.close()
+
+
+def test_setup_production_logger_archives_existing(tmp_path, monkeypatch):
+    """Existing app log is archived on startup when enabled."""
+    monkeypatch.chdir(tmp_path)
+    log_dir = Path("logs")
+    log_dir.mkdir()
+    log_file = log_dir / "casino_calendar.log"
+    log_file.write_text(
+        "2025-09-01 10:00:00 | INFO     | casino_calendar | old log content\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.delenv("LOG_FILE", raising=False)
+    monkeypatch.setenv("ARCHIVE_APP_LOG_ON_STARTUP", "move")
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+
+    logger = logging_config.setup_production_logger("test_archive_logger")
+
+    try:
+        assert log_file.exists()
+        archive_dir = log_dir / "archive"
+        all_file = archive_dir / "casino_calendar_all.log"
+        assert all_file.exists()
+        assert "old log content" in all_file.read_text(encoding="utf-8")
+    finally:
+        for handler in logger.handlers[:]:
+            logger.removeHandler(handler)
+            handler.close()
+
+
 def test_formatter():
     """Test custom formatter."""
     formatter = logging_config.CasinoCalendarFormatter(use_colors=False)
 
-    # Create a dummy log record
     import logging
 
     record = logging.LogRecord(
@@ -86,20 +180,39 @@ def test_data_module_logging():
     """Test that data module imports with logging."""
     from casino_calendar.dash_app.data.transforms import categorize_offer_type
 
-    # This should work without errors
     result = categorize_offer_type("Free Play", "Get free money")
     assert isinstance(result, str)
 
 
 def test_app_import_with_logging():
     """Test that the main app can be imported with logging enabled."""
-    # This is a basic smoke test to ensure our logging changes don't break imports
     try:
-        import casino_calendar.dash_app.data.loader
-        import casino_calendar.logging.config  # noqa: F401 - verify import side effects
-        import casino_calendar.services.colors  # noqa: F401 - verify import side effects
+        import casino_calendar.dash_app.data.loader  # noqa: F401
+        import casino_calendar.logging.config  # noqa: F401
+        import casino_calendar.services.colors  # noqa: F401
 
-        # If we get here without exceptions, the test passes
         assert True
-    except Exception as e:
-        pytest.fail(f"Failed to import modules with logging: {e}")
+    except Exception as exc:  # pragma: no cover - defensive
+        pytest.fail(f"Failed to import modules with logging: {exc}")
+
+
+def test_minimal_log_mode_filters_production_messages(tmp_path, monkeypatch):
+    log_dir = tmp_path / "logs"
+    log_dir.mkdir()
+    prod_log = log_dir / "casino_calendar_prod.log"
+    monkeypatch.setenv("LOG_FILE", str(prod_log))
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "1")
+
+    logger = logging_config.setup_logger("minimal_filter", log_file=str(prod_log))
+
+    try:
+        logger.info("Some detailed message that should be suppressed")
+        logger.info("Logging system shutting down")
+    finally:
+        for handler in logger.handlers[:]:
+            logger.removeHandler(handler)
+            handler.close()
+
+    content = prod_log.read_text(encoding="utf-8") if prod_log.exists() else ""
+    assert "Some detailed message" not in content
+    assert "Logging system shutting down" in content

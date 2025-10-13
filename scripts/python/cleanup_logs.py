@@ -15,7 +15,56 @@ for candidate in (src_dir, project_root):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
+from casino_calendar.logging import config as logging_config  # noqa: E402
 from casino_calendar.logging import rotation  # noqa: E402
+
+logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.cleanup_logs")
+
+
+def _file_contains_only_date(file_path: Path, target: str) -> bool:
+    """Return True if the log file only contains entries for the target date."""
+
+    try:
+        lines = file_path.read_text(encoding="utf-8").splitlines()
+    except Exception:
+        return False
+
+    dates = {
+        line[:10]
+        for line in lines
+        if line.strip() and len(line) >= 10
+    }
+    return dates == {target}
+
+
+def _tidy_log_directory(log_dir: Path) -> None:
+    """Ensure only active logs reside at the root; move others to archive or delete."""
+
+    allowed = {"casino_calendar_prod.log", "casino_calendar_maintenance.log"}
+    archive_dir = log_dir / "archive"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+
+    for extra in log_dir.glob("*.log*"):
+        if extra.name in allowed:
+            continue
+        # Delete logs that only contain entries from 2025-10-12
+        if _file_contains_only_date(extra, "2025-10-12"):
+            try:
+                extra.unlink()
+            except Exception:
+                logger.exception("Failed to delete %s", extra)
+            continue
+
+        destination = archive_dir / extra.name
+        try:
+            extra.replace(destination)
+        except Exception:
+            logger.exception("Failed to move %s into archive", extra)
+
+    for active in allowed:
+        active_path = log_dir / active
+        if active_path.exists():
+            rotation.normalise_archives(str(active_path), str(archive_dir))
 
 
 def main():
@@ -24,11 +73,10 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python scripts/python/cleanup_logs.py                    # Default cleanup (30 days)
-  python scripts/python/cleanup_logs.py --days 7          # Keep only 7 days
-  python scripts/python/cleanup_logs.py --dry-run         # Show what would be deleted
-  python scripts/python/cleanup_logs.py --info            # Show log directory info
-  python scripts/python/cleanup_logs.py --archive-current # Archive current log file
+  python scripts/python/cleanup_logs.py --info
+  python scripts/python/cleanup_logs.py --archive-by-month --log-file logs/casino_calendar_prod.log
+  python scripts/python/cleanup_logs.py --copy-current --log-file logs/casino_calendar_prod.log
+  python scripts/python/cleanup_logs.py --copy-split-days 14 --log-file logs/casino_calendar_maintenance.log
         """,
     )
 
@@ -68,11 +116,30 @@ Examples:
         action="store_true",
         help="Archive prior months and keep only current month in active log",
     )
+    parser.add_argument(
+        "--copy-current",
+        action="store_true",
+        help="Copy the current log file into the archive directory (no trimming)",
+    )
+    parser.add_argument(
+        "--copy-split-days",
+        type=int,
+        default=None,
+        help="Copy lines older than N days into the archive without trimming",
+    )
     parser.add_argument("--quiet", action="store_true", help="Reduce output verbosity")
 
     args = parser.parse_args()
 
     log_dir = Path(args.log_dir)
+    _tidy_log_directory(log_dir)
+
+    def emit(message: str):
+        """Emit an informational message respecting the quiet flag."""
+        if args.quiet:
+            logger.debug(message)
+        else:
+            logger.info(message)
 
     # Determine log file if not supplied
     def resolve_log_file() -> Path:
@@ -95,18 +162,25 @@ Examples:
     if args.info:
         info = rotation.get_log_directory_info(args.log_dir)
         if not info["exists"]:
-            print(f"Log directory {log_dir} does not exist")
+            logger.warning("Log directory %s does not exist", log_dir)
             return 1
 
-        print(f"Log Directory: {log_dir.absolute()}")
-        print(f"Total files: {info['file_count']}")
-        print(f"Total size: {info['total_size_mb']:.2f} MB ({info['total_size_bytes']:,} bytes)")
-        print()
-
+        logger.info("Log Directory: %s", log_dir.absolute())
+        logger.info("Total files: %s", info["file_count"])
+        logger.info(
+            "Total size: %.2f MB (%s bytes)",
+            info["total_size_mb"],
+            f"{info['total_size_bytes']:,}",
+        )
         if info["files"]:
-            print("Files (newest first):")
+            logger.info("Files (newest first):")
             for file_info in info["files"]:
-                print(f"  {file_info['name']:<30} {file_info['size_mb']:>8.2f} MB  {file_info['modified']}")
+                logger.info(
+                    "  %-30s %8.2f MB  %s",
+                    file_info["name"],
+                    file_info["size_mb"],
+                    file_info["modified"],
+                )
         return 0
 
     # Archive current log if requested
@@ -114,68 +188,136 @@ Examples:
         current_log = resolve_log_file()
         if current_log.exists():
             try:
-                archive_path = rotation.archive_current_log(str(current_log))
-                print(f"Archived current log to: {archive_path}")
-            except Exception as e:
-                print(f"Error archiving current log: {e}")
+                logger.info("Archiving current log file: %s", current_log)
+                archive_path = rotation.archive_current_log(
+                    str(current_log),
+                    archive_dir=args.archive_dir,
+                )
+                rotation.normalise_archives(str(current_log), args.archive_dir)
+                logger.info("Archived current log to: %s", archive_path)
+            except Exception:
+                logger.exception("Error archiving current log %s", current_log)
                 return 1
         else:
-            print(f"Current log file {current_log} does not exist")
+            logger.warning("Current log file %s does not exist", current_log)
+        return 0
+
+    if args.copy_current:
+        current_log = resolve_log_file()
+        if current_log.exists():
+            try:
+                logger.info("Copying current log file into archive: %s", current_log)
+                archive_path = rotation.copy_current_log(
+                    str(current_log),
+                    archive_dir=args.archive_dir,
+                )
+                logger.info("Copied current log to: %s", archive_path)
+            except Exception:
+                logger.exception("Error copying current log %s", current_log)
+                return 1
+        else:
+            logger.warning("Current log file %s does not exist", current_log)
         return 0
 
     # Archive split by days (trim current log)
     if args.archive_split_days is not None:
         log_file = resolve_log_file()
         try:
+            logger.info(
+                "Archiving lines older than %s day(s) from %s",
+                args.archive_split_days,
+                log_file,
+            )
             summary = rotation.archive_and_trim_by_days(
                 str(log_file),
                 days_to_keep=args.archive_split_days,
                 archive_dir=args.archive_dir,
             )
-            if not args.quiet:
-                arch = summary.get("archive_path")
-                print(
-                    f"Archived {summary['archived_lines']} lines to {arch if arch else 'N/A'}; "
-                    f"kept {summary['kept_lines']} lines in {log_file}"
-                )
+            files = summary.get("archive_files", [])
+            message = (
+                f"Archived {summary['archived_lines']} lines to {len(files)} file(s); "
+                f"kept {summary['kept_lines']} lines in {log_file}"
+            )
+            if args.quiet:
+                logger.debug(message)
+            else:
+                logger.info(message)
             return 0
-        except PermissionError as e:
-            print(f"Permission error writing to log file. Ensure the app is not locking the file.\n{e}")
+        except PermissionError:
+            logger.exception(
+                "Permission error writing to log file %s. Ensure the app is not locking the file.",
+                log_file,
+            )
             return 1
-        except Exception as e:
-            print(f"Error during archive split by days: {e}")
+        except Exception:
+            logger.exception("Error during archive split by days for %s", log_file)
             return 1
 
     # Archive by month (trim current log)
     if args.archive_by_month:
         log_file = resolve_log_file()
         try:
+            logger.info(
+                "Archiving prior months and keeping only current month for %s",
+                log_file,
+            )
             summary = rotation.archive_and_trim_by_month(str(log_file), archive_dir=args.archive_dir)
-            if not args.quiet:
-                files = summary.get("archive_files", [])
-                print(
-                    f"Archived {summary['archived_lines']} lines to {len(files)} file(s); "
-                    f"kept {summary['kept_lines']} lines in {log_file}"
-                )
+            files = summary.get("archive_files", [])
+            message = (
+                f"Archived {summary['archived_lines']} lines to {len(files)} file(s); "
+                f"kept {summary['kept_lines']} lines in {log_file}"
+            )
+            if args.quiet:
+                logger.debug(message)
+            else:
+                logger.info(message)
             return 0
-        except PermissionError as e:
-            print(f"Permission error writing to log file. Ensure the app is not locking the file.\n{e}")
+        except PermissionError:
+            logger.exception(
+                "Permission error writing to log file %s. Ensure the app is not locking the file.",
+                log_file,
+            )
             return 1
-        except Exception as e:
-            print(f"Error during archive by month: {e}")
+        except Exception:
+            logger.exception("Error during archive by month for %s", log_file)
+            return 1
+
+    if args.copy_split_days is not None:
+        log_file = resolve_log_file()
+        try:
+            logger.info(
+                "Copying lines older than %s day(s) from %s into archive",
+                args.copy_split_days,
+                log_file,
+            )
+            summary = rotation.copy_lines_by_days(
+                str(log_file),
+                args.copy_split_days,
+                archive_dir=args.archive_dir,
+            )
+            files = summary.get("archive_files", [])
+            message = (
+                f"Copied {summary['copied_lines']} lines into {len(files)} archive file(s) "
+                f"from {log_file}"
+            )
+            if args.quiet:
+                logger.debug(message)
+            else:
+                logger.info(message)
+            return 0
+        except Exception:
+            logger.exception("Error during copy-by-days for %s", log_file)
             return 1
 
     # Perform cleanup of old files
     if not log_dir.exists():
-        print(f"Log directory {log_dir} does not exist")
+        logger.warning("Log directory %s does not exist", log_dir)
         return 1
 
-    if not args.quiet:
-        print(f"Cleaning up logs older than {args.days} days in {log_dir.absolute()}")
+    emit(f"Cleaning up logs older than {args.days} days in {log_dir.absolute()}")
 
     if args.dry_run:
-        print("DRY RUN - No files will be deleted")
-        print()
+        emit("DRY RUN - No files will be deleted")
 
         import time
 
@@ -188,21 +330,20 @@ Examples:
                 found_files.append((log_file, size_mb))
 
         if found_files:
-            print("Files that would be deleted:")
+            emit("Files that would be deleted:")
             total_size = 0
             for log_file, size_mb in found_files:
-                print(f"  {log_file.name:<30} {size_mb:>8.2f} MB")
+                emit(f"  {log_file.name:<30} {size_mb:>8.2f} MB")
                 total_size += size_mb
-            print(f"\nTotal: {len(found_files)} files, {total_size:.2f} MB")
+            emit(f"Total: {len(found_files)} files, {total_size:.2f} MB")
         else:
-            print("No files found that match deletion criteria")
+            emit("No files found that match deletion criteria")
     else:
         deleted_count = rotation.cleanup_old_logs(args.log_dir, args.days)
-        if not args.quiet:
-            if deleted_count > 0:
-                print(f"Deleted {deleted_count} old log files")
-            else:
-                print("No old log files found to delete")
+        if deleted_count > 0:
+            emit(f"Deleted {deleted_count} old log files")
+        else:
+            emit("No old log files found to delete")
 
     return 0
 
