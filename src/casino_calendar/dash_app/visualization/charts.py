@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     # Dash base component type for annotations only
     from dash.development.base_component import Component
 
-from casino_calendar.services.colors import get_color
+from casino_calendar.services.colors import get_color, resolve_casino_color
 
 from ..services.layout_state import (
     filter_long_spanning_events,
@@ -796,8 +796,9 @@ def build_weekly_figure(events_df: pd.DataFrame, screen_width: int, week_start: 
             label = row["EventName"]
             trimmed_label = trim_label(label, max_chars, row.get("OfferType", ""))
 
-            color = casino_colors[row["Casino"]]["bg"]
-            text_color = casino_colors[row["Casino"]]["text"]
+            color_entry = resolve_casino_color(row["Casino"], palette=casino_colors)
+            color = color_entry["bg"]
+            text_color = color_entry["text"]
 
             shapes.append(
                 dict(

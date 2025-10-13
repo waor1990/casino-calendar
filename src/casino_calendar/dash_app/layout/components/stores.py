@@ -16,6 +16,8 @@ def build_state_stores() -> list[dcc.Store]:
         dcc.Store(id="animation-refresh"),
         dcc.Store(id="selected-casinos", data=[]),
         dcc.Store(id="selected-event-types", data=[]),
+        dcc.Store(id="event-filter-state", data={}),
+        dcc.Store(id="legacy-event-data"),
         dcc.Store(id="last-day-date", data=None),
         dcc.Store(id="reopen-day-on-close", data=False),
         dcc.Store(id="theme-store", data="light", storage_type="local"),

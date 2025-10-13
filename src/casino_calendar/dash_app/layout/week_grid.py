@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, cast
 
 import pandas as pd
-from casino_calendar.services.colors import get_color
+from casino_calendar.services.colors import get_color, resolve_casino_color
 from casino_calendar.services.data_parsing import prepare_week_events
 from dash import html
 
@@ -53,12 +53,14 @@ def _build_block(row, week_start, week_end, screen_width, colors):
     arrow_left = "calc(-1 * var(--arrow-width))" if row["has_left_arrow"] else "0"
     arrow_right = "calc(-1 * var(--arrow-width))" if row["has_right_arrow"] else "0"
 
+    color_entry = resolve_casino_color(row["Casino"], palette=colors)
+
     style = {
         "--row": row_num,
         "--left": f"{left_pct:.2f}%",
         "--width": f"{width_pct:.2f}%",
-        "--bg": colors[row["Casino"]]["bg"],
-        "--fg": colors[row["Casino"]]["text"],
+        "--bg": color_entry["bg"],
+        "--fg": color_entry["text"],
         "--arrow-left-offset": arrow_left,
         "--arrow-right-offset": arrow_right,
     }
