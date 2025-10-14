@@ -3,23 +3,47 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+import json
 
 import pandas as pd
 import pytest
+import dash
+from dash import Dash
 from casino_calendar.dash_app.callbacks import register_callbacks
 from casino_calendar.dash_app.services.layout_state import to_naive_utc
 from casino_calendar.dash_app.visualization import charts as day_charts
 from casino_calendar.services import data_parsing
 from casino_calendar.services.colors import get_color
-from dash import Dash
 
 
 class DummyCtx:
     """Minimal stand-in for Dash's callback context."""
 
-    def __init__(self, triggered_id):
+    def __init__(self, triggered_id, value: int = 1, timestamp: int | None = 1_000):
         self.triggered_id = triggered_id
-        self.triggered = [{"prop_id": f"{triggered_id}.n_clicks", "value": 1}]
+        if isinstance(triggered_id, dict):
+            prop_key = json.dumps(triggered_id, separators=(",", ":"))
+        else:
+            prop_key = triggered_id
+        self.triggered = [
+            {
+                "prop_id": f"{prop_key}.n_clicks",
+                "value": value,
+                "id": triggered_id,
+            }
+        ]
+        self.inputs_list = []
+        if isinstance(triggered_id, dict):
+            self.inputs_list = [
+                [],
+                [],
+                [],
+                [],
+                [{"id": triggered_id, "property": "n_clicks", "value": value}],
+                [{"id": triggered_id, "property": "n_clicks_timestamp", "value": timestamp}],
+                [],
+                [],
+            ]
 
 
 def _event_modal_callback(casino: str):
@@ -59,19 +83,59 @@ def test_show_event_modal_handles_duplicate(monkeypatch, casino):
         raising=False,
     )
 
-    result = callback(None, 0, 0, 0, [1], [0], 0, 1024, [])
+    result = callback(None, 0, 0, 0, [1], [1000], [0], [1000], 0, 1024, [])
     assert result[1] == "modal show"
     assert result[4] is True
     assert result[5] == {"display": "none"}
 
 
 @pytest.mark.usefixtures("casino")
+def test_show_event_modal_handles_json_triggered_id(monkeypatch, casino):
+    callback = _event_modal_callback(casino)
+    triggered_json = json.dumps({"type": "grid-event", "index": 0})
+    monkeypatch.setattr("dash.callback_context", DummyCtx(triggered_json), raising=False)
+
+    result = callback(None, 0, 0, 0, [1], [1000], [0], [1000], 0, 1024, [])
+    assert result[1] == "modal show"
+
+
+@pytest.mark.usefixtures("casino")
+def test_show_event_modal_handles_python_literal_triggered_id(monkeypatch, casino):
+    callback = _event_modal_callback(casino)
+    triggered_literal = "{'type': 'grid-event', 'index': 0}"
+    monkeypatch.setattr("dash.callback_context", DummyCtx(triggered_literal), raising=False)
+
+    result = callback(None, 0, 0, 0, [1], [1000], [0], [1000], 0, 1024, [])
+    assert result[1] == "modal show"
+
+
+@pytest.mark.usefixtures("casino")
+def test_show_event_modal_ignores_zero_clicks(monkeypatch, casino):
+    callback = _event_modal_callback(casino)
+    ctx = DummyCtx({"type": "grid-event", "index": 0}, value=0)
+    ctx.inputs_list = [
+        [],  # day-event-catcher clickData
+        [],  # close-modal
+        [],  # close-timer
+        [],  # close-day-modal
+        [{"id": {"type": "grid-event", "index": 0}, "property": "n_clicks", "value": 0}],
+        [{"id": {"type": "grid-event", "index": 0}, "property": "n_clicks_timestamp", "value": None}],
+        [],  # day-column clicks
+        [],  # day-column timestamps
+    ]
+    monkeypatch.setattr("dash.callback_context", ctx, raising=False)
+
+    with pytest.raises(dash.exceptions.PreventUpdate):
+        callback(None, 0, 0, 0, [0], [None], [0], [None], 0, 1024, [])
+        callback(None, 0, 0, 0, [0], [0], [0], [0], 0, 1024, [])
+
+@pytest.mark.usefixtures("casino")
 def test_show_event_modal_close(monkeypatch, casino):
     callback = _event_modal_callback(casino)
     monkeypatch.setattr("dash.callback_context", DummyCtx("close-modal"), raising=False)
 
-    result = callback(None, 1, 0, 0, [0], [0], 0, 1024, [])
-    assert result[1] == "modal closing"
+    result = callback(None, 1, 0, 0, [0], [None], [0], [None], 0, 1024, [])
+    result = callback(None, 1, 0, 0, [0], [0], [0], [0], 0, 1024, [])
     assert result[3] == 0
     assert result[4] is False
 
@@ -234,3 +298,5 @@ def test_day_modal_sorting_orders_by_time_then_name_then_category():
         "Same Casino Different Category 2",
         "Late Event",
     ]
+
+

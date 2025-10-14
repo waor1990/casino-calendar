@@ -1,3 +1,5 @@
+import ast
+import json
 import time
 from datetime import datetime, timedelta
 from typing import Any, Tuple
@@ -68,7 +70,9 @@ def register_callbacks(app, df) -> None:
         Input("close-timer", "n_intervals"),
         Input("close-day-modal", "n_clicks"),
         Input({"type": "grid-event", "index": ALL}, "n_clicks"),
+        Input({"type": "grid-event", "index": ALL}, "n_clicks_timestamp"),
         Input({"type": "day-column", "index": ALL}, "n_clicks"),
+        Input({"type": "day-column", "index": ALL}, "n_clicks_timestamp"),
         State("week-offset", "data"),
         State("screen-width", "data"),
         State("selected-casinos", "data"),
@@ -81,7 +85,9 @@ def register_callbacks(app, df) -> None:
         _timer_tick: int,
         _close_day_clicks: int,
         _grid_clicks: list[int],
+        _grid_click_timestamps: list[int | None],
         _day_column_clicks: list[int],
+        _day_column_timestamps: list[int | None],
         week_offset: int,
         screen_width: int,
         selected_casinos: list[str] | None,
@@ -95,13 +101,36 @@ def register_callbacks(app, df) -> None:
         start_time = time.time()
         logger.debug("show_event_modal callback triggered")
 
+        def _normalize_pattern_id(raw_id: Any) -> Any:
+            """Return pattern IDs parsed from Dash string forms into dicts."""
+            if isinstance(raw_id, str):
+                parsed_id = None
+                try:
+                    parsed_id = json.loads(raw_id)
+                except json.JSONDecodeError:
+                    try:
+                        parsed_id = ast.literal_eval(raw_id)
+                    except (ValueError, SyntaxError):
+                        logger.debug("Unable to parse pattern ID string: %s", raw_id)
+                if isinstance(parsed_id, dict):
+                    return parsed_id
+            return raw_id
+
         try:
             ctx = dash.callback_context
-            triggered_id = ctx.triggered_id
+            triggered_id = _normalize_pattern_id(ctx.triggered_id)
             logger.debug("Trigger source: %s", triggered_id)
 
-            def _lookup_click_value(target_id: Any, position: int) -> int | None:
-                """Return the n_clicks value for a pattern-matched component."""
+            triggered_prop = ""
+            if ctx.triggered:
+                prop_id = ctx.triggered[-1].get("prop_id", "")
+                if prop_id:
+                    triggered_prop = prop_id.rpartition(".")[2]
+
+            def _lookup_click_value(target_id: Any, position: int) -> Any:
+                """Return a stored value for a pattern-matched component."""
+
+                normalized_target = _normalize_pattern_id(target_id)
                 try:
                     inputs = ctx.inputs_list[position]
                 except (AttributeError, IndexError):  # pragma: no cover - dash internals
@@ -110,12 +139,17 @@ def register_callbacks(app, df) -> None:
                 if inputs:
                     for item in inputs:
                         try:
-                            if item.get("id") == target_id:
+                            item_id = _normalize_pattern_id(item.get("id"))
+                            if item_id == normalized_target:
                                 return item.get("value")
                         except AttributeError:
                             continue
 
                 try:
+                    last_trigger = ctx.triggered[-1]
+                    comp_id = _normalize_pattern_id(last_trigger.get("id"))
+                    if comp_id == normalized_target:
+                        return last_trigger.get("value")
                     return ctx.triggered[0]["value"] if ctx.triggered else None
                 except (IndexError, KeyError, TypeError, AttributeError):
                     return None
@@ -165,8 +199,20 @@ def register_callbacks(app, df) -> None:
             if isinstance(triggered_id, dict) and triggered_id.get("type") in ("grid-event",):
                 logger.debug("Grid event clicked: %s", triggered_id)
                 triggered_n = _lookup_click_value(triggered_id, 4)
+                triggered_ts = _lookup_click_value(triggered_id, 5)
                 if not triggered_n:
-                    logger.debug("No triggered value, preventing update")
+                    logger.debug(
+                        "Grid event has no clicks recorded, preventing update (n=%s)",
+                        triggered_n,
+                    )
+                    raise dash.exceptions.PreventUpdate
+
+                if triggered_prop != "n_clicks" and not triggered_ts:
+                    logger.debug(
+                        "Grid event timestamp missing for property %s (ts=%s), preventing update",
+                        triggered_prop,
+                        triggered_ts,
+                    )
                     raise dash.exceptions.PreventUpdate
 
                 idx = triggered_id.get("index")
@@ -204,9 +250,21 @@ def register_callbacks(app, df) -> None:
 
             if isinstance(triggered_id, dict) and triggered_id.get("type") == "day-column":
                 logger.debug("Day column clicked: %s", triggered_id)
-                triggered_n = _lookup_click_value(triggered_id, 5)
+                triggered_n = _lookup_click_value(triggered_id, 6)
+                triggered_ts = _lookup_click_value(triggered_id, 7)
                 if not triggered_n:
-                    logger.debug("No triggered value for day column, preventing update")
+                    logger.debug(
+                        "Day column has no clicks recorded, preventing update (n=%s)",
+                        triggered_n,
+                    )
+                    raise dash.exceptions.PreventUpdate
+
+                if triggered_prop != "n_clicks" and not triggered_ts:
+                    logger.debug(
+                        "Day column timestamp missing for property %s (ts=%s), preventing update",
+                        triggered_prop,
+                        triggered_ts,
+                    )
                     raise dash.exceptions.PreventUpdate
 
                 date_str = triggered_id.get("index")
