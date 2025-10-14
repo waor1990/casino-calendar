@@ -164,6 +164,8 @@ def _configure_http_log_file_routing() -> None:
         if handler is not None and handler not in http_logger.handlers:
             http_logger.addHandler(handler)
             http_logger.propagate = False
+            if http_logger.level == logging.NOTSET or http_logger.level > logging.INFO:
+                http_logger.setLevel(logging.INFO)
 
 
 def _is_minimal_log_mode() -> bool:
