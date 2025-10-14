@@ -33,7 +33,9 @@ def register_callbacks(app, df) -> None:
     )
     def toggle_overflow(n_clicks: int, start_date_str: str) -> Tuple[str, str]:
         """Toggle visibility of the overflow list for the selected week."""
-        logger.debug("Overflow toggle received %s click(s) for %s", n_clicks, start_date_str)
+        logger.debug(
+            "Overflow toggle received %s click(s) for %s", n_clicks, start_date_str
+        )
 
         try:
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
@@ -42,14 +44,18 @@ def register_callbacks(app, df) -> None:
 
             box_class = "overflow-box-expand show" if is_open else "overflow-box-expand"
 
-            date_range = f"{start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+            date_range = (
+                f"{start_date.strftime('%b %d')} - {end_date.strftime('%b %d')}"
+            )
             button_text = (
                 f"\U0001f300 Hide Ongoing Events for {date_range}"
                 if is_open
                 else f"\U0001f300 Show Ongoing Events for {date_range}"
             )
 
-            logger.debug("Overflow toggle state open %s with class %s", is_open, box_class)
+            logger.debug(
+                "Overflow toggle state open %s with class %s", is_open, box_class
+            )
             return box_class, button_text
 
         except Exception as e:
@@ -72,7 +78,10 @@ def register_callbacks(app, df) -> None:
         Input({"type": "grid-event", "index": ALL}, "n_clicks"),
         Input({"type": "grid-event", "index": ALL}, "n_clicks_timestamp"),
         Input({"type": "day-column", "index": ALL}, "n_clicks"),
-        Input({"type": "day-column", "index": ALL}, "n_clicks_timestamp"),
+        State({"type": "grid-event", "index": ALL}, "n_clicks_timestamp"),
+        State({"type": "day-column", "index": ALL}, "n_clicks_timestamp"),
+        State({"type": "grid-event", "index": ALL}, "id"),
+        State({"type": "day-column", "index": ALL}, "id"),
         State("week-offset", "data"),
         State("screen-width", "data"),
         State("selected-casinos", "data"),
@@ -87,7 +96,10 @@ def register_callbacks(app, df) -> None:
         _grid_clicks: list[int],
         _grid_click_timestamps: list[int | None],
         _day_column_clicks: list[int],
-        _day_column_timestamps: list[int | None],
+        _grid_click_timestamps: list[int | None] | None,
+        _day_column_timestamps: list[int | None] | None,
+        _grid_click_ids: list[dict[str, Any]] | None,
+        _day_column_ids: list[dict[str, Any]] | None,
         week_offset: int,
         screen_width: int,
         selected_casinos: list[str] | None,
@@ -133,7 +145,10 @@ def register_callbacks(app, df) -> None:
                 normalized_target = _normalize_pattern_id(target_id)
                 try:
                     inputs = ctx.inputs_list[position]
-                except (AttributeError, IndexError):  # pragma: no cover - dash internals
+                except (
+                    AttributeError,
+                    IndexError,
+                ):  # pragma: no cover - dash internals
                     inputs = None
 
                 if inputs:
@@ -156,6 +171,23 @@ def register_callbacks(app, df) -> None:
 
             if triggered_id == "close-timer":
                 logger.debug("Closing modal via timer")
+                modal_class = event_modal_class or ""
+                if "closing" not in modal_class:
+                    logger.debug(
+                        "Timer fired while modal class was %s; disabling without closing",
+                        modal_class,
+                    )
+                    return (
+                        no_update,
+                        no_update,
+                        no_update,
+                        0,
+                        True,
+                        no_update,
+                        no_update,
+                        no_update,
+                    )
+
                 return (
                     {"display": "none"},
                     "modal",
@@ -196,23 +228,72 @@ def register_callbacks(app, df) -> None:
                     no_update,
                 )
 
-            if isinstance(triggered_id, dict) and triggered_id.get("type") in ("grid-event",):
-                logger.debug("Grid event clicked: %s", triggered_id)
-                triggered_n = _lookup_click_value(triggered_id, 4)
-                triggered_ts = _lookup_click_value(triggered_id, 5)
-                if not triggered_n:
-                    logger.debug(
-                        "Grid event has no clicks recorded, preventing update (n=%s)",
-                        triggered_n,
-                    )
-                    raise dash.exceptions.PreventUpdate
+            def _resolve_click_metadata(
+                component_id: dict[str, Any] | None,
+                known_ids: list[dict[str, Any]] | None,
+                click_values: list[int] | None,
+                timestamps: list[int | None] | None,
+            ) -> tuple[int | None, int | None]:
+                if not component_id or not known_ids:
+                    return None, None
 
-                if triggered_prop != "n_clicks" and not triggered_ts:
-                    logger.debug(
-                        "Grid event timestamp missing for property %s (ts=%s), preventing update",
-                        triggered_prop,
-                        triggered_ts,
-                    )
+                match_index: int | None = None
+                for i, candidate in enumerate(known_ids):
+                    if candidate == component_id:
+                        match_index = i
+                        break
+
+                if match_index is None:
+                    return None, None
+
+                resolved_click: int | None = None
+                resolved_timestamp: int | None = None
+
+                if click_values and len(click_values) > match_index:
+                    resolved_click = click_values[match_index]
+
+                if timestamps and len(timestamps) > match_index:
+                    resolved_timestamp = timestamps[match_index]
+
+                return resolved_click, resolved_timestamp
+
+            if isinstance(triggered_id, dict) and triggered_id.get("type") in (
+                "grid-event",
+            ):
+                logger.debug("Grid event clicked: %s", triggered_id)
+
+                triggered_n, timestamp_value = _resolve_click_metadata(
+                    triggered_id,
+                    _grid_click_ids,
+                    _grid_clicks,
+                    _grid_click_timestamps,
+                )
+
+                if triggered_n is None:
+                    try:
+                        triggered_n = (
+                            ctx.triggered[0]["value"] if ctx.triggered else None
+                        )
+                    except (IndexError, KeyError, TypeError):
+                        triggered_n = None
+
+                if timestamp_value is None:
+                    try:
+                        prop_id = ctx.triggered[0]["prop_id"]
+                    except (IndexError, KeyError, TypeError):
+                        prop_id = None
+                    else:
+                        timestamp_key = prop_id.replace(
+                            ".n_clicks", ".n_clicks_timestamp"
+                        )
+                        timestamp_value = (
+                            ctx.states.get(timestamp_key)
+                            if hasattr(ctx, "states")
+                            else None
+                        )
+
+                if triggered_n is None or (triggered_n == 0 and not timestamp_value):
+                    logger.debug("No triggered value, preventing update")
                     raise dash.exceptions.PreventUpdate
 
                 idx = triggered_id.get("index")
@@ -231,10 +312,14 @@ def register_callbacks(app, df) -> None:
                     )
 
                 row = df.loc[idx]
-                event_name = row["EventName"] if "EventName" in row.index else "Unknown Event"
+                event_name = (
+                    row["EventName"] if "EventName" in row.index else "Unknown Event"
+                )
                 logger.info("Opening event modal for %s", event_name)
                 colors = get_color()
-                casino_colors = colors.get(row["Casino"], {"bg": "#000", "text": "#000"})
+                casino_colors = colors.get(
+                    row["Casino"], {"bg": "#000", "text": "#000"}
+                )
                 rows = build_event_info_rows(row.items())
                 style = {"--bg": casino_colors["bg"]}
                 return (
@@ -248,23 +333,44 @@ def register_callbacks(app, df) -> None:
                     no_update,
                 )
 
-            if isinstance(triggered_id, dict) and triggered_id.get("type") == "day-column":
+            if (
+                isinstance(triggered_id, dict)
+                and triggered_id.get("type") == "day-column"
+            ):
                 logger.debug("Day column clicked: %s", triggered_id)
-                triggered_n = _lookup_click_value(triggered_id, 6)
-                triggered_ts = _lookup_click_value(triggered_id, 7)
-                if not triggered_n:
-                    logger.debug(
-                        "Day column has no clicks recorded, preventing update (n=%s)",
-                        triggered_n,
-                    )
-                    raise dash.exceptions.PreventUpdate
 
-                if triggered_prop != "n_clicks" and not triggered_ts:
-                    logger.debug(
-                        "Day column timestamp missing for property %s (ts=%s), preventing update",
-                        triggered_prop,
-                        triggered_ts,
-                    )
+                triggered_n, timestamp_value = _resolve_click_metadata(
+                    triggered_id,
+                    _day_column_ids,
+                    _day_column_clicks,
+                    _day_column_timestamps,
+                )
+
+                if triggered_n is None:
+                    try:
+                        triggered_n = (
+                            ctx.triggered[0]["value"] if ctx.triggered else None
+                        )
+                    except (IndexError, KeyError, TypeError):
+                        triggered_n = None
+
+                if timestamp_value is None:
+                    try:
+                        prop_id = ctx.triggered[0]["prop_id"]
+                    except (IndexError, KeyError, TypeError):
+                        prop_id = None
+                    else:
+                        timestamp_key = prop_id.replace(
+                            ".n_clicks", ".n_clicks_timestamp"
+                        )
+                        timestamp_value = (
+                            ctx.states.get(timestamp_key)
+                            if hasattr(ctx, "states")
+                            else None
+                        )
+
+                if triggered_n is None or (triggered_n == 0 and not timestamp_value):
+                    logger.debug("No triggered value for day column, preventing update")
                     raise dash.exceptions.PreventUpdate
 
                 date_str = triggered_id.get("index")
@@ -282,16 +388,22 @@ def register_callbacks(app, df) -> None:
                     )
 
                 clicked_date = to_naive_utc(datetime.strptime(date_str, "%Y-%m-%d"))
-                logger.info("Opening day modal for %s", clicked_date.strftime("%Y-%m-%d"))
+                logger.info(
+                    "Opening day modal for %s", clicked_date.strftime("%Y-%m-%d")
+                )
 
-                filtered = df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
+                filtered = (
+                    df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
+                )
                 logger.debug(
                     "Filtered events to %d items based on selected casinos",
                     len(filtered),
                 )
 
-                title_text, grid_children, figure, height_px = day_charts.generate_day_view_parts(
-                    filtered, clicked_date, get_color, screen_width
+                title_text, grid_children, figure, height_px = (
+                    day_charts.generate_day_view_parts(
+                        filtered, clicked_date, get_color, screen_width
+                    )
                 )
                 day_modal_children = html.Div(
                     id="day-modal-content-container",
@@ -370,9 +482,15 @@ def register_callbacks(app, df) -> None:
                         clicked_date.strftime("%Y-%m-%d"),
                     )
 
-                    filtered = df[df["Casino"].isin(selected_casinos)] if selected_casinos else df
-                    title_text, grid_children, figure, height_px = day_charts.generate_day_view_parts(
-                        filtered, clicked_date, get_color, screen_width
+                    filtered = (
+                        df[df["Casino"].isin(selected_casinos)]
+                        if selected_casinos
+                        else df
+                    )
+                    title_text, grid_children, figure, height_px = (
+                        day_charts.generate_day_view_parts(
+                            filtered, clicked_date, get_color, screen_width
+                        )
                     )
                     day_modal_children = html.Div(
                         id="day-modal-content-container",
@@ -387,7 +505,9 @@ def register_callbacks(app, df) -> None:
                                 id="day-grid-wrapper",
                                 style={"position": "relative"},
                                 children=[
-                                    html.Div(id="day-grid-content", children=grid_children),
+                                    html.Div(
+                                        id="day-grid-content", children=grid_children
+                                    ),
                                     dcc.Graph(
                                         id="day-event-catcher",
                                         className="day-event-catcher",
