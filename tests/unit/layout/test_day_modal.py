@@ -11,7 +11,7 @@ from casino_calendar.dash_app.services.layout_state import to_naive_utc
 from casino_calendar.dash_app.visualization import charts as day_charts
 from casino_calendar.services import data_parsing
 from casino_calendar.services.colors import get_color
-from dash import Dash
+from dash import Dash, no_update
 
 
 class DummyCtx:
@@ -20,6 +20,14 @@ class DummyCtx:
     def __init__(self, triggered_id):
         self.triggered_id = triggered_id
         self.triggered = [{"prop_id": f"{triggered_id}.n_clicks", "value": 1}]
+
+
+class TimerCtx:
+    """Context helper for timer-triggered callbacks."""
+
+    def __init__(self, value: int = 1):
+        self.triggered_id = "close-timer"
+        self.triggered = [{"prop_id": "close-timer.n_intervals", "value": value}]
 
 
 def _event_modal_callback(casino: str):
@@ -38,7 +46,7 @@ def _event_modal_callback(casino: str):
     key = "".join(
         [
             "..event-modal.style...event-modal.className...event-modal-body.children",
-            "...close-timer.n_intervals...day-modal.style...day-modal.className...",
+            "...close-timer.n_intervals...close-timer.disabled...day-modal.style...day-modal.className...",
             "day-modal-body.children..",
         ]
     )
@@ -61,7 +69,8 @@ def test_show_event_modal_handles_duplicate(monkeypatch, casino):
 
     result = callback(None, 0, 0, 0, [1], [0], 0, 1024, [])
     assert result[1] == "modal show"
-    assert result[4] == {"display": "none"}
+    assert result[4] is True
+    assert result[5] == {"display": "none"}
 
 
 @pytest.mark.usefixtures("casino")
@@ -71,7 +80,21 @@ def test_show_event_modal_close(monkeypatch, casino):
 
     result = callback(None, 1, 0, 0, [0], [0], 0, 1024, [])
     assert result[1] == "modal closing"
-    assert result[3] == 1
+    assert result[3] == 0
+    assert result[4] is False
+
+
+@pytest.mark.usefixtures("casino")
+def test_close_timer_ignores_reopened_modal(monkeypatch, casino):
+    callback = _event_modal_callback(casino)
+    monkeypatch.setattr("dash.callback_context", TimerCtx(), raising=False)
+
+    result = callback(None, 1, 1, 0, [0], [0], 0, 1024, [], "modal show")
+    assert result[0] is no_update
+    assert result[1] is no_update
+    assert result[2] is no_update
+    assert result[3] == 0
+    assert result[4] is True
 
 
 def _build_boundary_events(clicked_date):
