@@ -165,7 +165,7 @@ def register_callbacks(app, df) -> None:
                     triggered_n = ctx.triggered[0]["value"] if ctx.triggered and len(ctx.triggered) > 0 else None
                 except (IndexError, KeyError, TypeError):
                     triggered_n = None
-                if not triggered_n:
+                if triggered_n is None:
                     logger.debug("No triggered value, preventing update")
                     raise dash.exceptions.PreventUpdate
 
@@ -208,7 +208,7 @@ def register_callbacks(app, df) -> None:
                     triggered_n = ctx.triggered[0]["value"] if ctx.triggered and len(ctx.triggered) > 0 else None
                 except (IndexError, KeyError, TypeError):
                     triggered_n = None
-                if not triggered_n:
+                if triggered_n is None:
                     logger.debug("No triggered value for day column, preventing update")
                     raise dash.exceptions.PreventUpdate
 
