@@ -3,24 +3,31 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
+import json
 
+import dash
 import pandas as pd
 import pytest
-import dash
+from dash import Dash, no_update
+
 from casino_calendar.dash_app.callbacks import register_callbacks
 from casino_calendar.dash_app.services.layout_state import to_naive_utc
 from casino_calendar.dash_app.visualization import charts as day_charts
 from casino_calendar.services import data_parsing
 from casino_calendar.services.colors import get_color
-from dash import Dash, no_update
 
 
 class DummyCtx:
     """Minimal stand-in for Dash's callback context."""
 
-    def __init__(self, triggered_id, value=1):
+    def __init__(self, triggered_id, value=1, states=None, prop="n_clicks"):
         self.triggered_id = triggered_id
-        self.triggered = [{"prop_id": f"{triggered_id}.n_clicks", "value": value}]
+        if isinstance(triggered_id, dict):
+            trigger_key = json.dumps(triggered_id, separators=(",", ":"))
+        else:
+            trigger_key = triggered_id
+        self.triggered = [{"prop_id": f"{trigger_key}.{prop}", "value": value}]
+        self.states = states or {}
 
 
 class TimerCtx:
@@ -69,7 +76,7 @@ def test_show_event_modal_handles_duplicate(monkeypatch, casino):
         raising=False,
     )
 
-    result = callback(None, 0, 0, 0, [1], [0], 0, 1024, [])
+    result = callback(None, 0, 0, 0, [1], [0], [1111], [0], 0, 1024, [])
     assert result[1] == "modal show"
     assert result[4] is True
     assert result[5] == {"display": "none"}
@@ -78,11 +85,26 @@ def test_show_event_modal_handles_duplicate(monkeypatch, casino):
 @pytest.mark.usefixtures("casino")
 def test_show_event_modal_allows_zero_click_value(monkeypatch, casino):
     callback = _event_modal_callback(casino)
+    trigger_key = json.dumps({"type": "grid-event", "index": 0}, separators=(",", ":"))
+    ctx = DummyCtx(
+        {"type": "grid-event", "index": 0},
+        value=0,
+        states={f"{trigger_key}.n_clicks_timestamp": 1234},
+    )
+    monkeypatch.setattr("dash.callback_context", ctx, raising=False)
+
+    result = callback(None, 0, 0, 0, [0], [0], [1234], [0], 0, 1024, [])
+    assert result[1] == "modal show"
+
+
+@pytest.mark.usefixtures("casino")
+def test_show_event_modal_zero_click_without_timestamp(monkeypatch, casino):
+    callback = _event_modal_callback(casino)
     ctx = DummyCtx({"type": "grid-event", "index": 0}, value=0)
     monkeypatch.setattr("dash.callback_context", ctx, raising=False)
 
-    result = callback(None, 0, 0, 0, [0], [0], 0, 1024, [])
-    assert result[1] == "modal show"
+    with pytest.raises(dash.exceptions.PreventUpdate):
+        callback(None, 0, 0, 0, [0], [0], [0], [0], 0, 1024, [])
 
 
 @pytest.mark.usefixtures("casino")
@@ -92,7 +114,7 @@ def test_show_event_modal_none_click_value_prevents_update(monkeypatch, casino):
     monkeypatch.setattr("dash.callback_context", ctx, raising=False)
 
     with pytest.raises(dash.exceptions.PreventUpdate):
-        callback(None, 0, 0, 0, [0], [0], 0, 1024, [])
+        callback(None, 0, 0, 0, [0], [0], [None], [0], 0, 1024, [])
 
 
 @pytest.mark.usefixtures("casino")
@@ -100,7 +122,7 @@ def test_show_event_modal_close(monkeypatch, casino):
     callback = _event_modal_callback(casino)
     monkeypatch.setattr("dash.callback_context", DummyCtx("close-modal"), raising=False)
 
-    result = callback(None, 1, 0, 0, [0], [0], 0, 1024, [])
+    result = callback(None, 1, 0, 0, [0], [0], [0], [0], 0, 1024, [])
     assert result[1] == "modal closing"
     assert result[3] == 0
     assert result[4] is False
@@ -111,7 +133,7 @@ def test_close_timer_ignores_reopened_modal(monkeypatch, casino):
     callback = _event_modal_callback(casino)
     monkeypatch.setattr("dash.callback_context", TimerCtx(), raising=False)
 
-    result = callback(None, 1, 1, 0, [0], [0], 0, 1024, [], "modal show")
+    result = callback(None, 1, 1, 0, [0], [0], [0], [0], 0, 1024, [], "modal show")
     assert result[0] is no_update
     assert result[1] is no_update
     assert result[2] is no_update
@@ -122,10 +144,15 @@ def test_close_timer_ignores_reopened_modal(monkeypatch, casino):
 @pytest.mark.usefixtures("casino")
 def test_day_column_allows_zero_click_value(monkeypatch, casino):
     callback = _event_modal_callback(casino)
-    ctx = DummyCtx({"type": "day-column", "index": "2025-07-12"}, value=0)
+    trigger_key = json.dumps({"type": "day-column", "index": "2025-07-12"}, separators=(",", ":"))
+    ctx = DummyCtx(
+        {"type": "day-column", "index": "2025-07-12"},
+        value=0,
+        states={f"{trigger_key}.n_clicks_timestamp": 4567},
+    )
     monkeypatch.setattr("dash.callback_context", ctx, raising=False)
 
-    result = callback(None, 0, 0, 0, [0], [0], 0, 1024, [])
+    result = callback(None, 0, 0, 0, [0], [0], [0], [4567], 0, 1024, [])
     assert result[6] == "modal show"
 
 
@@ -136,7 +163,7 @@ def test_day_column_none_click_value_prevents_update(monkeypatch, casino):
     monkeypatch.setattr("dash.callback_context", ctx, raising=False)
 
     with pytest.raises(dash.exceptions.PreventUpdate):
-        callback(None, 0, 0, 0, [0], [0], 0, 1024, [])
+        callback(None, 0, 0, 0, [0], [0], [0], [None], 0, 1024, [])
 
 
 def _build_boundary_events(clicked_date):
