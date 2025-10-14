@@ -71,6 +71,8 @@ def register_callbacks(app, df) -> None:
         Input({"type": "day-column", "index": ALL}, "n_clicks"),
         State({"type": "grid-event", "index": ALL}, "n_clicks_timestamp"),
         State({"type": "day-column", "index": ALL}, "n_clicks_timestamp"),
+        State({"type": "grid-event", "index": ALL}, "id"),
+        State({"type": "day-column", "index": ALL}, "id"),
         State("week-offset", "data"),
         State("screen-width", "data"),
         State("selected-casinos", "data"),
@@ -86,6 +88,8 @@ def register_callbacks(app, df) -> None:
         _day_column_clicks: list[int],
         _grid_click_timestamps: list[int | None] | None,
         _day_column_timestamps: list[int | None] | None,
+        _grid_click_ids: list[dict[str, Any]] | None,
+        _day_column_ids: list[dict[str, Any]] | None,
         week_offset: int,
         screen_width: int,
         selected_casinos: list[str] | None,
@@ -163,24 +167,64 @@ def register_callbacks(app, df) -> None:
                     no_update,
                 )
 
+            def _resolve_click_metadata(
+                component_id: dict[str, Any] | None,
+                known_ids: list[dict[str, Any]] | None,
+                click_values: list[int] | None,
+                timestamps: list[int | None] | None,
+            ) -> tuple[int | None, int | None]:
+                if not component_id or not known_ids:
+                    return None, None
+
+                match_index: int | None = None
+                for i, candidate in enumerate(known_ids):
+                    if candidate == component_id:
+                        match_index = i
+                        break
+
+                if match_index is None:
+                    return None, None
+
+                resolved_click: int | None = None
+                resolved_timestamp: int | None = None
+
+                if click_values and len(click_values) > match_index:
+                    resolved_click = click_values[match_index]
+
+                if timestamps and len(timestamps) > match_index:
+                    resolved_timestamp = timestamps[match_index]
+
+                return resolved_click, resolved_timestamp
+
             if isinstance(triggered_id, dict) and triggered_id.get("type") in ("grid-event",):
                 logger.debug("Grid event clicked: %s", triggered_id)
-                try:
-                    triggered_n = ctx.triggered[0]["value"] if ctx.triggered and len(ctx.triggered) > 0 else None
-                except (IndexError, KeyError, TypeError):
-                    triggered_n = None
-                timestamp_value = None
-                try:
-                    prop_id = ctx.triggered[0]["prop_id"]
-                except (IndexError, KeyError, TypeError):
-                    prop_id = None
-                if prop_id:
-                    timestamp_key = prop_id.replace(".n_clicks", ".n_clicks_timestamp")
-                    timestamp_value = (
-                        ctx.states.get(timestamp_key)
-                        if hasattr(ctx, "states")
-                        else None
-                    )
+
+                triggered_n, timestamp_value = _resolve_click_metadata(
+                    triggered_id,
+                    _grid_click_ids,
+                    _grid_clicks,
+                    _grid_click_timestamps,
+                )
+
+                if triggered_n is None:
+                    try:
+                        triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
+                    except (IndexError, KeyError, TypeError):
+                        triggered_n = None
+
+                if timestamp_value is None:
+                    try:
+                        prop_id = ctx.triggered[0]["prop_id"]
+                    except (IndexError, KeyError, TypeError):
+                        prop_id = None
+                    else:
+                        timestamp_key = prop_id.replace(".n_clicks", ".n_clicks_timestamp")
+                        timestamp_value = (
+                            ctx.states.get(timestamp_key)
+                            if hasattr(ctx, "states")
+                            else None
+                        )
+
                 if triggered_n is None or (triggered_n == 0 and not timestamp_value):
                     logger.debug("No triggered value, preventing update")
                     raise dash.exceptions.PreventUpdate
@@ -220,22 +264,33 @@ def register_callbacks(app, df) -> None:
 
             if isinstance(triggered_id, dict) and triggered_id.get("type") == "day-column":
                 logger.debug("Day column clicked: %s", triggered_id)
-                try:
-                    triggered_n = ctx.triggered[0]["value"] if ctx.triggered and len(ctx.triggered) > 0 else None
-                except (IndexError, KeyError, TypeError):
-                    triggered_n = None
-                timestamp_value = None
-                try:
-                    prop_id = ctx.triggered[0]["prop_id"]
-                except (IndexError, KeyError, TypeError):
-                    prop_id = None
-                if prop_id:
-                    timestamp_key = prop_id.replace(".n_clicks", ".n_clicks_timestamp")
-                    timestamp_value = (
-                        ctx.states.get(timestamp_key)
-                        if hasattr(ctx, "states")
-                        else None
-                    )
+
+                triggered_n, timestamp_value = _resolve_click_metadata(
+                    triggered_id,
+                    _day_column_ids,
+                    _day_column_clicks,
+                    _day_column_timestamps,
+                )
+
+                if triggered_n is None:
+                    try:
+                        triggered_n = ctx.triggered[0]["value"] if ctx.triggered else None
+                    except (IndexError, KeyError, TypeError):
+                        triggered_n = None
+
+                if timestamp_value is None:
+                    try:
+                        prop_id = ctx.triggered[0]["prop_id"]
+                    except (IndexError, KeyError, TypeError):
+                        prop_id = None
+                    else:
+                        timestamp_key = prop_id.replace(".n_clicks", ".n_clicks_timestamp")
+                        timestamp_value = (
+                            ctx.states.get(timestamp_key)
+                            if hasattr(ctx, "states")
+                            else None
+                        )
+
                 if triggered_n is None or (triggered_n == 0 and not timestamp_value):
                     logger.debug("No triggered value for day column, preventing update")
                     raise dash.exceptions.PreventUpdate
