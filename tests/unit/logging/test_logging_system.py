@@ -1,5 +1,6 @@
 """Tests for the logging system implementation."""
 
+import contextlib
 import logging
 import os
 import tempfile
@@ -111,7 +112,8 @@ def test_http_access_logs_written_when_not_suppressed(tmp_path, monkeypatch):
     for handler in original_handlers:
         http_logger.removeHandler(handler)
 
-    log_path = tmp_path / "http.log"
+    log_path = tmp_path / "application.log"
+    http_log_path = tmp_path / "application_http.log"
     logger = logging_config.setup_logger("test_http_logging", log_file=str(log_path))
 
     try:
@@ -122,14 +124,24 @@ def test_http_access_logs_written_when_not_suppressed(tmp_path, monkeypatch):
                 handler.flush()
 
         assert log_path.exists(), "Expected application log file to be created"
+        assert http_log_path.exists(), "Expected dedicated HTTP log file to be created"
+
         content = log_path.read_text(encoding="utf-8")
-        assert "Werkzeug served GET /ping 200" in content
+        http_content = http_log_path.read_text(encoding="utf-8")
+        assert "Werkzeug served GET /ping 200" not in content
+        assert "Werkzeug served GET /ping 200" in http_content
     finally:
         for handler in http_logger.handlers[:]:
             http_logger.removeHandler(handler)
 
         for handler in original_handlers:
             http_logger.addHandler(handler)
+
+        monkeypatch.setenv("SUPPRESS_HTTP_LOGS", "true")
+        logging_config._suppress_http_logs()
+
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(http_log_path)
 
         for handler in logger.handlers[:]:
             logger.removeHandler(handler)

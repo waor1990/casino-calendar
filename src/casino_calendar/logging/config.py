@@ -66,7 +66,8 @@ _HTTP_LOGGER_NAMES = (
 )
 
 
-_HTTP_FILE_HANDLERS: list[logging.FileHandler] = []
+_HTTP_LOG_BASE_PATH: Optional[Path] = None
+_HTTP_FILE_HANDLER: Optional[RotatingFileHandler] = None
 
 
 def _http_logs_are_suppressed() -> bool:
@@ -78,30 +79,91 @@ def _http_logs_are_suppressed() -> bool:
     )
 
 
-def _register_http_file_handler(handler: logging.FileHandler) -> None:
-    if not isinstance(handler, logging.FileHandler):
-        return
+def _derive_http_log_path(base_path: Path) -> Path:
+    suffix = base_path.suffix or ".log"
+    stem = base_path.stem
 
-    for existing in _HTTP_FILE_HANDLERS:
-        if existing is handler:
-            break
+    if "casino_calendar" in stem:
+        filename = f"casino_calendar_http{suffix}"
     else:
-        _HTTP_FILE_HANDLERS.append(handler)
+        filename = f"{stem}_http{suffix}"
 
-    _configure_http_log_file_routing()
+    return base_path.with_name(filename)
 
 
-def _configure_http_log_file_routing() -> None:
-    if not _HTTP_FILE_HANDLERS:
+def _teardown_http_log_handler() -> None:
+    global _HTTP_FILE_HANDLER
+
+    handler = _HTTP_FILE_HANDLER
+    if handler is None:
+        _configure_http_log_file_routing()
         return
 
     for logger_name in _HTTP_LOGGER_NAMES:
         http_logger = logging.getLogger(logger_name)
-        http_logger.propagate = True
+        if handler in http_logger.handlers:
+            http_logger.removeHandler(handler)
 
-        for handler in _HTTP_FILE_HANDLERS:
-            if handler not in http_logger.handlers:
-                http_logger.addHandler(handler)
+    try:
+        handler.close()
+    finally:
+        _HTTP_FILE_HANDLER = None
+        _configure_http_log_file_routing()
+
+
+def _ensure_http_file_handler(base_path: Path) -> None:
+    global _HTTP_FILE_HANDLER, _HTTP_LOG_BASE_PATH
+
+    _HTTP_LOG_BASE_PATH = base_path
+
+    if _http_logs_are_suppressed():
+        _teardown_http_log_handler()
+        return
+
+    http_log_path = _derive_http_log_path(base_path)
+    http_log_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if _HTTP_FILE_HANDLER is not None:
+        existing_path = Path(_HTTP_FILE_HANDLER.baseFilename)
+        if existing_path == http_log_path:
+            _configure_http_log_file_routing()
+            return
+        _teardown_http_log_handler()
+
+    handler = RotatingFileHandler(
+        str(http_log_path),
+        maxBytes=10 * 1024 * 1024,
+        backupCount=5,
+        encoding="utf-8",
+    )
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
+    setattr(handler, "_casino_http_handler", True)
+
+    _HTTP_FILE_HANDLER = handler
+    _configure_http_log_file_routing()
+
+
+def _configure_http_log_file_routing() -> None:
+    handler = _HTTP_FILE_HANDLER
+
+    for logger_name in _HTTP_LOGGER_NAMES:
+        http_logger = logging.getLogger(logger_name)
+
+        for existing in list(http_logger.handlers):
+            if (
+                getattr(existing, "_casino_http_handler", False)
+                and existing is not handler
+            ):
+                http_logger.removeHandler(existing)
+                try:
+                    existing.close()
+                except Exception:
+                    pass
+
+        if handler is not None and handler not in http_logger.handlers:
+            http_logger.addHandler(handler)
+            http_logger.propagate = False
 
 
 def _is_minimal_log_mode() -> bool:
@@ -138,7 +200,10 @@ class _HttpSuppressionFilter(logging.Filter):
         self._notified = False
 
     def _matches(self, record: logging.LogRecord) -> bool:
-        return any(record.name == name or record.name.startswith(f"{name}.") for name in self._logger_names)
+        return any(
+            record.name == name or record.name.startswith(f"{name}.")
+            for name in self._logger_names
+        )
 
     def filter(self, record: logging.LogRecord) -> bool:  # type: ignore[override]
         if self._matches(record) and record.levelno < logging.WARNING:
@@ -150,7 +215,8 @@ class _HttpSuppressionFilter(logging.Filter):
 
     def _emit_notice(self, record: logging.LogRecord) -> None:
         message = (
-            "HTTP request log suppressed from " f"{record.name} (set SUPPRESS_HTTP_LOGS=false to view HTTP traffic)"
+            "HTTP request log suppressed from "
+            f"{record.name} (set SUPPRESS_HTTP_LOGS=false to view HTTP traffic)"
         )
         try:
             print(message)
@@ -237,22 +303,31 @@ def _suppress_http_logs() -> Optional[logging.Filter]:
     if not suppress_enabled:
         global _HTTP_SUPPRESSION_FILTER
         _HTTP_SUPPRESSION_FILTER = None
-        _configure_http_log_file_routing()
+        if _HTTP_LOG_BASE_PATH is not None:
+            _ensure_http_file_handler(_HTTP_LOG_BASE_PATH)
+        else:
+            _configure_http_log_file_routing()
         return None  # HTTP logs will be shown normally
+
+    _teardown_http_log_handler()
 
     filter_instance = _get_http_suppression_filter()
 
     for logger_name in _HTTP_LOGGER_NAMES:
         http_logger = logging.getLogger(logger_name)
-        http_logger.propagate = True
-        console_handlers = [h for h in http_logger.handlers if isinstance(h, logging.StreamHandler)]
+        http_logger.propagate = False
+        console_handlers = [
+            h for h in http_logger.handlers if isinstance(h, logging.StreamHandler)
+        ]
         for handler in console_handlers:
             http_logger.removeHandler(handler)
 
     return filter_instance
 
 
-def setup_logger(name: str, log_file: Optional[str] = None, level: Optional[int] = None) -> logging.Logger:
+def setup_logger(
+    name: str, log_file: Optional[str] = None, level: Optional[int] = None
+) -> logging.Logger:
     """Setup and configure a logger with console and optional file output.
 
     Args:
@@ -293,13 +368,15 @@ def setup_logger(name: str, log_file: Optional[str] = None, level: Optional[int]
         max_bytes = 10 * 1024 * 1024  # 10MB per file
         backup_count = 5  # Keep 5 backup files
 
-        file_handler = RotatingFileHandler(file_path, maxBytes=max_bytes, backupCount=backup_count, encoding="utf-8")
+        file_handler = RotatingFileHandler(
+            file_path, maxBytes=max_bytes, backupCount=backup_count, encoding="utf-8"
+        )
         file_handler.setLevel(logging.DEBUG)  # File gets all levels
         file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
         if _should_apply_minimal_filter(log_path):
             file_handler.addFilter(_MinimalTestFilter())
         logger.addHandler(file_handler)
-        _register_http_file_handler(file_handler)
+        _ensure_http_file_handler(log_path)
 
     # Prevent propagation to root logger to avoid duplicate messages
     logger.propagate = False
@@ -387,11 +464,17 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
                 if isinstance(handler, logging.StreamHandler):
                     handler.addFilter(http_filter)
         for handler in logger.handlers:
-            if isinstance(handler, logging.FileHandler):
-                _register_http_file_handler(handler)
+            if (
+                isinstance(handler, logging.FileHandler)
+                and Path(handler.baseFilename).name == log_file.name
+            ):
+                _ensure_http_file_handler(Path(handler.baseFilename))
         if minimal_filter:
             for handler in logger.handlers:
-                if isinstance(handler, RotatingFileHandler) and Path(handler.baseFilename).name == log_file.name:
+                if (
+                    isinstance(handler, RotatingFileHandler)
+                    and Path(handler.baseFilename).name == log_file.name
+                ):
                     handler.addFilter(minimal_filter)
         logger.info("Configured production logging with rotation")
     else:
@@ -438,7 +521,9 @@ def get_maintenance_log_path() -> Path:
     return path
 
 
-def setup_maintenance_logger(name: str = "casino_calendar.maintenance") -> logging.Logger:
+def setup_maintenance_logger(
+    name: str = "casino_calendar.maintenance",
+) -> logging.Logger:
     """Configure a logger for setup, cleanup, and maintenance scripts."""
 
     logger = logging.getLogger(name)
@@ -450,11 +535,13 @@ def setup_maintenance_logger(name: str = "casino_calendar.maintenance") -> loggi
 
     log_path = get_maintenance_log_path()
 
-    file_handler = RotatingFileHandler(str(log_path), maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8")
+    file_handler = RotatingFileHandler(
+        str(log_path), maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8"
+    )
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
     logger.addHandler(file_handler)
-    _register_http_file_handler(file_handler)
+    _ensure_http_file_handler(log_path)
 
     http_filter = _suppress_http_logs()
 
@@ -480,7 +567,9 @@ def log_function_call(logger: logging.Logger, func_name: str, **kwargs):
         logger.debug("%s called with no parameters", func_name)
 
 
-def log_performance(logger: logging.Logger, operation: str, start_time: float, end_time: float):
+def log_performance(
+    logger: logging.Logger, operation: str, start_time: float, end_time: float
+):
     """Log performance metrics for operations."""
     duration = end_time - start_time
     logger.info("%s completed in %.3f seconds", operation, duration)
