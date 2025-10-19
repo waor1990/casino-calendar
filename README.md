@@ -1,214 +1,195 @@
 # 🎰 Casino Event Calendar
 
-A personal Dash application that displays casino events on a responsive calendar.
-Weekly and daily views include interactive modals rendered with a CSS grid layout.
-
-The project targets **Python 3.11** and **Node 22** (tested with **v22.9.0**).
-Other versions may work but are not tested.
+A Dash application that visualizes casino promotions on a responsive weekly calendar. Interactive callbacks power event modals, casino and offer filters, and a hotel booking helper that surfaces links for the selected venue. The project targets **Python 3.11** and **Node 22**.
 
 ---
 
-## ⚠️ CRITICAL CSS WARNING ⚠️
+## ✨ Highlights
 
-**🚨 NEVER modify `assets/dist/style.css` directly! It is auto-generated and will be overwritten! 🚨**
-
-**ALL CSS changes must be made in SCSS files inside `assets/styles/`.** The `index.scss` entry compiles to `assets/dist/style.css` during the npm build step.
-
----
-
-## 🚀 Features
-
-- Weekly calendar view with color‑coded event blocks
-- Modal windows for detailed event and day information
-- CSS grid layout for weekly view
-- Responsive design for desktop, tablet and mobile
-- Times stored in UTC and displayed in Pacific Time (PDT)
-- Toggle to show ongoing events that span the week
-- Auto-categorizes offers into Giveaway, Free-Play, Point-Based, Hospitality-Rewards and Special-Events
-- **Hotel booking links** that appear when a casino is selected from the legend
-- SCSS styles compiled with Sass
-- **Comprehensive logging system** for debugging and monitoring
+- Weekly calendar built with Dash components and CSS grid utilities
+- Modal dialogs for day and event detail views with Plotly-powered overlays
+- Casino and offer-type filtering backed by Dash stores
+- Theme toggle (light/dark) with persisted preference in local storage
+- Automatic offer categorisation and colour assignment driven by JSON lookups
+- Comprehensive logging with rotation, optional HTTP access log capture, and maintenance utilities
 
 ---
 
-## 📁 Project Layout
+## 🧱 Architecture Overview
 
-> For detailed project structure documentation, see [docs/architecture/project_structure.md](docs/architecture/project_structure.md).
+The repository follows a "src/" layout with a single Python package:
 
 ```text
-app.py                   # Dash entry point exposing Dash server
-wsgi.py                  # Optional WSGI shim exporting application
-deploy/                  # Deployment descriptors
-  Procfile
-  render.yaml
-  gunicorn.conf.py
-src/
-  casino_calendar/       # Primary Python package
-    settings.py          # Environment and path helpers
-    dash_app/            # Dash application modules
-      app.py             # create_dash_app factory
-      callbacks/         # Callback groups (events, filters, theme, navigation)
-      data/              # Loader, repositories, transforms
-      layout/            # Layout factory and component helpers
-      services/          # Dash-specific services (layout state, etc.)
-      visualization/     # Plotly figure builders
-    logging/             # Logging configuration and rotation utilities
-    services/            # General-purpose services (colors, config cache)
-assets/
-  dist/                 # Compiled CSS artifacts (generated)
-  scripts/theme-toggle.js
-  styles/index.scss     # Sass entry point
-  styles/partials/      # Reusable Sass modules
-config/
-  formatting/           # Formatting tool configuration
-    pyproject.toml
-    .isort.cfg
-  linting/              # Linting configuration
-    .flake8
-    .stylelintrc.json
-  typing/               # Static typing configuration
-    mypy.ini
-data/
-  raw/casino_events.csv # Primary dataset
-  lookups/              # JSON lookup tables (colors, keywords, etc.)
-  cache/                # Runtime cache artifacts
-docs/
-  legacy/               # Historical documentation and archived notes
-scripts/
-  python/               # Python maintenance utilities
-  shell/                # Bash helpers (setup, test)
-  node/                 # Scriptable/Node automation helpers
-  windows/              # Windows batch launchers
-logs/                    # Application log files
-tests/
-  unit/
-  integration/
-  e2e/
-requirements.txt         # Python dependencies
-package.json             # NPM scripts for Sass/CSS pipeline
+app.py / wsgi.py     # Entrypoints that expose the Dash server
+src/casino_calendar/ # Application package
+  dash_app/          # Dash factory, callbacks, layout helpers, figures
+  logging/           # Logging configuration and rotation helpers
+  services/          # Shared services (config cache, colour helpers, parsing)
+  settings.py        # Environment handling and shared path constants
+assets/              # Sass sources and generated CSS (dist/style.css)
+data/                # CSV source data and lookup tables
+scripts/             # Python, shell, node, and Windows automation helpers
+config/              # Tooling configuration (black, flake8, mypy, stylelint)
+docs/                # Architecture guides and operational notes
 ```
 
-## 🧪 Try It Locally
+For additional detail see [docs/architecture/project_structure.md](docs/architecture/project_structure.md).
 
-### Windows (Recommended)
+---
+
+## 🧰 Requirements
+
+- Python 3.11 (virtual environment strongly recommended)
+- Node.js 22.x (uses Sass CLI and Stylelint)
+- npm ≥ 10
+- Optional: Google Chrome/Chromedriver for end-to-end tests
+
+Python dependencies are defined in [`requirements.txt`](requirements.txt); the primary runtime stack is Dash, Plotly, Pandas, and python-dotenv.
+
+---
+
+## ⚙️ Installation
+
+### Windows quick start
 
 ```cmd
-# Quick setup - runs everything needed
+REM Create and activate the virtual environment, install Python/Node deps, compile Sass
 scripts\windows\setup.bat
 
-# Run the application
-scripts\windows
-un_direct.bat
-
-# Or use convenience launchers
-setup.bat  # calls scripts\windows\setup.bat
-run.bat    # calls scripts\windows
-un_direct.bat
+REM Launch the Dash development server
+scripts\windows\run_direct.bat
 ```
 
-### Linux/Mac
+Convenience launchers (`setup.bat`, `run.bat`, `un_direct.bat`) proxy to the scripts above.
+
+### Linux / macOS
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-scripts/shell/setup.sh           # install Python and Node dependencies
-npm install
-npm run build:css  # compiles assets/styles/index.scss to assets/dist/style.css (edit SCSS only)
-npm run lint:css
+
+# Install Python requirements
 pip install -r requirements.txt
-pre-commit install
-pre-commit run --all-files
-python -m compileall src
-scripts/shell/test.sh             # run linters and tests
+
+# Install Node dependencies and build CSS assets
+npm install
+npm run build:css
+
+# Optional quality checks
+npm run lint:css
+black .
+isort .
+flake8
+
+# Launch the Dash development server
 python app.py
 ```
 
-On Windows you can run everything from one command by executing `scripts\windowsun_direct.bat`
-or the convenience launcher `run.bat` in a Command Prompt or the VS Code terminal:
+When using `python-dotenv`, environment variables are loaded from `.env` in the project root. See [Environment configuration](#environment-configuration) for details.
 
-```cmd
-scripts\windowsun_direct.bat
-# Or use the convenience launcher:
-run.bat
-```
+---
 
-
-## 📊 Logging System
-
-The application includes a comprehensive logging system for debugging and monitoring:
-
-### Quick Start
+## 🚀 Running the Application
 
 ```bash
-# Run with default logging (INFO level, console output)
+# Activate your virtual environment first
 python app.py
-
-For detailed documentation, see [`docs/architecture/logging_system.md`](docs/architecture/logging_system.md).
-LOG_LEVEL=DEBUG python app.py
-
-# Enable file logging
-LOG_FILE=logs/app.log python app.py
-
-# Production logging
-LOG_LEVEL=WARNING LOG_FILE=logs/production.log gunicorn app:server
 ```
 
-### Features
+`app.py` instantiates the Dash application and exposes both `app` and `server` so the same entry point can be used by Gunicorn:
 
-- **Configurable log levels**: DEBUG, INFO, WARNING, ERROR, CRITICAL
-- **File and console output** with automatic log rotation
-- **Color-coded console output** for better readability
-- **Performance timing** for key operations
-- **Structured error logging** with stack traces
-- **Client-side JavaScript logging** in browser console
-
-### Configuration
-
-Set environment variables to control logging:
-
-- `LOG_LEVEL`: Minimum log level (default: INFO)
-- `LOG_FILE`: Optional file output path
-
-For detailed documentation, see [`docs/logging_system.md`](docs/logging_system.md).
-
-## 🌍 Deployment
-
-Hosted at [https://casino-calendar.onrender.com](https://casino-calendar.onrender.com)
-
-`Procfile`:
-
-```txt
-web: gunicorn app:server
+```bash
+gunicorn app:server
 ```
+
+The Dash factory warms caches for lookup tables (casino colours, offer keywords, hotel booking metadata) and loads the event dataset from `data/raw/casino_events.csv` at startup.
+
+---
+
+## 🗃️ Data pipeline
+
+- Raw data lives in `data/raw/casino_events.csv`.
+- Lookup JSON files in `data/lookups/` describe colours, offer type emojis, keyword groupings, and hotel partners.
+- `casino_calendar.dash_app.data.loader.load_event_data()` normalises timestamps to naive UTC before the layout functions render them in Pacific Time.
+- The [EventRepository](src/casino_calendar/dash_app/data/repositories.py) wrapper provides a simple interface for loading events in callbacks or tests.
+
+If you add new columns to the CSV, update the transforms in [`src/casino_calendar/dash_app/data/transforms.py`](src/casino_calendar/dash_app/data/transforms.py) and adjust layout components that render event metadata.
+
+---
+
+## 🌗 Theming and styling
+
+- SCSS sources live in `assets/styles/`. Never edit `assets/dist/style.css` directly; it is generated by the Sass build.
+- Use `npm run watch:css` during development to rebuild styles on change.
+- The theme toggle stores the preferred theme in a persistent Dash `dcc.Store` (`theme-store`).
+- Client-side JavaScript in `assets/scripts/theme-toggle.js` applies CSS custom properties for light/dark modes.
+
+---
+
+## 🪵 Logging
+
+Logging is centralised through [`casino_calendar.logging.config`](src/casino_calendar/logging/config.py).
+
+Environment variables:
+
+| Variable | Purpose |
+| --- | --- |
+| `LOG_LEVEL` | Override default log level (default: `INFO`) |
+| `LOG_FILE` | Enable file logging with rotation |
+| `SUPPRESS_HTTP_LOGS` | Toggle HTTP access log capture |
+| `ARCHIVE_APP_LOG_ON_STARTUP` | Archive existing log on startup (`move`, `copy`, or `false`) |
+
+Maintenance utilities for log cleanup live under `scripts/python/` and are documented in [docs/operations/log_management.md](docs/operations/log_management.md).
+
+---
+
+## 🧪 Testing and quality
+
+```bash
+# Run the Python test suite
+pytest
+
+# Run Dash integration tests (requires Chrome/Chromedriver)
+pytest tests/integration
+
+# Static analysis
+black --check .
+isort --check-only .
+flake8
+npm run lint:css
+```
+
+Continuous integration scripts (`scripts/shell/test.sh`) run the same suite locally.
+
+---
+
+## 🌍 Environment configuration
+
+`src/casino_calendar/settings.py` defines helper functions for reading environment variables. Notable options:
+
+- `DEBUG` – Enable Dash debug server features.
+- `APP_TIMEZONE` – Defaults to `America/Los_Angeles`; controls how timestamps are rendered.
+- `CONFIG_CACHE_BUST` – Forces configuration caches to reload JSON files.
+
+Create a `.env` file alongside `app.py` to override these values when developing locally.
+
+---
 
 ## 🤝 Contributing
 
-Please follow the development guidelines in `AGENTS.md` when proposing
-changes. Run the formatters and linters before committing and see
-`GIT-CHEATSHEET.md` for handy Git commands.
+1. Fork and clone the repository.
+2. Follow the installation steps above.
+3. Ensure linters and tests pass before opening a PR (`scripts/shell/test.sh`).
+4. Review the documentation under [`docs/`](docs/)—especially the architecture and operations guides—before large changes.
 
-### Git Helper: CSV Update Alias
+Issues and feature ideas are tracked in [`docs/guides/TODO.md`](docs/guides/TODO.md). Pull requests should include updates to documentation and tests where appropriate.
 
-For quick commits when only `data/casino_events.csv` changes, add a repo‑local alias:
+---
 
-- Create alias: `git config --local alias.csvupdate '!git add data/casino_events.csv && git commit -m "chore(data): update casino_events.csv"'`
-- Use it: `git csvupdate`
-- Optional (with push): `git config --local alias.csvupdate '!git add data/casino_events.csv && git commit -m "chore(data): update casino_events.csv" && git push'`
+## 📚 Additional Resources
 
-See `GIT-CHEATSHEET.md` for editing/removing the alias and more details.
-VSCode users can take advantage of the included `.editorconfig` and
-`.vscode` files so formatting and linting run automatically on save.
+- [docs/architecture/project_structure.md](docs/architecture/project_structure.md)
+- [docs/architecture/logging_system.md](docs/architecture/logging_system.md)
+- [docs/guides/handoff.md](docs/guides/handoff.md)
+- [docs/operations/log_management.md](docs/operations/log_management.md)
 
-### Branch strategy
-
-Use prefix-based branches when contributing:
-
-- `feature/` for new functionality
-- `fix/` for bug fixes
-- `refactor/` for internal improvements
-- `test/` for test additions
-- `doc/` for documentation updates
-
-## 🧼 License
-
-Released under [The Unlicense](https://unlicense.org).

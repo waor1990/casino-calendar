@@ -1,4 +1,4 @@
-"""Header and legend components for the Dash layout."""
+"""Header and legend components for the Casino Calendar UI."""
 
 from __future__ import annotations
 

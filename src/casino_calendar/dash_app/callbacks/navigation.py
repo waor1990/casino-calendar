@@ -1,3 +1,5 @@
+"""Navigation-related Dash callbacks (home button, scroll helpers)."""
+
 from uuid import uuid4
 
 from casino_calendar.logging.config import setup_logger

@@ -1,16 +1,19 @@
 # Casino Calendar Documentation
 
-This directory collects project guides and reference material.
+This directory collects the living documentation for the project.
 
 ## Structure
 
 - `architecture/`
-  - [project_structure.md](architecture/project_structure.md) – Repository layout overview.
-  - [logging_system.md](architecture/logging_system.md) – Logging pipeline and rotation internals.
+  - [project_structure.md](architecture/project_structure.md) – Repository layout and code organisation.
+  - [logging_system.md](architecture/logging_system.md) – Logging pipeline, rotation, and environment controls.
 - `guides/`
-  - [handoff.md](guides/handoff.md) – Developer handoff summary.
-  - [TODO.md](guides/TODO.md) – Upcoming improvements and tasks.
-  - [vscode_terminal_troubleshooting.md](guides/vscode_terminal_troubleshooting.md) – Terminal setup tips.
+  - [handoff.md](guides/handoff.md) – High-level feature tour and current state summary for new contributors.
+  - [TODO.md](guides/TODO.md) – Backlog of enhancements and stretch goals.
+  - [vscode_terminal_troubleshooting.md](guides/vscode_terminal_troubleshooting.md) – Terminal configuration tips for Windows users.
 - `operations/`
-  - [log_management.md](operations/log_management.md) – Log rotation and cleanup utility.
-- `legacy/` – Historical or superseded documents retained for reference.
+  - [log_management.md](operations/log_management.md) – Log retention, scheduled cleanup, and maintenance automation.
+- `legacy/`
+  - Archived documentation retained for historical context. Consult only when researching previous implementations.
+
+All documentation assumes the repository is checked out at the project root. When updating features, update the relevant guide in this folder in addition to the README.

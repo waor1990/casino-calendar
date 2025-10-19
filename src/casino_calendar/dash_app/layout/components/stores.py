@@ -1,4 +1,4 @@
-"""Reusable Dash store and helper components."""
+"""Dash store, helper, and interval builders for the layout."""
 
 from __future__ import annotations
 

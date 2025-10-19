@@ -1,4 +1,4 @@
-"""Top-level layout factory for the Casino Calendar Dash app."""
+"""Top-level layout factory for the Casino Calendar Dash application."""
 
 from __future__ import annotations
 

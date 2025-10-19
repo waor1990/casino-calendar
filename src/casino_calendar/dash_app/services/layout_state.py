@@ -1,3 +1,5 @@
+"""Utilities for manipulating layout state and formatting event data."""
+
 from datetime import datetime, timedelta
 from typing import Any, Iterable, Tuple
 

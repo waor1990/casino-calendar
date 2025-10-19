@@ -1,4 +1,4 @@
-"""CSV data loading for Casino Calendar events."""
+"""CSV loader utilities for Casino Calendar event data."""
 
 from __future__ import annotations
 

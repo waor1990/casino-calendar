@@ -1,4 +1,4 @@
-"""Dash application factory for Casino Calendar."""
+"""Dash application factory and runtime helpers for Casino Calendar."""
 
 from __future__ import annotations
 

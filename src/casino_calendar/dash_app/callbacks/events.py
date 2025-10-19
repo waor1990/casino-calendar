@@ -1,3 +1,5 @@
+"""Event-related Dash callbacks for modals, overflow panels, and charts."""
+
 import ast
 import json
 import time
