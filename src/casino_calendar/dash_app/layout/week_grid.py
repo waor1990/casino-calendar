@@ -1,3 +1,5 @@
+"""Helpers for building the weekly grid layout displayed in Dash."""
+
 from datetime import datetime
 from typing import Any, cast
 

@@ -1,3 +1,5 @@
+"""Plotly chart helpers for the day modal visualisations."""
+
 from datetime import datetime, timedelta
 from math import floor
 from typing import TYPE_CHECKING, Any, Callable

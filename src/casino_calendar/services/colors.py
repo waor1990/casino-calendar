@@ -1,3 +1,5 @@
+"""Colour palette helpers used throughout the Casino Calendar UI."""
+
 import logging
 from typing import Dict
 

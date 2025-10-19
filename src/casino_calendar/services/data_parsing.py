@@ -1,3 +1,5 @@
+"""Utilities for parsing and annotating event data before rendering."""
+
 from collections import defaultdict
 from datetime import timedelta
 from math import floor

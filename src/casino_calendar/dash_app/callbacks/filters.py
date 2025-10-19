@@ -1,3 +1,5 @@
+"""Callbacks for casino filtering, hotel booking links, and derived views."""
+
 from datetime import datetime, timedelta
 from typing import Any, Tuple, cast
 from uuid import uuid4

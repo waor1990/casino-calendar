@@ -1,4 +1,4 @@
-"""Modal dialog components used by the layout."""
+"""Modal component factories for day and event detail views."""
 
 from __future__ import annotations
 

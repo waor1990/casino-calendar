@@ -1,3 +1,5 @@
+"""Callbacks responsible for handling the light/dark theme toggle."""
+
 from casino_calendar.logging.config import setup_logger
 from dash import Input, Output, State
 
