@@ -94,9 +94,9 @@ def register_callbacks(app, df) -> None:
         _timer_tick: int,
         _close_day_clicks: int,
         _grid_clicks: list[int],
-        _grid_click_timestamps: list[int | None],
+        _grid_click_timestamps_input: list[int | None],
         _day_column_clicks: list[int],
-        _grid_click_timestamps: list[int | None] | None,
+        _grid_click_timestamps_state: list[int | None] | None,
         _day_column_timestamps: list[int | None] | None,
         _grid_click_ids: list[dict[str, Any]] | None,
         _day_column_ids: list[dict[str, Any]] | None,
@@ -262,11 +262,14 @@ def register_callbacks(app, df) -> None:
             ):
                 logger.debug("Grid event clicked: %s", triggered_id)
 
+                grid_timestamps = (
+                    _grid_click_timestamps_state or _grid_click_timestamps_input
+                )
                 triggered_n, timestamp_value = _resolve_click_metadata(
                     triggered_id,
                     _grid_click_ids,
                     _grid_clicks,
-                    _grid_click_timestamps,
+                    grid_timestamps,
                 )
 
                 if triggered_n is None:
