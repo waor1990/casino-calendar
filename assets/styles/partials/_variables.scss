@@ -45,8 +45,8 @@
     --color-day-header-bg: var(--color-background);
     --color-border-primary: var(--color-primary-dark);
     --color-border-accent: var(--color-accent);
-    --color-border-grid: #7F8BAA;
-    --color-border-grid-light: rgb(127 139 170 / 30%);
+    --color-border-grid: #5d6a90;
+    --color-border-grid-light: rgb(93 106 144 / 40%);
 
     /* Borders and shadows */
     --border-radius-lg: 0.625rem;
@@ -55,9 +55,9 @@
     --border-thin: 1px;
     --border-thick: 0.125rem;
     --border-event: 0.1875rem;
-    --box-shadow-light: 0 -0.125rem 0.3125rem var(--color-primary-dark);
-    --box-shadow-subtle: 0 -0.0625rem 0.3125rem var(--color-accent);
-    --box-shadow-modal: 0 0 1.25rem var(--color-primary-dark);
+    --box-shadow-light: 0 0.5rem 1.1rem rgb(40 32 86 / 38%);
+    --box-shadow-subtle: 0 0.35rem 0.75rem rgb(72 61 139 / 30%);
+    --box-shadow-modal: 0 1rem 2.5rem rgb(26 20 65 / 42%);
 
     /* Modal sizing */
     --modal-max-width: clamp(20rem, 90vw, 37.5rem);
@@ -180,27 +180,11 @@ body {
     --color-border-grid-light: rgb(125 211 252 / 30%);
 
     /* Shadows - light blue-ish */
-    --box-shadow-light: 0 -0.125rem 0.3125rem rgb(125 211 252 / 40%);
-    --box-shadow-modal: 0 0 1.25rem rgb(125 211 252 / 20%);
-    --box-shadow-subtle: 0 -0.0625rem 0.3125rem rgb(125 211 252 / 30%);
-    /* Global override to soften casino colors in dark mode */
+    --box-shadow-light: 0 0.45rem 1.1rem rgb(82 62 150 / 55%);
+    --box-shadow-modal: 0 0.9rem 2.4rem rgb(67 52 131 / 70%);
+    --box-shadow-subtle: 0 0.3rem 0.9rem rgb(96 79 163 / 45%);
     .event-block-grid,
     .event-block-day {
         z-index: 25 !important;
-        /* Ensure event blocks sit above grid lines */
-        filter: brightness(0.8) saturate(0.7) !important;
-        /* Soften colors without transparency */
-    }
-
-    /* Lighten Muckleshoot Casino's too-dark color - try multiple formats */
-    .event-block-grid[style*="background-color: rgb(30, 28, 41)"],
-    .event-block-day[style*="background-color: rgb(30, 28, 41)"],
-    .event-block-grid[style*="background-color:#1e1c29"],
-    .event-block-day[style*="background-color:#1e1c29"],
-    .event-block-grid[style*="background-color: #1e1c29"],
-    .event-block-day[style*="background-color: #1e1c29"] {
-        background-color: rgb(166 161 193) !important;
-        filter: none !important;
-        /* Remove filter for the lightened color */
     }
 }

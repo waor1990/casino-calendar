@@ -1,5 +1,8 @@
 """Colour palette helpers used throughout the Casino Calendar UI."""
 
+from __future__ import annotations
+
+import colorsys
 import logging
 from typing import Dict
 
@@ -14,6 +17,45 @@ _color_map = None
 _default_colors = None
 _generated_log_emitted = False
 _fallback_color_cache: Dict[str, dict[str, str]] = {}
+
+
+def _normalize_hex(color: str | None) -> str | None:
+    """Return ``color`` normalised to a 7-character ``#rrggbb`` form."""
+
+    if not color:
+        return None
+
+    value = color.strip()
+    if not value.startswith("#"):
+        return None
+
+    value = value.lower()
+    if len(value) == 7:
+        return value
+    if len(value) == 4:
+        return "#" + "".join(ch * 2 for ch in value[1:])
+    return None
+
+
+def _soften_color(base_hex: str) -> str:
+    """Return a softened variant of ``base_hex`` suitable for dark mode."""
+
+    normalised = _normalize_hex(base_hex) or "#627d98"
+
+    red = int(normalised[1:3], 16)
+    green = int(normalised[3:5], 16)
+    blue = int(normalised[5:7], 16)
+    hue, lightness, saturation = colorsys.rgb_to_hls(red / 255, green / 255, blue / 255)
+
+    # Lift the lightness and reduce saturation to create a muted tone.
+    adjusted_lightness = min(0.82, lightness + 0.22 * (1 - lightness))
+    adjusted_saturation = max(
+        0.0,
+        min(1.0, saturation * 0.85 + 0.05 * (1 - saturation)),
+    )
+
+    r_float, g_float, b_float = colorsys.hls_to_rgb(hue, adjusted_lightness, adjusted_saturation)
+    return "#{:02x}{:02x}{:02x}".format(int(round(r_float * 255)), int(round(g_float * 255)), int(round(b_float * 255)))
 
 
 def _get_color_map():
@@ -49,13 +91,13 @@ def get_color():
 
     result = {}
     for casino, colors in color_map.items():
-        result[casino] = colors
+        result[casino] = _ensure_dark_variants(colors)
 
     if not result:
         logger.warning("No casino colors found, using default colors")
         dummy_casinos = [f"Casino {i}" for i in range(len(default_colors))]
         for casino_name, color in zip(dummy_casinos, default_colors, strict=False):
-            result[casino_name] = {"bg": color, "text": "#000000"}
+            result[casino_name] = _ensure_dark_variants({"bg": color, "text": "#000000"})
 
     if logger.isEnabledFor(logging.DEBUG) and not _generated_log_emitted:
         logger.debug("Generated colors for %d casinos", len(result))
@@ -81,6 +123,27 @@ def _is_perceived_light(color: str) -> bool:
     return brightness >= 150
 
 
+def _ensure_dark_variants(colors: dict[str, str]) -> dict[str, str]:
+    """Return a copy of ``colors`` with guaranteed dark-mode keys."""
+
+    normalised_bg = _normalize_hex(colors.get("bg")) or "#627d98"
+    normalised_fg = colors.get("text")
+    if not normalised_fg:
+        normalised_fg = "#000000" if _is_perceived_light(normalised_bg) else "#ffffff"
+
+    normalised_bg_dark = _normalize_hex(colors.get("bg_dark")) or _soften_color(normalised_bg)
+    normalised_fg_dark = colors.get("text_dark")
+    if not normalised_fg_dark:
+        normalised_fg_dark = "#1f1f2e" if _is_perceived_light(normalised_bg_dark) else "#f7f4ff"
+
+    enriched = dict(colors)
+    enriched["bg"] = normalised_bg
+    enriched["text"] = normalised_fg
+    enriched["bg_dark"] = normalised_bg_dark
+    enriched["text_dark"] = normalised_fg_dark
+    return enriched
+
+
 def resolve_casino_color(
     casino_name: str,
     palette: dict[str, dict[str, str]] | None = None,
@@ -89,7 +152,9 @@ def resolve_casino_color(
 
     color_palette = palette or get_color()
     if casino_name in color_palette:
-        return color_palette[casino_name]
+        enriched = _ensure_dark_variants(color_palette[casino_name])
+        color_palette[casino_name] = enriched
+        return enriched
 
     if casino_name in _fallback_color_cache:
         return _fallback_color_cache[casino_name]
@@ -102,7 +167,7 @@ def resolve_casino_color(
         bg_color = "#627D98"
 
     text_color = "#000000" if _is_perceived_light(bg_color) else "#ffffff"
-    style = {"bg": bg_color, "text": text_color}
+    style = _ensure_dark_variants({"bg": bg_color, "text": text_color})
     _fallback_color_cache[casino_name] = style
     logger.debug("Assigned fallback color for %s -> %s", casino_name, style)
     return style

@@ -8,7 +8,7 @@ from typing import Any, Tuple
 
 import dash
 from casino_calendar.logging.config import setup_logger
-from casino_calendar.services.colors import get_color
+from casino_calendar.services.colors import get_color, resolve_casino_color
 from casino_calendar.settings import APP_TIMEZONE
 from dash import ALL, Input, Output, State, dcc, html, no_update
 from dash._callback import NoUpdate
@@ -321,12 +321,17 @@ def register_callbacks(app, df) -> None:
                     row["EventName"] if "EventName" in row.index else "Unknown Event"
                 )
                 logger.info("Opening event modal for %s", event_name)
-                colors = get_color()
-                casino_colors = colors.get(
-                    row["Casino"], {"bg": "#000", "text": "#000"}
+                color_palette = get_color()
+                casino_colors = resolve_casino_color(
+                    row["Casino"], palette=color_palette
                 )
                 rows = build_event_info_rows(row.items())
-                style = {"--bg": casino_colors["bg"]}
+                style = {
+                    "--bg": casino_colors["bg"],
+                    "--fg": casino_colors["text"],
+                    "--bg-dark": casino_colors["bg_dark"],
+                    "--fg-dark": casino_colors["text_dark"],
+                }
                 return (
                     style,
                     "modal show",
@@ -553,8 +558,18 @@ def register_callbacks(app, df) -> None:
                     event_name = data.get("EventName", "Unknown Event")
                     logger.info("Opening event modal for %s", event_name)
                     rows = build_event_info_rows(data.items())
+                    palette = get_color()
+                    casino_colors = resolve_casino_color(
+                        data.get("Casino", ""), palette=palette
+                    )
+                    style = {
+                        "--bg": casino_colors["bg"],
+                        "--fg": casino_colors["text"],
+                        "--bg-dark": casino_colors["bg_dark"],
+                        "--fg-dark": casino_colors["text_dark"],
+                    }
                     return (
-                        {},
+                        style,
                         "modal show from-day",
                         rows,
                         0,

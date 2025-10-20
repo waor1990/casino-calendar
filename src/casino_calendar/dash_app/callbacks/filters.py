@@ -151,14 +151,23 @@ def register_callbacks(app, df) -> None:
         clicked = ctx.triggered_id.get("index")
         logger.debug("Casino legend clicked: %s", clicked)
 
-        if not selected:
-            selected = []
+        selected_list = list(selected or [])
 
-        selected_list = list(selected)
         if clicked in selected_list:
             selected_list.remove(clicked)
         else:
             selected_list.append(clicked)
+
+        available_indices = [
+            item.get("index")
+            for item in ids
+            if isinstance(item, dict) and item.get("index")
+        ]
+        unique_available = {idx for idx in available_indices}
+        unique_selected = {idx for idx in selected_list if idx in unique_available}
+        if unique_available and unique_selected == unique_available:
+            logger.debug("All casinos selected; clearing selection to show all by default")
+            selected_list = []
 
         logger.info("Selected casinos updated: %s", selected_list)
         return selected_list

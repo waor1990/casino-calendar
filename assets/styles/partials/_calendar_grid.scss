@@ -163,6 +163,11 @@
         background-color: var(--color-primary);
         box-shadow: var(--box-shadow-light);
     }
+
+    .event-block-grid {
+        background-color: var(--bg-dark, var(--bg));
+        color: var(--fg-dark, var(--fg));
+    }
 }
 
 

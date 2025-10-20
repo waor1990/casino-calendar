@@ -1,70 +1,104 @@
 {
     "ilani": {
         "bg": "#2c6f7f",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#459cb1",
+        "text_dark": "#f7f4ff"
     },
     "Spirit Mountain Casino": {
         "bg": "#a74321",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#cd633f",
+        "text_dark": "#f7f4ff"
     },
     "Lucky Eagle Casino": {
         "bg": "#862c8e",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#b245bc",
+        "text_dark": "#f7f4ff"
     },
     "Muckleshoot Casino": {
         "bg": "#1e1c29",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#474264",
+        "text_dark": "#f7f4ff"
     },
     "Little Creek Casino": {
         "bg": "#3086c3",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#5fa0ce",
+        "text_dark": "#f7f4ff"
     },
     "Red Wind Casino": {
         "bg": "#e13332",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#df6968",
+        "text_dark": "#f7f4ff"
     },
     "Snoqualmie Casino": {
         "bg": "#00a9e0",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#31c0ee",
+        "text_dark": "#1f1f2e"
     },
     "Angel of the Winds Casino": {
         "bg": "#64c7cc",
-        "text": "#000000"
+        "text": "#000000",
+        "bg_dark": "#8ad0d3",
+        "text_dark": "#1f1f2e"
     },
     "Lucky Dog Casino": {
         "bg": "#f07a22",
-        "text": "#000000"
+        "text": "#000000",
+        "bg_dark": "#e8995e",
+        "text_dark": "#1f1f2e"
     },
     "Legends Casino": {
         "bg": "#ca9a41",
-        "text": "#000000"
+        "text": "#000000",
+        "bg_dark": "#d0ae71",
+        "text_dark": "#1f1f2e"
     },
     "Chinook Winds Casino": {
         "bg": "#32373d",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#576270",
+        "text_dark": "#f7f4ff"
     },
     "Emerald Queen Casino": {
         "bg": "#d62e52",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#d7647d",
+        "text_dark": "#f7f4ff"
     },
     "Rolling Hills Casino": {
         "bg": "#5b1d1e",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#973739",
+        "text_dark": "#f7f4ff"
     },
     "Wildhorse Casino": {
         "bg": "#d21245",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#e1416c",
+        "text_dark": "#f7f4ff"
     },
     "Tulalip Casino": {
         "bg": "#155e6d",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#2c94aa",
+        "text_dark": "#f7f4ff"
     },
     "Quil Ceda Creek Casino": {
         "bg": "#9a0709",
-        "text": "#ffffff"
+        "text": "#ffffff",
+        "bg_dark": "#d41a1d",
+        "text_dark": "#f7f4ff"
     },
     "Seven Feathers Casino": {
         "bg": "#41c5de",
-        "text": "#000000"
+        "text": "#000000",
+        "bg_dark": "#73ccdd",
+        "text_dark": "#1f1f2e"
     }
 }

@@ -245,7 +245,7 @@ def generate_day_view_html(
         # Position blocks using proper track-based layout to prevent overlap
         left_pct = label_column_pct + row["overlap_index"] * width_pct
 
-        colors = color_map.get(row["Casino"], {"bg": "#aaa", "text": "#000"})
+        colors = resolve_casino_color(row["Casino"], palette=color_map)
         emoji = offer_type_emoji(row.get("OfferType", ""))
 
         short_span = row["duration_min"] < 90
@@ -292,6 +292,8 @@ def generate_day_view_html(
             "height": f"{height_px}px",
             "--bg": colors["bg"],
             "--fg": colors["text"],
+            "--bg-dark": colors["bg_dark"],
+            "--fg-dark": colors["text_dark"],
         }
 
         if short_span:
@@ -612,6 +614,8 @@ def generate_day_view_parts(
             "height": f"{height_px}px",
             "--bg": colors["bg"],
             "--fg": colors["text"],
+            "--bg-dark": colors["bg_dark"],
+            "--fg-dark": colors["text_dark"],
         }
         if short_span:
             if len(events) < 5:
