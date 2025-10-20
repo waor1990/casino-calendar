@@ -26,25 +26,29 @@ h1,
 
 .calendar-title-row {
     width: 100%;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
-    justify-content: space-between;
-    gap: clamp(0.5rem, 1vw, 1.5rem);
+    column-gap: clamp(0.5rem, 1vw, 1.5rem);
     background-color: var(--color-background);
     color: var(--color-accent);
     padding: var(--padding-base) clamp(1.5rem, 3vw, 3rem);
 
     @include mixins.mobile {
         padding-inline: var(--padding-base);
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     }
 }
 
 .calendar-title-row .calendar-title {
-    width: auto;
     padding: 0;
     background-color: transparent;
     color: inherit;
     justify-content: center;
+    justify-self: center;
+    margin: 0 auto;
+    width: max-content;
+    text-align: center;
 
     @include mixins.mobile {
         padding-inline: 0;
@@ -52,11 +56,11 @@ h1,
 }
 
 .calendar-title-spacer {
-    flex: 1 1 0;
+    justify-self: start;
 }
 
 .calendar-title-actions {
-    flex: 1 1 0;
+    justify-self: end;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -79,7 +83,7 @@ h1,
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: auto;
 }
 
 .calendar-title-home-button:focus {
