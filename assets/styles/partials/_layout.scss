@@ -114,6 +114,7 @@ body {
     top: 0;
     z-index: 100;
     background-color: var(--color-background);
+    padding-top: var(--padding-base);
 
     @include mixins.tablet {
         position: static;
