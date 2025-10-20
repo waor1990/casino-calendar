@@ -21,24 +21,35 @@ def build_header(events: pd.DataFrame) -> html.Div:
 
     return html.Div(
         [
-            html.H1(
+            html.Div(
                 [
-                    html.Button(
-                        "🎰 Casino Event Calendar 📅",
-                        id="home-button",
-                        n_clicks=0,
-                        className="calendar-title-home-button",
-                        title="Home",
+                    html.Div(className="calendar-title-spacer"),
+                    html.H1(
+                        [
+                            html.Button(
+                                "🎰 Casino Event Calendar 📅",
+                                id="home-button",
+                                n_clicks=0,
+                                className="calendar-title-home-button",
+                                title="Home",
+                            ),
+                        ],
+                        className="calendar-title",
                     ),
-                    html.Button(
-                        "🌙",
-                        id="theme-toggle",
-                        n_clicks=0,
-                        className="emoji-button theme-toggle",
-                        title="Toggle dark mode",
+                    html.Div(
+                        [
+                            html.Button(
+                                "🌙",
+                                id="theme-toggle",
+                                n_clicks=0,
+                                className="emoji-button theme-toggle",
+                                title="Toggle dark mode",
+                            ),
+                        ],
+                        className="calendar-title-actions",
                     ),
                 ],
-                className="calendar-title",
+                className="calendar-title-row",
             ),
             html.Div(
                 id="header-container",

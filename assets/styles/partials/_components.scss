@@ -24,12 +24,49 @@ h1,
     }
 }
 
-.calendar-title .theme-toggle {
+.calendar-title-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(0.5rem, 1vw, 1.5rem);
+    background-color: var(--color-background);
+    color: var(--color-accent);
+    padding: var(--padding-base) clamp(1.5rem, 3vw, 3rem);
+
+    @include mixins.mobile {
+        padding-inline: var(--padding-base);
+    }
+}
+
+.calendar-title-row .calendar-title {
+    width: auto;
+    padding: 0;
+    background-color: transparent;
+    color: inherit;
+    justify-content: center;
+
+    @include mixins.mobile {
+        padding-inline: 0;
+    }
+}
+
+.calendar-title-spacer {
+    flex: 1 1 0;
+}
+
+.calendar-title-actions {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.calendar-title-actions .theme-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: inherit;
-    margin-left: auto;
 }
 
 .calendar-title-home-button {
@@ -39,10 +76,10 @@ h1,
     font: inherit;
     cursor: pointer;
     text-align: center;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .calendar-title-home-button:focus {
