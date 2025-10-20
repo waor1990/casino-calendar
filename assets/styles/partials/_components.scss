@@ -8,24 +8,28 @@ h1,
     text-align: center;
     color: var(--color-accent);
     background-color: var(--color-background);
-    box-shadow: var(--box-shadow-light);
-    border-radius: var(--border-radius-sm);
-    padding: var(--padding-base);
+    box-shadow: none;
+    border-radius: 0;
+    padding: var(--padding-base) clamp(1.5rem, 3vw, 3rem);
     margin: 0;
+    width: 100%;
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: flex-start;
     position: relative;
 
     @include mixins.mobile {
         font-size: var(--font-header);
+        padding-inline: var(--padding-base);
     }
 }
 
 .calendar-title .theme-toggle {
-    position: absolute;
-    right: var(--padding-base);
-    top: 50%;
-    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    margin-left: auto;
 }
 
 .calendar-title-home-button {
@@ -34,6 +38,11 @@ h1,
     color: inherit;
     font: inherit;
     cursor: pointer;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .calendar-title-home-button:focus {
@@ -57,6 +66,7 @@ h1,
 .legend-text {
     font-size: var(--font-base);
     white-space: nowrap;
+    color: var(--legend-color-light, var(--color-accent));
 }
 
 .legend-item {
@@ -74,6 +84,7 @@ h1,
     display: inline-block;
     border-radius: var(--padding-xs);
     margin-right: var(--padding-xs);
+    background-color: var(--legend-bg-light, var(--color-accent));
 }
 
 .legend-button {
@@ -304,11 +315,37 @@ h1,
         background-color: var(--color-primary);
     }
 
+    .legend-color-box {
+        background-color: var(--legend-bg-dark, var(--legend-bg-light));
+    }
+
+    .legend-text {
+        color: var(--legend-color-dark, var(--legend-color-light, var(--color-primary)));
+    }
+
+    .event-label span {
+        color: var(--bg-dark, var(--bg));
+    }
+
     .event-type-dropdown {
-        [class~="Select-control"],
+        [class~="Select-control"] {
+            background-color: var(--color-background);
+            border-color: rgb(58 45 104);
+            box-shadow: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        [class~="Select-control"]:hover,
+        [class~="Select-control"].is-focused,
+        [class~="Select-control"].is-open {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 1px rgb(128 103 201 / 35%);
+        }
+
         [class~="Select-menu-outer"],
         [class~="Select-menu"] {
             background-color: var(--color-background);
+            border-color: rgb(58 45 104);
         }
 
         [class~="Select-value-label"],
@@ -338,21 +375,5 @@ h1,
         &:active {
             transform: translateY(0);
         }
-    }
-
-    // Override Muckleshoot Casino text color for better contrast in dark theme
-    .legend-text[style*="color:#1e1c29"],
-    .legend-text[style*="color: #1e1c29"],
-    .legend-text[style*="color:rgb(30, 28, 41)"],
-    .legend-text[style*="color: rgb(30, 28, 41)"],
-    .legend-text[style*="color:rgb(30 28 41)"],
-    .legend-text[style*="color: rgb(30 28 41)"],
-    #event-modal[style*="--bg:#1e1c29"] .event-label span,
-    #event-modal[style*="--bg: #1e1c29"] .event-label span,
-    #event-modal[style*="--bg:rgb(30, 28, 41)"] .event-label span,
-    #event-modal[style*="--bg: rgb(30, 28, 41)"] .event-label span,
-    #event-modal[style*="--bg:rgb(30 28 41)"] .event-label span,
-    #event-modal[style*="--bg: rgb(30 28 41)"] .event-label span {
-        color: rgb(166 161 193) !important;
     }
 }

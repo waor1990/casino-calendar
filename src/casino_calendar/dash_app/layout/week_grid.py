@@ -63,6 +63,8 @@ def _build_block(row, week_start, week_end, screen_width, colors):
         "--width": f"{width_pct:.2f}%",
         "--bg": color_entry["bg"],
         "--fg": color_entry["text"],
+        "--bg-dark": color_entry["bg_dark"],
+        "--fg-dark": color_entry["text_dark"],
         "--arrow-left-offset": arrow_left,
         "--arrow-right-offset": arrow_right,
     }

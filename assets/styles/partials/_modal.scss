@@ -241,6 +241,22 @@
     z-index: 20;
 }
 
+[data-theme="dark"] {
+    .event-block-day {
+        background-color: var(--bg-dark, var(--bg));
+        color: var(--fg-dark, var(--fg));
+    }
+
+    .event-block-day-text {
+        color: var(--fg-dark, var(--fg));
+    }
+
+    .event-block-day:hover::after {
+        background-color: var(--bg-dark, var(--bg));
+        color: var(--fg-dark, var(--fg));
+    }
+}
+
 /* Modal Responsiveness */
 @include mixins.tablet {
     #event-modal-content {
