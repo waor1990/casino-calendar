@@ -57,6 +57,7 @@ h1,
 .legend-text {
     font-size: var(--font-base);
     white-space: nowrap;
+    color: var(--legend-text-color, var(--color-accent-dark));
 }
 
 .legend-item {
@@ -74,6 +75,7 @@ h1,
     display: inline-block;
     border-radius: var(--padding-xs);
     margin-right: var(--padding-xs);
+    background-color: var(--legend-swatch, var(--color-accent));
 }
 
 .legend-button {
@@ -302,6 +304,20 @@ h1,
     .legend-selected {
         outline: var(--border-thin) solid var(--color-primary);
         background-color: var(--color-primary);
+    }
+
+    .legend-text {
+        color: var(
+            --legend-text-color-dark,
+            var(--legend-text-color, var(--color-primary))
+        );
+    }
+
+    .legend-color-box {
+        background-color: var(
+            --legend-swatch-dark,
+            var(--legend-swatch, var(--color-primary))
+        );
     }
 
     .event-type-dropdown {
