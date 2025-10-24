@@ -1,4 +1,4 @@
-"""Header and legend components for the Casino Calendar UI."""
+"""Header and legend components for the Dash layout."""
 
 from __future__ import annotations
 
@@ -22,35 +22,24 @@ def build_header(events: pd.DataFrame) -> html.Div:
 
     return html.Div(
         [
-            html.Div(
+            html.H1(
                 [
-                    html.Div(className="calendar-title-spacer"),
-                    html.H1(
-                        [
-                            html.Button(
-                                "🎰 Casino Event Calendar 📅",
-                                id="home-button",
-                                n_clicks=0,
-                                className="calendar-title-home-button",
-                                title="Home",
-                            ),
-                        ],
-                        className="calendar-title",
+                    html.Button(
+                        "🎰 Casino Event Calendar 📅",
+                        id="home-button",
+                        n_clicks=0,
+                        className="calendar-title-home-button",
+                        title="Home",
                     ),
-                    html.Div(
-                        [
-                            html.Button(
-                                "🌙",
-                                id="theme-toggle",
-                                n_clicks=0,
-                                className="emoji-button theme-toggle",
-                                title="Toggle dark mode",
-                            ),
-                        ],
-                        className="calendar-title-actions",
+                    html.Button(
+                        "🌙",
+                        id="theme-toggle",
+                        n_clicks=0,
+                        className="emoji-button theme-toggle",
+                        title="Toggle dark mode",
                     ),
                 ],
-                className="calendar-title-row",
+                className="calendar-title",
             ),
             html.Div(
                 id="header-container",
@@ -74,14 +63,12 @@ def build_header(events: pd.DataFrame) -> html.Div:
                             ),
                             dcc.Dropdown(
                                 id="event-type-filter",
-                                options=sorted(
-                                    {
-                                        str(offer_type)
-                                        for offer_type in events["OfferType"]
-                                        .dropna()
-                                        .unique()
-                                    }
-                                ),
+                                options=[
+                                    {"label": offer_type, "value": offer_type}
+                                    for offer_type in sorted(
+                                        events["OfferType"].dropna().unique()
+                                    )
+                                ],
                                 multi=True,
                                 placeholder="Filter by event type",
                                 className="event-type-dropdown",
@@ -148,19 +135,12 @@ def create_legend(df: pd.DataFrame) -> list[Any]:
                         children=[
                             html.Div(
                                 className="legend-color-box",
-                                style={
-                                    "--legend-bg-light": color["bg"],
-                                    "--legend-bg-dark": color["bg_dark"],
-                                },
+                                style={"backgroundColor": color["bg"]},
                             ),
                             html.Span(
                                 f"{casino}",
                                 className="legend-text legend-gap",
-                                style={
-                                    "--legend-color-light": color["bg"],
-                                    "--legend-color-dark": color["bg_dark"],
-                                    "marginRight": "4px",
-                                },
+                                style={"color": color["bg"], "marginRight": "4px"},
                             ),
                         ],
                     )
