@@ -6,8 +6,6 @@ html,
 body {
     height: 100%;
     overflow: hidden;
-    margin: 0;
-    padding: 0;
 }
 
 @include mixins.mobile {
@@ -114,7 +112,6 @@ body {
     top: 0;
     z-index: 100;
     background-color: var(--color-background);
-    padding-top: var(--padding-base);
 
     @include mixins.tablet {
         position: static;
