@@ -144,8 +144,8 @@ def create_legend(df: pd.DataFrame) -> list[Any]:
                                 f"{casino}",
                                 className="legend-text legend-gap",
                                 style={
-                                    "--legend-text-color": color["bg"],
-                                    "--legend-text-color-dark": color["bg_dark"],
+                                    "--legend-text-color": color["text"],
+                                    "--legend-text-color-dark": color["text_dark"],
                                     "marginRight": "4px",
                                 },
                             ),
