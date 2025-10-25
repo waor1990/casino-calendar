@@ -24,9 +24,6 @@ def build_header(events: pd.DataFrame) -> html.Div:
         [
             html.Div(
                 [
-                    html.Div(
-                        className="header-title-row__spacer",
-                    ),
                     html.H1(
                         html.Button(
                             "🎰 Casino Event Calendar 📅",
@@ -37,17 +34,12 @@ def build_header(events: pd.DataFrame) -> html.Div:
                         ),
                         className="calendar-title",
                     ),
-                    html.Div(
-                        [
-                            html.Button(
-                                "🌙",
-                                id="theme-toggle",
-                                n_clicks=0,
-                                className="emoji-button theme-toggle",
-                                title="Toggle dark mode",
-                            ),
-                        ],
-                        className="header-title-row__actions",
+                    html.Button(
+                        "🌙",
+                        id="theme-toggle",
+                        n_clicks=0,
+                        className="emoji-button theme-toggle",
+                        title="Toggle dark mode",
                     ),
                 ],
                 className="header-title-row",
