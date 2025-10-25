@@ -34,6 +34,10 @@ h1,
     gap: var(--padding-small);
 }
 
+.header-title-row > .header-title-spacer {
+    grid-column: 1;
+}
+
 .header-title-row > .calendar-title {
     grid-column: 2;
     justify-self: center;

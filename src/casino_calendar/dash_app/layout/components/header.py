@@ -24,6 +24,9 @@ def build_header(events: pd.DataFrame) -> html.Div:
         [
             html.Div(
                 [
+                    html.Div(
+                        className="header-title-spacer", **{"aria-hidden": "true"}
+                    ),
                     html.H1(
                         html.Button(
                             "🎰 Casino Event Calendar 📅",
