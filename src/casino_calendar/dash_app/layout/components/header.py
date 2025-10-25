@@ -135,19 +135,12 @@ def create_legend(df: pd.DataFrame) -> list[Any]:
                         children=[
                             html.Div(
                                 className="legend-color-box",
-                                style={
-                                    "--legend-swatch": color["bg"],
-                                    "--legend-swatch-dark": color["bg_dark"],
-                                },
+                                style={"backgroundColor": color["bg"]},
                             ),
                             html.Span(
                                 f"{casino}",
                                 className="legend-text legend-gap",
-                                style={
-                                    "--legend-text-color": color["text"],
-                                    "--legend-text-color-dark": color["text_dark"],
-                                    "marginRight": "4px",
-                                },
+                                style={"color": color["bg"], "marginRight": "4px"},
                             ),
                         ],
                     )
