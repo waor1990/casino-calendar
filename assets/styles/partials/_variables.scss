@@ -38,8 +38,8 @@
     --color-accent-rgb: 106 90 205;
     --color-casino-gold: #f3ba2f;
     --color-casino-gold-rgb: 243 186 47;
-    --color-background: #eae6dc;
-    --color-page-background: linear-gradient(170deg, #f0ece2 0%, #e9e3d7 45%, #e4dbce 100%), radial-gradient(circle at 20% 22%, rgb(var(--color-accent-rgb) / 0.08) 0, rgb(var(--color-accent-rgb) / 0) 60%), radial-gradient(circle at 80% 15%, rgb(var(--color-casino-gold-rgb) / 0.1) 0, rgb(var(--color-casino-gold-rgb) / 0) 55%), #eae6dc;
+    --color-background: #e7ddcf;
+    --color-page-background: linear-gradient(170deg, #efe7da 0%, #e8dece 45%, #e1d4c4 100%), radial-gradient(circle at 20% 22%, rgb(var(--color-accent-rgb) / 0.06) 0, rgb(var(--color-accent-rgb) / 0) 60%), radial-gradient(circle at 80% 15%, rgb(var(--color-casino-gold-rgb) / 0.08) 0, rgb(var(--color-casino-gold-rgb) / 0) 55%), #e7ddcf;
     --color-white: #fff;
     --color-black: #000;
     --color-accent-light: rgb(var(--color-accent-rgb) / 0.1);
@@ -59,9 +59,9 @@
     --border-thin: 1px;
     --border-thick: 0.125rem;
     --border-event: 0.1875rem;
-    --box-shadow-light: 0 0.35rem 0.95rem rgb(40 32 86 / 24%);
-    --box-shadow-subtle: 0 0.25rem 0.65rem rgb(72 61 139 / 22%);
-    --box-shadow-modal: 0 0.75rem 2rem rgb(26 20 65 / 28%);
+    --box-shadow-light: 0 0.28rem 0.78rem rgb(40 32 86 / 18%);
+    --box-shadow-subtle: 0 0.2rem 0.52rem rgb(72 61 139 / 15%);
+    --box-shadow-modal: 0 0.6rem 1.65rem rgb(26 20 65 / 22%);
 
     /* Modal sizing */
     --modal-max-width: clamp(20rem, 90vw, 37.5rem);
