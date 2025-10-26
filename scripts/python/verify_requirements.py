@@ -63,7 +63,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args:
         req_path = Path(args[0]).expanduser()
     else:
-        req_path = Path(__file__).resolve().parent.parent / "requirements.txt"
+        req_path = PROJECT_ROOT / "requirements.txt"
 
     if not req_path.exists():
         logger.error("Requirements file not found: %s", req_path)
