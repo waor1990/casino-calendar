@@ -32,14 +32,15 @@
     --font-subtitle-lg: 1.5rem;
 
     /* Colors */
-    --color-primary-dark: #00008B;
+    --color-primary-dark: #00008b;
+    --color-primary-dark-rgb: 0 0 139;
     --color-accent: #6A5ACD;
     --color-accent-dark: #483D8B;
     --color-accent-rgb: 106 90 205;
     --color-casino-gold: #f3ba2f;
     --color-casino-gold-rgb: 243 186 47;
-    --color-background: #e7ddcf;
-    --color-page-background: linear-gradient(170deg, #efe7da 0%, #e8dece 45%, #e1d4c4 100%), radial-gradient(circle at 20% 22%, rgb(var(--color-accent-rgb) / 0.06) 0, rgb(var(--color-accent-rgb) / 0) 60%), radial-gradient(circle at 80% 15%, rgb(var(--color-casino-gold-rgb) / 0.08) 0, rgb(var(--color-casino-gold-rgb) / 0) 55%), #e7ddcf;
+    --color-background: #f4f5f7;
+    --color-page-background: linear-gradient(170deg, #f4f5f7 0%, #eef1f8 50%, #f6efe2 100%), radial-gradient(circle at 18% 20%, rgb(var(--color-primary-dark-rgb) / 0.08) 0, rgb(var(--color-primary-dark-rgb) / 0) 55%), radial-gradient(circle at 82% 18%, rgb(var(--color-casino-gold-rgb) / 0.12) 0, rgb(var(--color-casino-gold-rgb) / 0) 60%), #f4f5f7;
     --color-white: #fff;
     --color-black: #000;
     --color-accent-light: rgb(var(--color-accent-rgb) / 0.1);
@@ -49,8 +50,8 @@
     --color-day-header-bg: var(--color-background);
     --color-border-primary: var(--color-primary-dark);
     --color-border-accent: var(--color-accent);
-    --color-border-grid: #5d6a90;
-    --color-border-grid-light: rgb(93 106 144 / 40%);
+    --color-border-grid: rgb(var(--color-primary-dark-rgb) / 0.35);
+    --color-border-grid-light: rgb(var(--color-primary-dark-rgb) / 0.18);
 
     /* Borders and shadows */
     --border-radius-lg: 0.625rem;
@@ -59,9 +60,9 @@
     --border-thin: 1px;
     --border-thick: 0.125rem;
     --border-event: 0.1875rem;
-    --box-shadow-light: 0 0.28rem 0.78rem rgb(40 32 86 / 18%);
-    --box-shadow-subtle: 0 0.2rem 0.52rem rgb(72 61 139 / 15%);
-    --box-shadow-modal: 0 0.6rem 1.65rem rgb(26 20 65 / 22%);
+    --box-shadow-light: 0 0.28rem 0.78rem rgb(var(--color-primary-dark-rgb) / 0.18);
+    --box-shadow-subtle: 0 0.2rem 0.52rem rgb(var(--color-primary-dark-rgb) / 0.14);
+    --box-shadow-modal: 0 0.6rem 1.65rem rgb(var(--color-primary-dark-rgb) / 0.22);
 
     /* Modal sizing */
     --modal-max-width: clamp(20rem, 90vw, 37.5rem);
@@ -161,14 +162,15 @@ body {
 [data-theme="dark"] {
     /* Background */
     --color-background: #2d2d30;
-    --color-page-background: radial-gradient(circle at 25% 20%, rgb(var(--color-accent-rgb) / 0.24) 0, rgb(var(--color-accent-rgb) / 0) 60%), linear-gradient(135deg, rgb(24 24 36 / 0.95), rgb(10 10 20 / 0.95));
+    --color-page-background: radial-gradient(circle at 20% 18%, rgb(var(--color-primary-dark-rgb) / 0.45) 0, rgb(var(--color-primary-dark-rgb) / 0) 60%), radial-gradient(circle at 78% 22%, rgb(var(--color-accent-rgb) / 0.25) 0, rgb(var(--color-accent-rgb) / 0) 55%), linear-gradient(135deg, rgb(8 8 20 / 0.98), rgb(3 3 12 / 0.98));
 
     /* Primary color tokens used across dark theme */
-    --color-primary: #a78bfa;
+    --color-primary: #8a90ff;
     /* Main primary used instead of accent in dark */
-    --color-primary-dark: #6a5acd;
+    --color-primary-dark: #00008b;
     /* Supporting tone for shadows/borders */
-    --color-primary-light: rgb(106 90 205 / 15%);
+    --color-primary-dark-rgb: 0 0 139;
+    --color-primary-light: rgb(var(--color-primary-dark-rgb) / 0.25);
     /* Subtle primary-tinted backgrounds */
 
     /* Base text/background tokens */
@@ -180,14 +182,14 @@ body {
     /* Header and border colors */
     --color-day-header-text: #a78bfa;
     --color-day-header-bg: #2d2d30;
-    --color-border-primary: #7dd3fc;
-    --color-border-grid: #7dd3fc;
-    --color-border-grid-light: rgb(125 211 252 / 30%);
+    --color-border-primary: rgb(var(--color-primary-dark-rgb) / 0.75);
+    --color-border-grid: rgb(var(--color-primary-dark-rgb) / 0.6);
+    --color-border-grid-light: rgb(var(--color-primary-dark-rgb) / 0.25);
 
     /* Shadows - light blue-ish */
-    --box-shadow-light: 0 0.45rem 1.1rem rgb(82 62 150 / 55%);
-    --box-shadow-modal: 0 0.9rem 2.4rem rgb(67 52 131 / 70%);
-    --box-shadow-subtle: 0 0.3rem 0.9rem rgb(96 79 163 / 45%);
+    --box-shadow-light: 0 0.45rem 1.1rem rgb(var(--color-primary-dark-rgb) / 0.55);
+    --box-shadow-modal: 0 0.9rem 2.4rem rgb(var(--color-primary-dark-rgb) / 0.7);
+    --box-shadow-subtle: 0 0.3rem 0.9rem rgb(var(--color-primary-dark-rgb) / 0.45);
     .event-block-grid,
     .event-block-day {
         z-index: 25 !important;
