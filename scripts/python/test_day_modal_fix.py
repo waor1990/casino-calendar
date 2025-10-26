@@ -14,11 +14,14 @@ for candidate in (SRC_DIR, ROOT_DIR):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
-from casino_calendar.dash_app.visualization import charts as day_charts  # noqa: E402
+from casino_calendar.dash_app.visualization import \
+    charts as day_charts  # noqa: E402
 from casino_calendar.logging import config as logging_config  # noqa: E402
 from casino_calendar.services.colors import get_color  # noqa: E402
 
-logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.test_day_modal_fix")
+logger = logging_config.setup_maintenance_logger(
+    "casino_calendar.scripts.test_day_modal_fix"
+)
 
 # Create test data
 test_events = pd.DataFrame(
@@ -47,7 +50,9 @@ clicked_date = datetime(2025, 7, 30)
 screen_width = 1024
 
 try:
-    result = day_charts.generate_day_view_html(test_events, clicked_date, get_color, screen_width)
+    result = day_charts.generate_day_view_html(
+        test_events, clicked_date, get_color, screen_width
+    )
 
     logger.info("Day modal generated successfully")
     logger.info("Generated %s elements for modal", len(result))

@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 from typing import Any, Iterable, Tuple
 
 import pandas as pd
+from dash import html
+
 from casino_calendar.services.config_cache import get_config
 from casino_calendar.settings import APP_TIMEZONE, UTC_TZ
-from dash import html
 
 
 def offer_type_emoji(offer_type: str) -> str:
@@ -52,9 +53,9 @@ def get_week_range(clicked_date: datetime) -> Tuple[datetime, datetime]:
     else:
         localized = clicked_date.astimezone(tz)
 
-    week_start_local = (localized - timedelta(days=(localized.weekday() + 1) % 7)).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+    week_start_local = (
+        localized - timedelta(days=(localized.weekday() + 1) % 7)
+    ).replace(hour=0, minute=0, second=0, microsecond=0)
     week_end_local = week_start_local + timedelta(days=7)
 
     week_start = week_start_local.astimezone(UTC_TZ).replace(tzinfo=None)
@@ -102,7 +103,9 @@ def filter_long_spanning_events(
 ) -> pd.DataFrame:
     """Return events that span the entire week."""
 
-    return events_df[(events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end)].copy()
+    return events_df[
+        (events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end)
+    ].copy()
 
 
 def build_event_info_rows(data: Iterable[tuple[str, Any]]) -> list[Any]:
@@ -110,7 +113,9 @@ def build_event_info_rows(data: Iterable[tuple[str, Any]]) -> list[Any]:
 
     mapping = dict(data)
     emoji = offer_type_emoji(mapping.get("OfferType", ""))
-    rows: list[Any] = [html.H2(f"{emoji} Event Detail {emoji}", className="event-label-title")]
+    rows: list[Any] = [
+        html.H2(f"{emoji} Event Detail {emoji}", className="event-label-title")
+    ]
 
     for label in [
         "EventName",

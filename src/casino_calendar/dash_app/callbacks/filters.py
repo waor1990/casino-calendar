@@ -6,9 +6,10 @@ from uuid import uuid4
 
 import dash
 import pandas as pd
+from dash import ALL, Input, Output, State, html
+
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.settings import APP_TIMEZONE
-from dash import ALL, Input, Output, State, html
 
 from ..layout import week_grid
 from ..services import layout_state
@@ -25,7 +26,9 @@ def _get_hotel_booking_sites():
 
     sites = get_config("lookups/hotel_book_sites.json")
     if not sites:
-        logger.warning("hotel_book_sites.json not available, hotel booking links disabled")
+        logger.warning(
+            "hotel_book_sites.json not available, hotel booking links disabled"
+        )
         return {}
     return sites
 
@@ -86,7 +89,8 @@ def register_callbacks(app, df) -> None:
             week_end_pdt = week_start_pdt + timedelta(days=6)
 
             label = (
-                f"Events for the Week of {week_start_pdt.strftime('%B %d')} - " f"{week_end_pdt.strftime('%B %d, %Y')}"
+                f"Events for the Week of {week_start_pdt.strftime('%B %d')} - "
+                f"{week_end_pdt.strftime('%B %d, %Y')}"
             )
             logger.debug("Week label generated: %s", label)
             return label
@@ -127,7 +131,9 @@ def register_callbacks(app, df) -> None:
         next_week_start = layout_state.to_naive_utc(next_week_start_pdt)
         next_week_end = next_week_start + timedelta(days=7)
 
-        has_next_week_events = not df[(df["EndDate"] > next_week_start) & (df["StartDate"] < next_week_end)].empty
+        has_next_week_events = not df[
+            (df["EndDate"] > next_week_start) & (df["StartDate"] < next_week_end)
+        ].empty
 
         if not has_next_week_events and desired_offset > current_offset:
             desired_offset = current_offset
@@ -166,7 +172,9 @@ def register_callbacks(app, df) -> None:
         unique_available = {idx for idx in available_indices}
         unique_selected = {idx for idx in selected_list if idx in unique_available}
         if unique_available and unique_selected == unique_available:
-            logger.debug("All casinos selected; clearing selection to show all by default")
+            logger.debug(
+                "All casinos selected; clearing selection to show all by default"
+            )
             selected_list = []
 
         logger.info("Selected casinos updated: %s", selected_list)
@@ -270,17 +278,23 @@ def register_callbacks(app, df) -> None:
         filtered_df = _apply_filters(df, selected_casinos, selected_types)
         logger.info("Filtered events count: %d", len(filtered_df))
 
-        grid = week_grid.render_week_grid(week_start, filtered_df, screen_width, selected_casinos)
+        grid = week_grid.render_week_grid(
+            week_start, filtered_df, screen_width, selected_casinos
+        )
         labels = week_grid.render_day_labels(week_start)
 
         week_end = week_start + timedelta(days=7)
-        overflow_df = layout_state.filter_long_spanning_events(filtered_df, week_start, week_end)
+        overflow_df = layout_state.filter_long_spanning_events(
+            filtered_df, week_start, week_end
+        )
 
         if not overflow_df.empty:
             week_start_pdt = layout_state.to_pdt(week_start)
             week_end_pdt = layout_state.to_pdt(week_end)
             is_open = bool(selected_casinos or selected_types)
-            week_range = f"{week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
+            week_range = (
+                f"{week_start_pdt.strftime('%b %d')} - {week_end_pdt.strftime('%b %d')}"
+            )
             toggle_text = (
                 f"\U0001f300 Hide Ongoing Events for {week_range}"
                 if is_open
@@ -294,8 +308,12 @@ def register_callbacks(app, df) -> None:
             )
 
             def _format_overflow_item(row: pd.Series) -> html.Li:
-                start = layout_state.to_pdt(cast(datetime, row["StartDate"])).strftime("%b %d")
-                end = layout_state.to_pdt(cast(datetime, row["EndDate"])).strftime("%b %d")
+                start = layout_state.to_pdt(cast(datetime, row["StartDate"])).strftime(
+                    "%b %d"
+                )
+                end = layout_state.to_pdt(cast(datetime, row["EndDate"])).strftime(
+                    "%b %d"
+                )
                 text = f"{row['EventName']} ({row['Casino']}) - {start} to {end}"
                 return html.Li(text)
 
@@ -308,7 +326,12 @@ def register_callbacks(app, df) -> None:
                         className="overflow-title font-bold mb-section",
                         style={"display": "block"},
                     ),
-                    html.Ul([_format_overflow_item(row) for _, row in overflow_df.iterrows()]),
+                    html.Ul(
+                        [
+                            _format_overflow_item(row)
+                            for _, row in overflow_df.iterrows()
+                        ]
+                    ),
                 ],
             )
         else:
@@ -323,7 +346,11 @@ def register_callbacks(app, df) -> None:
             **data_attr,
         )
 
-        style = {"height": f"{usable_height}px"} if screen_width >= 768 else {"minHeight": f"{usable_height}px"}
+        style = (
+            {"height": f"{usable_height}px"}
+            if screen_width >= 768
+            else {"minHeight": f"{usable_height}px"}
+        )
 
         return chart, labels, week_start.strftime("%Y-%m-%d"), str(uuid4()), style
 
@@ -355,8 +382,12 @@ def register_callbacks(app, df) -> None:
         )
 
         triggered = getattr(dash.callback_context, "triggered_id", None)
-        selected_casinos = selected_casinos_state if isinstance(selected_casinos_state, list) else []
-        selected_types = selected_types_state if isinstance(selected_types_state, list) else []
+        selected_casinos = (
+            selected_casinos_state if isinstance(selected_casinos_state, list) else []
+        )
+        selected_types = (
+            selected_types_state if isinstance(selected_types_state, list) else []
+        )
 
         if isinstance(legacy_data, pd.DataFrame):
             source_df = legacy_data
@@ -364,7 +395,9 @@ def register_callbacks(app, df) -> None:
             try:
                 source_df = pd.DataFrame(legacy_data)
             except (ValueError, TypeError):
-                logger.debug("Unable to coerce legacy event data into DataFrame; using repository data")
+                logger.debug(
+                    "Unable to coerce legacy event data into DataFrame; using repository data"
+                )
                 source_df = df
         else:
             source_df = df
@@ -390,7 +423,9 @@ def register_callbacks(app, df) -> None:
             selected_casinos,
             active_types,
         )
-        return week_grid.render_week_grid(week_start, filtered_df, screen_width, selected_casinos)
+        return week_grid.render_week_grid(
+            week_start, filtered_df, screen_width, selected_casinos
+        )
 
     app.clientside_callback(
         """

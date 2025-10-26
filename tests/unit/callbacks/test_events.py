@@ -6,9 +6,10 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
+from dash import Dash
+
 from casino_calendar.dash_app.callbacks import register_callbacks
 from casino_calendar.dash_app.services.layout_state import to_naive_utc
-from dash import Dash
 
 
 class DummyCtx:
@@ -32,15 +33,21 @@ def test_toggle_overflow(monkeypatch, casino):
 
     app = Dash(__name__)
     register_callbacks(app, df)
-    callback = app.callback_map["..overflow-box.className...overflow-toggle.children.."]["callback"].__wrapped__
+    callback = app.callback_map[
+        "..overflow-box.className...overflow-toggle.children.."
+    ]["callback"].__wrapped__
 
-    monkeypatch.setattr("dash.callback_context", DummyCtx("overflow-toggle"), raising=False)
+    monkeypatch.setattr(
+        "dash.callback_context", DummyCtx("overflow-toggle"), raising=False
+    )
     klass, label = callback(1, "2025-04-13")
 
     assert klass == "overflow-box-expand show"
     assert "Hide" in label
 
-    monkeypatch.setattr("dash.callback_context", DummyCtx("overflow-toggle"), raising=False)
+    monkeypatch.setattr(
+        "dash.callback_context", DummyCtx("overflow-toggle"), raising=False
+    )
     klass, label = callback(2, "2025-04-13")
 
     assert klass == "overflow-box-expand"

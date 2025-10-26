@@ -2,7 +2,9 @@
 
 import pytest
 
-pytestmark = pytest.mark.skip(reason="Percy snapshots are not executed in this environment")
+pytestmark = pytest.mark.skip(
+    reason="Percy snapshots are not executed in this environment"
+)
 
 
 def test_percy_placeholder():

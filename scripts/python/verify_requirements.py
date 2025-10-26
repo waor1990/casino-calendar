@@ -14,7 +14,9 @@ for candidate in (SRC_DIR, PROJECT_ROOT):
 
 from casino_calendar.logging import config as logging_config  # noqa: E402
 
-logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.verify_requirements")
+logger = logging_config.setup_maintenance_logger(
+    "casino_calendar.scripts.verify_requirements"
+)
 
 
 def normalize(name: str) -> str:

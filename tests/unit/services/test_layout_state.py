@@ -22,7 +22,9 @@ def test_get_week_range_handles_naive_datetime():
 def test_trim_label_truncates_and_emojis():
     text = "This is a very long label"
     assert layout_state.trim_label(text, 10, "Giveaway").endswith("...")
-    assert layout_state.trim_label(text, 3, "Giveaway") == layout_state.offer_type_emoji("Giveaway")
+    assert layout_state.trim_label(
+        text, 3, "Giveaway"
+    ) == layout_state.offer_type_emoji("Giveaway")
 
 
 def test_offer_type_emoji_default():

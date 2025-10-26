@@ -76,8 +76,12 @@ Examples:
         """,
     )
 
-    parser.add_argument("--days", type=int, default=30, help="Number of days to keep logs (default: 30)")
-    parser.add_argument("--log-dir", type=str, default="logs", help="Log directory path (default: logs)")
+    parser.add_argument(
+        "--days", type=int, default=30, help="Number of days to keep logs (default: 30)"
+    )
+    parser.add_argument(
+        "--log-dir", type=str, default="logs", help="Log directory path (default: logs)"
+    )
     parser.add_argument(
         "--log-file",
         type=str,
@@ -95,7 +99,9 @@ Examples:
         action="store_true",
         help="Show what would be deleted without actually deleting",
     )
-    parser.add_argument("--info", action="store_true", help="Show information about log directory")
+    parser.add_argument(
+        "--info", action="store_true", help="Show information about log directory"
+    )
     parser.add_argument(
         "--archive-current",
         action="store_true",
@@ -253,7 +259,9 @@ Examples:
         log_file = resolve_log_file()
         try:
             logger.info("Archiving earlier months for %s", log_file)
-            summary = rotation.archive_and_trim_by_month(str(log_file), archive_dir=args.archive_dir)
+            summary = rotation.archive_and_trim_by_month(
+                str(log_file), archive_dir=args.archive_dir
+            )
             files = summary.get("archive_files", [])
             (logger.debug if args.quiet else logger.info)(
                 "Archived %d lines into %d file(s) and kept %d lines in %s",

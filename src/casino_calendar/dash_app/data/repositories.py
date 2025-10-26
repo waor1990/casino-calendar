@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Protocol
 
 import pandas as pd
+
 from casino_calendar.settings import DATA_DIR
 
 from .loader import load_event_data

@@ -192,7 +192,9 @@ def _parse_log_timestamp(line: str) -> Optional[datetime]:
         return None
 
 
-def _replace_with_retry(src: Path, dest: Path, attempts: int = 5, delay: float = 0.2) -> None:
+def _replace_with_retry(
+    src: Path, dest: Path, attempts: int = 5, delay: float = 0.2
+) -> None:
     """Replace ``dest`` with ``src`` retrying on ``PermissionError`` (Windows)."""
 
     last_exc: Optional[PermissionError] = None
@@ -291,7 +293,9 @@ def _merge_month_archive(
     _write_lines_with_fallback(month_file, merged)
 
 
-def _append_to_all_archive(base_name: str, archive_dir: Path, lines: Iterable[str]) -> None:
+def _append_to_all_archive(
+    base_name: str, archive_dir: Path, lines: Iterable[str]
+) -> None:
     """Append ``lines`` to the global archive, keeping unique entries."""
 
     if not lines:
@@ -326,7 +330,10 @@ def _rebucket_existing_archives(log_path: Path, archive_dir: Path) -> None:
             continue
 
         # If the entire file only contains logs from 2025-10-12, drop it
-        distinct_dates = {(_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None) for line in lines}
+        distinct_dates = {
+            (_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None)
+            for line in lines
+        }
         if distinct_dates == {datetime(2025, 10, 12).date()}:
             file_path.unlink()
             continue
@@ -402,7 +409,10 @@ def archive_and_trim_by_days(
         base_name = log_path.stem
         for month_key, month_lines in buckets.items():
             # Skip files that would contain only 2025-10-12 entries
-            dates = {(_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None) for l in month_lines}
+            dates = {
+                (_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None)
+                for l in month_lines
+            }
             if dates == {datetime(2025, 10, 12).date()}:
                 continue
 
@@ -422,7 +432,9 @@ def archive_and_trim_by_days(
     }
 
 
-def archive_and_trim_by_month(log_file: str, archive_dir: Optional[str] = None) -> Dict[str, object]:
+def archive_and_trim_by_month(
+    log_file: str, archive_dir: Optional[str] = None
+) -> Dict[str, object]:
     """
     Archive log lines into per-month files (YYYY-MM) and keep only the current
     month's logs in the active file. Returns a summary dict.
@@ -463,7 +475,10 @@ def archive_and_trim_by_month(log_file: str, archive_dir: Optional[str] = None) 
     base = log_path.stem
 
     for key, lines in buckets.items():
-        dates = {(_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None) for l in lines}
+        dates = {
+            (_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None)
+            for l in lines
+        }
         if dates == {datetime(2025, 10, 12).date()}:
             continue
 
@@ -526,7 +541,10 @@ def copy_lines_by_days(
     archive_files: List[str] = []
     copied_payload: List[str] = []
     for month_key, month_lines in buckets.items():
-        dates = {(_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None) for l in month_lines}
+        dates = {
+            (_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None)
+            for l in month_lines
+        }
         if dates == {datetime(2025, 10, 12).date()}:
             continue
 
@@ -551,7 +569,9 @@ def copy_current_log(log_file: str, archive_dir: Optional[str] = None) -> str:
 
     _rebucket_existing_archives(log_path, arch_dir)
 
-    archive_path = Path(archive_current_log(log_file, archive_dir=str(arch_dir), move=False))
+    archive_path = Path(
+        archive_current_log(log_file, archive_dir=str(arch_dir), move=False)
+    )
     lines = archive_path.read_text(encoding="utf-8").splitlines(True)
     buckets: Dict[str, List[str]] = defaultdict(list)
     for line in lines:
@@ -561,7 +581,10 @@ def copy_current_log(log_file: str, archive_dir: Optional[str] = None) -> str:
 
     payload: List[str] = []
     for month_key, month_lines in buckets.items():
-        dates = {(_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None) for l in month_lines}
+        dates = {
+            (_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None)
+            for l in month_lines
+        }
         if dates == {datetime(2025, 10, 12).date()}:
             continue
 
