@@ -1,6 +1,9 @@
 [flake8]
 max-line-length = 188
-extend-ignore = E203, W503, E508, E501
+# Ignore long line warnings explicitly and extend the default ignore list for
+# the style-related rules we intentionally skip across the project.
+ignore = E501
+extend-ignore = E203, W503, E508
 exclude =
     .venv,
     node_modules,
