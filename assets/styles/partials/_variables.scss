@@ -35,10 +35,14 @@
     --color-primary-dark: #00008B;
     --color-accent: #6A5ACD;
     --color-accent-dark: #483D8B;
-    --color-background: #f5f3fa;
+    --color-accent-rgb: 106 90 205;
+    --color-casino-gold: #f3ba2f;
+    --color-casino-gold-rgb: 243 186 47;
+    --color-background: #f4f0ff;
+    --color-page-background: radial-gradient(circle at 15% 20%, rgb(var(--color-accent-rgb) / 0.18) 0, rgb(var(--color-accent-rgb) / 0) 60%), radial-gradient(circle at 85% 15%, rgb(var(--color-casino-gold-rgb) / 0.18) 0, rgb(var(--color-casino-gold-rgb) / 0) 55%), #f7f2ff;
     --color-white: #fff;
     --color-black: #000;
-    --color-accent-light: rgb(106 90 205 / 10%);
+    --color-accent-light: rgb(var(--color-accent-rgb) / 0.1);
 
     /* Day Header & Week Grid Colors */
     --color-day-header-text: var(--color-accent);
@@ -157,6 +161,7 @@ body {
 [data-theme="dark"] {
     /* Background */
     --color-background: #2d2d30;
+    --color-page-background: radial-gradient(circle at 25% 20%, rgb(var(--color-accent-rgb) / 0.24) 0, rgb(var(--color-accent-rgb) / 0) 60%), linear-gradient(135deg, rgb(24 24 36 / 0.95), rgb(10 10 20 / 0.95));
 
     /* Primary color tokens used across dark theme */
     --color-primary: #a78bfa;
