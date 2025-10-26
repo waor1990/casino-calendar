@@ -16,7 +16,9 @@ if str(SRC_DIR) not in sys.path:
 
 from casino_calendar.logging import config as logging_config
 
-MAINTENANCE_LOGGER = logging_config.setup_maintenance_logger("casino_calendar.tests.pytest")
+MAINTENANCE_LOGGER = logging_config.setup_maintenance_logger(
+    "casino_calendar.tests.pytest"
+)
 
 
 @pytest.fixture(autouse=True)

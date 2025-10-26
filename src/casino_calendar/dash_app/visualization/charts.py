@@ -6,8 +6,9 @@ from typing import TYPE_CHECKING, Any, Callable
 
 import pandas as pd
 import plotly.graph_objs as go
-from casino_calendar.settings import APP_TIMEZONE
 from dash import dcc, html
+
+from casino_calendar.settings import APP_TIMEZONE
 
 if TYPE_CHECKING:
     # Dash base component type for annotations only
@@ -15,13 +16,9 @@ if TYPE_CHECKING:
 
 from casino_calendar.services.colors import get_color, resolve_casino_color
 
-from ..services.layout_state import (
-    filter_long_spanning_events,
-    offer_type_emoji,
-    to_naive_utc,
-    to_pdt,
-    trim_label,
-)
+from ..services.layout_state import (filter_long_spanning_events,
+                                     offer_type_emoji, to_naive_utc, to_pdt,
+                                     trim_label)
 
 # Constants used to size the day modal dynamically
 DAY_MODAL_MIN_REM = 18
@@ -57,9 +54,13 @@ def generate_day_view_html(
     # The clicked_date comes from the callback as naive UTC (via to_naive_utc)
     # We need to treat it as a local PDT date for day boundaries
     if clicked_date.tzinfo is None:
-        day_start = APP_TIMEZONE.localize(clicked_date.replace(hour=0, minute=0, second=0, microsecond=0))
+        day_start = APP_TIMEZONE.localize(
+            clicked_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        )
     else:
-        day_start = to_pdt(clicked_date).replace(hour=0, minute=0, second=0, microsecond=0)
+        day_start = to_pdt(clicked_date).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
     day_end = day_start + timedelta(days=1)
 
     # Filter events that overlap with the day
@@ -78,7 +79,9 @@ def generate_day_view_html(
     week_end = week_start + timedelta(days=7)
 
     # Get ongoing events for this week (events that span the entire week)
-    ongoing_events = filter_long_spanning_events(events_df, to_naive_utc(week_start), to_naive_utc(week_end))
+    ongoing_events = filter_long_spanning_events(
+        events_df, to_naive_utc(week_start), to_naive_utc(week_end)
+    )
     ongoing_event_ids = set(ongoing_events.index) if not ongoing_events.empty else set()
 
     # Filter events that either start or end on the selected day
@@ -90,11 +93,15 @@ def generate_day_view_html(
     # Define time window: allow events within a reasonable range of the day
     # This prevents very distant events from cluttering the day view while still
     # showing events that meaningfully overlap with the selected day
-    earliest_start = day_start - timedelta(days=2)  # Allow events starting up to 2 days before
+    earliest_start = day_start - timedelta(
+        days=2
+    )  # Allow events starting up to 2 days before
     latest_end = day_end + timedelta(days=2)  # Allow events ending up to 2 days after
 
     events = events[
-        (events["EndDate"] >= day_start)  # Event ends at or after day starts (includes boundary)
+        (
+            events["EndDate"] >= day_start
+        )  # Event ends at or after day starts (includes boundary)
         & (events["StartDate"] < day_end)  # Event starts before day ends
         & (events["StartDate"] >= earliest_start)  # Event doesn't start too early
         & (events["EndDate"] <= latest_end)  # Event doesn't end too late
@@ -119,16 +126,26 @@ def generate_day_view_html(
         ]
 
     # Time math - clip events to day boundaries
-    events["adj_start"] = events["StartDate"].where(events["StartDate"] >= day_start, day_start)
-    events["adj_start"] = events["adj_start"].where(events["adj_start"] <= day_end, day_end)
-    events["adj_end"] = events["EndDate"].where(events["EndDate"] >= day_start, day_start)
+    events["adj_start"] = events["StartDate"].where(
+        events["StartDate"] >= day_start, day_start
+    )
+    events["adj_start"] = events["adj_start"].where(
+        events["adj_start"] <= day_end, day_end
+    )
+    events["adj_end"] = events["EndDate"].where(
+        events["EndDate"] >= day_start, day_start
+    )
     events["adj_end"] = events["adj_end"].where(events["adj_end"] <= day_end, day_end)
-    events["start_offset_min"] = (events["adj_start"] - day_start).dt.total_seconds() / 60
+    events["start_offset_min"] = (
+        events["adj_start"] - day_start
+    ).dt.total_seconds() / 60
     events["end_offset_min"] = (events["adj_end"] - day_start).dt.total_seconds() / 60
     events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
 
     # Sort events for display order: start time, then casino, then category (OfferType)
-    events = events.sort_values(by=["start_offset_min", "Casino", "OfferType", "duration_min"])
+    events = events.sort_values(
+        by=["start_offset_min", "Casino", "OfferType", "duration_min"]
+    )
 
     # Minimum block height: even extremely short events should remain
     # visible and clickable in the grid. ``min_block_px`` defines the
@@ -149,10 +166,14 @@ def generate_day_view_html(
     # Clamp the visual end to the end of the day so a late-night event does
     # not overflow past the 24‑hour grid. The clamped value is used both for
     # rendering and collision detection.
-    events["visual_end_offset_min"] = events["visual_end_offset_min"].clip(upper=24 * 60)
+    events["visual_end_offset_min"] = events["visual_end_offset_min"].clip(
+        upper=24 * 60
+    )
 
     # Precompute the adjusted duration which downstream calculations use.
-    events["visual_duration_min"] = events["visual_end_offset_min"] - events["start_offset_min"]
+    events["visual_duration_min"] = (
+        events["visual_end_offset_min"] - events["start_offset_min"]
+    )
 
     # Assign tracks dynamically to avoid overlap using visual duration
     tracks: list[list[tuple[float, float]]] = []
@@ -206,7 +227,11 @@ def generate_day_view_html(
     for hour in range(24):
         top_px = hour * hour_height
         # Show hour labels every 3 hours to avoid clutter
-        label = datetime(2000, 1, 1, hour).strftime("%I %p").lstrip("0") if hour % 3 == 0 else ""
+        label = (
+            datetime(2000, 1, 1, hour).strftime("%I %p").lstrip("0")
+            if hour % 3 == 0
+            else ""
+        )
 
         # Label on left
         hour_blocks.append(
@@ -265,7 +290,11 @@ def generate_day_view_html(
                 emoji,
             ]
 
-            lines = [html.Span(v, className="event-block-day-line") for v in values[:max_lines] if v]
+            lines = [
+                html.Span(v, className="event-block-day-line")
+                for v in values[:max_lines]
+                if v
+            ]
 
             children = html.Div(lines, className="event-block-day-text")
 
@@ -278,7 +307,8 @@ def generate_day_view_html(
             return ts.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
 
         tooltip = (
-            f"{row['EventName']} ({row['Casino']}) - " f"{_fmt_time(row['StartDate'])} to {_fmt_time(row['EndDate'])}"
+            f"{row['EventName']} ({row['Casino']}) - "
+            f"{_fmt_time(row['StartDate'])} to {_fmt_time(row['EndDate'])}"
         )
 
         # Calculate appropriate width based on content and available track space
@@ -317,7 +347,9 @@ def generate_day_view_html(
                     style_dict["width"] = max_track_width
                 else:
                     style_dict["minWidth"] = "2.5rem"
-                    style_dict["maxWidth"] = max_track_width if track_width_rem < 3 else "3rem"
+                    style_dict["maxWidth"] = (
+                        max_track_width if track_width_rem < 3 else "3rem"
+                    )
         else:
             char_min_len = min(len(event_name), len(casino_name))
             char_max_len = max(len(event_name), len(casino_name)) + 1
@@ -399,7 +431,9 @@ def generate_day_view_html(
     ]
 
 
-def build_day_overlay_figure(total_height_px: int, click_markers: list[go.Scatter]) -> go.Figure:
+def build_day_overlay_figure(
+    total_height_px: int, click_markers: list[go.Scatter]
+) -> go.Figure:
     """Return a Plotly figure for the day overlay click catcher.
 
     The x-axis is normalized to [0,1] and the y-axis to pixel height.
@@ -449,9 +483,13 @@ def generate_day_view_parts(
 
     # Normalize clicked_date
     if clicked_date.tzinfo is None:
-        day_start = APP_TIMEZONE.localize(clicked_date.replace(hour=0, minute=0, second=0, microsecond=0))
+        day_start = APP_TIMEZONE.localize(
+            clicked_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        )
     else:
-        day_start = to_pdt(clicked_date).replace(hour=0, minute=0, second=0, microsecond=0)
+        day_start = to_pdt(clicked_date).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
     day_end = day_start + timedelta(days=1)
 
     events = events_df.copy()
@@ -464,7 +502,9 @@ def generate_day_view_parts(
     week_start = day_start - timedelta(days=days_from_sunday)
     week_end = week_start + timedelta(days=7)
 
-    ongoing_events = filter_long_spanning_events(events_df, to_naive_utc(week_start), to_naive_utc(week_end))
+    ongoing_events = filter_long_spanning_events(
+        events_df, to_naive_utc(week_start), to_naive_utc(week_end)
+    )
     ongoing_event_ids = set(ongoing_events.index) if not ongoing_events.empty else set()
 
     earliest_start = day_start - timedelta(days=2)
@@ -485,15 +525,25 @@ def generate_day_view_parts(
         grid_children = [html.Div("No events scheduled.", className="no-events")]
         return header_text, grid_children, build_day_overlay_figure(10, []), 10
 
-    events["adj_start"] = events["StartDate"].where(events["StartDate"] >= day_start, day_start)
-    events["adj_start"] = events["adj_start"].where(events["adj_start"] <= day_end, day_end)
-    events["adj_end"] = events["EndDate"].where(events["EndDate"] >= day_start, day_start)
+    events["adj_start"] = events["StartDate"].where(
+        events["StartDate"] >= day_start, day_start
+    )
+    events["adj_start"] = events["adj_start"].where(
+        events["adj_start"] <= day_end, day_end
+    )
+    events["adj_end"] = events["EndDate"].where(
+        events["EndDate"] >= day_start, day_start
+    )
     events["adj_end"] = events["adj_end"].where(events["adj_end"] <= day_end, day_end)
-    events["start_offset_min"] = (events["adj_start"] - day_start).dt.total_seconds() / 60
+    events["start_offset_min"] = (
+        events["adj_start"] - day_start
+    ).dt.total_seconds() / 60
     events["end_offset_min"] = (events["adj_end"] - day_start).dt.total_seconds() / 60
     events["duration_min"] = events["end_offset_min"] - events["start_offset_min"]
 
-    events = events.sort_values(by=["start_offset_min", "Casino", "OfferType", "duration_min"])
+    events = events.sort_values(
+        by=["start_offset_min", "Casino", "OfferType", "duration_min"]
+    )
 
     min_block_px = 16
     min_block_min = min_block_px / hour_height * 60
@@ -502,8 +552,12 @@ def generate_day_view_parts(
         events["duration_min"] >= min_block_min,
         events["start_offset_min"] + min_block_min,
     )
-    events["visual_end_offset_min"] = events["visual_end_offset_min"].clip(upper=24 * 60)
-    events["visual_duration_min"] = events["visual_end_offset_min"] - events["start_offset_min"]
+    events["visual_end_offset_min"] = events["visual_end_offset_min"].clip(
+        upper=24 * 60
+    )
+    events["visual_duration_min"] = (
+        events["visual_end_offset_min"] - events["start_offset_min"]
+    )
 
     tracks: list[list[tuple[float, float]]] = []
     track_assignments: list[int] = []
@@ -546,7 +600,11 @@ def generate_day_view_parts(
 
     for hour in range(24):
         top_px = hour * hour_height
-        label = datetime(2000, 1, 1, hour).strftime("%I %p").lstrip("0") if hour % 3 == 0 else ""
+        label = (
+            datetime(2000, 1, 1, hour).strftime("%I %p").lstrip("0")
+            if hour % 3 == 0
+            else ""
+        )
         hour_blocks.append(
             html.Div(
                 label,
@@ -575,7 +633,10 @@ def generate_day_view_parts(
         height_px = max(16, height_px)
         if top_px + height_px > total_height_px:
             height_px = total_height_px - top_px
-        left_pct = label_column_pct + row["overlap_index"] * (100 - label_column_pct) / n_tracks
+        left_pct = (
+            label_column_pct
+            + row["overlap_index"] * (100 - label_column_pct) / n_tracks
+        )
         colors = color_map.get(row["Casino"], {"bg": "#aaa", "text": "#000"})
         emoji = offer_type_emoji(row.get("OfferType", ""))
         short_span = row["duration_min"] < 90
@@ -592,7 +653,11 @@ def generate_day_view_parts(
                 str(row.get("Offer", "")),
                 emoji,
             ]
-            lines = [html.Span(v, className="event-block-day-line") for v in values[:max_lines] if v]
+            lines = [
+                html.Span(v, className="event-block-day-line")
+                for v in values[:max_lines]
+                if v
+            ]
             children = html.Div(lines, className="event-block-day-text")
 
         block_classes = ["event-block-day"]
@@ -603,7 +668,8 @@ def generate_day_view_parts(
             return ts.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
 
         tooltip = (
-            f"{row['EventName']} ({row['Casino']}) - " f"{_fmt_time(row['StartDate'])} to {_fmt_time(row['EndDate'])}"
+            f"{row['EventName']} ({row['Casino']}) - "
+            f"{_fmt_time(row['StartDate'])} to {_fmt_time(row['EndDate'])}"
         )
 
         event_name = str(row["EventName"])
@@ -638,7 +704,9 @@ def generate_day_view_parts(
                     style_dict["width"] = max_track_width
                 else:
                     style_dict["minWidth"] = "2.5rem"
-                    style_dict["maxWidth"] = max_track_width if track_width_rem < 3 else "3rem"
+                    style_dict["maxWidth"] = (
+                        max_track_width if track_width_rem < 3 else "3rem"
+                    )
         else:
             char_min_len = min(len(event_name), len(casino_name))
             char_max_len = max(len(event_name), len(casino_name)) + 1
@@ -663,7 +731,9 @@ def generate_day_view_parts(
                 children,
                 id={
                     "type": "day-event",
-                    "index": (int(row.name) if isinstance(row.name, (int,)) else str(row.name)),
+                    "index": (
+                        int(row.name) if isinstance(row.name, (int,)) else str(row.name)
+                    ),
                 },
                 n_clicks=0,
                 **block_kwargs,
@@ -672,7 +742,9 @@ def generate_day_view_parts(
 
         center_y = top_px + height_px / 2
         center_x = left_pct + (100 - label_column_pct) / n_tracks / 2
-        event_data = row[["EventName", "Casino", "OfferType", "StartDate", "EndDate", "Offer"]].to_dict()
+        event_data = row[
+            ["EventName", "Casino", "OfferType", "StartDate", "EndDate", "Offer"]
+        ].to_dict()
         click_markers.append(
             go.Scatter(
                 x=[center_x / 100],
@@ -699,14 +771,20 @@ def generate_day_view_parts(
     return header_text, [grid], figure, total_height_px
 
 
-def build_weekly_figure(events_df: pd.DataFrame, screen_width: int, week_start: datetime) -> go.Figure:
+def build_weekly_figure(
+    events_df: pd.DataFrame, screen_width: int, week_start: datetime
+) -> go.Figure:
     """Return the legacy Plotly weekly figure.
 
     This helper is retained for test coverage and reference while the
     application uses a CSS grid for rendering.
     """
 
-    font_rem = 12 if screen_width < 480 else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
+    font_rem = (
+        12
+        if screen_width < 480
+        else 14 if screen_width < 768 else 16 if screen_width < 1024 else 18
+    )
     event_font_size_px = font_rem * 1
 
     shapes = []
@@ -726,7 +804,9 @@ def build_weekly_figure(events_df: pd.DataFrame, screen_width: int, week_start: 
     current_row: int = 0
 
     tick_labels = [
-        (week_start + timedelta(days=i)).strftime("%a") + "<br>" + (week_start + timedelta(days=i)).strftime("%b %d")
+        (week_start + timedelta(days=i)).strftime("%a")
+        + "<br>"
+        + (week_start + timedelta(days=i)).strftime("%b %d")
         for i in range(7)
     ]
 
@@ -763,19 +843,26 @@ def build_weekly_figure(events_df: pd.DataFrame, screen_width: int, week_start: 
             start_day = max(0, floor(visible_start))
             end_day = min(6, floor(visible_end - 1e-6))
 
-            recurring_key = f"{row['EventName']}|{row['Casino']}|" f"{row['StartDate'].time()}|{row['EndDate'].time()}"
+            recurring_key = (
+                f"{row['EventName']}|{row['Casino']}|"
+                f"{row['StartDate'].time()}|{row['EndDate'].time()}"
+            )
             preferred_row = recurring_rows.get(recurring_key)
             row_assigned = False
             assigned_row: int | None = None
 
             if preferred_row is not None and all(
-                preferred_row not in used_rows_by_day[d] for d in range(start_day, end_day + 1)
+                preferred_row not in used_rows_by_day[d]
+                for d in range(start_day, end_day + 1)
             ):
                 assigned_row = preferred_row
                 row_assigned = True
             else:
                 for r in range(current_row, 100):
-                    if all(r not in used_rows_by_day[d] for d in range(start_day, end_day + 1)):
+                    if all(
+                        r not in used_rows_by_day[d]
+                        for d in range(start_day, end_day + 1)
+                    ):
                         assigned_row = r
                         recurring_rows[recurring_key] = r
                         row_assigned = True
@@ -824,7 +911,8 @@ def build_weekly_figure(events_df: pd.DataFrame, screen_width: int, week_start: 
                     dict(
                         type="path",
                         path=(
-                            f"M 0,{y_center} L{ARROW_OFFSET},{y_center + 0.2} " f"L{ARROW_OFFSET},{y_center - 0.2} Z"
+                            f"M 0,{y_center} L{ARROW_OFFSET},{y_center + 0.2} "
+                            f"L{ARROW_OFFSET},{y_center - 0.2} Z"
                         ),
                         fillcolor="black",
                         line=dict(color="black", width=1),
@@ -908,7 +996,10 @@ def build_weekly_figure(events_df: pd.DataFrame, screen_width: int, week_start: 
                 tickmode="array",
                 tickvals=[i + 0.5 for i in range(7)],
                 ticktext=[
-                    ("<b style='color:#00008B;font-size:" f"{event_font_size_px}px'>{label}</b>")
+                    (
+                        "<b style='color:#00008B;font-size:"
+                        f"{event_font_size_px}px'>{label}</b>"
+                    )
                     for label in tick_labels
                 ],
                 side="top",

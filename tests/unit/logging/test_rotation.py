@@ -6,7 +6,13 @@ from unittest import mock
 
 import pytest
 
-MODULE_PATH = Path(__file__).resolve().parents[3] / "src" / "casino_calendar" / "logging" / "rotation.py"
+MODULE_PATH = (
+    Path(__file__).resolve().parents[3]
+    / "src"
+    / "casino_calendar"
+    / "logging"
+    / "rotation.py"
+)
 spec = importlib.util.spec_from_file_location("rotation_under_test", MODULE_PATH)
 rotation = importlib.util.module_from_spec(spec)
 sys.modules["rotation_under_test"] = rotation
@@ -74,7 +80,9 @@ def test_write_lines_with_fallback_replaces_file(tmp_path):
     assert not dest.with_suffix(dest.suffix + ".tmp").exists()
 
 
-def test_write_lines_with_fallback_recovers_from_permission_error(monkeypatch, tmp_path):
+def test_write_lines_with_fallback_recovers_from_permission_error(
+    monkeypatch, tmp_path
+):
     dest = tmp_path / "casino_calendar.log"
     dest.write_text("old\n", encoding="utf-8")
 
@@ -110,7 +118,9 @@ def test_archive_and_trim_by_month_creates_monthly_files(tmp_path, monkeypatch):
 
     monkeypatch.setattr(rotation, "datetime", FrozenDateTime)
 
-    summary = rotation.archive_and_trim_by_month(str(log_file), archive_dir=str(archive_dir))
+    summary = rotation.archive_and_trim_by_month(
+        str(log_file), archive_dir=str(archive_dir)
+    )
 
     active_content = log_file.read_text(encoding="utf-8")
     assert "sept-one" in active_content
@@ -152,7 +162,9 @@ def test_copy_lines_by_days_copies_without_trimming(tmp_path, monkeypatch):
     fake_now = datetime.datetime(2025, 9, 30, 12, 0, 0)
     monkeypatch.setattr(rotation.time, "time", lambda: fake_now.timestamp())
 
-    summary = rotation.copy_lines_by_days(str(log_file), 30, archive_dir=str(archive_dir))
+    summary = rotation.copy_lines_by_days(
+        str(log_file), 30, archive_dir=str(archive_dir)
+    )
 
     assert summary["copied_lines"] == 1
     august_file = archive_dir / "casino_calendar_prod_2025-08.log"

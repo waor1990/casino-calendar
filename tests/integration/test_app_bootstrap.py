@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 
 import pandas as pd
+
 from casino_calendar.dash_app import create_dash_app
 from casino_calendar.dash_app.data import EventRepository
 from casino_calendar.dash_app.services.layout_state import to_naive_utc

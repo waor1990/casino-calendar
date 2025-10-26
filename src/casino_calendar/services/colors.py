@@ -54,8 +54,12 @@ def _soften_color(base_hex: str) -> str:
         min(1.0, saturation * 0.85 + 0.05 * (1 - saturation)),
     )
 
-    r_float, g_float, b_float = colorsys.hls_to_rgb(hue, adjusted_lightness, adjusted_saturation)
-    return "#{:02x}{:02x}{:02x}".format(int(round(r_float * 255)), int(round(g_float * 255)), int(round(b_float * 255)))
+    r_float, g_float, b_float = colorsys.hls_to_rgb(
+        hue, adjusted_lightness, adjusted_saturation
+    )
+    return "#{:02x}{:02x}{:02x}".format(
+        int(round(r_float * 255)), int(round(g_float * 255)), int(round(b_float * 255))
+    )
 
 
 def _get_color_map():
@@ -97,7 +101,9 @@ def get_color():
         logger.warning("No casino colors found, using default colors")
         dummy_casinos = [f"Casino {i}" for i in range(len(default_colors))]
         for casino_name, color in zip(dummy_casinos, default_colors, strict=False):
-            result[casino_name] = _ensure_dark_variants({"bg": color, "text": "#000000"})
+            result[casino_name] = _ensure_dark_variants(
+                {"bg": color, "text": "#000000"}
+            )
 
     if logger.isEnabledFor(logging.DEBUG) and not _generated_log_emitted:
         logger.debug("Generated colors for %d casinos", len(result))
@@ -131,10 +137,14 @@ def _ensure_dark_variants(colors: dict[str, str]) -> dict[str, str]:
     if not normalised_fg:
         normalised_fg = "#000000" if _is_perceived_light(normalised_bg) else "#ffffff"
 
-    normalised_bg_dark = _normalize_hex(colors.get("bg_dark")) or _soften_color(normalised_bg)
+    normalised_bg_dark = _normalize_hex(colors.get("bg_dark")) or _soften_color(
+        normalised_bg
+    )
     normalised_fg_dark = colors.get("text_dark")
     if not normalised_fg_dark:
-        normalised_fg_dark = "#1f1f2e" if _is_perceived_light(normalised_bg_dark) else "#f7f4ff"
+        normalised_fg_dark = (
+            "#1f1f2e" if _is_perceived_light(normalised_bg_dark) else "#f7f4ff"
+        )
 
     enriched = dict(colors)
     enriched["bg"] = normalised_bg

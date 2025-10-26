@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
 import json
+from datetime import datetime, timedelta
 
 import dash
 import pandas as pd
 import pytest
-import dash
-from dash import Dash
 from dash import Dash, no_update
 
 from casino_calendar.dash_app.callbacks import register_callbacks
