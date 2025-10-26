@@ -37,15 +37,21 @@ def build_header(events: pd.DataFrame) -> html.Div:
                         ),
                         className="calendar-title",
                     ),
-                    html.Button(
-                        "🌙",
-                        id="theme-toggle",
-                        n_clicks=0,
-                        className="emoji-button theme-toggle",
-                        title="Toggle dark mode",
+                    html.Div(
+                        className="header-title-spacer", **{"aria-hidden": "true"}
                     ),
                 ],
                 className="header-title-row",
+            ),
+            html.Div(
+                html.Button(
+                    "🌙",
+                    id="theme-toggle",
+                    n_clicks=0,
+                    className="emoji-button theme-toggle",
+                    title="Toggle dark mode",
+                ),
+                className="theme-toggle-fab",
             ),
             html.Div(
                 id="header-container",

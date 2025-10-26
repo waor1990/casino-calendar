@@ -26,26 +26,70 @@ h1,
 
 .header-title-row {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     width: 100%;
     box-sizing: border-box;
-    padding: var(--padding-base);
+    padding: var(--padding-base) 0;
     gap: var(--padding-small);
+    background-color: transparent;
+    color: inherit;
+    margin: 0;
 }
 
 .header-title-row > .header-title-spacer {
     grid-column: 1;
+    justify-self: start;
 }
 
 .header-title-row > .calendar-title {
     grid-column: 2;
     justify-self: center;
+    margin: 0;
 }
 
 .header-title-row > .theme-toggle {
     grid-column: 3;
     justify-self: end;
+}
+
+.theme-toggle-fab {
+    position: fixed;
+    top: clamp(0.75rem, 2vw, 1.5rem);
+    right: clamp(0.75rem, 3vw, 2rem);
+    z-index: 250;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--padding-small) var(--padding-xs);
+    border-radius: 999px;
+    background-color: var(--color-background);
+    box-shadow: var(--box-shadow-light);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-toggle-fab .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--padding-small);
+}
+
+.theme-toggle-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-modal);
+}
+
+@include mixins.mobile {
+    .theme-toggle-fab {
+        top: var(--padding-base);
+        right: var(--padding-base);
+    }
+}
+
+[data-theme="dark"] .theme-toggle-fab {
+    background-color: var(--color-background);
+    box-shadow: var(--box-shadow-light);
 }
 
 .calendar-title-home-button {
