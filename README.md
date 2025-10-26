@@ -9,7 +9,7 @@ A Dash application that visualizes casino promotions on a responsive weekly cale
 - Weekly calendar built with Dash components and CSS grid utilities
 - Modal dialogs for day and event detail views with Plotly-powered overlays
 - Casino and offer-type filtering backed by Dash stores
-- Theme toggle (light/dark) with persisted preference in local storage
+- Theme toggle (light/dark) with a floating top-right action button and persisted preference in local storage
 - Automatic offer categorisation and colour assignment driven by JSON lookups
 - Comprehensive logging with rotation, optional HTTP access log capture, and maintenance utilities
 

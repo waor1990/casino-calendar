@@ -1,13 +1,14 @@
-"""Header and legend components for the Casino Calendar UI."""
+"""Header and legend components for the Dash layout."""
 
 from __future__ import annotations
 
 from typing import Any
 
 import pandas as pd
+from dash import dcc, html
+
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color
-from dash import dcc, html
 
 logger = setup_logger(__name__)
 
@@ -21,24 +22,36 @@ def build_header(events: pd.DataFrame) -> html.Div:
 
     return html.Div(
         [
-            html.H1(
+            html.Div(
                 [
-                    html.Button(
-                        "🎰 Casino Event Calendar 📅",
-                        id="home-button",
-                        n_clicks=0,
-                        className="calendar-title-home-button",
-                        title="Home",
+                    html.Div(
+                        className="header-title-spacer", **{"aria-hidden": "true"}
                     ),
-                    html.Button(
-                        "🌙",
-                        id="theme-toggle",
-                        n_clicks=0,
-                        className="emoji-button theme-toggle",
-                        title="Toggle dark mode",
+                    html.H1(
+                        html.Button(
+                            "🎰 Casino Event Calendar 📅",
+                            id="home-button",
+                            n_clicks=0,
+                            className="calendar-title-home-button",
+                            title="Home",
+                        ),
+                        className="calendar-title",
+                    ),
+                    html.Div(
+                        className="header-title-spacer", **{"aria-hidden": "true"}
                     ),
                 ],
-                className="calendar-title",
+                className="header-title-row",
+            ),
+            html.Div(
+                html.Button(
+                    "🌙",
+                    id="theme-toggle",
+                    n_clicks=0,
+                    className="emoji-button theme-toggle",
+                    title="Toggle dark mode",
+                ),
+                className="theme-toggle-fab",
             ),
             html.Div(
                 id="header-container",
@@ -57,12 +70,16 @@ def build_header(events: pd.DataFrame) -> html.Div:
                                 "Casino Legend:",
                                 className="legend-title legend-gap",
                             ),
-                            html.Div(create_legend(events), className="legend-container"),
+                            html.Div(
+                                create_legend(events), className="legend-container"
+                            ),
                             dcc.Dropdown(
                                 id="event-type-filter",
                                 options=[
                                     {"label": offer_type, "value": offer_type}
-                                    for offer_type in sorted(events["OfferType"].dropna().unique())
+                                    for offer_type in sorted(
+                                        events["OfferType"].dropna().unique()
+                                    )
                                 ],
                                 multi=True,
                                 placeholder="Filter by event type",
@@ -130,19 +147,12 @@ def create_legend(df: pd.DataFrame) -> list[Any]:
                         children=[
                             html.Div(
                                 className="legend-color-box",
-                                style={
-                                    "--legend-bg-light": color["bg"],
-                                    "--legend-bg-dark": color["bg_dark"],
-                                },
+                                style={"backgroundColor": color["bg"]},
                             ),
                             html.Span(
                                 f"{casino}",
                                 className="legend-text legend-gap",
-                                style={
-                                    "--legend-color-light": color["bg"],
-                                    "--legend-color-dark": color["bg_dark"],
-                                    "marginRight": "4px",
-                                },
+                                style={"color": color["bg"], "marginRight": "4px"},
                             ),
                         ],
                     )

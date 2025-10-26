@@ -13,7 +13,7 @@ Casino Calendar is a responsive Dash web application that visualises casino even
 - 🧠 Day and event modals with rich details and hotel booking helper content
 - 🌀 Toggle for displaying long-running events that span multiple days
 - 📱 Responsive design tuned for desktop, tablet, and mobile breakpoints
-- 🌗 Persistent light/dark theme toggle driven by Dash stores and client-side JS
+- 🌗 Persistent light/dark theme toggle driven by Dash stores and client-side JS, presented as a floating action button in the top-right corner
 - 🏷️ Automatic offer categorisation based on keyword analysis
 - 🛎️ Hotel booking links surfaced when a casino is selected from the legend
 - 🪵 Structured logging with rotation, HTTP log routing, and maintenance scripts
