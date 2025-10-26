@@ -8,8 +8,8 @@ echo ================================
 
 REM Resolve project root (parent of scripts directory) without changing CWD
 set "SCRIPT_DIR=%~dp0"
-for %%I in ("%SCRIPT_DIR%..") do set "SCRIPTS_DIR=%%~fI"
-for %%I in ("%SCRIPTS_DIR%..") do set "ROOT_DIR=%%~fI"
+for %%I in ("%SCRIPT_DIR%\..") do set "SCRIPTS_DIR=%%~fI"
+for %%I in ("%SCRIPTS_DIR%\..") do set "ROOT_DIR=%%~fI"
 echo Using project root: %ROOT_DIR%
 
 REM Determine expected venv path
