@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""
-Simple test script to verify the Casino Calendar application can be imported and run.
+"""Archived legacy script.
+
+This script previously validated imports for the deprecated ``app_components`` package. It
+is kept for historical reference only and should not be executed as part of the active
+test suite.
 """
 import os
 import sys
