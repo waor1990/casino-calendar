@@ -38,8 +38,8 @@
     --color-accent-rgb: 106 90 205;
     --color-casino-gold: #f3ba2f;
     --color-casino-gold-rgb: 243 186 47;
-    --color-background: #f4f0ff;
-    --color-page-background: radial-gradient(circle at 15% 20%, rgb(var(--color-accent-rgb) / 0.18) 0, rgb(var(--color-accent-rgb) / 0) 60%), radial-gradient(circle at 85% 15%, rgb(var(--color-casino-gold-rgb) / 0.18) 0, rgb(var(--color-casino-gold-rgb) / 0) 55%), #f7f2ff;
+    --color-background: #f2ede4;
+    --color-page-background: linear-gradient(160deg, #f5f0e8 0%, #f4eff6 55%, #f0e8ff 100%), radial-gradient(circle at 18% 24%, rgb(var(--color-accent-rgb) / 0.12) 0, rgb(var(--color-accent-rgb) / 0) 65%), radial-gradient(circle at 82% 18%, rgb(var(--color-casino-gold-rgb) / 0.14) 0, rgb(var(--color-casino-gold-rgb) / 0) 60%), #f3ede6;
     --color-white: #fff;
     --color-black: #000;
     --color-accent-light: rgb(var(--color-accent-rgb) / 0.1);
