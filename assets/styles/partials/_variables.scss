@@ -162,15 +162,15 @@ body {
 [data-theme="dark"] {
     /* Background */
     --color-background: #2d2d30;
-    --color-page-background: radial-gradient(circle at 20% 18%, rgb(var(--color-primary-dark-rgb) / 0.45) 0, rgb(var(--color-primary-dark-rgb) / 0) 60%), radial-gradient(circle at 78% 22%, rgb(var(--color-accent-rgb) / 0.25) 0, rgb(var(--color-accent-rgb) / 0) 55%), linear-gradient(135deg, rgb(8 8 20 / 0.98), rgb(3 3 12 / 0.98));
+    --color-page-background: radial-gradient(circle at 20% 18%, rgb(var(--color-primary-dark-rgb) / 0.45) 0, rgb(var(--color-primary-dark-rgb) / 0) 60%), radial-gradient(circle at 78% 22%, rgb(var(--color-accent-rgb) / 0.25) 0, rgb(var(--color-accent-rgb) / 0) 55%), linear-gradient(135deg, rgb(12 19 24 / 0.98), rgb(6 10 16 / 0.98));
 
     /* Primary color tokens used across dark theme */
     --color-primary: #8a90ff;
     /* Main primary used instead of accent in dark */
-    --color-primary-dark: #00008b;
+    --color-primary-dark: #7dd3fc;
     /* Supporting tone for shadows/borders */
-    --color-primary-dark-rgb: 0 0 139;
-    --color-primary-light: rgb(var(--color-primary-dark-rgb) / 0.25);
+    --color-primary-dark-rgb: 125 211 252;
+    --color-primary-light: rgb(var(--color-primary-dark-rgb) / 0.2);
     /* Subtle primary-tinted backgrounds */
 
     /* Base text/background tokens */
@@ -184,12 +184,12 @@ body {
     --color-day-header-bg: #2d2d30;
     --color-border-primary: rgb(var(--color-primary-dark-rgb) / 0.75);
     --color-border-grid: rgb(var(--color-primary-dark-rgb) / 0.6);
-    --color-border-grid-light: rgb(var(--color-primary-dark-rgb) / 0.25);
+    --color-border-grid-light: rgb(var(--color-primary-dark-rgb) / 0.3);
 
     /* Shadows - light blue-ish */
-    --box-shadow-light: 0 0.45rem 1.1rem rgb(var(--color-primary-dark-rgb) / 0.55);
-    --box-shadow-modal: 0 0.9rem 2.4rem rgb(var(--color-primary-dark-rgb) / 0.7);
-    --box-shadow-subtle: 0 0.3rem 0.9rem rgb(var(--color-primary-dark-rgb) / 0.45);
+    --box-shadow-light: 0 0.45rem 1.1rem rgb(var(--color-primary-dark-rgb) / 0.45);
+    --box-shadow-modal: 0 0.9rem 2.4rem rgb(var(--color-primary-dark-rgb) / 0.65);
+    --box-shadow-subtle: 0 0.3rem 0.9rem rgb(var(--color-primary-dark-rgb) / 0.35);
     .event-block-grid,
     .event-block-day {
         z-index: 25 !important;
