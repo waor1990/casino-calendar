@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 
 
-def test_dark_theme_uses_primary_dark_instead_of_accent():
+def test_dark_theme_exposes_accent_token():
     variables = Path("assets/styles/partials/_variables.scss").read_text(
         encoding="utf-8"
     )
@@ -10,7 +10,11 @@ def test_dark_theme_uses_primary_dark_instead_of_accent():
         r'\[data-theme="dark"\][^{]*{([^}]*)}', variables, re.MULTILINE | re.DOTALL
     )
     assert dark_block, "dark theme block not found"
-    assert "--color-accent" not in dark_block.group(1)
+    dark_content = dark_block.group(1)
+    assert "--color-accent" in dark_content
+    assert "--color-accent-rgb" in dark_content
+    assert "#7dd3fc" not in dark_content.lower()
+    assert "125 211 252" not in dark_content
 
     scss_paths = [
         Path("assets/styles/partials/_components.scss"),
@@ -20,15 +24,14 @@ def test_dark_theme_uses_primary_dark_instead_of_accent():
     pattern = re.compile(
         r'\[data-theme="dark"\][^{]*{([^}]*)}', re.MULTILINE | re.DOTALL
     )
-    found_primary = False
+    found_accent_usage = False
     for path in scss_paths:
         content = path.read_text(encoding="utf-8")
         for match in pattern.finditer(content):
             block = match.group(1)
-            assert "var(--color-accent" not in block
-            if "var(--color-primary)" in block:
-                found_primary = True
-    assert found_primary, "no primary dark usage in dark theme blocks"
+            if "var(--color-accent" in block:
+                found_accent_usage = True
+    assert found_accent_usage, "dark theme blocks should use accent token"
 
 
 def test_event_detail_span_uses_bg_color():

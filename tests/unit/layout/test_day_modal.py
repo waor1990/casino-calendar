@@ -93,11 +93,13 @@ def test_show_event_modal_handles_duplicate(monkeypatch, casino):
         [0],
         [1111],
         [0],
+        [0],
         GRID_EVENT_IDS,
         DAY_COLUMN_IDS,
         0,
         1024,
         [],
+        None,
     )
     assert result[1] == "modal show"
     assert result[4] is True
@@ -121,14 +123,16 @@ def test_show_event_modal_allows_zero_click_value(monkeypatch, casino):
         0,
         0,
         [0],
-        [0],
+        [None],
         [1234],
+        [None],
         [0],
         GRID_EVENT_IDS,
         DAY_COLUMN_IDS,
         0,
         1024,
         [],
+        None,
     )
     assert result[1] == "modal show"
 
@@ -148,11 +152,13 @@ def test_show_event_modal_uses_state_when_context_missing(monkeypatch, casino):
         [0],
         [7890],
         [0],
+        [0],
         GRID_EVENT_IDS,
         DAY_COLUMN_IDS,
         0,
         1024,
         [],
+        None,
     )
 
     assert result[1] == "modal show"
@@ -174,11 +180,13 @@ def test_show_event_modal_zero_click_without_timestamp(monkeypatch, casino):
             [0],
             [0],
             [0],
+            [0],
             GRID_EVENT_IDS,
             DAY_COLUMN_IDS,
             0,
             1024,
             [],
+            None,
         )
 
 
@@ -198,11 +206,13 @@ def test_show_event_modal_none_click_value_prevents_update(monkeypatch, casino):
             [0],
             [None],
             [0],
+            [0],
             GRID_EVENT_IDS,
             DAY_COLUMN_IDS,
             0,
             1024,
             [],
+            None,
         )
 
 
@@ -220,11 +230,13 @@ def test_show_event_modal_close(monkeypatch, casino):
         [0],
         [0],
         [0],
+        [0],
         GRID_EVENT_IDS,
         DAY_COLUMN_IDS,
         0,
         1024,
         [],
+        None,
     )
     assert result[1] == "modal closing"
     assert result[3] == 0
@@ -241,6 +253,7 @@ def test_close_timer_ignores_reopened_modal(monkeypatch, casino):
         1,
         1,
         0,
+        [0],
         [0],
         [0],
         [0],
@@ -280,12 +293,14 @@ def test_day_column_allows_zero_click_value(monkeypatch, casino):
         [0],
         [0],
         [0],
+        [0],
         [4567],
         GRID_EVENT_IDS,
         DAY_COLUMN_IDS,
         0,
         1024,
         [],
+        None,
     )
     assert result[6] == "modal show"
 
@@ -305,12 +320,14 @@ def test_day_column_none_click_value_prevents_update(monkeypatch, casino):
             [0],
             [0],
             [0],
+            [0],
             [None],
             GRID_EVENT_IDS,
             DAY_COLUMN_IDS,
             0,
             1024,
             [],
+            None,
         )
 
 

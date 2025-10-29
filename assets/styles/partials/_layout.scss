@@ -7,6 +7,8 @@ body {
     height: 100%;
     overflow: hidden;
     margin: 0;
+    background: var(--color-page-background, var(--color-background));
+    background-attachment: fixed;
 }
 
 @include mixins.mobile {
