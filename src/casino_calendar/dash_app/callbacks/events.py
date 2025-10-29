@@ -7,12 +7,11 @@ from datetime import datetime, timedelta
 from typing import Any, Tuple
 
 import dash
-from dash import ALL, Input, Output, State, dcc, html, no_update
-from dash._callback import NoUpdate
-
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color, resolve_casino_color
 from casino_calendar.settings import APP_TIMEZONE
+from dash import ALL, Input, Output, State, dcc, html, no_update
+from dash._callback import NoUpdate
 
 from ..services.layout_state import build_event_info_rows, to_naive_utc
 from ..visualization import charts as day_charts
@@ -136,11 +135,8 @@ def register_callbacks(app, df) -> None:
             triggered_id = _normalize_pattern_id(ctx.triggered_id)
             logger.debug("Trigger source: %s", triggered_id)
 
-            triggered_prop = ""
-            if ctx.triggered:
-                prop_id = ctx.triggered[-1].get("prop_id", "")
-                if prop_id:
-                    triggered_prop = prop_id.rpartition(".")[2]
+            # Note: We intentionally don't parse or use the triggered property name
+            # here; the callback logic keys off component IDs and timestamps.
 
             def _lookup_click_value(target_id: Any, position: int) -> Any:
                 """Return a stored value for a pattern-matched component."""

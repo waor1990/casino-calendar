@@ -410,8 +410,12 @@ def archive_and_trim_by_days(
         for month_key, month_lines in buckets.items():
             # Skip files that would contain only 2025-10-12 entries
             dates = {
-                (_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None)
-                for l in month_lines
+                (
+                    _parse_log_timestamp(line).date()
+                    if _parse_log_timestamp(line)
+                    else None
+                )
+                for line in month_lines
             }
             if dates == {datetime(2025, 10, 12).date()}:
                 continue
@@ -476,8 +480,8 @@ def archive_and_trim_by_month(
 
     for key, lines in buckets.items():
         dates = {
-            (_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None)
-            for l in lines
+            (_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None)
+            for line in lines
         }
         if dates == {datetime(2025, 10, 12).date()}:
             continue
@@ -542,8 +546,8 @@ def copy_lines_by_days(
     copied_payload: List[str] = []
     for month_key, month_lines in buckets.items():
         dates = {
-            (_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None)
-            for l in month_lines
+            (_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None)
+            for line in month_lines
         }
         if dates == {datetime(2025, 10, 12).date()}:
             continue
@@ -582,8 +586,8 @@ def copy_current_log(log_file: str, archive_dir: Optional[str] = None) -> str:
     payload: List[str] = []
     for month_key, month_lines in buckets.items():
         dates = {
-            (_parse_log_timestamp(l).date() if _parse_log_timestamp(l) else None)
-            for l in month_lines
+            (_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None)
+            for line in month_lines
         }
         if dates == {datetime(2025, 10, 12).date()}:
             continue
