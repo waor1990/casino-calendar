@@ -338,6 +338,7 @@ h1,
     z-index: 5;
 }
 
+
 [data-theme="dark"] {
 
     .calendar-title,
@@ -347,7 +348,7 @@ h1,
     .day-modal-title,
     .event-label strong,
     .no-events {
-        color: var(--color-primary);
+        color: var(--color-accent);
     }
 
     .day-label,
@@ -356,16 +357,16 @@ h1,
     .day-label-grid,
     .overflow-toggle,
     .hour-label {
-        color: var(--color-primary);
+        color: var(--color-accent);
     }
 
     .day-label.day-modal-title {
-        color: var(--color-primary);
+        color: var(--color-accent);
     }
 
     .legend-selected {
-        outline: var(--border-thin) solid var(--color-primary);
-        background-color: var(--color-primary);
+        outline: var(--border-thin) solid var(--color-accent-dark);
+        background-color: var(--color-accent-light);
     }
 
     .event-type-dropdown {
@@ -380,20 +381,20 @@ h1,
         [class~="Select-option"],
         [class~="VirtualizedSelectOption"],
         [class~="Select-input"] input {
-            color: var(--color-primary);
+            color: var(--color-accent);
         }
     }
 
     [id^="react-select-"][id$="--list"] [class~="VirtualizedSelectOption"] {
-        color: var(--color-primary);
+        color: var(--color-accent);
     }
 
     #hotel-booking-container a {
-        color: var(--color-primary);
-        border-color: var(--color-primary);
+        color: var(--color-accent);
+        border-color: var(--color-accent);
 
         &:hover {
-            background-color: var(--color-primary);
+            background-color: var(--color-accent);
             color: var(--color-background);
             transform: translateY(-2px);
             box-shadow: var(--box-shadow-light);

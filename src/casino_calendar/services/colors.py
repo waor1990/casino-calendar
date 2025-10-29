@@ -133,14 +133,16 @@ def _ensure_dark_variants(colors: dict[str, str]) -> dict[str, str]:
     """Return a copy of ``colors`` with guaranteed dark-mode keys."""
 
     normalised_bg = _normalize_hex(colors.get("bg")) or "#627d98"
-    normalised_fg = colors.get("text")
+    normalised_fg = _normalize_hex(colors.get("text")) or colors.get("text")
     if not normalised_fg:
         normalised_fg = "#000000" if _is_perceived_light(normalised_bg) else "#ffffff"
 
     normalised_bg_dark = _normalize_hex(colors.get("bg_dark")) or _soften_color(
         normalised_bg
     )
-    normalised_fg_dark = colors.get("text_dark")
+    normalised_fg_dark = _normalize_hex(colors.get("text_dark")) or colors.get(
+        "text_dark"
+    )
     if not normalised_fg_dark:
         normalised_fg_dark = (
             "#1f1f2e" if _is_perceived_light(normalised_bg_dark) else "#f7f4ff"

@@ -243,7 +243,7 @@
 
 [data-theme="dark"] {
     .event-block-day {
-        background-color: var(--bg-dark, var(--bg));
+        background-color: var(--bg);
         color: var(--fg-dark, var(--fg));
     }
 
@@ -252,7 +252,7 @@
     }
 
     .event-block-day:hover::after {
-        background-color: var(--bg-dark, var(--bg));
+        background-color: var(--bg);
         color: var(--fg-dark, var(--fg));
     }
 }
