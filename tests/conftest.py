@@ -1,5 +1,6 @@
 """Pytest configuration, fixtures, and logging hooks for Casino Calendar tests."""
 
+import importlib
 import os
 import sys
 from pathlib import Path
@@ -14,11 +15,13 @@ SRC_DIR = PROJECT_ROOT / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from casino_calendar.logging import config as logging_config
 
-MAINTENANCE_LOGGER = logging_config.setup_maintenance_logger(
-    "casino_calendar.tests.pytest"
-)
+def _setup_maintenance_logger():
+    logging_config = importlib.import_module("casino_calendar.logging.config")
+    return logging_config.setup_maintenance_logger("casino_calendar.tests.pytest")
+
+
+MAINTENANCE_LOGGER = _setup_maintenance_logger()
 
 
 @pytest.fixture(autouse=True)
