@@ -13,6 +13,8 @@ def test_dark_theme_exposes_accent_token():
     dark_content = dark_block.group(1)
     assert "--color-accent" in dark_content
     assert "--color-accent-rgb" in dark_content
+    assert "#7dd3fc" not in dark_content.lower()
+    assert "125 211 252" not in dark_content
 
     scss_paths = [
         Path("assets/styles/partials/_components.scss"),
