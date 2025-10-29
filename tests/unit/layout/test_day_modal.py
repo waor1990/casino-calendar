@@ -123,9 +123,9 @@ def test_show_event_modal_allows_zero_click_value(monkeypatch, casino):
         0,
         0,
         [0],
-        [0],
+        [None],
         [1234],
-        [0],
+        [None],
         [0],
         GRID_EVENT_IDS,
         DAY_COLUMN_IDS,
@@ -263,7 +263,6 @@ def test_close_timer_ignores_reopened_modal(monkeypatch, casino):
         0,
         1024,
         [],
-        None,
         "modal show",
     )
     assert result[0] is no_update
