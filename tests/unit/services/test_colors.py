@@ -24,7 +24,12 @@ def test_get_color_returns_configured_values(monkeypatch):
     monkeypatch.setattr(colors, "get_config", fake_get_config)
 
     result = colors.get_color()
-    assert result == {"Test Casino": {"bg": "#fff", "text": "#000"}}
+    assert set(result) == {"Test Casino"}
+    entry = result["Test Casino"]
+    assert entry["bg"] == "#ffffff"
+    assert entry["text"] == "#000000"
+    assert entry["bg_dark"].startswith("#")
+    assert entry["text_dark"].startswith("#")
 
 
 def test_get_color_falls_back_to_defaults(monkeypatch):
