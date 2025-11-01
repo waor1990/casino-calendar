@@ -8,8 +8,9 @@ h1,
     text-align: center;
     color: var(--color-accent);
     background-color: var(--color-background);
-    box-shadow: var(--box-shadow-light);
+    box-shadow: var(--box-shadow-header);
     border-radius: var(--border-radius-sm);
+    border: var(--border-thick) solid var(--color-border-grid);
     padding: var(--padding-base);
     margin: 0 auto;
     display: inline-flex;

@@ -63,6 +63,7 @@
     --box-shadow-light: 0 0.28rem 0.78rem rgb(var(--color-primary-dark-rgb) / 18%);
     --box-shadow-subtle: 0 0.2rem 0.52rem rgb(var(--color-primary-dark-rgb) / 14%);
     --box-shadow-modal: 0 0.6rem 1.65rem rgb(var(--color-primary-dark-rgb) / 22%);
+    --box-shadow-header: 0 1.1rem 2.8rem rgb(var(--color-primary-dark-rgb) / 38%);
 
     /* Modal sizing */
     --modal-max-width: clamp(20rem, 90vw, 37.5rem);
@@ -193,6 +194,7 @@ body {
     --box-shadow-light: 0 0.45rem 1.1rem rgb(var(--color-primary-rgb) / 42%);
     --box-shadow-modal: 0 0.9rem 2.4rem rgb(var(--color-primary-rgb) / 60%);
     --box-shadow-subtle: 0 0.3rem 0.9rem rgb(var(--color-primary-rgb) / 32%);
+    --box-shadow-header: 0 0.65rem 1.8rem rgb(var(--color-primary-rgb) / 32%);
     .event-block-grid,
     .event-block-day {
         z-index: 25 !important;
