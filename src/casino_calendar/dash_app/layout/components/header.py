@@ -5,9 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 import pandas as pd
+from dash import dcc, html
+
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color
-from dash import dcc, html
 
 logger = setup_logger(__name__)
 
@@ -18,6 +19,22 @@ def build_header(events: pd.DataFrame) -> html.Div:
     """Return the sticky page header composed of controls and legend."""
 
     logger.debug("Building sticky header")
+
+    offer_series = events["OfferType"].dropna().astype(str)
+    offer_counts = offer_series.value_counts()
+    offer_types = sorted(offer_counts.index.tolist())
+    dropdown_options = [
+        {
+            "label": f"{offer_type} ({offer_counts.get(offer_type, 0)})",
+            "value": offer_type,
+        }
+        for offer_type in offer_types
+    ]
+    longest_label = max(
+        (len(option["label"]) for option in dropdown_options),
+        default=len("Filter by event type"),
+    )
+    dropdown_min_width = longest_label + 2
 
     return html.Div(
         [
@@ -72,19 +89,6 @@ def build_header(events: pd.DataFrame) -> html.Div:
                             html.Div(
                                 create_legend(events), className="legend-container"
                             ),
-                            dcc.Dropdown(
-                                id="event-type-filter",
-                                options=[
-                                    {"label": offer_type, "value": offer_type}
-                                    for offer_type in sorted(
-                                        events["OfferType"].dropna().unique()
-                                    )
-                                ],
-                                multi=True,
-                                placeholder="Filter by event type",
-                                className="event-type-dropdown",
-                                value=[],
-                            ),
                             html.Div(
                                 id="hotel-booking-container",
                                 style={
@@ -117,6 +121,22 @@ def build_header(events: pd.DataFrame) -> html.Div:
                 },
             ),
             html.Div(id="week-label", className="fade-text week-label", children=""),
+            html.Div(
+                dcc.Dropdown(
+                    id="event-type-filter",
+                    options=dropdown_options,
+                    multi=True,
+                    placeholder="Filter by event type",
+                    className="event-type-dropdown",
+                    value=[],
+                    style={
+                        "width": "auto",
+                        "minWidth": f"{dropdown_min_width}ch",
+                        "maxWidth": "100%",
+                    },
+                ),
+                className="event-filter-row",
+            ),
             html.Div(id="day-label-row", className="day-label-wrapper"),
         ],
         className="sticky-header",
