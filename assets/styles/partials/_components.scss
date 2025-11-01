@@ -154,11 +154,39 @@ h1,
 .event-type-dropdown {
     width: 100%;
 
-    [class~="Select-control"],
+    [class~="Select-control"] {
+        background-color: var(--color-background);
+        border: var(--border-thin) solid #0073ff;
+        box-shadow: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    [class~="Select-control"].is-focused,
+    [class~="Select-control"]:hover {
+        border-color: #0073ff;
+        box-shadow: none;
+    }
+
     [class~="Select-menu-outer"],
     [class~="Select-menu"] {
         background-color: var(--color-background);
         border: var(--border-thin) solid var(--color-border-grid);
+    }
+
+    [class~="Select-value"] {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--padding-xxs);
+    }
+
+    [class~="Select-value-label"] {
+        order: 1;
+    }
+
+    [class~="Select-value-icon"] {
+        order: 2;
+        margin: 0;
+        margin-left: var(--padding-xxs);
     }
 
     [class~="Select-value-label"],
@@ -168,6 +196,24 @@ h1,
     [class~="Select-input"] input {
         color: var(--color-accent);
     }
+
+    [class~="Select-input"] input {
+        caret-color: transparent;
+    }
+}
+
+.event-filter-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--padding-small);
+    margin: 0 var(--padding-base) var(--gap-legend);
+}
+
+.event-filter-row .event-type-dropdown {
+    width: fit-content;
+    max-width: 100%;
+    flex: 0 1 auto;
 }
 
 [id^="react-select-"][id$="--list"] [class~="VirtualizedSelectOption"] {
@@ -372,11 +418,22 @@ h1,
     }
 
     .event-type-dropdown {
-        [class~="Select-control"],
         [class~="Select-menu-outer"],
         [class~="Select-menu"] {
             background-color: var(--color-background);
             border: var(--border-thin) solid var(--color-border-grid);
+        }
+
+        [class~="Select-control"] {
+            background-color: var(--color-background);
+            border: var(--border-thin) solid #66aaff;
+            box-shadow: none;
+        }
+
+        [class~="Select-control"].is-focused,
+        [class~="Select-control"]:hover {
+            border-color: #66aaff;
+            box-shadow: none;
         }
 
         [class~="Select-value-label"],
@@ -385,6 +442,7 @@ h1,
         [class~="VirtualizedSelectOption"],
         [class~="Select-input"] input {
             color: var(--color-accent);
+            caret-color: transparent;
         }
     }
 
