@@ -50,8 +50,8 @@
     --color-day-header-bg: var(--color-background);
     --color-border-primary: var(--color-primary-dark);
     --color-border-accent: var(--color-accent);
-    --color-border-grid: rgb(var(--color-primary-dark-rgb) / 35%);
-    --color-border-grid-light: rgb(var(--color-primary-dark-rgb) / 18%);
+    --color-border-grid: var(--color-primary-dark);
+    --color-border-grid-light: var(--color-primary-dark);
 
     /* Borders and shadows */
     --border-radius-lg: 0.625rem;
@@ -186,13 +186,13 @@ body {
     --color-day-header-bg: #2d2d30;
     --color-border-primary: rgb(var(--color-accent-rgb) / 70%);
     --color-border-accent: var(--color-accent);
-    --color-border-grid: rgb(var(--color-accent-rgb) / 45%);
-    --color-border-grid-light: rgb(var(--color-accent-rgb) / 20%);
+    --color-border-grid: var(--color-primary);
+    --color-border-grid-light: var(--color-primary);
 
     /* Shadows tuned to casino purples */
-    --box-shadow-light: 0 0.45rem 1.1rem rgb(var(--color-accent-rgb) / 42%);
-    --box-shadow-modal: 0 0.9rem 2.4rem rgb(var(--color-accent-rgb) / 60%);
-    --box-shadow-subtle: 0 0.3rem 0.9rem rgb(var(--color-accent-rgb) / 32%);
+    --box-shadow-light: 0 0.45rem 1.1rem rgb(var(--color-primary-rgb) / 42%);
+    --box-shadow-modal: 0 0.9rem 2.4rem rgb(var(--color-primary-rgb) / 60%);
+    --box-shadow-subtle: 0 0.3rem 0.9rem rgb(var(--color-primary-rgb) / 32%);
     .event-block-grid,
     .event-block-day {
         z-index: 25 !important;

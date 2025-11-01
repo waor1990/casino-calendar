@@ -157,6 +157,7 @@ h1,
     [class~="Select-menu-outer"],
     [class~="Select-menu"] {
         background-color: var(--color-background);
+        border: var(--border-thin) solid var(--color-border-grid);
     }
 
     [class~="Select-value-label"],
@@ -374,6 +375,7 @@ h1,
         [class~="Select-menu-outer"],
         [class~="Select-menu"] {
             background-color: var(--color-background);
+            border: var(--border-thin) solid var(--color-border-grid);
         }
 
         [class~="Select-value-label"],
