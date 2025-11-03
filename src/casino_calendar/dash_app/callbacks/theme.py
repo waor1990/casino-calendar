@@ -59,6 +59,14 @@ def register_callbacks(app, _df) -> None:
                 console.log('[CasinoCalendar] Updated button for theme', theme);
             }
 
+            if (window.CasinoCalendar && typeof window.CasinoCalendar.updateLegendTextColors === 'function') {
+                try {
+                    window.CasinoCalendar.updateLegendTextColors(theme === 'dark' ? 'dark' : 'light');
+                } catch (error) {
+                    console.error('[CasinoCalendar] Failed to update legend text colors', error);
+                }
+            }
+
             return '';
         }
         """,

@@ -113,6 +113,7 @@ h1,
     gap: var(--gap-legend);
     margin-bottom: var(--padding-small);
     width: 100%;
+    display: block;
 
     @include mixins.mobile {
         font-size: var(--font-subtitle);
