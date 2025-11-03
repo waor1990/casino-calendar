@@ -109,7 +109,7 @@ h1,
     font-size: clamp(var(--font-subtitle), 2.5vw, var(--font-header));
     font-weight: var(--font-weight-bold);
     text-align: center;
-    color: var(--color-accent);
+    color: var(--color-sticky-header-text);
     gap: var(--gap-legend);
     margin-bottom: var(--padding-small);
     width: 100%;
@@ -194,7 +194,7 @@ h1,
     [class~="Select-option"],
     [class~="VirtualizedSelectOption"],
     [class~="Select-input"] input {
-        color: var(--color-accent);
+        color: var(--color-sticky-header-text);
     }
 
     [class~="Select-input"] input {
@@ -217,7 +217,7 @@ h1,
 }
 
 [id^="react-select-"][id$="--list"] [class~="VirtualizedSelectOption"] {
-    color: var(--color-accent);
+    color: var(--color-sticky-header-text);
 }
 
 /* Hotel booking link styles */
@@ -292,7 +292,7 @@ h1,
     width: 80%;
     font-size: clamp(var(--font-xs), 3.5vw, var(--font-base));
     padding: var(--padding-base);
-    color: var(--color-primary);
+    color: var(--color-sticky-header-text);
 }
 
 .overflow-title {
@@ -405,7 +405,7 @@ h1,
     .day-label-grid,
     .overflow-toggle,
     .hour-label {
-        color: var(--color-accent);
+        color: var(--color-sticky-header-text);
     }
 
     .day-label.day-modal-title {
@@ -446,13 +446,13 @@ h1,
         [class~="Select-option"],
         [class~="VirtualizedSelectOption"],
         [class~="Select-input"] input {
-            color: var(--color-accent);
+            color: var(--color-sticky-header-text);
             caret-color: transparent;
         }
     }
 
     [id^="react-select-"][id$="--list"] [class~="VirtualizedSelectOption"] {
-        color: var(--color-accent);
+        color: var(--color-sticky-header-text);
     }
 
     #hotel-booking-container a {
