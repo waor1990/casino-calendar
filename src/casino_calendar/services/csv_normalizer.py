@@ -6,7 +6,7 @@ import csv
 import re
 import subprocess
 from dataclasses import dataclass
-from datetime import datetime, date, time, timedelta
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import Iterable, Sequence
 
@@ -204,9 +204,7 @@ def normalize_csv(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8", newline="") as fh:
-        writer = csv.DictWriter(
-            fh, fieldnames=EXPECTED_COLUMNS, lineterminator="\n"
-        )
+        writer = csv.DictWriter(fh, fieldnames=EXPECTED_COLUMNS, lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow(
@@ -284,7 +282,9 @@ def _normalise_row(
     if not casino:
         raise ValueError(f"Row {row_number}: missing casino name")
 
-    location_segments = _collect_values(row, categories.get(_CATEGORY_LOCATION_PRIMARY, ()))
+    location_segments = _collect_values(
+        row, categories.get(_CATEGORY_LOCATION_PRIMARY, ())
+    )
     location_parts = _collect_values(row, categories.get(_CATEGORY_LOCATION_PART, ()))
     location = _combine_segments(location_segments, ", ")
     if location_parts:
@@ -300,7 +300,9 @@ def _normalise_row(
         offer = f"{offer} - {extra_text}" if offer else extra_text
 
     start_dt, start_warning = _resolve_datetime(
-        datetime_values=_collect_values(row, categories.get(_CATEGORY_START_DATETIME, ())),
+        datetime_values=_collect_values(
+            row, categories.get(_CATEGORY_START_DATETIME, ())
+        ),
         date_values=_collect_values(row, categories.get(_CATEGORY_START_DATE, ())),
         time_values=_collect_values(row, categories.get(_CATEGORY_START_TIME, ())),
         fallback=time(0, 0),
@@ -311,7 +313,9 @@ def _normalise_row(
         warnings.append(start_warning)
 
     end_dt, end_warning = _resolve_datetime(
-        datetime_values=_collect_values(row, categories.get(_CATEGORY_END_DATETIME, ())),
+        datetime_values=_collect_values(
+            row, categories.get(_CATEGORY_END_DATETIME, ())
+        ),
         date_values=_collect_values(row, categories.get(_CATEGORY_END_DATE, ())),
         time_values=_collect_values(row, categories.get(_CATEGORY_END_TIME, ())),
         fallback=time(23, 59),

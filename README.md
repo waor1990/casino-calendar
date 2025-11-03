@@ -85,7 +85,7 @@ flake8
 python app.py
 ```
 
-When using `python-dotenv`, environment variables are loaded from `.env` in the project root. See [Environment configuration](#environment-configuration) for details.
+When using `python-dotenv`, environment variables are loaded from `.env` in the project root. See [Environment configuration] (#environment-configuration) for details.
 
 ---
 
@@ -192,4 +192,3 @@ Issues and feature ideas are tracked in [`docs/guides/TODO.md`](docs/guides/TODO
 - [docs/architecture/logging_system.md](docs/architecture/logging_system.md)
 - [docs/guides/handoff.md](docs/guides/handoff.md)
 - [docs/operations/log_management.md](docs/operations/log_management.md)
-
