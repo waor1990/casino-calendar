@@ -8,7 +8,7 @@ h1,
     text-align: center;
     color: var(--color-accent);
     background-color: var(--color-background);
-    box-shadow: var(--box-shadow-header);
+    box-shadow: 0 0 16px rgba(0, 115, 255, 0.28);
     border-radius: var(--border-radius-sm);
     border: var(--border-thick) solid var(--color-border-grid);
     padding: var(--padding-base);
@@ -90,7 +90,7 @@ h1,
 
 [data-theme="dark"] .theme-toggle-fab {
     background-color: var(--color-background);
-    box-shadow: var(--box-shadow-light);
+    box-shadow: 0 0 14px 10px rgba(102, 170, 255, 0.28);
 }
 
 .calendar-title-home-button {
@@ -109,10 +109,11 @@ h1,
     font-size: clamp(var(--font-subtitle), 2.5vw, var(--font-header));
     font-weight: var(--font-weight-bold);
     text-align: center;
-    color: var(--color-accent);
+    color: var(--color-sticky-header-text);
     gap: var(--gap-legend);
     margin-bottom: var(--padding-small);
     width: 100%;
+    display: block;
 
     @include mixins.mobile {
         font-size: var(--font-subtitle);
@@ -154,11 +155,39 @@ h1,
 .event-type-dropdown {
     width: 100%;
 
-    [class~="Select-control"],
+    [class~="Select-control"] {
+        background-color: var(--color-background);
+        border: var(--border-thin) solid #0073ff;
+        box-shadow: none;
+        transition: border-color 0.2s ease;
+    }
+
+    [class~="Select-control"].is-focused,
+    [class~="Select-control"]:hover {
+        border-color: #0073ff;
+        box-shadow: none;
+    }
+
     [class~="Select-menu-outer"],
     [class~="Select-menu"] {
         background-color: var(--color-background);
         border: var(--border-thin) solid var(--color-border-grid);
+    }
+
+    [class~="Select-value"] {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--padding-xxs);
+    }
+
+    [class~="Select-value-label"] {
+        order: 1;
+    }
+
+    [class~="Select-value-icon"] {
+        order: 2;
+        margin: 0;
+        margin-left: var(--padding-xxs);
     }
 
     [class~="Select-value-label"],
@@ -166,12 +195,30 @@ h1,
     [class~="Select-option"],
     [class~="VirtualizedSelectOption"],
     [class~="Select-input"] input {
-        color: var(--color-accent);
+        color: var(--color-sticky-header-text);
+    }
+
+    [class~="Select-input"] input {
+        caret-color: transparent;
     }
 }
 
+.event-filter-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--padding-small);
+    margin: 0 var(--padding-base) var(--gap-legend);
+}
+
+.event-filter-row .event-type-dropdown {
+    width: fit-content;
+    max-width: 100%;
+    flex: 0 1 auto;
+}
+
 [id^="react-select-"][id$="--list"] [class~="VirtualizedSelectOption"] {
-    color: var(--color-accent);
+    color: var(--color-sticky-header-text);
 }
 
 /* Hotel booking link styles */
@@ -246,7 +293,7 @@ h1,
     width: 80%;
     font-size: clamp(var(--font-xs), 3.5vw, var(--font-base));
     padding: var(--padding-base);
-    color: var(--color-primary);
+    color: var(--color-sticky-header-text);
 }
 
 .overflow-title {
@@ -359,11 +406,15 @@ h1,
     .day-label-grid,
     .overflow-toggle,
     .hour-label {
-        color: var(--color-accent);
+        color: var(--color-sticky-header-text);
     }
 
     .day-label.day-modal-title {
         color: var(--color-accent);
+    }
+
+    .calendar-title {
+        box-shadow: 0 0 16px 12px rgba(102, 170, 255, 0.28);
     }
 
     .legend-selected {
@@ -372,11 +423,23 @@ h1,
     }
 
     .event-type-dropdown {
-        [class~="Select-control"],
         [class~="Select-menu-outer"],
         [class~="Select-menu"] {
             background-color: var(--color-background);
             border: var(--border-thin) solid var(--color-border-grid);
+        }
+
+        [class~="Select-control"] {
+            background-color: var(--color-background);
+            border: var(--border-thin) solid #66aaff;
+            box-shadow: none;
+            transition: border-color 0.2s ease;
+        }
+
+        [class~="Select-control"].is-focused,
+        [class~="Select-control"]:hover {
+            border-color: #66aaff;
+            box-shadow: none;
         }
 
         [class~="Select-value-label"],
@@ -384,12 +447,13 @@ h1,
         [class~="Select-option"],
         [class~="VirtualizedSelectOption"],
         [class~="Select-input"] input {
-            color: var(--color-accent);
+            color: var(--color-sticky-header-text);
+            caret-color: transparent;
         }
     }
 
     [id^="react-select-"][id$="--list"] [class~="VirtualizedSelectOption"] {
-        color: var(--color-accent);
+        color: var(--color-sticky-header-text);
     }
 
     #hotel-booking-container a {

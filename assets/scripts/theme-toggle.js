@@ -42,6 +42,32 @@
         }
     }
 
+    window.CasinoCalendar = window.CasinoCalendar || {};
+
+    function updateLegendAppearance(theme) {
+        const spans = document.querySelectorAll('.legend-text[data-color]');
+        spans.forEach((span) => {
+            const baseColor = span.getAttribute('data-color') || '';
+            const darkColor = span.getAttribute('data-dark-color') || baseColor;
+            const targetColor = theme === 'dark' ? darkColor : baseColor;
+
+            if (targetColor) {
+                span.style.color = targetColor;
+            }
+        });
+
+    }
+
+    window.CasinoCalendar.updateLegendTextColors = function (theme) {
+        try {
+            const normalizedTheme = theme === 'dark' ? 'dark' : 'light';
+            window.CasinoCalendar.activeTheme = normalizedTheme;
+            updateLegendAppearance(normalizedTheme);
+        } catch (error) {
+            log('error', `Failed to update legend text colors: ${error.message}`, error);
+        }
+    };
+
     function applyTheme(theme) {
         const root = document.documentElement;
 
@@ -54,12 +80,14 @@
             // Set dark3 background color (#212121) as the standard dark theme
             root.style.setProperty('--color-background', '#212121');
             log('info', 'Applied dark theme with Material Design background');
+            window.CasinoCalendar.updateLegendTextColors('dark');
             return 'dark';
         }
 
         // Remove any custom background override for light theme
         root.style.removeProperty('--color-background');
         log('info', 'Applied light theme');
+        window.CasinoCalendar.updateLegendTextColors('light');
         return 'light';
     }
 
@@ -77,6 +105,31 @@
             }
 
             const currentTheme = applyTheme(theme);
+
+            function setupLegendObserver() {
+                const legendContainer = document.querySelector('.legend-container');
+                if (!legendContainer) {
+                    log('debug', 'Legend container not found for observer');
+                    return;
+                }
+
+                const legendObserver = new MutationObserver(() => {
+                    const activeTheme =
+                        window.CasinoCalendar.activeTheme || currentTheme || 'light';
+                    window.CasinoCalendar.updateLegendTextColors(activeTheme);
+                });
+
+                legendObserver.observe(legendContainer, {
+                    childList: true,
+                    subtree: true,
+                });
+
+                if (window.CasinoCalendar.legendObserver) {
+                    window.CasinoCalendar.legendObserver.disconnect();
+                }
+                window.CasinoCalendar.legendObserver = legendObserver;
+                log('info', 'Legend observer attached');
+            }
 
             // Wait for Dash to render the button, with retry logic
             function findThemeButton(attempts = 0) {
@@ -113,6 +166,7 @@
                         }
                     }
                 });
+                setupLegendObserver();
             });
 
             // Start observing
@@ -125,6 +179,8 @@
             setTimeout(() => observer.disconnect(), 5000);
 
             findThemeButton();
+            setupLegendObserver();
+            window.CasinoCalendar.updateLegendTextColors(currentTheme || 'light');
             log('info', 'Theme toggle script initialized successfully');
         }, 'Theme toggle initialization');
     });

@@ -6,9 +6,10 @@ from uuid import uuid4
 
 import dash
 import pandas as pd
+from dash import ALL, Input, Output, State, html, no_update
+
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.settings import APP_TIMEZONE
-from dash import ALL, Input, Output, State, html
 
 from ..layout import week_grid
 from ..services import layout_state
@@ -200,6 +201,61 @@ def register_callbacks(app, df) -> None:
         logger.debug("Event type filter changed: %s", selected_types)
         logger.info("Selected event types updated: %s", selected_types)
         return selected_types or []
+
+    @app.callback(
+        Output("event-type-filter", "options"),
+        Input("week-offset", "data"),
+        Input("selected-casinos", "data"),
+    )
+    def update_event_type_options(
+        week_offset: int | None, selected_casinos: list[str] | None
+    ) -> list[dict[str, str]] | Any:
+        """Return dropdown options annotated with event counts."""
+
+        try:
+            try:
+                normalized_offset = int(week_offset or 0)
+            except (TypeError, ValueError):
+                logger.debug(
+                    "Invalid week offset provided for event type options: %s",
+                    week_offset,
+                )
+                normalized_offset = 0
+
+            week_start = _week_start_from_offset(normalized_offset)
+            week_end = week_start + timedelta(days=7)
+
+            weekly_events = df[
+                (df["EndDate"] > week_start) & (df["StartDate"] < week_end)
+            ]
+            filtered_df = _apply_filters(weekly_events, selected_casinos, None)
+
+            counts = (
+                filtered_df["OfferType"].dropna().astype(str).value_counts()
+                if not filtered_df.empty
+                else pd.Series(dtype=int)
+            )
+
+            all_offer_types = sorted(map(str, df["OfferType"].dropna().unique()))
+
+            options = [
+                {
+                    "label": f"{offer_type} ({int(counts.get(offer_type, 0))})",
+                    "value": offer_type,
+                }
+                for offer_type in all_offer_types
+            ]
+
+            logger.debug(
+                "Event type options refreshed for casinos=%s week_offset=%s",
+                selected_casinos,
+                normalized_offset,
+            )
+            return options
+
+        except Exception as exc:  # pragma: no cover - defensive logging
+            logger.error("Failed to refresh event type options: %s", exc, exc_info=True)
+            return no_update
 
     @app.callback(
         Output("hotel-booking-container", "children"),
