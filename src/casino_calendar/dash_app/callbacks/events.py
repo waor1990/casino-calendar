@@ -7,11 +7,12 @@ from datetime import datetime, timedelta
 from typing import Any, Tuple
 
 import dash
+from dash import ALL, Input, Output, State, dcc, html, no_update
+from dash._callback import NoUpdate
+
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color, resolve_casino_color
 from casino_calendar.settings import APP_TIMEZONE
-from dash import ALL, Input, Output, State, dcc, html, no_update
-from dash._callback import NoUpdate
 
 from ..services.layout_state import build_event_info_rows, to_naive_utc
 from ..visualization import charts as day_charts

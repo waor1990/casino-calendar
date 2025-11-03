@@ -14,7 +14,8 @@ for candidate in (SRC_DIR, ROOT_DIR):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
-from casino_calendar.dash_app.visualization import charts as day_charts  # noqa: E402
+from casino_calendar.dash_app.visualization import \
+    charts as day_charts  # noqa: E402
 from casino_calendar.logging import config as logging_config  # noqa: E402
 from casino_calendar.services.colors import get_color  # noqa: E402
 

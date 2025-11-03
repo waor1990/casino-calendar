@@ -130,7 +130,9 @@ def test_normalize_csv_defaults_missing_end_time(tmp_path: Path) -> None:
 
 
 def test_find_candidate_csv_paths(monkeypatch: pytest.MonkeyPatch) -> None:
-    status_output = "?? data/raw/new_file.csv\n M data/raw/casino_events.csv\n?? docs/readme.txt\n"
+    status_output = (
+        "?? data/raw/new_file.csv\n M data/raw/casino_events.csv\n?? docs/readme.txt\n"
+    )
 
     class DummyCompletedProcess:
         def __init__(self, stdout: str) -> None:

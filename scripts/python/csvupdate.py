@@ -18,15 +18,10 @@ for candidate in (SRC_DIR, PROJECT_ROOT):
 
 from casino_calendar.logging import config as logging_config  # noqa: E402
 from casino_calendar.services.csv_normalizer import (  # noqa: E402
-    DEFAULT_OUTPUT_PATH,
-    NormalizationResult,
-    find_candidate_csv_paths,
-    normalize_csv,
-)
+    DEFAULT_OUTPUT_PATH, NormalizationResult, find_candidate_csv_paths,
+    normalize_csv)
 
-logger = logging_config.setup_maintenance_logger(
-    "casino_calendar.scripts.csvupdate"
-)
+logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.csvupdate")
 
 
 def build_parser() -> argparse.ArgumentParser:
