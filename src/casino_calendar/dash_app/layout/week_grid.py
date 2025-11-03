@@ -21,7 +21,7 @@ def _normalize(dt):
 
 
 def _build_block(row, week_start, week_end, screen_width, colors):
-    """Return button text, classes and style variables for a calendar block."""
+    """Return button text, classes, style variables, and metadata for a calendar block."""
 
     start_delta = (
         _normalize(row["StartDate"]) - _normalize(week_start)
@@ -77,7 +77,12 @@ def _build_block(row, week_start, week_end, screen_width, colors):
         "--arrow-right-offset": arrow_right,
     }
 
-    return text, " ".join(classes), style
+    data_attributes = {
+        "data-bg": color_entry["bg"],
+        "data-bg-dark": color_entry["bg_dark"],
+    }
+
+    return text, " ".join(classes), style, data_attributes
 
 
 def render_day_labels(week_start: datetime) -> list[html.Div]:
@@ -140,7 +145,7 @@ def render_week_grid(
         )
     else:
         for idx, row in df_assigned.iterrows():
-            text, cls, style = _build_block(
+            text, cls, style, color_data = _build_block(
                 row, week_start, week_end, screen_width, colors
             )
 
@@ -168,6 +173,7 @@ def render_week_grid(
                             ),
                             "data-end": row["EndDate"].strftime("%Y-%m-%dT%H:%M:%SZ"),
                             "data-offer": row["Offer"],
+                            **color_data,
                         },
                     ),
                 )

@@ -159,6 +159,17 @@ def create_legend(df: pd.DataFrame) -> list[Any]:
         for casino, color in colors.items():
             if casino in unique_casinos:
                 LEGEND_CASINOS.append(casino)
+                base_color = color["bg"]
+                dark_theme_color = color.get("bg_dark") or base_color
+                legend_text_style: dict[str, str] = {
+                    "color": base_color,
+                    "marginRight": "4px",
+                }
+                legend_data_attributes = {
+                    "data-color": base_color,
+                    "data-dark-color": dark_theme_color,
+                }
+
                 legend_items.append(
                     html.Button(
                         className="legend-item legend-button",
@@ -172,7 +183,8 @@ def create_legend(df: pd.DataFrame) -> list[Any]:
                             html.Span(
                                 f"{casino}",
                                 className="legend-text legend-gap",
-                                style={"color": color["bg"], "marginRight": "4px"},
+                                style=legend_text_style,
+                                **legend_data_attributes,
                             ),
                         ],
                     )
