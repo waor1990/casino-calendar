@@ -73,7 +73,7 @@ body {
 .week-label {
     color: var(--color-accent);
     background-color: var(--color-background);
-    box-shadow: var(--box-shadow-header);
+    box-shadow: 0 0 16px rgba(0, 115, 255, 0.28);
     border-radius: var(--border-radius-sm);
     border: var(--border-thick) solid var(--color-border-grid);
     box-sizing: border-box;
@@ -82,6 +82,10 @@ body {
     font-weight: var(--font-weight-bold);
     padding: var(--padding-base) 0;
     margin: 0 var(--padding-base) var(--gap-legend);
+}
+
+[data-theme="dark"] .week-label {
+    box-shadow: 0 0 18px 8px rgba(102, 170, 255, 0.28);
 }
 
 @include mixins.mobile {
