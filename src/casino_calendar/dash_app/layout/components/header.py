@@ -82,7 +82,7 @@ def build_header(events: pd.DataFrame) -> html.Div:
                     ),
                     html.Div(
                         [
-                            html.Legend(
+                            html.Span(
                                 "Casino Legend:",
                                 className="legend-title legend-gap",
                             ),
@@ -129,6 +129,7 @@ def build_header(events: pd.DataFrame) -> html.Div:
                     placeholder="Filter by event type",
                     className="event-type-dropdown",
                     value=[],
+                    searchable=False,
                     style={
                         "width": "auto",
                         "minWidth": f"{dropdown_min_width}ch",
