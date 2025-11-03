@@ -63,9 +63,9 @@ def test_build_block_breakpoints(casino):
     }
     colors = {casino: {"bg": "#fff", "text": "#000"}}
 
-    mobile_text, _, _ = _build_block(row, week_start, week_end, 375, colors)
-    tablet_text, _, _ = _build_block(row, week_start, week_end, 650, colors)
-    desktop_text, _, _ = _build_block(row, week_start, week_end, 1024, colors)
+    mobile_text, _, _, _ = _build_block(row, week_start, week_end, 375, colors)
+    tablet_text, _, _, _ = _build_block(row, week_start, week_end, 650, colors)
+    desktop_text, _, _, _ = _build_block(row, week_start, week_end, 1024, colors)
 
     assert len(mobile_text) <= len(tablet_text) <= len(desktop_text)
 

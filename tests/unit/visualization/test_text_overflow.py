@@ -38,7 +38,7 @@ def test_build_block_adds_ellipsis_on_narrow_screen(casino, offer_type):
         offer_type,
     )
 
-    text, _, _ = _build_block(row, week_start, week_end, 375, COLORS)
+    text, _, _, _ = _build_block(row, week_start, week_end, 375, COLORS)
     assert text.endswith("...")
 
 
@@ -53,5 +53,5 @@ def test_build_block_uses_emoji_when_too_small(casino, offer_type):
         offer_type,
     )
 
-    text, _, _ = _build_block(row, week_start, week_end, 100, COLORS)
+    text, _, _, _ = _build_block(row, week_start, week_end, 100, COLORS)
     assert text == layout_state.offer_type_emoji(offer_type)
