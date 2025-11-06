@@ -33,7 +33,7 @@ def _get_hotel_booking_sites():
     return sites
 
 
-def register_callbacks(app, df, _repository) -> None:
+def register_callbacks(app, df, _repository=None) -> None:
     """Register filter and navigation callbacks."""
     logger.info("Registering filter and navigation callbacks")
 
@@ -113,7 +113,7 @@ def register_callbacks(app, df, _repository) -> None:
         _prev_clicks: int,
         _next_clicks: int,
         _refresh_token,
-        current_offset: int,
+        current_offset: int = 0,
     ) -> Tuple[int, bool, bool, str]:
         """Update the week offset based on navigation button clicks."""
         ctx = dash.callback_context
@@ -433,7 +433,7 @@ def register_callbacks(app, df, _repository) -> None:
         legacy_data,
         selected_casinos_state,
         selected_types_state,
-        _refresh_token,
+        _refresh_token=None,
     ):
         """Maintain backwards-compatible calendar grid output for legacy tests."""
 

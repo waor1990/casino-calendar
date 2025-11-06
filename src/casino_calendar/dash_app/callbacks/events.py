@@ -26,9 +26,17 @@ PDT = APP_TIMEZONE
 logger = setup_logger(__name__)
 
 
-def register_callbacks(app, df, repository) -> None:
+class _NullEventRepository:
+    """Fallback repository used when persistence is not configured."""
+
+    def save_events(self, _df: pd.DataFrame) -> None:  # pragma: no cover - trivial
+        logger.debug("No repository configured; skipping event persistence")
+
+
+def register_callbacks(app, df, repository=None) -> None:
     """Register event related callbacks on the given Dash ``app``."""
     logger.info("Registering event callbacks")
+    repository = repository or _NullEventRepository()
 
     @app.callback(
         Output("overflow-box", "className"),
