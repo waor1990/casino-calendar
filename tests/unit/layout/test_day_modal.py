@@ -52,14 +52,33 @@ def _event_modal_callback(casino: str):
     )
     app = Dash(__name__)
     register_callbacks(app, df)
-    key = "".join(
-        [
-            "..event-modal.style...event-modal.className...event-modal-body.children",
-            "...close-timer.n_intervals...close-timer.disabled...day-modal.style...day-modal.className...",
-            "day-modal-body.children..",
-        ]
-    )
-    return app.callback_map[key]["callback"].__wrapped__
+
+    expected_outputs = [
+        ("event-modal", "style"),
+        ("event-modal", "className"),
+        ("event-modal-body", "children"),
+        ("selected-event-data", "data"),
+        ("close-timer", "n_intervals"),
+        ("close-timer", "disabled"),
+        ("day-modal", "style"),
+        ("day-modal", "className"),
+        ("day-modal-body", "children"),
+    ]
+
+    for meta in app.callback_map.values():
+        outputs = meta.get("output")
+        if outputs is None:
+            continue
+        if not isinstance(outputs, (list, tuple)):
+            output_pairs = [(outputs.component_id, outputs.component_property)]
+        else:
+            output_pairs = [
+                (out.component_id, out.component_property) for out in outputs
+            ]
+        if output_pairs == expected_outputs:
+            return meta["callback"].__wrapped__
+
+    raise KeyError("Event modal callback not found in callback_map")
 
 
 GRID_EVENT_IDS = [{"type": "grid-event", "index": 0}]
@@ -102,8 +121,8 @@ def test_show_event_modal_handles_duplicate(monkeypatch, casino):
         None,
     )
     assert result[1] == "modal show"
-    assert result[4] is True
-    assert result[5] == {"display": "none"}
+    assert result[5] is True
+    assert result[6] == {"display": "none"}
 
 
 @pytest.mark.usefixtures("casino")
@@ -239,8 +258,8 @@ def test_show_event_modal_close(monkeypatch, casino):
         None,
     )
     assert result[1] == "modal closing"
-    assert result[3] == 0
-    assert result[4] is False
+    assert result[4] == 0
+    assert result[5] is False
 
 
 @pytest.mark.usefixtures("casino")
@@ -268,8 +287,8 @@ def test_close_timer_ignores_reopened_modal(monkeypatch, casino):
     assert result[0] is no_update
     assert result[1] is no_update
     assert result[2] is no_update
-    assert result[3] == 0
-    assert result[4] is True
+    assert result[4] == 0
+    assert result[5] is True
 
 
 @pytest.mark.usefixtures("casino")
@@ -302,7 +321,7 @@ def test_day_column_allows_zero_click_value(monkeypatch, casino):
         [],
         None,
     )
-    assert result[6] == "modal show"
+    assert result[7] == "modal show"
 
 
 @pytest.mark.usefixtures("casino")

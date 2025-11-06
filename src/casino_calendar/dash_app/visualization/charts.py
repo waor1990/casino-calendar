@@ -522,7 +522,9 @@ def generate_day_view_parts(
     header_text = f"Events for {day_label}"
 
     if events.empty:
-        grid_children = [html.Div("No events scheduled.", className="no-events")]
+        grid_children: list["Component"] = [
+            html.Div("No events scheduled.", className="no-events")
+        ]
         return header_text, grid_children, build_day_overlay_figure(10, []), 10
 
     events["adj_start"] = events["StartDate"].where(

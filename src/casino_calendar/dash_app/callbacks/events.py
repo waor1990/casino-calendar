@@ -578,6 +578,7 @@ def register_callbacks(app, df) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        no_update,
                         {},
                         "modal show",
                         day_modal_children,

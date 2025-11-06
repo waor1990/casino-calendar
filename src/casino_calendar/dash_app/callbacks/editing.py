@@ -159,7 +159,7 @@ def register_callbacks(
         Output("event-dataset", "data"),
         Output("legacy-event-data", "data"),
         Output("event-edit-status", "children"),
-        Output("selected-event-data", "data"),
+        Output("selected-event-data", "data", allow_duplicate=True),
         Input("event-edit-save", "n_clicks"),
         State({"type": "event-edit-field", "name": ALL}, "value"),
         State({"type": "event-edit-field", "name": ALL}, "id"),
@@ -186,13 +186,31 @@ def register_callbacks(
             raise dash.exceptions.PreventUpdate
 
         updates: dict[str, Any] = {}
+        dataframe_updates: dict[str, Any] = {}
         for value, field_id in zip(field_values, field_ids):
             if not isinstance(field_id, dict):
                 continue
             field_name = field_id.get("name")
             if field_name not in EDITABLE_FIELDS:
                 continue
-            updates[field_name] = _normalize_update(field_name, value)
+            normalized_value = _normalize_update(field_name, value)
+            updates[field_name] = normalized_value
+
+            if field_name in DATE_FIELDS:
+                if normalized_value in ("", None):
+                    dataframe_updates[field_name] = pd.NaT
+                else:
+                    parsed_value = pd.to_datetime(normalized_value, errors="coerce")
+                    if pd.isna(parsed_value):
+                        logger.warning(
+                            "Unable to coerce %s=%r for in-memory dataset",
+                            field_name,
+                            normalized_value,
+                        )
+                        continue
+                    dataframe_updates[field_name] = parsed_value
+            else:
+                dataframe_updates[field_name] = normalized_value
 
         if not updates:
             logger.debug("No updates detected; skipping save")
@@ -225,6 +243,21 @@ def register_callbacks(
             logger.exception("Failed to persist event edits: %s", exc)
             return no_update, no_update, "Failed to save changes", no_update
 
+        if isinstance(df, pd.DataFrame):
+            if row_index in df.index:
+                for field_name, df_value in dataframe_updates.items():
+                    if field_name not in df.columns:
+                        continue
+                    df.at[row_index, field_name] = df_value
+                    logger.debug(
+                        "Updated in-memory %s for row %s", field_name, row_index
+                    )
+            else:
+                logger.warning(
+                    "Row %s not found in in-memory dataframe; UI may show stale data",
+                    row_index,
+                )
+
         logger.info("Event %s updated successfully", updated_selected.get("EventName"))
         return (
             updated_records,
@@ -234,7 +267,7 @@ def register_callbacks(
         )
 
     @app.callback(
-        Output("event-edit-status", "children"),
+        Output("event-edit-status", "children", allow_duplicate=True),
         Input("event-edit-mode", "data"),
         prevent_initial_call=True,
     )
