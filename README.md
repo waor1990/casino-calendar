@@ -115,6 +115,12 @@ The Dash factory warms caches for lookup tables (casino colours, offer keywords,
 
 If you add new columns to the CSV, update the transforms in [`src/casino_calendar/dash_app/data/transforms.py`](src/casino_calendar/dash_app/data/transforms.py) and adjust layout components that render event metadata.
 
+## ✏️ Editing events
+
+- The event detail modal now exposes an **Edit Event** workflow that surfaces form controls for core fields. Changes are stored in new Dash `dcc.Store` instances so other callbacks can react to the updated dataset.
+- Persisted edits are written back through `EventRepository.save_events()`, which updates `data/raw/casino_events.csv` when possible and falls back to a sibling `*.edited.csv` copy if the original file cannot be overwritten.
+- On application startup `load_event_data()` automatically prefers the freshest edited copy, ensuring saved changes survive restarts without additional configuration.
+
 ---
 
 ## 🌗 Theming and styling

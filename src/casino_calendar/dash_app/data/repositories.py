@@ -9,7 +9,7 @@ import pandas as pd
 
 from casino_calendar.settings import DATA_DIR
 
-from .loader import load_event_data
+from .loader import load_event_data, resolve_active_csv_path, save_event_data
 
 
 class SupportsEvents(Protocol):
@@ -29,6 +29,16 @@ class EventRepository:
         """Return the event data set."""
 
         return load_event_data(self._csv_path)
+
+    def active_path(self) -> Path:
+        """Return the path currently used for loading event data."""
+
+        return resolve_active_csv_path(self._csv_path)
+
+    def save_events(self, events: pd.DataFrame | list[dict]) -> Path:
+        """Persist ``events`` to disk and return the written path."""
+
+        return save_event_data(events, self._csv_path)
 
 
 __all__ = ["EventRepository", "SupportsEvents"]

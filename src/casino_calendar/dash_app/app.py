@@ -91,7 +91,7 @@ def create_dash_app() -> Tuple[Dash, Any]:
     logger.debug("Application layout ready")
 
     logger.info("Registering callbacks")
-    register_callbacks(app, events)
+    register_callbacks(app, events, repository)
     logger.debug("Callbacks ready")
 
     return app, app.server

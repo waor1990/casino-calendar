@@ -444,6 +444,11 @@ def register_callbacks(app, df) -> None:
         elif isinstance(legacy_data, list):
             try:
                 source_df = pd.DataFrame(legacy_data)
+                for column in ["StartDate", "EndDate"]:
+                    if column in source_df.columns:
+                        source_df[column] = pd.to_datetime(
+                            source_df[column], errors="coerce"
+                        )
             except (ValueError, TypeError):
                 logger.debug(
                     "Unable to coerce legacy event data into DataFrame; using repository data"

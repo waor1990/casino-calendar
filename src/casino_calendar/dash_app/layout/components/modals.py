@@ -18,7 +18,52 @@ def build_event_modal() -> html.Div:
                 className="modal-content",
                 children=[
                     html.Div(id="event-modal-body", className="base-padding"),
-                    html.Button("Close", id="close-modal", className="modal-close"),
+                    html.Div(
+                        id="event-edit-container",
+                        className="event-edit-container base-padding",
+                        style={"display": "none"},
+                        children=[
+                            html.H3(
+                                "Edit Event Details",
+                                className="event-edit-title",
+                            ),
+                            html.Div(id="event-edit-form", className="event-edit-form"),
+                            html.Div(
+                                id="event-edit-status",
+                                className="event-edit-status",
+                            ),
+                            html.Div(
+                                className="event-edit-actions",
+                                children=[
+                                    html.Button(
+                                        "Cancel",
+                                        id="event-edit-cancel",
+                                        className="modal-secondary",
+                                    ),
+                                    html.Button(
+                                        "Save Changes",
+                                        id="event-edit-save",
+                                        className="modal-primary",
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                    html.Div(
+                        className="event-modal-footer",
+                        children=[
+                            html.Button(
+                                "Edit Event",
+                                id="event-edit-start",
+                                className="modal-secondary",
+                            ),
+                            html.Button(
+                                "Close",
+                                id="close-modal",
+                                className="modal-close",
+                            ),
+                        ],
+                    ),
                 ],
             )
         ],

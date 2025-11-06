@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from typing import Any, Tuple
 
 import dash
+import pandas as pd
 from dash import ALL, Input, Output, State, dcc, html, no_update
 from dash._callback import NoUpdate
 
@@ -21,6 +22,25 @@ PDT = APP_TIMEZONE
 
 # Initialize module logger
 logger = setup_logger(__name__)
+
+
+def _serialize_event_row(row: pd.Series, index: int) -> dict[str, Any]:
+    """Return a JSON-serializable mapping for the selected event row."""
+
+    record = {key: row[key] for key in row.index}
+
+    for key, value in list(record.items()):
+        if isinstance(value, (datetime, pd.Timestamp)):
+            record[key] = pd.to_datetime(value).isoformat()
+        elif isinstance(value, float) and pd.isna(value):
+            record[key] = None
+        elif isinstance(value, (pd.Series, pd.DataFrame)):
+            record.pop(key)
+        elif pd.isna(value):
+            record[key] = None
+
+    record["_row_index"] = int(index)
+    return record
 
 
 def register_callbacks(app, df) -> None:
@@ -69,6 +89,7 @@ def register_callbacks(app, df) -> None:
         Output("event-modal", "style"),
         Output("event-modal", "className"),
         Output("event-modal-body", "children"),
+        Output("selected-event-data", "data"),
         Output("close-timer", "n_intervals"),
         Output("close-timer", "disabled"),
         Output("day-modal", "style"),
@@ -107,7 +128,17 @@ def register_callbacks(app, df) -> None:
         screen_width: int,
         selected_casinos: list[str] | None,
         event_modal_class: str | None = None,
-    ) -> Tuple[Any, Any, Any, int | NoUpdate, bool | NoUpdate, Any, Any, Any]:
+    ) -> Tuple[
+        Any,
+        Any,
+        Any,
+        Any,
+        int | NoUpdate,
+        bool | NoUpdate,
+        Any,
+        Any,
+        Any,
+    ]:
         """Handle modal open and close events.
 
         Unused parameters prefixed with an underscore are included solely so the
@@ -181,6 +212,7 @@ def register_callbacks(app, df) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        no_update,
                         0,
                         True,
                         no_update,
@@ -192,6 +224,7 @@ def register_callbacks(app, df) -> None:
                     {"display": "none"},
                     "modal",
                     "",
+                    None,
                     0,
                     True,
                     no_update,
@@ -207,6 +240,7 @@ def register_callbacks(app, df) -> None:
                     {"display": "none"},
                     "modal closing",
                     no_update,
+                    None,
                     0,
                     False,
                     {} if reopen_day else no_update,
@@ -218,6 +252,7 @@ def register_callbacks(app, df) -> None:
                 logger.debug("Closing day modal")
                 # Hide the day modal but keep its children so the catcher ID exists
                 return (
+                    no_update,
                     no_update,
                     no_update,
                     no_update,
@@ -312,6 +347,7 @@ def register_callbacks(app, df) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        no_update,
                     )
 
                 row = df.loc[idx]
@@ -324,6 +360,7 @@ def register_callbacks(app, df) -> None:
                     row["Casino"], palette=color_palette
                 )
                 rows = build_event_info_rows(row.items())
+                selected_event_data = _serialize_event_row(row, idx)
                 style = {
                     "--bg": casino_colors["bg"],
                     "--fg": casino_colors["text"],
@@ -334,6 +371,7 @@ def register_callbacks(app, df) -> None:
                     style,
                     "modal show",
                     rows,
+                    selected_event_data,
                     0,
                     True,
                     {"display": "none"},
@@ -385,6 +423,7 @@ def register_callbacks(app, df) -> None:
                 if not date_str:
                     logger.warning("No date string provided for day column click")
                     return (
+                        no_update,
                         no_update,
                         no_update,
                         no_update,
@@ -448,6 +487,7 @@ def register_callbacks(app, df) -> None:
                     no_update,
                     no_update,
                     no_update,
+                    no_update,
                     {},
                     "modal show",
                     day_modal_children,
@@ -469,6 +509,7 @@ def register_callbacks(app, df) -> None:
                     if day_index is None:
                         logger.warning("Day index is None in click data")
                         return (
+                            no_update,
                             no_update,
                             no_update,
                             no_update,
@@ -570,6 +611,7 @@ def register_callbacks(app, df) -> None:
                         style,
                         "modal show from-day",
                         rows,
+                        None,
                         0,
                         True,
                         {"display": "none"},
