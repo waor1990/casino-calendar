@@ -16,9 +16,13 @@ if TYPE_CHECKING:
 
 from casino_calendar.services.colors import get_color, resolve_casino_color
 
-from ..services.layout_state import (filter_long_spanning_events,
-                                     offer_type_emoji, to_naive_utc, to_pdt,
-                                     trim_label)
+from ..services.layout_state import (
+    filter_long_spanning_events,
+    offer_type_emoji,
+    to_naive_utc,
+    to_pdt,
+    trim_label,
+)
 
 # Constants used to size the day modal dynamically
 DAY_MODAL_MIN_REM = 18

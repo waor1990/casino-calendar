@@ -9,7 +9,7 @@ from casino_calendar.logging.config import setup_logger
 logger = setup_logger(__name__)
 
 
-def register_callbacks(app, _df) -> None:
+def register_callbacks(app, _df, _repository) -> None:
     """Register navigation callbacks."""
     logger.info("Registering navigation callbacks")
 

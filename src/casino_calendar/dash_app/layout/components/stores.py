@@ -21,6 +21,8 @@ def build_state_stores() -> list[dcc.Store]:
         dcc.Store(id="last-day-date", data=None),
         dcc.Store(id="reopen-day-on-close", data=False),
         dcc.Store(id="theme-store", data="light", storage_type="local"),
+        dcc.Store(id="event-edit-context"),
+        dcc.Store(id="event-data-refresh"),
     ]
 
 

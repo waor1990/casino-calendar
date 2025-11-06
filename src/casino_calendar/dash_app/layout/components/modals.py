@@ -18,7 +18,29 @@ def build_event_modal() -> html.Div:
                 className="modal-content",
                 children=[
                     html.Div(id="event-modal-body", className="base-padding"),
-                    html.Button("Close", id="close-modal", className="modal-close"),
+                    html.Div(
+                        className="modal-footer",
+                        children=[
+                            html.Div(
+                                id="event-save-status", className="event-save-status"
+                            ),
+                            html.Div(
+                                className="modal-footer-buttons",
+                                children=[
+                                    html.Button(
+                                        "Save Changes",
+                                        id="event-save-button",
+                                        className="modal-save",
+                                    ),
+                                    html.Button(
+                                        "Close",
+                                        id="close-modal",
+                                        className="modal-close",
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
                 ],
             )
         ],
