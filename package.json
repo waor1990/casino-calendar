@@ -13,7 +13,9 @@
     "scripts": {
         "build:css": "sass --no-source-map assets/styles/index.scss assets/dist/style.css",
         "watch:css": "sass --no-source-map --watch assets/styles/index.scss assets/dist/style.css",
-        "lint:css": "stylelint --config config/linting/.stylelintrc.json \"assets/**/*.scss\"",
+        "lint:css": "npm run lint:css:check",
+        "lint:css:check": "stylelint --config config/linting/.stylelintrc.json \"assets/**/*.scss\"",
+        "lint:css:fix": "stylelint --config config/linting/.stylelintrc.json \"assets/**/*.scss\" --fix",
         "lint:package-json": "node scripts/node/verify-package-json.mjs",
         "clean:node-modules": "node scripts/node/cleanup-node-modules.mjs",
         "preinstall": "node scripts/node/cleanup-node-modules.mjs",
