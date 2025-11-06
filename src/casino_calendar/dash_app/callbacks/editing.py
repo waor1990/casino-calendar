@@ -11,7 +11,9 @@ from dash import ALL, Input, Output, State, dcc, html, no_update
 from pytz import AmbiguousTimeError, NonExistentTimeError
 
 from casino_calendar.logging.config import setup_logger
+from casino_calendar.services.colors import get_color, resolve_casino_color
 from casino_calendar.settings import APP_TIMEZONE, UTC_TZ
+from ..services.layout_state import build_event_info_rows
 
 logger = setup_logger(__name__)
 
@@ -194,6 +196,8 @@ def register_callbacks(
         Output("legacy-event-data", "data"),
         Output("event-edit-status", "children"),
         Output("selected-event-data", "data", allow_duplicate=True),
+        Output("event-modal-body", "children", allow_duplicate=True),
+        Output("event-modal", "style", allow_duplicate=True),
         Input("event-edit-save", "n_clicks"),
         State({"type": "event-edit-field", "name": ALL}, "value"),
         State({"type": "event-edit-field", "name": ALL}, "id"),
@@ -248,7 +252,14 @@ def register_callbacks(
 
         if not updates:
             logger.debug("No updates detected; skipping save")
-            return no_update, no_update, "No changes to save", no_update
+            return (
+                no_update,
+                no_update,
+                "No changes to save",
+                no_update,
+                no_update,
+                no_update,
+            )
 
         row_index = selected_event.get("_row_index")
         if row_index is None:
@@ -275,7 +286,14 @@ def register_callbacks(
             repository.save_events(updated_records)
         except Exception as exc:  # pragma: no cover - defensive logging
             logger.exception("Failed to persist event edits: %s", exc)
-            return no_update, no_update, "Failed to save changes", no_update
+            return (
+                no_update,
+                no_update,
+                "Failed to save changes",
+                no_update,
+                no_update,
+                no_update,
+            )
 
         if isinstance(df, pd.DataFrame):
             if row_index in df.index:
@@ -292,12 +310,33 @@ def register_callbacks(
                     row_index,
                 )
 
+        modal_children = no_update
+        modal_style = no_update
+        if updated_selected:
+            modal_children = build_event_info_rows(updated_selected.items())
+            try:
+                palette = get_color()
+                casino_colors = resolve_casino_color(
+                    updated_selected.get("Casino", ""), palette=palette
+                )
+            except Exception:
+                logger.debug("Unable to resolve casino colors after edit", exc_info=True)
+            else:
+                modal_style = {
+                    "--bg": casino_colors["bg"],
+                    "--fg": casino_colors["text"],
+                    "--bg-dark": casino_colors["bg_dark"],
+                    "--fg-dark": casino_colors["text_dark"],
+                }
+
         logger.info("Event %s updated successfully", updated_selected.get("EventName"))
         return (
             updated_records,
             updated_records,
             "Changes saved successfully",
             updated_selected,
+            modal_children,
+            modal_style,
         )
 
     @app.callback(

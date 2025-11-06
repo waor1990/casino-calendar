@@ -300,6 +300,7 @@ def register_callbacks(app, df) -> None:
         Input("screen-width", "data"),
         Input("selected-casinos", "data"),
         Input("selected-event-types", "data"),
+        Input("event-dataset", "data"),
         prevent_initial_call=True,
     )
     def render_single_week_chart(
@@ -308,6 +309,7 @@ def register_callbacks(app, df) -> None:
         screen_width: int,
         selected_casinos: list[str] | None,
         selected_types: list[str] | None,
+        serialized_events,
     ) -> Tuple[html.Div, list[html.Div], str, str, dict[str, Any]]:
         """Render a single week of events and overflow list."""
         ctx = dash.callback_context
@@ -325,8 +327,25 @@ def register_callbacks(app, df) -> None:
         if selected_types:
             logger.debug("Filtering events by types: %s", selected_types)
 
+        source_df = df
+        if isinstance(serialized_events, list):
+            try:
+                temp_df = pd.DataFrame(serialized_events)
+                if "_row_index" in temp_df.columns:
+                    temp_df = temp_df.set_index("_row_index")
+                for column in ["StartDate", "EndDate"]:
+                    if column in temp_df.columns:
+                        temp_df[column] = pd.to_datetime(
+                            temp_df[column], errors="coerce"
+                        )
+                source_df = temp_df
+            except (ValueError, TypeError):
+                logger.debug(
+                    "Unable to coerce serialized event dataset; falling back to base dataframe"
+                )
+
         week_start = _week_start_from_offset(week_offset)
-        filtered_df = _apply_filters(df, selected_casinos, selected_types)
+        filtered_df = _apply_filters(source_df, selected_casinos, selected_types)
         logger.info("Filtered events count: %d", len(filtered_df))
 
         grid = week_grid.render_week_grid(
@@ -412,8 +431,8 @@ def register_callbacks(app, df) -> None:
         Output("calendar-grid", "children"),
         Input("week-offset", "data"),
         Input("screen-width", "data"),
+        Input("legacy-event-data", "data"),
         State("event-filter-state", "data"),
-        State("legacy-event-data", "data"),
         State("selected-casinos", "data"),
         State("selected-event-types", "data"),
         prevent_initial_call=True,
@@ -421,8 +440,8 @@ def register_callbacks(app, df) -> None:
     def _render_legacy_calendar_grid(
         week_offset: int,
         screen_width: int,
-        filter_flags: dict[str, Any] | list[str] | None,
         legacy_data,
+        filter_flags: dict[str, Any] | list[str] | None,
         selected_casinos_state,
         selected_types_state,
     ):
