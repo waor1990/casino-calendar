@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Protocol
 
 import pandas as pd
 
-from casino_calendar.settings import DATA_DIR
-
 from .loader import load_event_data
+from .storage import EventStorage
 
 
 class SupportsEvents(Protocol):
@@ -22,13 +20,14 @@ class SupportsEvents(Protocol):
 class EventRepository:
     """Repository responsible for loading event data from disk."""
 
-    def __init__(self, csv_path: Path | None = None) -> None:
-        self._csv_path = csv_path or DATA_DIR / "raw" / "casino_events.csv"
+    def __init__(self, storage: EventStorage | None = None) -> None:
+        self._storage = storage or EventStorage()
 
     def load_events(self) -> pd.DataFrame:
         """Return the event data set."""
 
-        return load_event_data(self._csv_path)
+        csv_path = self._storage.resolve_active_path()
+        return load_event_data(csv_path)
 
 
 __all__ = ["EventRepository", "SupportsEvents"]
