@@ -11,6 +11,7 @@ import pandas as pd
 from casino_calendar.settings import DATA_DIR
 
 from .loader import load_event_data
+from ..services.layout_state import to_pdt
 
 
 class SupportsEvents(Protocol):
@@ -38,7 +39,19 @@ class EventRepository:
         temp_path = self._csv_path.with_suffix(self._csv_path.suffix + ".tmp")
         backup_path = self._csv_path.with_suffix(self._csv_path.suffix + ".bak")
 
-        df.to_csv(temp_path, index=False)
+        persisted = df.copy()
+        for column in ["StartDate", "EndDate"]:
+            if column in persisted.columns:
+                persisted[column] = (
+                    pd.to_datetime(persisted[column], errors="coerce")
+                    .apply(
+                        lambda ts: to_pdt(ts).isoformat(timespec="minutes")
+                        if pd.notna(ts)
+                        else ""
+                    )
+                )
+
+        persisted.to_csv(temp_path, index=False)
 
         if self._csv_path.exists():
             shutil.copy2(self._csv_path, backup_path)

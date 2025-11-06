@@ -80,6 +80,8 @@ def register_callbacks(app, df, repository=None) -> None:
         Output("event-modal", "style"),
         Output("event-modal", "className"),
         Output("event-modal-body", "children"),
+        Output("event-edit-form-container", "children", allow_duplicate=True),
+        Output("event-edit-footer", "open", allow_duplicate=True),
         Output("event-edit-context", "data"),
         Output("close-timer", "n_intervals"),
         Output("close-timer", "disabled"),
@@ -119,7 +121,7 @@ def register_callbacks(app, df, repository=None) -> None:
         screen_width: int,
         selected_casinos: list[str] | None,
         event_modal_class: str | None = None,
-    ) -> Tuple[Any, Any, Any, int | NoUpdate, bool | NoUpdate, Any, Any, Any]:
+    ) -> tuple[Any, ...]:
         """Handle modal open and close events.
 
         Unused parameters prefixed with an underscore are included solely so the
@@ -194,6 +196,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        no_update,
+                        no_update,
                         0,
                         True,
                         no_update,
@@ -205,6 +209,8 @@ def register_callbacks(app, df, repository=None) -> None:
                     {"display": "none"},
                     "modal",
                     "",
+                    no_update,
+                    False,
                     None,
                     0,
                     True,
@@ -221,6 +227,8 @@ def register_callbacks(app, df, repository=None) -> None:
                     {"display": "none"},
                     "modal closing",
                     no_update,
+                    no_update,
+                    False,
                     None,
                     0,
                     False,
@@ -233,6 +241,8 @@ def register_callbacks(app, df, repository=None) -> None:
                 logger.debug("Closing day modal")
                 # Hide the day modal but keep its children so the catcher ID exists
                 return (
+                    no_update,
+                    no_update,
                     no_update,
                     no_update,
                     no_update,
@@ -329,6 +339,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        no_update,
+                        no_update,
                     )
 
                 row = df.loc[idx]
@@ -341,7 +353,9 @@ def register_callbacks(app, df, repository=None) -> None:
                     row["Casino"], palette=color_palette
                 )
                 form_defaults = event_editing.build_form_defaults(row)
-                rows = event_editing.build_event_modal_children(row, form_defaults)
+                body_children, form_component = event_editing.build_event_modal_children(
+                    row, form_defaults
+                )
                 context_payload = {
                     "index": idx,
                     "form": form_defaults,
@@ -356,7 +370,9 @@ def register_callbacks(app, df, repository=None) -> None:
                 return (
                     style,
                     "modal show",
-                    rows,
+                    body_children,
+                    form_component,
+                    False,
                     context_payload,
                     0,
                     True,
@@ -409,6 +425,8 @@ def register_callbacks(app, df, repository=None) -> None:
                 if not date_str:
                     logger.warning("No date string provided for day column click")
                     return (
+                        no_update,
+                        no_update,
                         no_update,
                         no_update,
                         no_update,
@@ -474,6 +492,8 @@ def register_callbacks(app, df, repository=None) -> None:
                     no_update,
                     no_update,
                     no_update,
+                    no_update,
+                    no_update,
                     {},
                     "modal show",
                     day_modal_children,
@@ -495,6 +515,7 @@ def register_callbacks(app, df, repository=None) -> None:
                     if day_index is None:
                         logger.warning("Day index is None in click data")
                         return (
+                            no_update,
                             no_update,
                             no_update,
                             no_update,
@@ -565,6 +586,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        no_update,
+                        no_update,
                         {},
                         "modal show",
                         day_modal_children,
@@ -622,8 +645,10 @@ def register_callbacks(app, df, repository=None) -> None:
                             )
                             row = df.loc[match_idx]
                             form_defaults = event_editing.build_form_defaults(row)
-                            body_children = event_editing.build_event_modal_children(
-                                row, form_defaults
+                            body_children, form_component = (
+                                event_editing.build_event_modal_children(
+                                    row, form_defaults
+                                )
                             )
                             context_payload = {
                                 "index": match_idx,
@@ -635,8 +660,10 @@ def register_callbacks(app, df, repository=None) -> None:
                                 "Unable to match day view event to DataFrame index; using read-only data"
                             )
                             row = pd.Series(data)
-                            body_children = event_editing.build_event_modal_children(
-                                row, event_editing.build_form_defaults(row)
+                            body_children, form_component = (
+                                event_editing.build_event_modal_children(
+                                    row, event_editing.build_form_defaults(row)
+                                )
                             )
                     except Exception as err:  # pragma: no cover - defensive logging
                         logger.warning(
@@ -644,8 +671,10 @@ def register_callbacks(app, df, repository=None) -> None:
                             err,
                         )
                         row = pd.Series(data)
-                        body_children = event_editing.build_event_modal_children(
-                            row, event_editing.build_form_defaults(row)
+                        body_children, form_component = (
+                            event_editing.build_event_modal_children(
+                                row, event_editing.build_form_defaults(row)
+                            )
                         )
                         context_payload = None
 
@@ -653,6 +682,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         style,
                         "modal show from-day",
                         body_children,
+                        form_component,
+                        False,
                         context_payload,
                         0,
                         True,
@@ -689,15 +720,15 @@ def register_callbacks(app, df, repository=None) -> None:
 
     @app.callback(
         Output("event-modal-body", "children", allow_duplicate=True),
+        Output("event-edit-form-container", "children", allow_duplicate=True),
         Output("event-edit-context", "data", allow_duplicate=True),
+        Output("event-edit-footer", "open", allow_duplicate=True),
         Output("event-save-status", "children"),
         Output("event-save-status", "className"),
         Output("event-data-refresh", "data"),
         Input("event-save-button", "n_clicks"),
         State("event-edit-context", "data"),
         State("event-edit-eventname", "value"),
-        State("event-edit-casino", "value"),
-        State("event-edit-location", "value"),
         State("event-edit-offertype", "value"),
         State("event-edit-offer", "value"),
         State("event-edit-startdate", "value"),
@@ -708,13 +739,11 @@ def register_callbacks(app, df, repository=None) -> None:
         n_clicks: int,
         context_data: dict[str, Any] | None,
         name: str | None,
-        casino: str | None,
-        location: str | None,
         offer_type: str | None,
         offer: str | None,
         start_value: str | None,
         end_value: str | None,
-    ) -> tuple[Any, Any, Any, str, Any]:
+    ) -> tuple[Any, ...]:
         """Persist edited event information to disk."""
 
         if not n_clicks:
@@ -723,8 +752,6 @@ def register_callbacks(app, df, repository=None) -> None:
         context_payload = dict(context_data or {})
         form_values = {
             "EventName": name or "",
-            "Casino": casino or "",
-            "Location": location or "",
             "OfferType": offer_type or "",
             "Offer": offer or "",
             "StartDate": start_value or "",
@@ -737,7 +764,9 @@ def register_callbacks(app, df, repository=None) -> None:
             logger.warning("Save requested without a selected event")
             return (
                 no_update,
+                no_update,
                 context_payload or None,
+                True,
                 "Select an event from the calendar before saving changes.",
                 "event-save-status error",
                 no_update,
@@ -747,7 +776,9 @@ def register_callbacks(app, df, repository=None) -> None:
             logger.warning("Event index %s no longer available", event_index)
             return (
                 no_update,
+                no_update,
                 context_payload,
+                True,
                 "The selected event is no longer available.",
                 "event-save-status error",
                 no_update,
@@ -760,11 +791,15 @@ def register_callbacks(app, df, repository=None) -> None:
                 "Validation failed when saving event %s: %s", event_index, errors
             )
             row = df.loc[event_index]
-            body_children = event_editing.build_event_modal_children(row, form_values)
+            body_children, form_component = event_editing.build_event_modal_children(
+                row, form_values
+            )
             message = html.Ul([html.Li(err) for err in errors])
             return (
                 body_children,
+                form_component,
                 context_payload,
+                True,
                 message,
                 "event-save-status error",
                 no_update,
@@ -787,10 +822,14 @@ def register_callbacks(app, df, repository=None) -> None:
             repository.save_events(df)
         except Exception as exc:  # pragma: no cover - defensive logging
             logger.error("Failed to save updated events: %s", exc, exc_info=True)
-            body_children = event_editing.build_event_modal_children(row, form_values)
+            body_children, form_component = (
+                event_editing.build_event_modal_children(row, form_values)
+            )
             return (
                 body_children,
+                form_component,
                 context_payload,
+                True,
                 "An unexpected error occurred while saving. Please try again.",
                 "event-save-status error",
                 no_update,
@@ -803,7 +842,7 @@ def register_callbacks(app, df, repository=None) -> None:
             "form": form_defaults,
             "values": updated_row.to_dict(),
         }
-        body_children = event_editing.build_event_modal_children(
+        body_children, form_component = event_editing.build_event_modal_children(
             updated_row, form_defaults
         )
         refresh_token = str(uuid4())
@@ -812,7 +851,9 @@ def register_callbacks(app, df, repository=None) -> None:
 
         return (
             body_children,
+            form_component,
             context_payload,
+            False,
             "Changes saved successfully.",
             "event-save-status success",
             refresh_token,

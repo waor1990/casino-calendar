@@ -67,7 +67,7 @@
     --box-shadow-header: 0 1.1rem 2.8rem rgb(var(--color-primary-dark-rgb) / 38%);
 
     /* Modal sizing */
-    --modal-max-width: clamp(20rem, 90vw, 37.5rem);
+    --modal-max-width: clamp(24rem, 92vw, 48rem);
     --modal-max-height: 80vh;
     --modal-min-height: 18.75rem;
     --modal-width: 90%;
@@ -76,7 +76,7 @@
     /* Significantly reduced height */
     /* Slightly reduced to better fit content */
     --modal-max-height-mobile: 75vh;
-    --event-modal-max-width-tablet: 31.25rem;
+    --event-modal-max-width-tablet: 36rem;
     --day-modal-max-width-tablet: 43.75rem;
     --day-modal-min-width: 18rem;
     --day-modal-max-width-desktop: 70rem;

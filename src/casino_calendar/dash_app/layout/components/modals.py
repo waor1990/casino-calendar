@@ -21,23 +21,43 @@ def build_event_modal() -> html.Div:
                     html.Div(
                         className="modal-footer",
                         children=[
-                            html.Div(
-                                id="event-save-status", className="event-save-status"
-                            ),
-                            html.Div(
-                                className="modal-footer-buttons",
+                            html.Details(
+                                id="event-edit-footer",
+                                className="modal-footer-edit",
+                                open=False,
                                 children=[
-                                    html.Button(
-                                        "Save Changes",
-                                        id="event-save-button",
-                                        className="modal-save",
+                                    html.Summary(
+                                        "Edit Event",
+                                        className="modal-footer-summary",
                                     ),
-                                    html.Button(
-                                        "Close",
-                                        id="close-modal",
-                                        className="modal-close",
+                                    html.Div(
+                                        className="modal-footer-panel",
+                                        children=[
+                                            html.Div(
+                                                id="event-edit-form-container"
+                                            ),
+                                            html.Div(
+                                                id="event-save-status",
+                                                className="event-save-status",
+                                            ),
+                                            html.Div(
+                                                className="modal-footer-buttons",
+                                                children=[
+                                                    html.Button(
+                                                        "Save Changes",
+                                                        id="event-save-button",
+                                                        className="modal-save",
+                                                    ),
+                                                ],
+                                            ),
+                                        ],
                                     ),
                                 ],
+                            ),
+                            html.Button(
+                                "Close",
+                                id="close-modal",
+                                className="modal-close",
                             ),
                         ],
                     ),

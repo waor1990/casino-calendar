@@ -15,12 +15,10 @@ logger = setup_logger(__name__)
 
 FORM_FIELDS: list[dict[str, str]] = [
     {"key": "EventName", "label": "Event Name", "component": "input"},
-    {"key": "Casino", "label": "Casino", "component": "input"},
-    {"key": "Location", "label": "Location", "component": "input"},
     {"key": "OfferType", "label": "Offer Type", "component": "input"},
     {"key": "Offer", "label": "Offer Details", "component": "textarea"},
-    {"key": "StartDate", "label": "Start Date (local time)", "component": "input"},
-    {"key": "EndDate", "label": "End Date (local time)", "component": "input"},
+    {"key": "StartDate", "label": "Start Date", "component": "datetime"},
+    {"key": "EndDate", "label": "End Date", "component": "datetime"},
 ]
 
 
@@ -44,7 +42,7 @@ def _format_timestamp_for_form(value: Any) -> str:
         return ""
     if pd.isna(ts):
         return ""
-    return to_pdt(ts.to_pydatetime()).strftime("%Y-%m-%d %H:%M")
+    return to_pdt(ts.to_pydatetime()).strftime("%Y-%m-%dT%H:%M")
 
 
 def build_form_defaults(row: pd.Series) -> dict[str, str]:
@@ -62,8 +60,8 @@ def build_form_defaults(row: pd.Series) -> dict[str, str]:
 
 def build_event_modal_children(
     row: pd.Series, form_values: Mapping[str, Any] | None
-) -> list[Any]:
-    """Return modal children including details and editable form."""
+) -> tuple[list[Any], html.Div]:
+    """Return modal body content and a separate editable form container."""
 
     details = html.Div(build_event_info_rows(row.items()), className="event-details")
 
@@ -72,16 +70,20 @@ def build_event_modal_children(
         defaults.update({k: _clean_string(v) for k, v in form_values.items()})
 
     form_children: list[Any] = [
-        html.H3("Edit Event", className="event-edit-title"),
         html.Div(
-            "Use 24-hour time (e.g., 2025-07-04 18:30) for date fields.",
+            "Use the picker to select dates and 24-hour times.",
             className="event-edit-notice",
         ),
         html.Div(
             [
                 html.Div(
                     [
-                        html.Label(field["label"], className="event-edit-label"),
+                        html.Label(
+                            field["label"],
+                            className="event-edit-label",
+                            htmlFor=f"event-edit-{field['key'].lower()}",
+                        ),
+                        html.Span(":", className="event-edit-separator"),
                         (
                             dcc.Textarea(
                                 id=f"event-edit-{field['key'].lower()}",
@@ -93,8 +95,17 @@ def build_event_modal_children(
                             else dcc.Input(
                                 id=f"event-edit-{field['key'].lower()}",
                                 value=defaults.get(field["key"], ""),
-                                type="text",
+                                type=(
+                                    "datetime-local"
+                                    if field["component"] == "datetime"
+                                    else "text"
+                                ),
                                 className="event-edit-input",
+                                **(
+                                    {"step": "60"}
+                                    if field["component"] == "datetime"
+                                    else {}
+                                ),
                             )
                         ),
                     ],
@@ -106,7 +117,10 @@ def build_event_modal_children(
         ),
     ]
 
-    return [details, html.Hr(), html.Div(form_children, className="event-edit-form")]
+    form_container = html.Div(form_children, className="event-edit-form")
+    body_children: list[Any] = [details]
+
+    return body_children, form_container
 
 
 def normalize_event_update(
@@ -117,7 +131,7 @@ def normalize_event_update(
     normalized: dict[str, Any] = {}
     errors: list[str] = []
 
-    required_fields = {"EventName", "Casino", "StartDate", "EndDate"}
+    required_fields = {"EventName", "StartDate", "EndDate"}
 
     for field in FORM_FIELDS:
         key = field["key"]
@@ -131,7 +145,7 @@ def normalize_event_update(
                 continue
             parsed = pd.to_datetime(raw_value, errors="coerce")
             if pd.isna(parsed):
-                errors.append(f"{field['label']} must be in YYYY-MM-DD HH:MM format.")
+                errors.append(f"{field['label']} must be a valid date and time.")
                 continue
             normalized[key] = to_naive_utc(parsed.to_pydatetime())
         else:
