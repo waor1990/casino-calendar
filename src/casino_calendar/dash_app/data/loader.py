@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Any
 
 import pandas as pd
 
 from casino_calendar.logging.config import setup_logger
-from casino_calendar.settings import DATA_DIR
+from casino_calendar.settings import APP_TIMEZONE, DATA_DIR, UTC_TZ
 
 from .transforms import categorize_offer_types, to_naive_utc
 
@@ -23,6 +23,24 @@ def _edited_copy_path(base_path: Path) -> Path:
     """Return the path used for persisted edits next to ``base_path``."""
 
     return base_path.with_name(f"{base_path.stem}{EDITED_SUFFIX}{base_path.suffix}")
+
+
+def _to_app_local(timestamp: Any) -> pd.Timestamp | pd.NaT:
+    """Return ``timestamp`` converted from UTC to the app's local timezone."""
+
+    if pd.isna(timestamp):
+        return pd.NaT
+
+    ts = pd.to_datetime(timestamp, errors="coerce")
+    if pd.isna(ts):
+        return pd.NaT
+
+    if ts.tzinfo is None:
+        ts = ts.tz_localize(UTC_TZ)
+    else:
+        ts = ts.tz_convert(UTC_TZ)
+
+    return ts.tz_convert(APP_TIMEZONE).tz_localize(None)
 
 
 def resolve_active_csv_path(csv_path: str | Path | None = None) -> Path:
@@ -77,6 +95,7 @@ def save_event_data(
     for column in ["StartDate", "EndDate"]:
         if column in events.columns:
             events[column] = pd.to_datetime(events[column], errors="coerce")
+            events[column] = events[column].map(_to_app_local)
 
     try:
         logger.info("Saving event data to %s", base_path)

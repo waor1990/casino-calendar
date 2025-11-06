@@ -120,6 +120,8 @@ If you add new columns to the CSV, update the transforms in [`src/casino_calenda
 ## ✏️ Editing events
 
 - The event detail modal now exposes an **Edit Event** workflow that surfaces form controls for core fields. Changes are stored in new Dash `dcc.Store` instances so other callbacks can react to the updated dataset.
+- Casino name and location remain view-only in the edit workflow; update the source dataset if those values need to change.
+- Saved timestamps are persisted in Pacific Time so untouched events retain their original displayed times.
 - Persisted edits are written back through `EventRepository.save_events()`, which updates `data/raw/casino_events.csv` when possible and falls back to a sibling `*.edited.csv` copy if the original file cannot be overwritten.
 - On application startup `load_event_data()` automatically prefers the freshest edited copy, ensuring saved changes survive restarts without additional configuration.
 

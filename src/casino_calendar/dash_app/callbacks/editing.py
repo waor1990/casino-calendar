@@ -8,13 +8,21 @@ from typing import Any
 import dash
 import pandas as pd
 from dash import ALL, Input, Output, State, dcc, html, no_update
+from pytz import AmbiguousTimeError, NonExistentTimeError
 
 from casino_calendar.logging.config import setup_logger
+from casino_calendar.settings import APP_TIMEZONE, UTC_TZ
 
 logger = setup_logger(__name__)
 
-EDITABLE_FIELDS = ["EventName", "Casino", "Location", "Offer", "StartDate", "EndDate"]
+EDITABLE_FIELDS = ["EventName", "Offer", "StartDate", "EndDate"]
 DATE_FIELDS = {"StartDate", "EndDate"}
+FIELD_LABELS = {
+    "EventName": "Event Name",
+    "Offer": "Offer Details",
+    "StartDate": "Start Date",
+    "EndDate": "End Date",
+}
 
 
 def _stringify_value(field: str, value: Any) -> str:
@@ -25,10 +33,15 @@ def _stringify_value(field: str, value: Any) -> str:
 
     if field in DATE_FIELDS:
         try:
-            ts = pd.to_datetime(value)
+            ts = pd.to_datetime(value, errors="coerce", utc=True)
         except Exception:
             return str(value)
-        return ts.strftime("%Y-%m-%d %H:%M")
+
+        if pd.isna(ts):
+            return ""
+
+        localized = ts.tz_convert(APP_TIMEZONE)
+        return localized.strftime("%Y-%m-%dT%H:%M")
 
     if isinstance(value, (datetime, pd.Timestamp)):
         return value.strftime("%Y-%m-%d %H:%M")
@@ -44,12 +57,22 @@ def _build_form_fields(event: dict[str, Any]) -> list[Any]:
         field_id = {"type": "event-edit-field", "name": field}
         value = _stringify_value(field, event.get(field))
 
-        if field in {"Offer", "Location"}:
+        label = f"{FIELD_LABELS.get(field, field)}:"
+
+        if field == "Offer":
             input_control: Any = dcc.Textarea(
                 id=field_id,
                 value=value,
                 className="event-edit-textarea",
                 style={"width": "100%"},
+            )
+        elif field in DATE_FIELDS:
+            input_control = dcc.Input(
+                id=field_id,
+                value=value,
+                className="event-edit-input",
+                type="datetime-local",
+                step="60",
             )
         else:
             input_control = dcc.Input(
@@ -62,7 +85,7 @@ def _build_form_fields(event: dict[str, Any]) -> list[Any]:
         fields.append(
             html.Div(
                 [
-                    html.Label(field, className="event-edit-label"),
+                    html.Label(label, className="event-edit-label"),
                     input_control,
                 ],
                 className="event-edit-field",
@@ -85,7 +108,18 @@ def _normalize_update(field: str, value: Any) -> Any:
         if pd.isna(parsed):
             logger.warning("Unable to parse %s date value %r", field, value)
             return value
-        return parsed.isoformat()
+        py_dt = parsed.to_pydatetime()
+        if py_dt.tzinfo is None:
+            try:
+                localized = APP_TIMEZONE.localize(py_dt, is_dst=None)
+            except AmbiguousTimeError:
+                localized = APP_TIMEZONE.localize(py_dt, is_dst=False)
+            except NonExistentTimeError:
+                localized = APP_TIMEZONE.localize(py_dt, is_dst=True)
+        else:
+            localized = py_dt.astimezone(APP_TIMEZONE)
+        utc_dt = localized.astimezone(UTC_TZ).replace(tzinfo=None)
+        return utc_dt.isoformat()
 
     return value
 

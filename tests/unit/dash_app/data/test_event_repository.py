@@ -8,6 +8,7 @@ import pandas as pd
 
 from casino_calendar.dash_app.data import loader
 from casino_calendar.dash_app.data.repositories import EventRepository
+from casino_calendar.settings import APP_TIMEZONE
 
 
 def _write_csv(path: Path, content: str) -> None:
@@ -53,6 +54,34 @@ def test_save_event_data_updates_primary_and_removes_edited(tmp_path: Path) -> N
 
     persisted = pd.read_csv(base)
     assert list(persisted["EventName"]) == ["Updated"]
+
+
+def test_save_event_data_converts_utc_to_local(tmp_path: Path) -> None:
+    base = tmp_path / "casino_events.csv"
+    _write_csv(base, "EventName,StartDate,EndDate\nSeed,2024-01-01,2024-01-02\n")
+
+    df = pd.DataFrame(
+        [
+            {
+                "EventName": "Shifted",
+                "StartDate": "2025-07-01 14:00:00",
+                "EndDate": "2025-07-01 20:30:00",
+            }
+        ]
+    )
+
+    loader.save_event_data(df, base)
+
+    persisted = pd.read_csv(base)
+    start_value = pd.Timestamp("2025-07-01 14:00:00", tz="UTC").tz_convert(APP_TIMEZONE)
+    end_value = pd.Timestamp("2025-07-01 20:30:00", tz="UTC").tz_convert(APP_TIMEZONE)
+
+    assert persisted.loc[0, "StartDate"] == start_value.tz_localize(None).strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+    assert persisted.loc[0, "EndDate"] == end_value.tz_localize(None).strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
 
 
 def test_save_event_data_uses_fallback_when_primary_write_fails(
