@@ -349,6 +349,9 @@ def register_callbacks(app, df, _repository=None) -> None:
             filtered_df, week_start, week_end
         )
 
+        overflow_toggle: html.Div | html.Button
+        overflow_box: html.Div
+
         if not overflow_df.empty:
             week_start_pdt = layout_state.to_pdt(week_start)
             week_end_pdt = layout_state.to_pdt(week_end)
@@ -396,7 +399,7 @@ def register_callbacks(app, df, _repository=None) -> None:
                 ],
             )
         else:
-            overflow_toggle = html.Div()
+            overflow_toggle = html.Div()  # type: ignore[assignment]
             overflow_box = html.Div()
 
         data_attr: dict[str, Any] = {"data-week": str(week_offset)}

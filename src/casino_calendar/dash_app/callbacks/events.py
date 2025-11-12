@@ -353,8 +353,8 @@ def register_callbacks(app, df, repository=None) -> None:
                     row["Casino"], palette=color_palette
                 )
                 form_defaults = event_editing.build_form_defaults(row)
-                body_children, form_component = event_editing.build_event_modal_children(
-                    row, form_defaults
+                body_children, form_component = (
+                    event_editing.build_event_modal_children(row, form_defaults)
                 )
                 context_payload = {
                     "index": idx,
@@ -617,8 +617,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         "--fg-dark": casino_colors["text_dark"],
                     }
 
-                    context_payload: dict[str, Any] | None = None
-                    body_children: list[Any]
+                    day_context_payload: dict[str, Any] | None = None
+                    day_body_children: list[Any]
 
                     try:
                         match_idx = None
@@ -645,12 +645,12 @@ def register_callbacks(app, df, repository=None) -> None:
                             )
                             row = df.loc[match_idx]
                             form_defaults = event_editing.build_form_defaults(row)
-                            body_children, form_component = (
+                            day_body_children, form_component = (
                                 event_editing.build_event_modal_children(
                                     row, form_defaults
                                 )
                             )
-                            context_payload = {
+                            day_context_payload = {
                                 "index": match_idx,
                                 "form": form_defaults,
                                 "values": row.to_dict(),
@@ -660,7 +660,7 @@ def register_callbacks(app, df, repository=None) -> None:
                                 "Unable to match day view event to DataFrame index; using read-only data"
                             )
                             row = pd.Series(data)
-                            body_children, form_component = (
+                            day_body_children, form_component = (
                                 event_editing.build_event_modal_children(
                                     row, event_editing.build_form_defaults(row)
                                 )
@@ -671,20 +671,20 @@ def register_callbacks(app, df, repository=None) -> None:
                             err,
                         )
                         row = pd.Series(data)
-                        body_children, form_component = (
+                        day_body_children, form_component = (
                             event_editing.build_event_modal_children(
                                 row, event_editing.build_form_defaults(row)
                             )
                         )
-                        context_payload = None
+                        day_context_payload = None
 
                     return (
                         style,
                         "modal show from-day",
-                        body_children,
+                        day_body_children,
                         form_component,
                         False,
-                        context_payload,
+                        day_context_payload,
                         0,
                         True,
                         {"display": "none"},
@@ -822,8 +822,8 @@ def register_callbacks(app, df, repository=None) -> None:
             repository.save_events(df)
         except Exception as exc:  # pragma: no cover - defensive logging
             logger.error("Failed to save updated events: %s", exc, exc_info=True)
-            body_children, form_component = (
-                event_editing.build_event_modal_children(row, form_values)
+            body_children, form_component = event_editing.build_event_modal_children(
+                row, form_values
             )
             return (
                 body_children,

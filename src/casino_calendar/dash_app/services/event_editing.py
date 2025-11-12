@@ -63,7 +63,10 @@ def build_event_modal_children(
 ) -> tuple[list[Any], html.Div]:
     """Return modal body content and a separate editable form container."""
 
-    details = html.Div(build_event_info_rows(row.items()), className="event-details")
+    details = html.Div(
+        build_event_info_rows([(str(k), v) for k, v in row.items()]),
+        className="event-details",
+    )
 
     defaults = build_form_defaults(row)
     if form_values:
@@ -95,16 +98,17 @@ def build_event_modal_children(
                             else dcc.Input(
                                 id=f"event-edit-{field['key'].lower()}",
                                 value=defaults.get(field["key"], ""),
-                                type=(
-                                    "datetime-local"
+                                type="text",
+                                inputMode=(
+                                    "numeric"
                                     if field["component"] == "datetime"
-                                    else "text"
+                                    else None
                                 ),
                                 className="event-edit-input",
-                                **(
-                                    {"step": "60"}
+                                placeholder=(
+                                    "YYYY-MM-DDTHH:MM"
                                     if field["component"] == "datetime"
-                                    else {}
+                                    else None
                                 ),
                             )
                         ),
