@@ -44,7 +44,7 @@ SCSS partials in this folder are combined into `../style.scss` and compiled to `
 
 ### Linting
 
-- Run `npm run lint:css` before committing style changes
+- Run `npm run lint:css` (check) before committing style changes; use `npm run lint:css:fix` to auto-correct formatting issues
 - Configuration in `config/.stylelintrc.json`
 - Follows standard SCSS conventions
 

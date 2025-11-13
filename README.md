@@ -76,7 +76,9 @@ npm install
 npm run build:css
 
 # Optional quality checks
-npm run lint:css
+python scripts/python/check_environment.py  # Validate Python/Node versions
+npm run lint:css          # Check Sass formatting
+npm run lint:css:fix      # Auto-fix Sass formatting
 black .
 isort .
 flake8
@@ -160,7 +162,9 @@ pytest tests/integration
 black --check .
 isort --check-only .
 flake8
-npm run lint:css
+npm run lint:css          # Check Sass formatting
+npm run lint:css:fix      # Auto-fix Sass formatting
+python scripts/python/check_environment.py  # Validate Python/Node versions
 ```
 
 Continuous integration scripts (`scripts/shell/test.sh`) run the same suite locally.

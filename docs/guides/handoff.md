@@ -63,7 +63,7 @@ Assets (Sass sources), data files, and automation scripts live alongside the pac
 
 - Improve accessibility (ARIA attributes on interactive controls, keyboard focus states).
 - Expand automated tests for navigation and theming callbacks.
-- Add CI workflow to exercise `npm run lint:css` alongside Python linters.
+- Add CI workflow to exercise `npm run lint:css` (check) and `npm run lint:css:fix` alongside Python linters.
 - Evaluate incremental data loading to reduce startup time on very large CSV files.
 
 Track additional ideas in [guides/TODO.md](TODO.md).
@@ -75,6 +75,7 @@ Track additional ideas in [guides/TODO.md](TODO.md).
 - `pytest` – Core test suite
 - `pytest tests/integration` – Dash integration tests (requires Chrome/Chromedriver)
 - `scripts/shell/test.sh` – Convenience wrapper that runs formatters, linters, and pytest
+- `python scripts/python/check_environment.py` – Verify Python/Node toolchain versions before running JS tooling
 
 Enable the environment variable `CASINO_MINIMAL_TEST_LOG=1` to keep the main log noise-free during test runs.
 

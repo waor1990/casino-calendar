@@ -8,7 +8,7 @@ h1,
     text-align: center;
     color: var(--color-accent);
     background-color: var(--color-background);
-    box-shadow: 0 0 16px rgba(0, 115, 255, 0.28);
+    box-shadow: 0 0 16px rgb(0 115 255 / 28%);
     border-radius: var(--border-radius-sm);
     border: var(--border-thick) solid var(--color-border-grid);
     padding: var(--padding-base);
@@ -90,7 +90,7 @@ h1,
 
 [data-theme="dark"] .theme-toggle-fab {
     background-color: var(--color-background);
-    box-shadow: 0 0 14px 10px rgba(102, 170, 255, 0.28);
+    box-shadow: 0 0 14px 10px rgb(102 170 255 / 28%);
 }
 
 .calendar-title-home-button {
@@ -414,7 +414,7 @@ h1,
     }
 
     .calendar-title {
-        box-shadow: 0 0 16px 12px rgba(102, 170, 255, 0.28);
+        box-shadow: 0 0 16px 12px rgb(102 170 255 / 28%);
     }
 
     .legend-selected {
@@ -431,14 +431,14 @@ h1,
 
         [class~="Select-control"] {
             background-color: var(--color-background);
-            border: var(--border-thin) solid #66aaff;
+            border: var(--border-thin) solid #6af;
             box-shadow: none;
             transition: border-color 0.2s ease;
         }
 
         [class~="Select-control"].is-focused,
         [class~="Select-control"]:hover {
-            border-color: #66aaff;
+            border-color: #6af;
             box-shadow: none;
         }
 

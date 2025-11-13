@@ -73,7 +73,7 @@ body {
 .week-label {
     color: var(--color-accent);
     background-color: var(--color-background);
-    box-shadow: 0 0 16px rgba(0, 115, 255, 0.28);
+    box-shadow: 0 0 16px rgb(0 115 255 / 28%);
     border-radius: var(--border-radius-sm);
     border: var(--border-thick) solid var(--color-border-grid);
     box-sizing: border-box;
@@ -85,7 +85,7 @@ body {
 }
 
 [data-theme="dark"] .week-label {
-    box-shadow: 0 0 18px 8px rgba(102, 170, 255, 0.28);
+    box-shadow: 0 0 18px 8px rgb(102 170 255 / 28%);
 }
 
 @include mixins.mobile {

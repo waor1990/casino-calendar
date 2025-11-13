@@ -6,6 +6,7 @@ These helpers run from the project root with the virtual environment activated.
 - debug_errors.py - inspect recent error logs and summarize stack traces.
 - test_day_modal_fix.py - regression runner for day modal interactions.
 - verify_requirements.py - compare the installed packages against requirements.txt.
+- check_environment.py - validate toolchain versions and offer guided Node.js fixes.
 
 Example::
 
