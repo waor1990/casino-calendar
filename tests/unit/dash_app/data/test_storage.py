@@ -1,4 +1,5 @@
 """Tests for the event storage helpers."""
+
 from __future__ import annotations
 
 import json
@@ -99,3 +100,53 @@ def test_repository_uses_override_path(tmp_path: Path) -> None:
 
     assert list(loaded["EventName"]) == ["Sample Event"]
     assert storage.resolve_active_path().name == "casino_events_override.csv"
+
+
+def test_timestamps_persist_after_save_and_reload(tmp_path: Path) -> None:
+    """Verify that timestamps round-trip correctly through save/load cycles.
+
+    When events are loaded, they are converted to naive UTC. When they are
+    edited and saved, they must be converted back to PDT before writing to CSV.
+    When reloaded, the to_naive_utc function should reconstruct the same
+    timestamps, handling DST edges correctly.
+    """
+    base_dir = tmp_path / "raw"
+    base_dir.mkdir()
+
+    # Create initial CSV with naive timestamps in PDT
+    # 2025-04-14 14:00 PDT (during PDT)
+    initial_csv = base_dir / "casino_events.csv"
+    initial_csv.write_text(
+        "EventName,Casino,Location,Offer,StartDate,EndDate\n"
+        "Spring Event,Test Casino,123 Main St,Free chips,"
+        "2025-04-14 14:00,2025-04-14 15:00\n",
+        encoding="utf-8",
+    )
+
+    # Load with EventRepository - this converts to naive UTC
+    repository = EventRepository(EventStorage(base_dir=base_dir))
+    loaded = repository.load_events()
+
+    # Verify the loaded timestamps are in UTC
+    assert pd.notna(loaded["StartDate"].iloc[0])
+    original_start_utc = loaded["StartDate"].iloc[0]
+
+    # Simulate editing - user receives PDT time, modifies it, returns as UTC
+    # (since our in-memory representation is UTC)
+    modified = loaded.copy()
+    modified["EventName"] = ["Spring Event - Modified"]
+    # Keep timestamps as-is (they're still UTC)
+
+    # Save the modified events back
+    storage = EventStorage(base_dir=base_dir)
+    storage.save_events(modified, mode="update", create_backup=False)
+
+    # Reload the events
+    reloaded = repository.load_events()
+
+    # The reloaded UTC timestamp should match the original UTC timestamp
+    reloaded_start_utc = reloaded["StartDate"].iloc[0]
+    assert (
+        original_start_utc == reloaded_start_utc
+    ), f"Timestamps diverged: {original_start_utc} != {reloaded_start_utc}"
+    assert reloaded["EventName"].iloc[0] == "Spring Event - Modified"

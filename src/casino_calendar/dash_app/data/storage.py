@@ -10,11 +10,48 @@ from typing import Literal
 import pandas as pd
 
 from casino_calendar.logging.config import setup_logger
-from casino_calendar.settings import DATA_DIR
+from casino_calendar.settings import APP_TIMEZONE, DATA_DIR, UTC_TZ
 
 logger = setup_logger(__name__)
 
 _METADATA_FILENAME = "event_source.json"
+
+
+def _to_local_timezone(
+    timestamp: pd.Timestamp | str,
+) -> pd.Timestamp | str:
+    """Convert from naive UTC to naive local timezone for persistence.
+
+    This is the inverse of the to_naive_utc transform in the loader.
+    When events are saved to CSV, timestamps must be converted from UTC
+    back to the configured local timezone (PDT) so that when reloaded,
+    the to_naive_utc function properly reconstructs the original times.
+
+    Parameters
+    ----------
+    timestamp:
+        A pandas Timestamp or string (assumed to be in naive UTC if a
+        Timestamp). Strings are returned unchanged.
+
+    Returns
+    -------
+    A pandas Timestamp in naive local time or the original string if input
+    was string.
+    """
+    # If input is already a string, return as-is (not yet parsed as Timestamp)
+    if isinstance(timestamp, str):
+        return timestamp
+
+    if pd.isna(timestamp):
+        return timestamp
+
+    if timestamp.tzinfo is None:
+        aware_utc = timestamp.replace(tzinfo=UTC_TZ)
+    else:
+        aware_utc = timestamp
+
+    local_aware = aware_utc.astimezone(APP_TIMEZONE)
+    return pd.Timestamp(local_aware.replace(tzinfo=None))
 
 
 class EventStorage:
@@ -61,7 +98,9 @@ class EventStorage:
         Parameters
         ----------
         df:
-            DataFrame containing the latest event information.
+            DataFrame containing the latest event information. Date columns
+            (StartDate, EndDate) are assumed to be in naive UTC and will be
+            converted to the local timezone before writing to CSV.
         mode:
             ``"update"`` writes directly to the canonical CSV. ``"copy"``
             creates a new CSV file and records it so future loads use the copy.
@@ -76,6 +115,12 @@ class EventStorage:
             msg = f"Invalid persistence mode: {mode}"
             raise ValueError(msg)
 
+        # Convert timestamps from UTC to local timezone before writing
+        df_to_write = df.copy()
+        for column in ["StartDate", "EndDate"]:
+            if column in df_to_write.columns:
+                df_to_write[column] = df_to_write[column].map(_to_local_timezone)
+
         target = self._resolve_target_path(
             mode=mode,
             copy_filename=copy_filename,
@@ -88,7 +133,7 @@ class EventStorage:
             backup_path.write_bytes(target.read_bytes())
 
         logger.info("Writing events to %s", target)
-        df.to_csv(target, index=False)
+        df_to_write.to_csv(target, index=False)
 
         if mode == "copy":
             self._write_metadata_path(target)
