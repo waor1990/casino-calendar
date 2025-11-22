@@ -24,16 +24,27 @@ echo.
 echo Select which log file to manage:
 echo   [1] casino_calendar_prod.log
 echo   [2] casino_calendar_maintenance.log
-echo   [3] Exit
-set /p LOGCHOICE=Enter choice [1-3]: 
+echo   [3] casino_calendar_http.log
+echo   [4] All log files
+echo   [5] Exit
+set /p LOGCHOICE=Enter choice [1-5]: 
 
 if "%LOGCHOICE%"=="1" (
     set "TARGET_LOG=logs\casino_calendar_prod.log"
     set "TARGET_NAME=casino_calendar_prod.log"
+    set "MULTI_LOG="
 ) else if "%LOGCHOICE%"=="2" (
     set "TARGET_LOG=logs\casino_calendar_maintenance.log"
     set "TARGET_NAME=casino_calendar_maintenance.log"
+    set "MULTI_LOG="
 ) else if "%LOGCHOICE%"=="3" (
+    set "TARGET_LOG=logs\casino_calendar_http.log"
+    set "TARGET_NAME=casino_calendar_http.log"
+) else if "%LOGCHOICE%"=="4" (
+    set "TARGET_LOGS=logs\casino_calendar_prod.log logs\casino_calendar_maintenance.log logs\casino_calendar_http.log"
+    set "TARGET_NAME=all log files"
+    set "MULTI_LOG=1"
+) else if "%LOGCHOICE%"=="5" (
     goto END
 ) else (
     echo.
@@ -64,12 +75,26 @@ goto MENU
 
 :OPT2_BYMONTH
 echo Archiving prior months and keeping only current month in active log...
-.\.venv\Scripts\python.exe scripts\python\cleanup_logs.py --archive-by-month --log-file "%TARGET_LOG%"
+if defined MULTI_LOG (
+    for %%L in (%TARGET_LOGS%) do (
+        echo Processing %%~nxL...
+        .\.venv\Scripts\python.exe scripts\python\cleanup_logs.py --archive-by-month --log-file "%%L"
+    )
+) else (
+    .\.venv\Scripts\python.exe scripts\python\cleanup_logs.py --archive-by-month --log-file "%TARGET_LOG%"
+)
 goto DONE
 
 :OPT3_COPY
 echo Copying the current log file into the archive folder...
-.\.venv\Scripts\python.exe scripts\python\cleanup_logs.py --copy-current --log-file "%TARGET_LOG%"
+if defined MULTI_LOG (
+    for %%L in (%TARGET_LOGS%) do (
+        echo Processing %%~nxL...
+        .\.venv\Scripts\python.exe scripts\python\cleanup_logs.py --copy-current --log-file "%%L"
+    )
+) else (
+    .\.venv\Scripts\python.exe scripts\python\cleanup_logs.py --copy-current --log-file "%TARGET_LOG%"
+)
 goto DONE
 
 :OPT4_INFO
@@ -81,7 +106,14 @@ goto DONE
 set /p DAYS=Enter number of days to copy to archive (e.g., 30): 
 if "%DAYS%"=="" goto MENU
 echo Copying lines older than %DAYS% day(s) into the archive...
-.\.venv\Scripts\python.exe scripts\python\cleanup_logs.py --copy-split-days %DAYS% --log-file "%TARGET_LOG%"
+if defined MULTI_LOG (
+    for %%L in (%TARGET_LOGS%) do (
+        echo Processing %%~nxL...
+        .\.venv\Scripts\python.exe scripts\python\cleanup_logs.py --copy-split-days %DAYS% --log-file "%%L"
+    )
+) else (
+    .\.venv\Scripts\python.exe scripts\python\cleanup_logs.py --copy-split-days %DAYS% --log-file "%TARGET_LOG%"
+)
 goto DONE
 
 :DONE
