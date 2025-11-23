@@ -20,7 +20,7 @@ flake8 --config config/linting/.flake8
 # Import sorting
 isort --settings-path config/formatting/.isort.cfg
 
-# Type checking
+# Type checking (mypy_path points at ../../src relative to this file)
 mypy --config-file config/typing/mypy.ini
 
 # CSS linting
