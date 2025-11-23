@@ -36,7 +36,11 @@ def _file_contains_only_date(file_path: Path, target: str) -> bool:
 def _tidy_log_directory(log_dir: Path) -> None:
     """Ensure only active logs reside at the root; move others to archive or delete."""
 
-    allowed = {"casino_calendar_prod.log", "casino_calendar_maintenance.log"}
+    allowed = {
+        "casino_calendar_prod.log",
+        "casino_calendar_maintenance.log",
+        "casino_calendar_http.log",
+    }
     archive_dir = log_dir / "archive"
     archive_dir.mkdir(parents=True, exist_ok=True)
 

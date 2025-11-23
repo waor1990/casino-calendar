@@ -12,6 +12,7 @@ The application now includes automatic log rotation and cleanup features to prev
 
 - **Main log**: `logs/casino_calendar.log` (with automatic rotation)
 - **Legacy log**: `logs/casino_calendar_prod.log` (to be phased out)
+- **HTTP access log**: `logs/casino_calendar_http.log` (captures web requests)
 - **Maintenance log**: `logs/casino_calendar_maintenance.log` (records setup, cleanup, and utility scripts)
 
 ### Rotation Settings
@@ -77,7 +78,7 @@ python scripts\maintenance\cleanup_logs.py --archive-current
 
 ### Interactive Cleanup Options
 
-Running `cleanup.bat` now prompts for the target log file (`casino_calendar_prod.log` or `casino_calendar_maintenance.log`) and displays the following actions:
+Running `cleanup.bat` now prompts for the target log file (`casino_calendar_prod.log`, `casino_calendar_maintenance.log`, `casino_calendar_http.log`, or **all logs at once**) and displays the following actions:
 
 ```
 [2] Archive by month (keep only current month in active log)
@@ -90,6 +91,7 @@ Running `cleanup.bat` now prompts for the target log file (`casino_calendar_prod
 - Option 2 removes prior months from the active log after archiving them into per-month files.
 - Option 3 copies the entire log into the archive (without trimming the active file).
 - Option 5 copies entries older than the specified number of days while leaving the active file untouched.
+- Selecting "All log files" runs the chosen action sequentially for the production, maintenance, and HTTP logs.
 
 ## Automated Cleanup
 
