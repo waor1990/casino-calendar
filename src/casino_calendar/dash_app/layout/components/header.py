@@ -81,12 +81,14 @@ def build_header(events: pd.DataFrame) -> html.Div:
                     ),
                     html.Div(
                         [
-                            html.Button(
+                            html.Span(
                                 "Casino Legend:",
                                 id="open-casino-index-modal",
                                 n_clicks=0,
-                                className="legend-title legend-gap legend-title-button",
+                                className="legend-title legend-gap",
                                 title="View casino index",
+                                role="button",
+                                tabIndex=0,
                             ),
                             html.Div(
                                 create_legend(events), className="legend-container"
