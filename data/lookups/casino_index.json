@@ -1,0 +1,23 @@
+[
+  {
+    "name": "ilani",
+    "color": "#2c6f7f",
+    "address": "1 Cowlitz Way, Ridgefield, WA",
+    "hours": "24/7",
+    "distance": "25 miles north of Portland"
+  },
+  {
+    "name": "Lucky Eagle Casino",
+    "address": "12888 188th Ave SW, Rochester, WA 98579",
+    "hours": "Open daily",
+    "distance": "Located near I-5 Exit 88"
+  },
+  {
+    "name": "Spirit Mountain Casino",
+    "color": "#a74321",
+    "address": "27100 SW Salmon River Hwy, Grand Ronde, OR 97347",
+    "hours": "24/7 gaming; restaurants vary",
+    "distance": "About 65 miles southwest of Portland",
+    "contact": "(503) 879-2350"
+  }
+]

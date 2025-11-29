@@ -214,6 +214,52 @@
     }
 }
 
+.casino-index-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-legend);
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: var(--padding-small) 0;
+}
+
+.casino-index-entry {
+    border: var(--border-thin) solid var(--color-border-grid);
+    border-radius: var(--border-radius-md);
+    padding: var(--padding-small);
+    box-shadow: var(--box-shadow-subtle);
+    background-color: var(--color-surface, #fff);
+
+    [data-theme="dark"] & {
+        background-color: var(--color-background);
+        border-color: var(--color-border-grid-light);
+    }
+}
+
+.casino-index-name {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-subtitle);
+    margin-bottom: var(--padding-xxs);
+}
+
+.casino-index-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-xxs);
+}
+
+.casino-index-field {
+    display: grid;
+    grid-template-columns: minmax(6rem, 10rem) 1fr;
+    gap: var(--padding-xxs);
+    align-items: baseline;
+}
+
+.casino-index-label {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-accent);
+}
+
 
 .event-block-day.short-span {
     padding-left: 0;

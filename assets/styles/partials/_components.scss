@@ -120,6 +120,21 @@ h1,
     }
 }
 
+.legend-title-button {
+    all: unset;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-legend);
+}
+
+.legend-title-button:focus-visible {
+    outline: var(--border-thin) solid var(--color-accent);
+    border-radius: var(--border-radius-sm);
+}
+
 .legend-text {
     font-size: var(--font-base);
     white-space: nowrap;

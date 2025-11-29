@@ -5,7 +5,6 @@ from datetime import timedelta
 from math import floor
 
 import pandas as pd
-
 from casino_calendar.logging.config import setup_logger
 
 # Initialize module logger
