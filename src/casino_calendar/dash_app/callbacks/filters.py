@@ -7,6 +7,7 @@ from uuid import uuid4
 import dash
 import pandas as pd
 from dash import ALL, Input, Output, State, html, no_update
+from dash.development.base_component import Component
 
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.settings import APP_TIMEZONE
@@ -338,6 +339,8 @@ def register_callbacks(app, df) -> None:
             filtered_df, week_start, week_end
         )
 
+        overflow_toggle: Component = html.Div()
+        overflow_box: Component = html.Div()
         if not overflow_df.empty:
             week_start_pdt = layout_state.to_pdt(week_start)
             week_end_pdt = layout_state.to_pdt(week_end)
@@ -384,9 +387,6 @@ def register_callbacks(app, df) -> None:
                     ),
                 ],
             )
-        else:
-            overflow_toggle = html.Div()
-            overflow_box = html.Div()
 
         data_attr: dict[str, Any] = {"data-week": str(week_offset)}
         chart = html.Div(
