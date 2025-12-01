@@ -1,0 +1,16 @@
+{
+    "typeCheckingMode": "basic",
+    "reportMissingTypeStubs": false,
+    "reportMissingImports": false,
+    "reportMissingModuleSource": false,
+    "pythonVersion": "3.11",
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "tests",
+        ".venv",
+        "node_modules"
+    ],
+    "stubPath": "stubs"
+}

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 
@@ -48,13 +49,17 @@ def test_save_events_update_overwrites_default_and_clears_metadata(
         encoding="utf-8",
     )
 
+    metadata_path = base_dir / "event_source.json"
+    metadata_path.write_text(json.dumps({"path": "stale.csv"}), encoding="utf-8")
+
     storage = EventStorage(base_dir=base_dir)
+    repository = EventRepository(storage=storage)
     df = _build_sample_frame()
 
-    written_path = storage.save_events(df, mode="update")
+    written_path = repository.save_events(df)
 
     assert written_path == default_csv.resolve()
-    assert not (base_dir / "event_source.json").exists()
+    assert not metadata_path.exists()
     backup_files = list(base_dir.glob("casino_events.*.bak.csv"))
     assert len(backup_files) == 1
     csv_contents = default_csv.read_text(encoding="utf-8")
@@ -150,3 +155,43 @@ def test_timestamps_persist_after_save_and_reload(tmp_path: Path) -> None:
         original_start_utc == reloaded_start_utc
     ), f"Timestamps diverged: {original_start_utc} != {reloaded_start_utc}"
     assert reloaded["EventName"].iloc[0] == "Spring Event - Modified"
+
+
+def test_repository_save_events_delegates_to_storage() -> None:
+    class _SpyStorage:
+        def __init__(self) -> None:
+            self.last_df: pd.DataFrame | None = None
+            self.kwargs: dict[str, Any] | None = None
+
+        def resolve_active_path(self) -> Path:
+            return Path("casino_events.csv")
+
+        def save_events(
+            self,
+            df: pd.DataFrame,
+            *,
+            mode: str = "update",
+            copy_filename: str | None = None,
+            create_backup: bool = True,
+        ) -> Path:
+            self.last_df = df.copy()
+            self.kwargs = {
+                "mode": mode,
+                "copy_filename": copy_filename,
+                "create_backup": create_backup,
+            }
+            return Path("casino_events.csv")
+
+    storage = _SpyStorage()
+    repository = EventRepository(storage=storage)
+    df = _build_sample_frame()
+
+    saved_path = repository.save_events(df)
+
+    assert saved_path == Path("casino_events.csv")
+    pd.testing.assert_frame_equal(storage.last_df, df)
+    assert storage.kwargs == {
+        "mode": "update",
+        "copy_filename": None,
+        "create_backup": True,
+    }

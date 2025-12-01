@@ -2,10 +2,10 @@
 
 from datetime import datetime, timedelta
 from math import floor
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, cast
 
 import pandas as pd
-import plotly.graph_objs as go
+import plotly.graph_objs as go  # type: ignore
 from dash import dcc, html
 
 from casino_calendar.settings import APP_TIMEZONE
@@ -16,9 +16,13 @@ if TYPE_CHECKING:
 
 from casino_calendar.services.colors import get_color, resolve_casino_color
 
-from ..services.layout_state import (filter_long_spanning_events,
-                                     offer_type_emoji, to_naive_utc, to_pdt,
-                                     trim_label)
+from ..services.layout_state import (
+    filter_long_spanning_events,
+    offer_type_emoji,
+    to_naive_utc,
+    to_pdt,
+    trim_label,
+)
 
 # Constants used to size the day modal dynamically
 DAY_MODAL_MIN_REM = 18
@@ -114,7 +118,7 @@ def generate_day_view_html(
     if events.empty:
         placeholder_graph = dcc.Graph(
             id="day-event-catcher",
-            figure=build_day_overlay_figure(10, []),
+            figure=cast(Any, build_day_overlay_figure(10, [])),
             config={"displayModeBar": False},
             style={"height": "0px", "pointerEvents": "none"},
         )
@@ -522,7 +526,9 @@ def generate_day_view_parts(
     header_text = f"Events for {day_label}"
 
     if events.empty:
-        grid_children = [html.Div("No events scheduled.", className="no-events")]
+        grid_children: list[Component] = [
+            html.Div("No events scheduled.", className="no-events")
+        ]
         return header_text, grid_children, build_day_overlay_figure(10, []), 10
 
     events["adj_start"] = events["StartDate"].where(

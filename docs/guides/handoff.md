@@ -56,6 +56,7 @@ Assets (Sass sources), data files, and automation scripts live alongside the pac
 - **Lookup cache warming** – `create_dash_app()` preloads JSON lookups (colours, keywords, hotel metadata) to remove first-click delays.
 - **Data transforms** – `to_naive_utc` and `categorize_offer_types` normalise CSV input to predictable formats before rendering.
 - **Logging upgrades** – HTTP access logging can be redirected to its own rotating file; maintenance scripts live under `scripts/python/`.
+- **Event modal editing** – Save controls now sit behind an expandable footer and casino/location fields are locked to prevent accidental edits.
 
 ---
 

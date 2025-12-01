@@ -62,6 +62,10 @@ def load_event_data(csv_path: str | Path | None = None) -> pd.DataFrame:
     offer_counts = df["OfferType"].value_counts()
     logger.info("Offer type distribution: %s", offer_counts.to_dict())
 
+    sort_columns = [col for col in ["StartDate", "EndDate", "Casino", "EventName"] if col in df.columns]
+    if sort_columns:
+        df = df.sort_values(sort_columns).reset_index(drop=True)
+
     load_time = time.time() - start_time
     logger.info("Processed event data in %.3f seconds", load_time)
     return df

@@ -8,6 +8,7 @@ A Dash application that visualizes casino promotions on a responsive weekly cale
 
 - Weekly calendar built with Dash components and CSS grid utilities
 - Modal dialogs for day and event detail views with Plotly-powered overlays
+- Expandable event modal editing controls with read-only casino and location fields
 - Casino and offer-type filtering backed by Dash stores
 - Theme toggle (light/dark) with a floating top-right action button and persisted preference in local storage
 - Automatic offer categorisation and colour assignment driven by JSON lookups
@@ -115,6 +116,9 @@ The Dash factory warms caches for lookup tables (casino colours, offer keywords,
   [`EventStorage`](src/casino_calendar/dash_app/data/storage.py), which updates
   the canonical CSV or records an override in `data/raw/event_source.json` so
   restarts load the most recent file.
+- Editing callbacks save through the `EventRepository`, which delegates to
+  `EventStorage.save_events` (update mode with backups) so the UI, repository,
+  and storage layer stay aligned.
 - Lookup JSON files in `data/lookups/` describe colours, offer type emojis, keyword groupings, and hotel partners.
 - `casino_calendar.dash_app.data.loader.load_event_data()` normalises timestamps to naive UTC before the layout functions render them in Pacific Time.
 - The [EventRepository](src/casino_calendar/dash_app/data/repositories.py) wrapper provides a simple interface for loading events in callbacks or tests.

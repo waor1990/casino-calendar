@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Protocol
 
 import pandas as pd
@@ -18,16 +19,21 @@ class SupportsEvents(Protocol):
 
 
 class EventRepository:
-    """Repository responsible for loading event data from disk."""
+    """Load and persist event data while delegating storage concerns to EventStorage."""
 
     def __init__(self, storage: EventStorage | None = None) -> None:
         self._storage = storage or EventStorage()
 
     def load_events(self) -> pd.DataFrame:
-        """Return the event data set."""
+        """Return the event data set using the active storage path."""
 
         csv_path = self._storage.resolve_active_path()
         return load_event_data(csv_path)
+
+    def save_events(self, df: pd.DataFrame) -> Path:
+        """Persist ``df`` via EventStorage with backup creation enabled."""
+
+        return self._storage.save_events(df, mode="update", create_backup=True)
 
 
 __all__ = ["EventRepository", "SupportsEvents"]

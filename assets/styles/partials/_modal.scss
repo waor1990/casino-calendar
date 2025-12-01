@@ -38,9 +38,9 @@
     position: fixed;
     inset: 0;
     background-color: var(--modal-overlay-color);
-    backdrop-filter: blur(var(--modal-overlay-blur));
     /* stylelint-disable-next-line property-no-vendor-prefix */
     -webkit-backdrop-filter: blur(var(--modal-overlay-blur));
+    backdrop-filter: blur(var(--modal-overlay-blur));
     z-index: -1;
     pointer-events: none;
 }
@@ -122,6 +122,172 @@
     flex-grow: 1;
     overflow-y: auto;
     padding: var(--padding-small);
+}
+
+.modal-footer {
+    margin-top: var(--padding-small);
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-small);
+}
+
+.modal-footer>.modal-close {
+    align-self: flex-end;
+}
+
+.modal-footer-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--padding-small);
+    flex-wrap: wrap;
+    padding-bottom: var(--padding-small);
+}
+
+.modal-footer-edit {
+    border: var(--border-thin) solid var(--color-border-grid);
+    border-radius: var(--border-radius-sm);
+    padding: var(--padding-xxs) var(--padding-small);
+    background-color: var(--color-background);
+    color: var(--color-accent);
+
+    [data-theme="dark"] & {
+        background-color: var(--color-background-dark, var(--color-background));
+        border-color: var(--color-primary);
+    }
+}
+
+.modal-footer-summary {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    list-style: none;
+    color: var(--color-accent);
+}
+
+.modal-footer-summary::-webkit-details-marker {
+    display: none;
+}
+
+.modal-footer-summary::after {
+    content: "+";
+    font-weight: 700;
+    margin-left: var(--padding-xs);
+}
+
+.modal-footer-edit[open] .modal-footer-summary::after {
+    content: "-";
+}
+
+.modal-footer-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-small);
+    margin-top: var(--padding-small);
+    color: var(--color-accent);
+}
+
+.modal-save {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    font-size: var(--font-small);
+    border: none;
+    padding: var(--padding-xs) var(--padding-base);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+
+    [data-theme="dark"] & {
+        background-color: var(--color-accent);
+        color: var(--color-background);
+    }
+}
+
+.event-save-status {
+    min-height: 1.5rem;
+    font-size: var(--font-small);
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+.event-save-status.success {
+    color: var(--color-primary-dark);
+}
+
+.event-save-status.error {
+    color: #c0392b;
+}
+
+.event-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-small);
+    color: var(--color-accent);
+}
+
+.event-edit-title {
+    margin: 0;
+    font-size: var(--font-large);
+}
+
+.event-edit-notice {
+    font-size: var(--font-small);
+    color: var(--color-accent);
+}
+
+.event-edit-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--padding-small);
+}
+
+.event-edit-field {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: var(--padding-xs);
+    row-gap: 0.25rem;
+}
+
+.event-edit-label {
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+.event-edit-separator {
+    font-weight: 600;
+    align-self: center;
+    color: var(--color-accent);
+}
+
+.event-edit-input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: var(--padding-xs) var(--padding-small);
+    border: var(--border-thin) solid var(--color-border-grid-light);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-small);
+    background-color: var(--color-background);
+    color: var(--bg);
+    caret-color: var(--bg);
+
+    [data-theme="dark"] & {
+        border-color: var(--color-border-primary);
+        background-color: rgb(33 33 33 / 70%);
+        color: var(--bg-dark, var(--bg));
+        caret-color: var(--bg-dark, var(--bg));
+    }
+}
+
+.event-edit-input::placeholder {
+    color: var(--bg);
+    opacity: 0.7;
+}
+
+[data-theme="dark"] .event-edit-input::placeholder {
+    color: var(--bg-dark, var(--bg));
+    opacity: 0.7;
 }
 
 /* Responsive Day Modal Enhancements */
@@ -294,7 +460,7 @@
 
 @include mixins.desktop {
     #event-modal-content {
-        max-width: 40rem;
+        max-width: 48rem;
     }
 
     #day-modal-content {
@@ -304,7 +470,7 @@
 
 @include mixins.hd {
     #event-modal-content {
-        max-width: 45rem;
+        max-width: 54rem;
     }
 
     #day-modal-content {

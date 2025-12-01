@@ -34,7 +34,7 @@ def _get_hotel_booking_sites():
     return sites
 
 
-def register_callbacks(app, df) -> None:
+def register_callbacks(app, df, _repository=None) -> None:
     """Register filter and navigation callbacks."""
     logger.info("Registering filter and navigation callbacks")
 
@@ -107,21 +107,27 @@ def register_callbacks(app, df) -> None:
         Output("next-button", "title"),
         Input("prev-button", "n_clicks"),
         Input("next-button", "n_clicks"),
+        Input("event-data-refresh", "data"),
         State("week-offset", "data"),
     )
     def update_week_offset(
         _prev_clicks: int,
         _next_clicks: int,
-        current_offset: int,
+        _refresh_token,
+        current_offset: int = 0,
     ) -> Tuple[int, bool, bool, str]:
         """Update the week offset based on navigation button clicks."""
         ctx = dash.callback_context
         desired_offset = current_offset
 
-        if ctx.triggered_id == "prev-button":
+        trigger_id = ctx.triggered_id
+
+        if trigger_id == "prev-button":
             desired_offset -= 1
-        elif ctx.triggered_id == "next-button":
+        elif trigger_id == "next-button":
             desired_offset += 1
+        elif trigger_id == "event-data-refresh":
+            desired_offset = current_offset
 
         desired_offset = max(-6, desired_offset)
         today_pdt = datetime.now(PDT)
@@ -207,9 +213,12 @@ def register_callbacks(app, df) -> None:
         Output("event-type-filter", "options"),
         Input("week-offset", "data"),
         Input("selected-casinos", "data"),
+        Input("event-data-refresh", "data"),
     )
     def update_event_type_options(
-        week_offset: int | None, selected_casinos: list[str] | None
+        week_offset: int | None,
+        selected_casinos: list[str] | None,
+        _refresh_token,
     ) -> list[dict[str, str]] | Any:
         """Return dropdown options annotated with event counts."""
 
@@ -300,6 +309,7 @@ def register_callbacks(app, df) -> None:
         Input("screen-width", "data"),
         Input("selected-casinos", "data"),
         Input("selected-event-types", "data"),
+        Input("event-data-refresh", "data"),
         prevent_initial_call=True,
     )
     def render_single_week_chart(
@@ -308,6 +318,7 @@ def register_callbacks(app, df) -> None:
         screen_width: int,
         selected_casinos: list[str] | None,
         selected_types: list[str] | None,
+        _refresh_token,
     ) -> Tuple[html.Div, list[html.Div], str, str, dict[str, Any]]:
         """Render a single week of events and overflow list."""
         ctx = dash.callback_context
@@ -339,8 +350,8 @@ def register_callbacks(app, df) -> None:
             filtered_df, week_start, week_end
         )
 
-        overflow_toggle: Component = html.Div()
-        overflow_box: Component = html.Div()
+        overflow_toggle: html.Div | html.Button
+        overflow_box: html.Div
         if not overflow_df.empty:
             week_start_pdt = layout_state.to_pdt(week_start)
             week_end_pdt = layout_state.to_pdt(week_end)
@@ -387,6 +398,9 @@ def register_callbacks(app, df) -> None:
                     ),
                 ],
             )
+        else:
+            overflow_toggle = html.Div()  # type: ignore[assignment]
+            overflow_box = html.Div()
 
         data_attr: dict[str, Any] = {"data-week": str(week_offset)}
         chart = html.Div(
@@ -408,6 +422,7 @@ def register_callbacks(app, df) -> None:
         Output("calendar-grid", "children"),
         Input("week-offset", "data"),
         Input("screen-width", "data"),
+        Input("event-data-refresh", "data"),
         State("event-filter-state", "data"),
         State("legacy-event-data", "data"),
         State("selected-casinos", "data"),
@@ -421,6 +436,7 @@ def register_callbacks(app, df) -> None:
         legacy_data,
         selected_casinos_state,
         selected_types_state,
+        _refresh_token=None,
     ):
         """Maintain backwards-compatible calendar grid output for legacy tests."""
 

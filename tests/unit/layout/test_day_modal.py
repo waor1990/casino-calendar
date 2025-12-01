@@ -52,18 +52,48 @@ def _event_modal_callback(casino: str):
     )
     app = Dash(__name__)
     register_callbacks(app, df)
-    key = "".join(
-        [
-            "..event-modal.style...event-modal.className...event-modal-body.children",
-            "...close-timer.n_intervals...close-timer.disabled...day-modal.style...day-modal.className...",
-            "day-modal-body.children..",
-        ]
-    )
-    return app.callback_map[key]["callback"].__wrapped__
+    for key, details in app.callback_map.items():
+        if (
+            "event-modal.style" in key
+            and "event-modal.className" in key
+            and "event-modal-body.children" in key
+            and "close-timer.n_intervals" in key
+        ):
+            return details["callback"].__wrapped__
+    raise KeyError("Event modal callback not registered")
 
 
 GRID_EVENT_IDS = [{"type": "grid-event", "index": 0}]
 DAY_COLUMN_IDS = [{"type": "day-column", "index": "2025-07-12"}]
+
+
+def _unpack_modal_outputs(result):
+    (
+        modal_style,
+        modal_class,
+        modal_body,
+        form_children,
+        footer_open,
+        context_payload,
+        close_timer_n,
+        close_timer_disabled,
+        day_modal_style,
+        day_modal_class,
+        day_modal_body,
+    ) = result
+    return {
+        "modal_style": modal_style,
+        "modal_class": modal_class,
+        "modal_body": modal_body,
+        "form_children": form_children,
+        "footer_open": footer_open,
+        "context_payload": context_payload,
+        "close_timer_n": close_timer_n,
+        "close_timer_disabled": close_timer_disabled,
+        "day_modal_style": day_modal_style,
+        "day_modal_class": day_modal_class,
+        "day_modal_body": day_modal_body,
+    }
 
 
 @pytest.mark.usefixtures("casino")
@@ -101,9 +131,12 @@ def test_show_event_modal_handles_duplicate(monkeypatch, casino):
         [],
         None,
     )
-    assert result[1] == "modal show"
-    assert result[4] is True
-    assert result[5] == {"display": "none"}
+    outputs = _unpack_modal_outputs(result)
+    assert outputs["modal_class"] == "modal show"
+    assert outputs["form_children"] is not no_update
+    assert outputs["footer_open"] is False
+    assert outputs["close_timer_disabled"] is True
+    assert outputs["day_modal_style"] == {"display": "none"}
 
 
 @pytest.mark.usefixtures("casino")
@@ -134,7 +167,8 @@ def test_show_event_modal_allows_zero_click_value(monkeypatch, casino):
         [],
         None,
     )
-    assert result[1] == "modal show"
+    outputs = _unpack_modal_outputs(result)
+    assert outputs["modal_class"] == "modal show"
 
 
 @pytest.mark.usefixtures("casino")
@@ -161,7 +195,8 @@ def test_show_event_modal_uses_state_when_context_missing(monkeypatch, casino):
         None,
     )
 
-    assert result[1] == "modal show"
+    outputs = _unpack_modal_outputs(result)
+    assert outputs["modal_class"] == "modal show"
 
 
 @pytest.mark.usefixtures("casino")
@@ -238,9 +273,10 @@ def test_show_event_modal_close(monkeypatch, casino):
         [],
         None,
     )
-    assert result[1] == "modal closing"
-    assert result[3] == 0
-    assert result[4] is False
+    outputs = _unpack_modal_outputs(result)
+    assert outputs["modal_class"] == "modal closing"
+    assert outputs["close_timer_n"] == 0
+    assert outputs["close_timer_disabled"] is False
 
 
 @pytest.mark.usefixtures("casino")
@@ -265,11 +301,12 @@ def test_close_timer_ignores_reopened_modal(monkeypatch, casino):
         [],
         "modal show",
     )
-    assert result[0] is no_update
-    assert result[1] is no_update
-    assert result[2] is no_update
-    assert result[3] == 0
-    assert result[4] is True
+    outputs = _unpack_modal_outputs(result)
+    assert outputs["modal_style"] is no_update
+    assert outputs["modal_class"] is no_update
+    assert outputs["modal_body"] is no_update
+    assert outputs["close_timer_n"] == 0
+    assert outputs["close_timer_disabled"] is True
 
 
 @pytest.mark.usefixtures("casino")
@@ -302,7 +339,8 @@ def test_day_column_allows_zero_click_value(monkeypatch, casino):
         [],
         None,
     )
-    assert result[6] == "modal show"
+    outputs = _unpack_modal_outputs(result)
+    assert outputs["day_modal_class"] == "modal show"
 
 
 @pytest.mark.usefixtures("casino")
