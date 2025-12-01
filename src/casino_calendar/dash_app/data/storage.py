@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Literal
 
 import pandas as pd
-
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.settings import APP_TIMEZONE, DATA_DIR, UTC_TZ
 

@@ -9,12 +9,10 @@ from uuid import uuid4
 
 import dash
 import pandas as pd
-from dash import ALL, Input, Output, State, dcc, html, no_update
-from dash._callback import NoUpdate
-
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color, resolve_casino_color
 from casino_calendar.settings import APP_TIMEZONE
+from dash import ALL, Input, Output, State, dcc, html, no_update
 
 from ..services import event_editing
 from ..services.layout_state import to_naive_utc
@@ -88,6 +86,8 @@ def register_callbacks(app, df, repository=None) -> None:
         Output("day-modal", "style"),
         Output("day-modal", "className"),
         Output("day-modal-body", "children"),
+        Output("event-save-status", "children", allow_duplicate=True),
+        Output("event-save-status", "className", allow_duplicate=True),
         Input("day-event-catcher", "clickData"),
         Input("close-modal", "n_clicks"),
         Input("close-timer", "n_intervals"),
@@ -122,13 +122,17 @@ def register_callbacks(app, df, repository=None) -> None:
         selected_casinos: list[str] | None,
         event_modal_class: str | None = None,
     ) -> tuple[Any, ...]:
-        """Handle modal open and close events.
+        """Handle modal open/close events and reset transient modal state.
 
         Unused parameters prefixed with an underscore are included solely so the
-        callback fires when those inputs change.
+        callback fires when those inputs change. The callback also resets the
+        footer summary area when opening or closing an event modal to avoid
+        carrying success messages between events.
         """
         start_time = time.time()
         logger.debug("show_event_modal callback triggered")
+
+        footer_reset = ("", "event-save-status")
 
         def _normalize_pattern_id(raw_id: Any) -> Any:
             """Return pattern IDs parsed from Dash string forms into dicts."""
@@ -203,6 +207,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        no_update,
+                        no_update,
                     )
 
                 return (
@@ -217,6 +223,7 @@ def register_callbacks(app, df, repository=None) -> None:
                     no_update,
                     no_update,
                     no_update,
+                    *footer_reset,
                 )
 
             if triggered_id == "close-modal":
@@ -235,6 +242,7 @@ def register_callbacks(app, df, repository=None) -> None:
                     {} if reopen_day else no_update,
                     "modal show" if reopen_day else no_update,
                     no_update,
+                    *footer_reset,
                 )
 
             if triggered_id == "close-day-modal":
@@ -251,6 +259,8 @@ def register_callbacks(app, df, repository=None) -> None:
                     no_update,
                     {"display": "none"},
                     "modal",
+                    no_update,
+                    no_update,
                     no_update,
                 )
 
@@ -341,6 +351,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        no_update,
+                        no_update,
                     )
 
                 row = df.loc[idx]
@@ -379,6 +391,7 @@ def register_callbacks(app, df, repository=None) -> None:
                     {"display": "none"},
                     "modal",
                     no_update,
+                    *footer_reset,
                 )
 
             if (
@@ -425,6 +438,8 @@ def register_callbacks(app, df, repository=None) -> None:
                 if not date_str:
                     logger.warning("No date string provided for day column click")
                     return (
+                        no_update,
+                        no_update,
                         no_update,
                         no_update,
                         no_update,
@@ -497,6 +512,8 @@ def register_callbacks(app, df, repository=None) -> None:
                     {},
                     "modal show",
                     day_modal_children,
+                    no_update,
+                    no_update,
                 )
 
             click_data = None
@@ -591,6 +608,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         {},
                         "modal show",
                         day_modal_children,
+                        no_update,
+                        no_update,
                     )
 
                 if data and all(
@@ -690,6 +709,7 @@ def register_callbacks(app, df, repository=None) -> None:
                         {"display": "none"},
                         "modal",
                         no_update,
+                        *footer_reset,
                     )
 
             logger.debug("No valid trigger found, preventing update")

@@ -241,13 +241,12 @@
     gap: var(--padding-small);
 }
 
-.event-edit-field {
-    display: grid;
-    grid-template-columns: auto auto minmax(0, 1fr);
-    align-items: center;
-    column-gap: var(--padding-xs);
-    row-gap: 0.25rem;
-}
+  .event-edit-field {
+      display: grid;
+      grid-template-columns: auto auto minmax(0, 1fr);
+      align-items: center;
+      gap: 0.25rem var(--padding-xs);
+  }
 
 .event-edit-label {
     font-weight: 600;

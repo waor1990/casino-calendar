@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
-
 from casino_calendar.dash_app.services import layout_state
 
 

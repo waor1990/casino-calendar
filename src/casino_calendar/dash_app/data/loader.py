@@ -6,7 +6,6 @@ import time
 from pathlib import Path
 
 import pandas as pd
-
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.settings import DATA_DIR
 
@@ -62,7 +61,11 @@ def load_event_data(csv_path: str | Path | None = None) -> pd.DataFrame:
     offer_counts = df["OfferType"].value_counts()
     logger.info("Offer type distribution: %s", offer_counts.to_dict())
 
-    sort_columns = [col for col in ["StartDate", "EndDate", "Casino", "EventName"] if col in df.columns]
+    sort_columns = [
+        col
+        for col in ["StartDate", "EndDate", "Casino", "EventName"]
+        if col in df.columns
+    ]
     if sort_columns:
         df = df.sort_values(sort_columns).reset_index(drop=True)
 

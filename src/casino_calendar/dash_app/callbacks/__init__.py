@@ -24,7 +24,10 @@ def _ensure_legacy_callback_aliases(app: Dash) -> None:
         "...day-modal.style...day-modal.className...day-modal-body.children.."
     )
 
-    if legacy_modal_key in app.callback_map or current_modal_key not in app.callback_map:
+    if (
+        legacy_modal_key in app.callback_map
+        or current_modal_key not in app.callback_map
+    ):
         return
 
     entry = app.callback_map[current_modal_key]

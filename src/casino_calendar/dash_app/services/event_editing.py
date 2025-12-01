@@ -5,9 +5,8 @@ from __future__ import annotations
 from typing import Any, Mapping
 
 import pandas as pd
-from dash import dcc, html
-
 from casino_calendar.logging.config import setup_logger
+from dash import dcc, html
 
 from .layout_state import build_event_info_rows, to_naive_utc, to_pdt
 

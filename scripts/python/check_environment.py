@@ -20,7 +20,9 @@ try:
     from casino_calendar.logging import config as logging_config  # noqa: E402
 except Exception as exc:  # pragma: no cover - fallback path
     logging.basicConfig(
-        level=logging.INFO, format="%(message)s", handlers=[logging.StreamHandler(sys.stdout)]
+        level=logging.INFO,
+        format="%(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)],
     )
     logger = logging.getLogger("casino_calendar.scripts.check_environment")
     logger.warning(
@@ -270,7 +272,9 @@ def check_node(
                 node_spec,
             )
             return None
-        logger.warning("Node.js still does not satisfy the requirement after attempting to fix.")
+        logger.warning(
+            "Node.js still does not satisfy the requirement after attempting to fix."
+        )
 
     return failure
 

@@ -33,9 +33,7 @@ def build_event_modal() -> html.Div:
                                     html.Div(
                                         className="modal-footer-panel",
                                         children=[
-                                            html.Div(
-                                                id="event-edit-form-container"
-                                            ),
+                                            html.Div(id="event-edit-form-container"),
                                             html.Div(
                                                 id="event-save-status",
                                                 className="event-save-status",
