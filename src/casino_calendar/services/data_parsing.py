@@ -70,6 +70,10 @@ def filter_week_events(events_df, week_start, week_end):
         (events_df["EndDate"] > week_start)
         & (events_df["StartDate"] < week_end)
         & ~(events_df["StartDate"] == week_end)
+        # Drop events that span the full week (they belong in the overflow list)
+        & ~(
+            (events_df["StartDate"] < week_start) & (events_df["EndDate"] > week_end)
+        )
     ].copy()
 
     logger.debug("Filtered to %d events for current week", len(filtered))
