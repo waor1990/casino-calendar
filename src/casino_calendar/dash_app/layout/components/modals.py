@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 import plotly.graph_objs as go
@@ -120,7 +121,11 @@ def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
             className="casino-index-field",
             children=[
                 html.Span(f"{field.title()}:", className="casino-index-label"),
-                html.Span(str(value) if value not in (None, "") else "Not provided"),
+                html.Span(
+                    _format_field_value(field, value)
+                    if value not in (None, "")
+                    else "Not provided"
+                ),
             ],
         )
         for field, value in ordered_fields
@@ -141,6 +146,73 @@ def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
             html.Div(field_children, className="casino-index-fields"),
         ],
     )
+
+
+def _format_field_value(field: str, value: Any) -> str:
+    """Return a formatted value for known casino index fields.
+
+    The ``hours`` field is reduced to the current day's entry when the
+    source value contains a weekly schedule; all other fields are coerced
+    to strings unchanged.
+    """
+
+    if field == "hours":
+        formatted_hours = _format_hours_value(value)
+        if formatted_hours is not None:
+            return formatted_hours
+        return "Not provided"
+
+    return str(value)
+
+
+def _format_hours_value(hours: Any) -> str | None:
+    """Return hours for the current weekday when present.
+
+    Supports dictionaries keyed by weekday names as well as multiline
+    strings where each line begins with a weekday label (e.g. "Mon:" or
+    "Monday -"). Falls back to the original value when a specific match is
+    not found so existing free-form hours strings render intact.
+    """
+
+    if hours in (None, ""):
+        return None
+
+    today = datetime.now().strftime("%A")
+    candidates = {
+        today,
+        today[:3],
+        today.upper(),
+        today.lower(),
+        today[:3].upper(),
+        today[:3].lower(),
+    }
+    lowered_candidates = {c.lower() for c in candidates}
+
+    if isinstance(hours, dict):
+        for key, value in hours.items():
+            if key in candidates or str(key).lower() in lowered_candidates:
+                return str(value)
+        return None
+
+    if isinstance(hours, (list, tuple)):
+        lines = [str(item) for item in hours]
+    elif isinstance(hours, str):
+        lines = [line.strip() for line in hours.splitlines() if line.strip()]
+    else:
+        return str(hours)
+
+    for line in lines:
+        lowered = line.lower()
+        for candidate in lowered_candidates:
+            if lowered.startswith(candidate):
+                if ":" in line:
+                    return line.split(":", 1)[1].strip()
+                if "-" in line:
+                    return line.split("-", 1)[1].strip()
+                parts = line.split(None, 1)
+                return parts[1].strip() if len(parts) > 1 else line.strip()
+
+    return "\n".join(lines)
 
 
 def build_casino_index_modal(

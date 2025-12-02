@@ -115,6 +115,10 @@ h1,
     width: 100%;
     display: block;
 
+    &[role="button"] {
+        cursor: pointer;
+    }
+
     @include mixins.mobile {
         font-size: var(--font-subtitle);
     }
