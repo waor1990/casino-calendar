@@ -6,14 +6,13 @@ import time
 from pathlib import Path
 from typing import Any, Tuple
 
-from dash import Dash
-
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.config_cache import warm_cache
-from casino_calendar.settings import get_env_bool
+from casino_calendar.settings import get_env, get_env_bool
+from dash import Dash
 
 from .callbacks import register_callbacks
-from .data import EventRepository
+from .data import APIEventRepository
 from .layout.root import create_layout
 
 logger = setup_logger(__name__)
@@ -73,11 +72,12 @@ def create_dash_app() -> Tuple[Dash, Any]:
         "lookups/hotel_book_sites.json",
     )
 
-    repository = EventRepository()
+    api_base_url = get_env("EVENT_API_BASE_URL", "http://localhost:5001")
+    repository = APIEventRepository(base_url=api_base_url)
 
     logger.info("Loading event data")
     start_time = time.time()
-    events = repository.load_events()
+    events = repository.get_events()
     load_time = time.time() - start_time
     logger.info("Loaded event data in %.3f seconds", load_time)
     logger.debug("Event count: %d", len(events))

@@ -6,21 +6,17 @@ This directory contains JavaScript utilities that support the Casino Calendar wo
 
 ### `append-casino-event.mjs`
 
-- **Purpose**: Adds new casino events to the CSV file
+- **Purpose**: Posts new casino events directly to the REST API (`POST /events`)
 - **Platform**: iOS Scriptable app
-- **Input**: JavaScript array of 6-item arrays (EventName, Casino, Location, Offer, StartDate, EndDate)
-- **Features**: Duplicate detection, data validation, iCloud sync
-- **Usage**: Run via iOS Shortcuts with casino event data
-- **Data Format**: Requires properly formatted data (no escaped characters like `\[` or `\$`)
+- **Input**: Single event object or array of `[EventName, Casino, Location, Offer, StartDate, EndDate, (OfferType?)]`
+- **Features**: Converts dates to ISO 8601 UTC, categorises offer types client-side using the same keyword lists as the Dash app, and sends JSON payloads (no CSV writes)
+- **Usage**: Run via iOS Shortcuts with casino event data; set `apiUrl` to your API host
 
 ### `trim-old-casino-events.mjs`
 
-- **Purpose**: Removes events older than 2 months to prevent CSV file growth
+- **Purpose**: Legacy CSV cleaner retained for archival workflows
 - **Platform**: iOS Scriptable app
-- **Input**: None (automatically processes existing CSV file)
-- **Features**: Casino-specific removal counts, robust CSV parsing, alert summary
-- **Usage**: Run periodically in Scriptable app (manually or via automation)
-- **Safety**: Preserves events with invalid dates, shows detailed removal summary
+- **Notes**: The primary workflow now posts to the REST API; CSV cleanup is no longer required for the Dash app
 
 ### `cleanup-node-modules.mjs`
 
@@ -40,9 +36,9 @@ This directory contains JavaScript utilities that support the Casino Calendar wo
 
 The iOS automation scripts integrate with the main Casino Calendar application by:
 
-- **Data Source**: Both iOS scripts work with `iCloud/CasinoEvents/casino_events.csv`
-- **Compatibility**: CSV format matches what the Dash app expects in `data/casino_events.csv`
-- **Workflow**: Complete data lifecycle from addition (`append-casino-event.mjs`) to cleanup (`trim-old-casino-events.mjs`)
+- **Data Source**: `append-casino-event.mjs` posts to the REST API backed by `data/events.json`
+- **Compatibility**: Dash fetches events from the API via `APIEventRepository`
+- **Workflow**: CSV utilities are retained only for legacy pipelines
 
 The `cleanup-node-modules.mjs` utility keeps the local `node_modules` tree tidy so that Windows developers can run `npm install` without cleanup warnings.
 
@@ -50,17 +46,5 @@ The `cleanup-node-modules.mjs` utility keeps the local `node_modules` tree tidy 
 
 1. Install the Scriptable app on iOS
 2. Copy the script content into new Scriptable scripts
-3. Ensure iCloud Drive is enabled for file access
+3. Update `apiUrl` in `append-casino-event.mjs` to point at your API host/IP (port 5001 by default)
 4. Run via Scriptable app or integrate with iOS Shortcuts
-
-## File Structure
-
-The scripts expect this iCloud file structure:
-
-```text
-iCloud Drive/
-└── Scriptable/
-    └── CasinoEvents/
-        ├── casino_events.csv (main data file)
-        └── backups/ (created by cleanup script if needed)
-```

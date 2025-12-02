@@ -24,7 +24,7 @@ This document outlines the Casino Calendar repository. The layout emphasises a c
 
 - `dash_app/app.py` – Dash factory returning the app and server, including cache warming.
 - `dash_app/callbacks/` – Modular callback handlers for events, filters, navigation, and theming.
-- `dash_app/data/` – CSV loader, repository wrapper, and transforms for dataset normalisation.
+- `dash_app/data/` – REST API repository plus legacy CSV loader and transforms for dataset normalisation.
 - `dash_app/layout/` – Layout factory (`root.py`), CSS grid helpers (`week_grid.py`), and reusable component builders under `layout/components/`.
 - `dash_app/services/` – Layout/callback utilities (timezone helpers, modal formatting, lookup helpers).
 - `dash_app/visualization/` – Plotly chart builders used by the day modal overlays.
@@ -40,7 +40,8 @@ This document outlines the Casino Calendar repository. The layout emphasises a c
 
 ### `data/`
 
-- `raw/casino_events.csv` – Primary dataset.
+- `events.json` – API-backed event store persisted by the Flask service.
+- `raw/casino_events.csv` – Legacy dataset retained for tooling compatibility.
 - `lookups/` – JSON lookup tables (casino colours, default palette, offer keywords, hotel metadata, etc.).
 - `cache/` – Placeholder for runtime caches (kept empty in version control).
 

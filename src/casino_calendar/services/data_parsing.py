@@ -5,7 +5,6 @@ from datetime import timedelta
 from math import floor
 
 import pandas as pd
-
 from casino_calendar.logging.config import setup_logger
 
 # Initialize module logger
@@ -71,6 +70,10 @@ def filter_week_events(events_df, week_start, week_end):
         & (events_df["StartDate"] < week_end)
         & ~(events_df["StartDate"] == week_end)
     ].copy()
+
+    filtered = filtered[
+        ~((filtered["StartDate"] < week_start) & (filtered["EndDate"] > week_end))
+    ]
 
     logger.debug("Filtered to %d events for current week", len(filtered))
     return filtered

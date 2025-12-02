@@ -1,4 +1,9 @@
-"""CSV loader utilities for Casino Calendar event data."""
+"""CSV loader utilities for Casino Calendar event data.
+
+This module remains for legacy workflows that still reference the
+``casino_events.csv`` file. The production Dash application now reads
+events from the REST API instead of the CSV store.
+"""
 
 from __future__ import annotations
 
@@ -6,7 +11,6 @@ import time
 from pathlib import Path
 
 import pandas as pd
-
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.settings import DATA_DIR
 

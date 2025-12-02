@@ -95,7 +95,8 @@ When using `python-dotenv`, environment variables are loaded from `.env` in the 
 
 ```bash
 # Activate your virtual environment first
-python app.py
+python api/event_api.py  # REST API (port 5001 by default)
+python app.py            # Dash frontend
 ```
 
 `app.py` instantiates the Dash application and exposes both `app` and `server` so the same entry point can be used by Gunicorn:
@@ -104,18 +105,53 @@ python app.py
 gunicorn app:server
 ```
 
-The Dash factory warms caches for lookup tables (casino colours, offer keywords, hotel booking metadata) and loads the event dataset from `data/raw/casino_events.csv` at startup.
+The Dash factory warms caches for lookup tables (casino colours, offer keywords, hotel booking metadata) and now loads event data from the REST API specified by `EVENT_API_BASE_URL` (defaults to `http://localhost:5001`).
 
 ---
 
 ## 🗃️ Data pipeline
 
-- Raw data lives in `data/raw/casino_events.csv`.
+- **Event API**: `api/event_api.py` provides `GET/POST/PUT /events` endpoints backed by `data/events.json`.
+- **Dash**: uses `APIEventRepository` to fetch and normalise events (timestamps converted to naive UTC and offer types categorised).
+- **Scriptable**: posts new events directly to the API (see `scripts/node/append-casino-event.mjs`).
 - Lookup JSON files in `data/lookups/` describe colours, offer type emojis, keyword groupings, and hotel partners.
-- `casino_calendar.dash_app.data.loader.load_event_data()` normalises timestamps to naive UTC before the layout functions render them in Pacific Time.
-- The [EventRepository](src/casino_calendar/dash_app/data/repositories.py) wrapper provides a simple interface for loading events in callbacks or tests.
 
-If you add new columns to the CSV, update the transforms in [`src/casino_calendar/dash_app/data/transforms.py`](src/casino_calendar/dash_app/data/transforms.py) and adjust layout components that render event metadata.
+If you add new columns to the event payload, update the transforms in [`src/casino_calendar/dash_app/data/transforms.py`](src/casino_calendar/dash_app/data/transforms.py), the API validation logic in [`api/event_api.py`](api/event_api.py), and adjust layout components that render event metadata.
+
+---
+
+## 📡 REST API usage
+
+The event API runs on port `5001` by default and persists data in `data/events.json`.
+
+```bash
+# Fetch all events
+curl http://localhost:5001/events
+
+# Create an event
+curl -X POST http://localhost:5001/events \
+  -H "Content-Type: application/json" \
+  -d '{
+    "EventName": "Lucky Draw",
+    "Offer": "Free Play",
+    "StartDate": "2025-12-01T20:00:00Z",
+    "EndDate": "2025-12-01T23:59:00Z",
+    "Casino": "Luxor",
+    "Location": "Las Vegas"
+  }'
+
+# Update an existing event
+curl -X PUT http://localhost:5001/events/<event-id> \
+  -H "Content-Type: application/json" \
+  -d '{
+    "EventName": "Lucky Draw Updated",
+    "Offer": "Free Play",
+    "StartDate": "2025-12-02T20:00:00Z",
+    "EndDate": "2025-12-02T23:59:00Z",
+    "Casino": "Luxor",
+    "Location": "Las Vegas"
+  }'
+```
 
 ---
 

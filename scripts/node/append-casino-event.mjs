@@ -3,187 +3,246 @@
 // icon-color: green; icon-glyph: search-location;
 
 /**
- * Casino Event CSV Appender for iOS Scriptable
- * 
- * This script is designed to run in the iOS Scriptable app and integrates with
- * the Casino Calendar project to add new casino events to the main CSV file.
- * 
- * USAGE:
- * - Run via iOS Shortcuts app with casino event data
- * - Input: JavaScript array of 6-item arrays
- * - Format: [EventName, Casino, Location, Offer, StartDate, EndDate]
- * 
- * DATA FORMAT REQUIREMENTS:
- * - Must be actual JavaScript array, not escaped string
- * - Each event must have exactly 6 items
- * - No escaped characters (\[, \], \$, etc.)
- * - Dates in format: "M/D/YYYY H:MM"
- * 
- * FEATURES:
- * - Duplicate detection based on Casino, StartDate, EndDate
- * - Data validation with detailed error messages
- * - iCloud file sync integration
- * - Comprehensive logging
- * 
- * INTEGRATION:
- * - Writes to: iCloud/CasinoEvents/casino_events.csv
- * - Compatible with Casino Calendar Dash app data loading
- * - Part of the overall casino event data management workflow
+ * Casino Event API Poster for iOS Scriptable
+ *
+ * This script sends casino events directly to the Casino Calendar REST API
+ * instead of writing CSV files to iCloud. Provide either a single event
+ * object or an array of 6- or 7-item arrays matching the API schema:
+ * [EventName, Casino, Location, Offer, StartDate, EndDate, (OfferType?)].
+ * Dates should be parseable by JavaScript's Date constructor and will be
+ * converted to ISO 8601 UTC (Z) before sending to the API.
  */
 
-// === CONFIGURATION ===
+const apiUrl = "http://<your-ip>:5001/events";
 
-const folderName = "CasinoEvents";
-const fileName = "casino_events.csv";
-const headers = ["EventName", "Casino", "Location", "Offer", "StartDate", "EndDate"];
-let logOutput = "";
-function log(...args) {
-    const message = args.join(" ");
-    console.log(message);
-    logOutput += message + "/n";
+const KEYWORDS = {
+    giveaway_keywords: [
+        "giveaway",
+        "giveaways",
+        "gift",
+        "gifts",
+        "redeem",
+        "earbuds",
+        "headphones",
+        "luggage",
+        "necklace",
+        "bracelet",
+        "earrings",
+        "tool set",
+        "barbuds",
+        "t-shirt",
+        "wearable",
+        "cooler",
+        "backpack",
+        "camping set",
+        "cookware",
+        "outdoor stove",
+        "fan",
+        "fishing pole",
+        "bathroom set",
+        "john wayne",
+        "frigidaire",
+        "collection",
+        "cash",
+        "drawing",
+        "sweepstakes",
+        "hot seat",
+        "prize",
+        "scratcher",
+        "bonus drawing",
+        "win it",
+        "winnings",
+        "fortune wheel",
+        "money",
+        "bonanza",
+        "red white drawings",
+        "hourly",
+    ],
+    free_play_cash_drawing_keywords: [
+        "free play",
+        "slot play",
+        "free-play",
+        "promo play",
+        "lucky bucks",
+        "mystery bonus",
+        "vault of riches",
+        "kiosk game",
+        "freeplay",
+        "xtra rewards",
+    ],
+    multiplier_points_keywords: [
+        "multiplier",
+        "points",
+        "x points",
+        "status points",
+        "points multiplier",
+        "point multiplier",
+    ],
+    hotel_travel_dining_shopping_keywords: [
+        "hotel",
+        "stay",
+        "rv",
+        "cruise",
+        "dining",
+        "shopping",
+        "buffet",
+        "food",
+        "restaurant",
+        "meal",
+        "discount",
+        "merchandise",
+        "spa",
+        "travel",
+        "trip",
+        "room night",
+        "complimentary night",
+        "standard room",
+        "complimentary stay",
+        "double rewards",
+        "% off",
+    ],
+    special_event_keywords: [
+        "tournament",
+        "event",
+        "brunch",
+        "reception",
+        "fiesta",
+        "party",
+        "taco crawl",
+        "special",
+        "celebration",
+        "invite",
+        "parade",
+        "festival",
+        "show",
+        "game",
+        "bingo",
+        "concert",
+        "birthday",
+    ],
+    vehicle_car_giveaway_keywords: [
+        "car",
+        "toyota",
+        "tundra",
+        "volkswagen",
+        "jetta",
+        "kia k5",
+        "dodge charger",
+        "rv giveaway",
+        "win an rv",
+        "rv drawing",
+        "atv",
+        "truck",
+        "land cruiser",
+    ],
+};
+
+function escapeRegex(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function parseCSVLine(line) {
-    const regex = /"([^"]*(?:""[^""]*)*)"|([^,]+)/g;
-    const result = [];
-    let match;
+function buildKeywordPattern(keys) {
+    const wholeWords = [];
+    const phrases = [];
 
-    while ((match = regex.exec(line)) !== null) {
-        const value = match[1] || match[2] || "";
-        result.push(value.replace(/""/g, '"'));
-    }
-
-    return result;
-}
-
-function safeFolderName(casino, date) {
-    return `${casino}`.replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "_") + "_" + date;
-}
-
-function formatDate(dateStr) {
-    const d = new Date(dateStr);
-    return d.toISOString().split("T")[0];
-}
-
-// === EXECUTION ===
-try {
-    const fm = FileManager.iCloud();
-    const dir = fm.joinPath(fm.documentsDirectory(), folderName);
-    const filePath = fm.joinPath(dir, fileName);
-    if (!fm.fileExists(dir)) fm.createDirectory(dir);
-
-    let input = args.shortcutParameter;
-
-    // If it's already an array, re-wrap it as object with events and images
-    if (Array.isArray(input)) {
-        input = { events: input, images: [] };
-    }
-
-    let events = input.events;
-    let images = input.images || [];
-
-    // Validate structure
-    if (!Array.isArray(events)) {
-        throw new Error("Input must be a JSON array of 6-item arrays.");
-    }
-
-    if (events.length === 0) {
-        throw new Error("Events array is empty.");
-    }
-
-    // Validate that all events are arrays with correct structure
-    for (let i = 0; i < events.length; i++) {
-        if (!Array.isArray(events[i])) {
-            throw new Error(`Event at index ${i} is not an array.`);
+    for (const key of keys) {
+        if (/^[A-Za-z0-9]+$/.test(key)) {
+            wholeWords.push(`\\b${escapeRegex(key)}\\b`);
+        } else {
+            phrases.push(escapeRegex(key));
         }
-        if (events[i].length !== headers.length) {
-            throw new Error(`Event at index ${i} has ${events[i].length} items, expected ${headers.length}.`);
-        }
     }
 
-    // Download if file exists
-    if (fm.isFileStoredIniCloud(filePath)) {
-        await fm.downloadFileFromiCloud(filePath);
-    }
-
-    // Create file with headers if it doesn't exist
-    if (!fm.fileExists(filePath)) {
-        const headerRow = headers.join(",") + "\n";
-        fm.writeString(filePath, headerRow);
-    }
-
-    // Read and parse existing CSV rows (excluding header)
-    let existingCSV = fm.readString(filePath).split("\n").filter(line => line.trim() !== "");
-    const existingRows = existingCSV.slice(1).map(parseCSVLine); // Remove header
-
-    // Helper to build CSV row
-    const formatRow = (event) =>
-        event.map(f => `"${String(f).trim().replace(/"/g, '""')}"`).join(",");
-
-    let newRows = "";
-    let appendedCount = 0;
-    let savedEventSummaries = [];
-
-    function clean(val) {
-        return String(val)
-            .replace(/^"|"$/g, '')
-            .replace(/\uFEFF/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-    }
-
-    for (let i = 0; i < events.length; i++) {
-        let event = events[i];
-        // Note: Length validation already done above, so all events are guaranteed to have correct length
-
-        const alreadyExists = existingRows.some(row => {
-            const match =
-                clean(row[1]) === clean(event[1]) &&
-                clean(row[4]) === clean(event[4]) &&
-                clean(row[5]) === clean(event[5]);
-
-            if (match) {
-                log(`❌ Duplicate found: \n CSV = ${clean(row[1])}, ${clean(row[4])}, ${clean(row[5])}\n Event = ${clean(event[1])}, ${clean(event[4])}, ${clean(event[5])}`);
-            }
-
-            return match;
-        });
-
-        if (alreadyExists) continue;
-
-        // Append row
-        const row = formatRow(event);
-        newRows += row + "\n";
-        appendedCount++;
-        savedEventSummaries.push(`🎰 ${event[0]} @ ${event[1]} (${event[4]} – ${event[5]})`);
-
-        // // Save associated images (commented out)
-        // if (images[i] && Array.isArray(images[i])) {
-        //     const [eventName, casino, , , startDate] = event;
-        //     const subFolder = safeFolderName(casino, formatDate(startDate));
-        //     const subFolderPath = fm.joinPath(dir, subFolder);
-        //     if (!fm.fileExists(subFolderPath)) fm.createDirectory(subFolderPath);
-        //     for (let j = 0; j < images[i].length; j++) {
-        //         const imgData = Data.fromBase64String(images[i][j]);
-        //         const imgPath = fm.joinPath(subFolderPath, `event_${i + 1}_img${j + 1}.jpg`);
-        //         fm.write(imgPath, imgData);
-        //         log(`🌁 Saved image: ${imgPath}`);
-        //     }
-        // }
-    }
-
-    const skippedCount = events.length - appendedCount;
-    const summaryLog = savedEventSummaries.join("\n");
-
-    if (appendedCount > 0) {
-        fm.writeString(filePath, fm.readString(filePath) + newRows);
-        Script.setShortcutOutput(`✅ ${appendedCount} new event(s) saved and ⛔️ ${skippedCount} duplicate event(s) skipped when adding to CSV. \n\n${summaryLog}\n\n${logOutput}`)
-    } else {
-        Script.setShortcutOutput(`⚠️ No new events saved. All ${skippedCount} provided event(s) already exist with the same Casino and time. \n\n${logOutput}`)
-    }
-
-} catch (err) {
-    Script.setShortcutOutput(`❌ Failed: ${err.message} \n${logOutput}`);
+    return new RegExp([...wholeWords, ...phrases].join("|"), "i");
 }
+
+function classifyOfferType(eventName, offer) {
+    const nameText = (eventName ?? "").toString();
+    const offerText = (offer ?? "").toString();
+
+    const patterns = {
+        vehicle: buildKeywordPattern(KEYWORDS.vehicle_car_giveaway_keywords),
+        giveaway: buildKeywordPattern(KEYWORDS.giveaway_keywords),
+        freePlay: buildKeywordPattern(KEYWORDS.free_play_cash_drawing_keywords),
+        multiplier: buildKeywordPattern(KEYWORDS.multiplier_points_keywords),
+        hospitality: buildKeywordPattern(KEYWORDS.hotel_travel_dining_shopping_keywords),
+        special: buildKeywordPattern(KEYWORDS.special_event_keywords),
+    };
+
+    const contains = (regex) => regex.test(nameText) || regex.test(offerText);
+
+    if (contains(patterns.vehicle)) return "Giveaway";
+    if (contains(patterns.giveaway)) return "Giveaway";
+    if (contains(patterns.freePlay)) return "Free-Play";
+    if (contains(patterns.multiplier)) return "Point-Based";
+    if (contains(patterns.hospitality)) return "Hospitality-Rewards";
+    if (contains(patterns.special)) return "Special-Events";
+
+    return "Offer";
+}
+
+function toIso(dateStr) {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) throw new Error(`Invalid date: ${dateStr}`);
+    return date.toISOString();
+}
+
+function normalizeEvent(raw) {
+    if (Array.isArray(raw)) {
+        const [EventName, Casino, Location, Offer, StartDate, EndDate, OfferType] = raw;
+        const classifiedOfferType = OfferType ?? classifyOfferType(EventName, Offer);
+        return {
+            EventName,
+            Casino,
+            Location,
+            Offer,
+            StartDate: toIso(StartDate),
+            EndDate: toIso(EndDate),
+            OfferType: classifiedOfferType,
+        };
+    }
+
+    if (typeof raw === "object" && raw !== null) {
+        const offerType =
+            raw.OfferType || classifyOfferType(raw.EventName, raw.Offer || raw.EventName);
+        return {
+            ...raw,
+            StartDate: toIso(raw.StartDate),
+            EndDate: toIso(raw.EndDate),
+            OfferType: offerType,
+        };
+    }
+
+    throw new Error("Input must be an event object or array.");
+}
+
+async function postEvent(event) {
+    const req = new Request(apiUrl);
+    req.method = "POST";
+    req.headers = { "Content-Type": "application/json" };
+    req.body = JSON.stringify(event);
+    return req.loadJSON();
+}
+
+async function run() {
+    const input = args.shortcutParameter;
+    const events = Array.isArray(input) ? input.map(normalizeEvent) : [normalizeEvent(input)];
+
+    const results = [];
+    for (const event of events) {
+        const response = await postEvent(event);
+        results.push(response);
+    }
+
+    const summary = results
+        .map((evt) => `✅ ${evt.EventName} (${evt.Casino}) saved as ${evt.EventID}`)
+        .join("\n");
+
+    Script.setShortcutOutput(summary);
+}
+
+run().catch((err) => {
+    Script.setShortcutOutput(`❌ Failed to save events: ${err.message}`);
+});
 
 Script.complete();

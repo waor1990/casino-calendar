@@ -4,10 +4,9 @@ from datetime import datetime, timedelta
 from typing import Any, Iterable, Tuple
 
 import pandas as pd
-from dash import html
-
 from casino_calendar.services.config_cache import get_config
 from casino_calendar.settings import APP_TIMEZONE, UTC_TZ
+from dash import html
 
 
 def offer_type_emoji(offer_type: str) -> str:
