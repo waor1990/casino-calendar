@@ -25,7 +25,7 @@
         "css",
         "scss"
     ],
-    "stylelint.configFile": "config/.stylelintrc.json",
+    "stylelint.configFile": "config/linting/.stylelintrc.json",
     "stylelint.autoFixOnSave": false,
     "editor.codeActionsOnSave": {
         "source.fixAll.stylelint": "never"
