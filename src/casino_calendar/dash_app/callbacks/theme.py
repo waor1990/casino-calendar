@@ -1,7 +1,8 @@
 """Callbacks responsible for handling the light/dark theme toggle."""
 
-from casino_calendar.logging.config import setup_logger
 from dash import Input, Output, State
+
+from casino_calendar.logging.config import setup_logger
 
 # Initialize module logger
 logger = setup_logger(__name__)

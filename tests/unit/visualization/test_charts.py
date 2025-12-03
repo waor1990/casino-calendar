@@ -3,13 +3,12 @@ from datetime import datetime, timedelta
 import pandas as pd
 import plotly.graph_objs as go
 import pytest
+
 from casino_calendar.dash_app.services.layout_state import to_naive_utc
 from casino_calendar.dash_app.visualization import charts as day_charts
 from casino_calendar.services.colors import get_color
-from casino_calendar.services.data_parsing import (
-    annotate_events_with_flags,
-    filter_week_events,
-)
+from casino_calendar.services.data_parsing import (annotate_events_with_flags,
+                                                   filter_week_events)
 
 
 @pytest.mark.usefixtures("casino", "offer_type")
