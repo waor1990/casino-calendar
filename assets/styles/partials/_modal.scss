@@ -100,6 +100,7 @@
 .modal-title {
     text-align: center;
     margin-bottom: var(--padding-small);
+    color: var(--color-accent);
 }
 
 .modal.show .modal-content {
@@ -251,6 +252,17 @@
     display: flex;
     flex-direction: column;
     gap: var(--padding-xxs);
+    color: var(--color-accent);
+
+    a {
+        color: inherit;
+        text-decoration: underline;
+
+        &:hover {
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+        }
+    }
 }
 
 .casino-index-field {
@@ -262,7 +274,25 @@
 
 .casino-index-label {
     font-weight: var(--font-weight-semibold);
-    color: var(--color-accent);
+    color: var(--color-primary);
+}
+
+#casino-index-modal .casino-index-entry {
+    border-color: var(--bg, var(--color-border-grid));
+}
+
+#casino-index-modal .casino-index-name {
+    color: var(--bg, inherit);
+}
+
+#casino-index-modal-content {
+    width: max-content;
+    max-width: 90vw;
+    overflow-x: hidden;
+}
+
+#casino-index-modal .modal-title {
+    font-size: var(--font-header);
 }
 
 
@@ -305,6 +335,14 @@
     .event-block-day:hover::after {
         background-color: var(--bg);
         color: var(--fg-dark, var(--fg));
+    }
+
+    #casino-index-modal .casino-index-entry {
+        border-color: var(--bg-dark, var(--bg, var(--color-border-grid-light)));
+    }
+
+    #casino-index-modal .casino-index-name {
+        color: var(--bg-dark, var(--bg, inherit));
     }
 }
 

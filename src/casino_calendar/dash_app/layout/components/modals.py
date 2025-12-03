@@ -4,10 +4,17 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any
+from urllib.parse import urlparse
 
 import plotly.graph_objs as go
 from casino_calendar.services.casino_index import load_casino_index
+from casino_calendar.services.colors import get_color
 from dash import dcc, html
+
+_DEFAULT_CASINO_COLORS: dict[str, dict[str, str]] = {
+    "Muckleshoot Casino": {"bg": "#1e1c29", "bg_dark": "#a6a1c1"},
+    "Tulalip Resort Casino": {"bg": "#155e6d", "bg_dark": "#2c94aa"},
+}
 
 
 def build_event_modal() -> html.Div:
@@ -113,8 +120,18 @@ def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
     )
 
     casino_name = casino.get("name", "Unknown Casino")
-    accent_color = casino.get("color")
-    name_style: dict[str, str] = {"color": accent_color} if accent_color else {}
+    palette = get_color()
+    palette_entry = palette.get(casino_name, {})
+    fallback_colors = _DEFAULT_CASINO_COLORS.get(casino_name, {})
+    bg_color = casino.get("color") or palette_entry.get("bg") or fallback_colors.get("bg")
+    bg_dark_color = palette_entry.get("bg_dark") or fallback_colors.get("bg_dark")
+    entry_style: dict[str, str] = {}
+    if bg_color:
+        entry_style["--bg"] = bg_color
+    if bg_dark_color or bg_color:
+        entry_style["--bg-dark"] = bg_dark_color or bg_color
+    today_label = datetime.now().strftime("%A")
+    today_label_lower = today_label.lower()
 
     field_children = [
         html.Div(
@@ -122,9 +139,9 @@ def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
             children=[
                 html.Span(f"{field.title()}:", className="casino-index-label"),
                 html.Span(
-                    _format_field_value(field, value)
-                    if value not in (None, "")
-                    else "Not provided"
+                    _format_casino_field_value(
+                        field, value, today_label, today_label_lower
+                    )
                 ),
             ],
         )
@@ -141,31 +158,67 @@ def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
 
     return html.Div(
         className="casino-index-entry",
+        style=entry_style,
         children=[
-            html.Div(casino_name, className="casino-index-name", style=name_style),
+            html.Div(casino_name, className="casino-index-name"),
             html.Div(field_children, className="casino-index-fields"),
         ],
     )
 
 
-def _format_field_value(field: str, value: Any) -> str:
-    """Return a formatted value for known casino index fields.
+def _format_casino_field_value(
+    field: str, value: Any, today_label: str, today_label_lower: str
+) -> Any:
+    """Format casino index field values with special handling for hours."""
 
-    The ``hours`` field is reduced to the current day's entry when the
-    source value contains a weekly schedule; all other fields are coerced
-    to strings unchanged.
-    """
+    if value in (None, ""):
+        return "Not provided"
+
+    if field.lower() in {"website", "player portal", "tax docs portal"}:
+        return _format_casino_link(value)
 
     if field == "hours":
-        formatted_hours = _format_hours_value(value)
-        if formatted_hours is not None:
-            return formatted_hours
-        return "Not provided"
+        formatted_hours = _format_hours_value(value, today_label, today_label_lower)
+        return formatted_hours if formatted_hours is not None else "Not provided"
 
     return str(value)
 
 
-def _format_hours_value(hours: Any) -> str | None:
+def _format_casino_link(value: Any) -> Any:
+    """Return a clickable link for casino URLs with a shortened label."""
+
+    if value in (None, ""):
+        return "Not provided"
+
+    if not isinstance(value, str):
+        return str(value)
+
+    href = value.strip()
+    parsed = urlparse(href)
+    if not parsed.scheme:
+        href = f"https://{href}"
+        parsed = urlparse(href)
+
+    host = parsed.netloc or parsed.path.split("/")[0] or href
+    display_host = host if host.startswith("www.") else f"www.{host}"
+    path = parsed.path.rstrip("/")
+    display = display_host if not path or path == "/" else f"{display_host}{path}"
+
+    max_length = 40
+    if len(display) > max_length:
+        if path and len(host) < max_length - 3:
+            remaining = max_length - len(host) - 3
+            trimmed_path = path[:remaining]
+            display = f"{display_host}{trimmed_path}..."
+        else:
+            display = f"{display[: max_length - 3]}..."
+
+    return html.A(display, href=href, target="_blank", rel="noopener noreferrer")
+
+
+def _format_hours_value(
+    hours: Any, today_label: str, today_label_lower: str
+) -> str | None:
     """Return hours for the current weekday when present.
 
     Supports dictionaries keyed by weekday names as well as multiline
@@ -177,14 +230,13 @@ def _format_hours_value(hours: Any) -> str | None:
     if hours in (None, ""):
         return None
 
-    today = datetime.now().strftime("%A")
     candidates = {
-        today,
-        today[:3],
-        today.upper(),
-        today.lower(),
-        today[:3].upper(),
-        today[:3].lower(),
+        today_label,
+        today_label[:3],
+        today_label.upper(),
+        today_label_lower,
+        today_label[:3].upper(),
+        today_label[:3].lower(),
     }
     lowered_candidates = {c.lower() for c in candidates}
 

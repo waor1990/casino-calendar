@@ -26,7 +26,8 @@ def test_build_casino_index_modal_renders_entries():
     entry = body.children[0]
 
     assert entry.className == "casino-index-entry"
-    assert entry.children[0].style["color"] == "#ff00ff"
+    assert entry.style["--bg"] == "#ff00ff"
+    assert entry.style["--bg-dark"] == "#ff00ff"
 
     fields = entry.children[1].children
     labels = [field.children[0].children for field in fields]

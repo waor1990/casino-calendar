@@ -38,18 +38,18 @@ h1,
     margin: 0;
 }
 
-.header-title-row > .header-title-spacer {
+.header-title-row>.header-title-spacer {
     grid-column: 1;
     justify-self: start;
 }
 
-.header-title-row > .calendar-title {
+.header-title-row>.calendar-title {
     grid-column: 2;
     justify-self: center;
     margin: 0;
 }
 
-.header-title-row > .theme-toggle {
+.header-title-row>.theme-toggle {
     grid-column: 3;
     justify-self: end;
 }
@@ -114,6 +114,7 @@ h1,
     margin-bottom: var(--padding-small);
     width: 100%;
     display: block;
+    cursor: pointer;
 
     &[role="button"] {
         cursor: pointer;
@@ -427,6 +428,7 @@ h1,
     }
 
     .event-type-dropdown {
+
         [class~="Select-menu-outer"],
         [class~="Select-menu"] {
             background-color: var(--color-background);
