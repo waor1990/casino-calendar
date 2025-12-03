@@ -63,13 +63,11 @@ def annotate_events_with_flags(events_df, week_start, week_end):
 
 
 def filter_week_events(events_df, week_start, week_end):
-    """Return events that intersect the current week."""
+    """Return events that fully fall within the provided week window."""
     logger.debug("Filtering events for week %s to %s", week_start, week_end)
 
     filtered = events_df[
-        (events_df["EndDate"] > week_start)
-        & (events_df["StartDate"] < week_end)
-        & ~(events_df["StartDate"] == week_end)
+        (events_df["StartDate"] >= week_start) & (events_df["EndDate"] <= week_end)
     ].copy()
 
     logger.debug("Filtered to %d events for current week", len(filtered))
