@@ -1,0 +1,232 @@
+[
+    {
+        "name": "ilani",
+        "hours": {
+            "Monday": "24 hours",
+            "Tuesday": "24 hours",
+            "Wednesday": "24 hours",
+            "Thursday": "24 hours",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
+        },
+        "promo day begins": "6am",
+        "location": "1 Cowlitz Way, Ridgefield, WA 98642",
+        "phone": "(877) 464-5264",
+        "website": "https://ilaniresort.com/",
+        "player portal": "https://ilaniresort.com/gaming/forever-rewards/login/"
+    },
+    {
+        "name": "Lucky Eagle Casino",
+        "hours": {
+            "Monday": "10am to 2am",
+            "Tuesday": "10am to 2am",
+            "Wednesday": "10am to 2am",
+            "Thursday": "10am to 2am",
+            "Friday": "10am to 4am",
+            "Saturday": "10am to 4am",
+            "Sunday": "10am to 2am"
+        },
+        "location": "12888 188th Avenue SW, Rochester, WA 98579",
+        "phone": "(360) 273-7777",
+        "website": "https://luckyeagle.com/"
+    },
+    {
+        "name": "Spirit Mountain Casino",
+        "hours": {
+            "Monday": "24 hours",
+            "Tuesday": "24 hours",
+            "Wednesday": "24 hours",
+            "Thursday": "24 hours",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
+        },
+        "promo day begins": "Unknown",
+        "location": "27100 SW Salmon River Hwy, Grand Ronde, OR 97347",
+        "phone": "(503) 879-2350",
+        "website": "https://www.spiritmountain.com/"
+    },
+    {
+        "name": "Muckleshoot Casino",
+        "hours": {
+            "Monday": "24 hours",
+            "Tuesday": "24 hours",
+            "Wednesday": "24 hours",
+            "Thursday": "24 hours",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
+        },
+        "promo day begins": "7am",
+        "location": "3402 Auburn Way South, Auburn, WA 98002",
+        "phone": "(253) 804-4444",
+        "website": "https://www.muckleshootcasino.com/",
+        "player portal": "https://sgwidget.muckleshootcasino.com/widget/Control.aspx?_gl=1*1ldq14k*_gcl_au*MTkyMDc5NDk1Ny4xNzY0NzE5NjI3",
+        "tax docs portal": "https://muckleshootrewardstax.com/"
+    },
+    {
+        "name": "Little Creek Casino",
+        "hours": {
+            "Monday": "9am to 3am",
+            "Tuesday": "9am to 3am",
+            "Wednesday": "9am to 3am",
+            "Thursday": "9am to 3am",
+            "Friday": "9am to 4am",
+            "Saturday": "8am to 4am",
+            "Sunday": "8am to 3am"
+        },
+        "location": "91 W State Route 108, Shelton, WA 98584",
+        "phone": "(360) 427-7711",
+        "website": "https://www.littlecreek.com/",
+        "player portal": "https://littlecreek.joingo.com/"
+    },
+    {
+        "name": "Red Wind Casino",
+        "hours": {
+            "Monday": "8am to 3am",
+            "Tuesday": "8am to 3am",
+            "Wednesday": "8am to 3am",
+            "Thursday": "8am to 3am",
+            "Friday": "8am to 3am",
+            "Saturday": "8am to 3am",
+            "Sunday": "8am to 3am"
+        },
+        "location": "12819 Yelm Hwy. SE, Olympia, WA 98513",
+        "phone": "(866) 946-2444",
+        "website": "https://www.redwindcasino.com/",
+        "player portal": "https://www.redwindcasino.com/club-red/login/"
+    },
+    {
+        "name": "Snoqualmie Casino",
+        "hours": {
+            "Monday": "24 hours",
+            "Tuesday": "24 hours",
+            "Wednesday": "24 hours",
+            "Thursday": "24 hours",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
+        },
+        "promo day begins": "Unknown",
+        "location": "37500 SE North Bend Way, Snoqualmie, WA 98065",
+        "phone": "(425) 888-1234",
+        "website": "https://www.snoqualmiecasino.com/",
+        "player portal": "https://club.snocasino.com/?_ga=2.160854644.817421285.1764719205-1124739054.1745531057"
+    },
+    {
+        "name": "Angel of the Winds Casino",
+        "hours": {
+            "Monday": "24 hours",
+            "Tuesday": "24 hours",
+            "Wednesday": "24 hours",
+            "Thursday": "24 hours",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
+        },
+        "promo day begins": "Unknown",
+        "location": "33438 Stoluckquamish Lane, Arlington, Washington 98223",
+        "phone": "(360) 474-9740",
+        "website": "https://www.angelofthewinds.com/",
+        "player portal": "https://angelofthewinds.com/player-portal-2/"
+    },
+    {
+        "name": "Lucky Dog Casino",
+        "hours": {
+            "Monday": "10am to 1am",
+            "Tuesday": "10am to 1am",
+            "Wednesday": "10am to 1am",
+            "Thursday": "10am to 1am",
+            "Friday": "10am to 2am",
+            "Saturday": "10am to 2am",
+            "Sunday": "10am to 1am"
+        },
+        "location": "19330 N US HWY 101, Skokomish, WA 98584",
+        "phone": "(360) 384-0777",
+        "website": "https://myluckydogcasino.com/",
+        "player portal": "http://ldc.skokomishenterprises.org/Widget/control.aspx#"
+    },
+    {
+        "name": "Legends Casino",
+        "hours": {
+            "Monday": "9am to 4am",
+            "Tuesday": "9am to 4am",
+            "Wednesday": "9am to 4am",
+            "Thursday": "9am to 4am",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
+        },
+        "location": "580 Fort Road, Toppenish, WA 98948",
+        "phone": "(509) 865-8800",
+        "website": "https://www.legendscasino.com/"
+    },
+    {
+        "name": "Emerald Queen Casino",
+        "hours": {
+            "Monday": "24 hours",
+            "Tuesday": "24 hours",
+            "Wednesday": "24 hours",
+            "Thursday": "24 hours",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
+        },
+        "promo day begins": "Unknown",
+        "location": "2920 East R St., Tacoma, WA 98404",
+        "phone": "(253) 594-7777",
+        "website": "https://www.emeraldqueen.com/",
+        "player portal": "https://emeraldqueen.tpiwebservices.com/Account/Login"
+    },
+    {
+        "name": "Wildhorse Casino",
+        "hours": {
+            "Monday": "24 hours",
+            "Tuesday": "24 hours",
+            "Wednesday": "24 hours",
+            "Thursday": "24 hours",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
+        },
+        "promo day begins": "Unknown",
+        "location": "46510 Wildhorse Blvd, Pendleton, OR 97801",
+        "phone": "(800) 654-9453",
+        "website": "https://www.wildhorseresort.com/"
+    },
+    {
+        "name": "Tulalip Resort Casino",
+        "hours": {
+            "Monday": "24 hours",
+            "Tuesday": "24 hours",
+            "Wednesday": "24 hours",
+            "Thursday": "24 hours",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
+        },
+        "promo day begins": "Unknown",
+        "location": "10200 Quil Ceda Blvd, Tulalip, WA 98271",
+        "phone": "(360) 716-6000",
+        "website": "https://www.everythingtulalip.com/casino-properties/tulalip-resort-casino/",
+        "player portal": "https://www.oneclubforall.com/"
+    },
+    {
+        "name": "Quil Ceda Creek Casino",
+        "hours": {
+            "Monday": "24 hours",
+            "Tuesday": "24 hours",
+            "Wednesday": "24 hours",
+            "Thursday": "24 hours",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
+        },
+        "promo day begins": "Unknown",
+        "location": "6221 31st Ave NE, Tulalip, WA 98271",
+        "phone": "(360) 716-1700",
+        "website": "https://www.everythingtulalip.com/casino-properties/quil-ceda-creek-casino/",
+        "player portal": "https://www.everythingtulalip.com/one-club/"
+    }
+]

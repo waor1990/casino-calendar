@@ -6,10 +6,9 @@ from datetime import datetime
 
 import pandas as pd
 import pytest
-from dash import Dash
-
 from casino_calendar.dash_app.callbacks import register_callbacks
 from casino_calendar.dash_app.services.layout_state import to_naive_utc
+from dash import Dash
 
 freeze_time = pytest.importorskip("freezegun").freeze_time
 

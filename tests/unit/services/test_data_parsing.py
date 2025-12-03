@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-
 from casino_calendar.dash_app.data import loader, transforms
 
 

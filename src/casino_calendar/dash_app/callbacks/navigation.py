@@ -2,9 +2,8 @@
 
 from uuid import uuid4
 
-from dash import Input, Output
-
 from casino_calendar.logging.config import setup_logger
+from dash import Input, Output
 
 logger = setup_logger(__name__)
 
