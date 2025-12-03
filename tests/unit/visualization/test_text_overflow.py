@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytest
+
 from casino_calendar.dash_app.layout.week_grid import _build_block
 from casino_calendar.dash_app.services import layout_state
 

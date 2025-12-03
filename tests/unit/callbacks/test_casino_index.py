@@ -1,6 +1,7 @@
 import pandas as pd
-from casino_calendar.dash_app.callbacks import register_callbacks
 from dash import Dash
+
+from casino_calendar.dash_app.callbacks import register_callbacks
 
 
 class DummyCtx:
