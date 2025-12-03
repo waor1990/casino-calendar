@@ -5,10 +5,9 @@ from __future__ import annotations
 from typing import Any
 
 import pandas as pd
-from dash import dcc, html
-
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color
+from dash import dcc, html
 
 logger = setup_logger(__name__)
 
@@ -84,7 +83,12 @@ def build_header(events: pd.DataFrame) -> html.Div:
                         [
                             html.Span(
                                 "Casino Legend:",
+                                id="open-casino-index-modal",
+                                n_clicks=0,
                                 className="legend-title legend-gap",
+                                title="View casino index",
+                                role="button",
+                                tabIndex=0,
                             ),
                             html.Div(
                                 create_legend(events), className="legend-container"

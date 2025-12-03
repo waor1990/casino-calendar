@@ -2,7 +2,6 @@ import csv
 from pathlib import Path
 
 import pytest
-
 from casino_calendar.services import csv_normalizer
 from casino_calendar.services.csv_normalizer import normalize_csv
 

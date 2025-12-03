@@ -112,6 +112,7 @@ The Dash factory warms caches for lookup tables (casino colours, offer keywords,
 
 - Raw data lives in `data/raw/casino_events.csv`.
 - Lookup JSON files in `data/lookups/` describe colours, offer type emojis, keyword groupings, and hotel partners.
+- Casino index metadata in `data/lookups/casino_index.json` powers the legend modal that lists addresses, hours, and other per-casino details.
 - `casino_calendar.dash_app.data.loader.load_event_data()` normalises timestamps to naive UTC before the layout functions render them in Pacific Time.
 - The [EventRepository](src/casino_calendar/dash_app/data/repositories.py) wrapper provides a simple interface for loading events in callbacks or tests.
 

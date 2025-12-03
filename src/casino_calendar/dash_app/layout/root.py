@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from dash import Dash, dcc, html
-
 from casino_calendar.logging import config as logging_config
+from dash import Dash, dcc, html
 
 from .components import header as header_components
 from .components import modals as modal_components
@@ -49,6 +48,7 @@ def create_layout(app: Dash, events) -> html.Div:
                 *store_components.build_state_stores(),
                 *store_components.build_hidden_helpers(),
                 *store_components.build_intervals(),
+                modal_components.build_casino_index_modal(),
                 modal_components.build_event_modal(),
                 modal_components.build_day_modal(),
             ],

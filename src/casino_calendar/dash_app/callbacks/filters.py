@@ -6,10 +6,9 @@ from uuid import uuid4
 
 import dash
 import pandas as pd
-from dash import ALL, Input, Output, State, html, no_update
-
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.settings import APP_TIMEZONE
+from dash import ALL, Input, Output, State, html, no_update
 
 from ..layout import week_grid
 from ..services import layout_state
