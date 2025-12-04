@@ -60,7 +60,7 @@ REM Launch the Dash development server
 scripts\windows\run_direct.bat
 ```
 
-Convenience launchers (`setup.bat`, `run.bat`, `un_direct.bat`) proxy to the scripts above.
+Convenience launchers (`setup.bat`, `run.bat`, `run_direct.bat`) proxy to the scripts above.
 
 ### Linux / macOS
 
@@ -87,7 +87,7 @@ flake8
 python app.py
 ```
 
-When using `python-dotenv`, environment variables are loaded from `.env` in the project root. See [Environment configuration] (#environment-configuration) for details.
+When using `python-dotenv`, environment variables are loaded from `.env` in the project root. See [Environment configuration](#environment-configuration) for details.
 
 ---
 

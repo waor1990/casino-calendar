@@ -2,37 +2,35 @@
 
 ## 🚀 One-Command Setup & Run
 
-### For Windows Users
+### Windows
 
 ```cmd
-# Setup everything (virtual env, dependencies, CSS)
-tools\setup.bat
+# Bootstrap dependencies and the virtual environment
+setup.bat
 
-# Run the application  
-tools\run_direct.bat
-
-# Or use convenience launcher
+# Launch the Dash app (proxies to scripts\windows\run_direct.bat)
 run.bat
 ```
 
-### For Linux/Mac Users
+The full-featured scripts live under `scripts\windows\` if you want to call them directly (`setup.bat`, `run_direct.bat`, `cleanup_logs.bat`).
+
+### Linux / macOS
 
 ```bash
-# Setup
-scripts/setup/setup.sh
+# Bootstrap dependencies, build CSS, and install pre-commit hooks
+bash scripts/shell/setup.sh
 
-# Run
+# Run the Dash app
 python app.py
 ```
 
 ## 📂 Key Scripts
 
-- `tools\setup.bat` - Complete setup for Windows
-- `tools\run_direct.bat` - Run application on Windows
-- `run.bat` - Convenience launcher for run_direct.bat  
-- `scripts/setup/setup.sh` - Linux/Mac setup script
-- `scripts/test.sh` - Run test suite
-- `tools\cleanup_logs.bat` - Log management utility
+- `setup.bat` / `scripts\windows\setup.bat` – Complete Windows setup
+- `run.bat` / `scripts\windows\run_direct.bat` – Start the Dash server on Windows
+- `scripts\windows\cleanup_logs.bat` – Log rotation/cleanup helper
+- `scripts/shell/setup.sh` – Unix-like setup (Python + Node + Sass build)
+- `scripts/shell/test.sh` – Linters plus pytest wrapper
 
 ## 🔧 Manual Setup
 
@@ -76,10 +74,11 @@ run.bat
 # Watch CSS changes
 npm run watch:css
 
-# Run tests
-scripts/test.sh
-
-# Lint code
+# Run tests and linters
+bash scripts/shell/test.sh
+pytest
+black .
+isort --settings-path config/formatting/.isort.cfg .
+flake8 --config config/linting/.flake8
 npm run lint:css
-flake8 --config config/.flake8
 ```

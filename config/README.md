@@ -29,4 +29,4 @@ stylelint --config config/linting/.stylelintrc.json 'assets/**/*.scss'
 
 ## Pre-commit Integration
 
-These configurations are integrated with pre-commit hooks defined in `.pre-commit-config.yaml` at the project root and mirrored in `scripts/shell/test.sh`.
+These configurations are integrated with pre-commit hooks defined in `.pre-commit-config.yaml` at the project root and mirrored in `scripts/shell/test.sh` and the GitHub Actions workflows. Keep the relative paths stable so the automation continues to resolve the files without extra flags.

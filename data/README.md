@@ -1,29 +1,19 @@
 # Data Files
 
-This directory contains data files used by the Casino Calendar application.
+Authoritative CSV and lookup data that drive the Casino Calendar UI.
 
-## Files
+## Layout
 
-- **casino_events.csv**: Main event data with casino names, dates, and event details
-- **casino_colors.json**: Color scheme definitions for each casino
-- **default_colors.json**: Fallback color scheme
-- **hotel_book_sites.json**: Hotel booking URLs for each casino (used for the hotel booking feature)
-- **offer_keywords.json**: Keywords used for categorizing event offers
-- **offer_type_emojis.json**: Emoji mappings for different offer types
+- `raw/casino_events.csv` – Primary dataset. `StartDate`/`EndDate` timestamps are parsed, converted to naive UTC, and an `OfferType` column is derived automatically during load.
+- `lookups/`
+  - `casino_colors.json` and `default_colors.json` – Brand colour mappings and fallbacks.
+  - `offer_keywords.json` and `offer_type_emojis.json` – Keyword groupings and emoji used for offer categorisation.
+  - `hotel_book_sites.json` – Booking URLs surfaced in the legend modal when a single casino is selected.
+  - `casino_index.json` – Legend metadata (addresses, hours, notes) rendered alongside filters.
+- `cache/` – Reserved for generated caches (kept empty in version control).
 
-## Hotel Booking Sites
+## Data Update Tips
 
-The `hotel_book_sites.json` file contains hotel booking URLs for casinos. When a user selects a casino from the legend, if a booking URL is available, a "Hotel Booking" link will appear below the legend.
-
-**Format:**
-
-```json
-{
-  "Casino Name": "https://booking-url.com",
-  "Another Casino": "N/A"
-}
-```
-
-- Use `"N/A"` for casinos that don't have hotel booking available
-- The hotel booking link only appears when exactly one casino is selected
-- Links open in a new tab/window
+- Keep CSV headers stable; new columns should be handled in `src/casino_calendar/dash_app/data/transforms.py`.
+- Dates must be parseable by pandas (`StartDate`, `EndDate`); invalid rows are logged.
+- Preserve JSON indentation and ordering where possible to keep diffs small.
