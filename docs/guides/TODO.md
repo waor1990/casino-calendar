@@ -22,4 +22,3 @@ This document outlines the upcoming improvements and high‑priority tasks for t
 
 - Provide data export functionality for filtered event sets.
 - Implement a caching layer for processed event data to speed up rendering.
-

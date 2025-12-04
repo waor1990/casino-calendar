@@ -5,12 +5,13 @@ This directory collects the living documentation for the project.
 ## Structure
 
 - `architecture/`
-  - [project_structure.md](architecture/project_structure.md) – Repository layout and code organisation.
-  - [logging_system.md](architecture/logging_system.md) – Logging pipeline, rotation, and environment controls.
+  - [project_structure.md](architecture/project_structure.md) — Repository layout and code organisation.
+  - [logging_system.md](architecture/logging_system.md) — Logging pipeline, rotation, and environment controls.
 - `guides/`
-  - [handoff.md](guides/handoff.md) – High-level feature tour and current state summary for new contributors.
-  - [TODO.md](guides/TODO.md) – Backlog of enhancements and stretch goals.
-  - [vscode_terminal_troubleshooting.md](guides/vscode_terminal_troubleshooting.md) – Terminal configuration tips for Windows users.
+  - [commit_conventions.md](guides/commit_conventions.md) — Allowed commit types/scopes and formatting rules enforced by commitlint/cz.
+  - [handoff.md](guides/handoff.md) — High-level feature tour and current state summary for new contributors.
+  - [TODO.md](guides/TODO.md) — Backlog of enhancements and stretch goals.
+  - [vscode_terminal_troubleshooting.md](guides/vscode_terminal_troubleshooting.md) — Terminal configuration tips for Windows users.
 - `operations/`
   - [log_management.md](operations/log_management.md) – Log retention, scheduled cleanup, and maintenance automation.
 - `legacy/`
