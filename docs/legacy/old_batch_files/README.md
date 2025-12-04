@@ -42,11 +42,11 @@ This directory contains batch files that were removed from the main project dire
 
 ## Current Active Batch Files
 
-The following batch files remain active in the main directory:
+The maintained Windows helpers now live in `scripts/windows/` with simple proxies in the project root:
 
-- ✅ **`run_direct.bat`** - Primary application runner used by VSCode tasks
-- ✅ **`setup.bat`** - Initial project setup and virtual environment creation
-- ✅ **`cleanup_logs.bat`** - Log management utility used by VSCode tasks
+- ✅ **`scripts/windows/run_direct.bat`** (call via root `run.bat`) - Primary application runner used by VSCode tasks.
+- ✅ **`scripts/windows/setup.bat`** (call via root `setup.bat`) - Initial project setup and virtual environment creation.
+- ✅ **`scripts/windows/cleanup_logs.bat`** - Log management utility used by VSCode tasks.
 
 ## Migration Notes
 
