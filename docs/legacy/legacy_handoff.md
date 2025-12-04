@@ -22,7 +22,7 @@ Casino Calendar is a responsive Dash web application that visualises casino even
 
 ## 📁 Key Modules (Quick Reference)
 
-```
+```plaintext
 src/casino_calendar/
 ├── dash_app/
 │   ├── app.py              # create_dash_app factory and run_app helper

@@ -4,31 +4,34 @@ const allowedTypes = [
     'docs',
     'style',
     'refactor',
+    'perf',
     'test',
-    'chore',
     'build',
-    'revert',
-    'merge'
+    'ci',
+    'chore',
+    'merge',
+    'revert'
 ];
 
 const allowedScopes = [
-    'data',
-    'ui',
-    'theme',
-    'dark-theme',
-    'modal',
+    'app',
+    'dash',
+    'components',
     'layout',
-    'filters',
+    'styles',
+    'theme',
+    'data',
+    'services',
+    'logging',
     'config',
-    'build',
-    'lint',
+    'assets',
+    'scripts',
+    'deps',
+    'branch',
     'tests',
     'docs',
-    'logging',
-    'maintenance',
-    'scripts',
-    'assets',
-    'deps'
+    'ci',
+    'infra'
 ];
 
 module.exports = {

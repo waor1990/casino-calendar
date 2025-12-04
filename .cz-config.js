@@ -5,13 +5,15 @@ const typeDescriptions = {
     feat: 'feat:     A new feature',
     fix: 'fix:      A bug fix',
     docs: 'docs:     Documentation only',
-    style: 'style:    Formatting, missing semi colons, etc',
+    style: 'style:    Formatting, missing semicolons, etc',
     refactor: 'refactor: Code change that neither fixes a bug nor adds a feature',
+    perf: 'perf:     Performance improvement without functional change',
     test: 'test:     Adding or updating tests',
-    chore: 'chore:    Updating build tasks, deps, etc',
     build: 'build:    Build system or external dependencies',
-    revert: 'revert:   Revert a previous commit',
-    merge: 'merge:    Merge branches'
+    ci: 'ci:       Continuous integration or automation changes',
+    chore: 'chore:    Maintenance tasks and dependency updates',
+    merge: 'merge:    Merge branches',
+    revert: 'revert:   Revert a previous commit'
 };
 
 module.exports = {
