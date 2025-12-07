@@ -66,11 +66,27 @@ def filter_week_events(events_df, week_start, week_end):
     """Return events that intersect the current week."""
     logger.debug("Filtering events for week %s to %s", week_start, week_end)
 
-    filtered = events_df[
-        (events_df["EndDate"] > week_start)
-        & (events_df["StartDate"] < week_end)
-        & ~(events_df["StartDate"] == week_end)
-    ].copy()
+    # We want to include only:
+    # 1) Events fully contained within the week (start >= week_start and end <= week_end)
+    # 2) Events that started in the prior week and end during the current week
+    #    (start < week_start and end > week_start and end <= week_end)
+    # 3) Events that start in the current week and end in the following week
+    #    (start >= week_start and start < week_end and end > week_end)
+    # Events that span from prior week into the following week (start < week_start and end > week_end)
+    # should be excluded here and handled as overflow (both arrows).
+
+    start = events_df["StartDate"]
+    end = events_df["EndDate"]
+
+    contained = (start >= week_start) & (end <= week_end) & (start != week_end)
+
+    prev_to_current = (start < week_start) & (end > week_start) & (end <= week_end)
+
+    current_to_next = (start >= week_start) & (start < week_end) & (end > week_end)
+
+    mask = contained | prev_to_current | current_to_next
+
+    filtered = events_df[mask].copy()
 
     logger.debug("Filtered to %d events for current week", len(filtered))
     return filtered
