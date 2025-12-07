@@ -649,7 +649,10 @@ def register_callbacks(app, df, repository=None) -> None:
                                     child_children = child_props["children"]
                                     if isinstance(child_children, list):
                                         for item in child_children:
-                                            if isinstance(item, dict) and "props" in item:
+                                            if (
+                                                isinstance(item, dict)
+                                                and "props" in item
+                                            ):
                                                 if (
                                                     item["props"].get("children")
                                                     == "EventID"
@@ -660,9 +663,10 @@ def register_callbacks(app, df, repository=None) -> None:
                                                         next_item = child_children[
                                                             idx + 1
                                                         ]
-                                                        if isinstance(
-                                                            next_item, dict
-                                                        ) and "props" in next_item:
+                                                        if (
+                                                            isinstance(next_item, dict)
+                                                            and "props" in next_item
+                                                        ):
                                                             event_id = next_item[
                                                                 "props"
                                                             ].get("children")

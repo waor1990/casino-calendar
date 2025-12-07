@@ -97,9 +97,11 @@ def build_event_modal_children(
                             else dcc.Input(
                                 id=f"event-edit-{field['key'].lower()}",
                                 value=defaults.get(field["key"], ""),
-                                type="text"
-                                if field["component"] == "input"
-                                else "datetime-local",
+                                type=(
+                                    "text"
+                                    if field["component"] == "input"
+                                    else "datetime-local"
+                                ),
                                 className="event-edit-input",
                             )
                         ),
