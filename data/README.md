@@ -1,11 +1,10 @@
 # Data Files
 
-This directory contains data files used by the Casino Calendar application.
+Authoritative CSV and lookup data that drive the Casino Calendar UI.
 
 ## Files
 
-- **events.json**: REST API-backed event store persisted by `api/event_api.py`
-- **casino_events.csv**: Legacy CSV used by older tooling; superseded by `events.json`
+- **casino_events.csv**: Main event data with casino names, dates, and event details
 - **casino_colors.json**: Color scheme definitions for each casino
 - **default_colors.json**: Fallback color scheme
 - **hotel_book_sites.json**: Hotel booking URLs for each casino (used for the hotel booking feature)

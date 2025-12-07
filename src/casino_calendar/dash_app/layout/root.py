@@ -48,6 +48,7 @@ def create_layout(app: Dash, events) -> html.Div:
                 *store_components.build_state_stores(),
                 *store_components.build_hidden_helpers(),
                 *store_components.build_intervals(),
+                modal_components.build_casino_index_modal(),
                 modal_components.build_event_modal(),
                 modal_components.build_day_modal(),
             ],

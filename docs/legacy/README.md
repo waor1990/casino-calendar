@@ -6,10 +6,10 @@ This directory contains files that are no longer actively used but are preserved
 
 ### `deprecated_scripts/`
 
-Contains scripts that are no longer functional or have been replaced:
+Contains scripts that are no longer functional or have been replaced by the maintained helpers under `scripts/windows/` and `scripts/shell/`:
 
-- `run.bat` - Empty script file from scripts/ directory
-- `setup.bat` - Empty script file from scripts/ directory  
+- `run.bat` - Empty script file from the old scripts directory
+- `setup.bat` - Empty script file from the old scripts directory  
 - `create_issues-v1.py` - Legacy script that referenced non-existent files (`docs/refactor_plan.md`)
 
 ### `legacy_docs/`
@@ -20,9 +20,7 @@ Contains documentation about deprecated features:
 
 ### `old_batch_files/`
 
-Contains deprecated batch scripts that were replaced by the current tools/ directory structure:
-
-- Various old batch files with their own README.md explaining the deprecation
+Contains deprecated batch scripts that were replaced by the current Windows helpers under `scripts/windows/` (callable via the root `setup.bat` and `run.bat` launchers). Each file includes a README detailing why it was archived.
 
 ## Archiving Guidelines
 
@@ -35,6 +33,6 @@ When archiving files:
 
 ## Current Active Alternatives
 
-- **Scripts**: Use files in `tools/` directory instead of archived scripts
-- **Calendar Rendering**: Uses CSS grid layout instead of legacy Plotly approach
-- **Documentation**: Current docs are in `docs/` directory root
+- **Scripts**: Use the maintained files in `scripts/windows/` (or the root proxy batch files) and `scripts/shell/` instead of archived scripts.
+- **Calendar Rendering**: Uses CSS grid layout instead of the legacy Plotly approach.
+- **Documentation**: Current docs are in the `docs/` directory root; architecture and operations guides live there.

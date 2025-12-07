@@ -5,9 +5,11 @@ This guide helps resolve common terminal issues in the Casino Calendar VSCode wo
 ## Quick Fixes
 
 ### 1. Python Command Not Found
+
 **Problem**: `'python' is not recognized as an internal or external command`
 
 **Solutions**:
+
 ```cmd
 # Option A: Run setup script
 setup_terminal.bat
@@ -20,9 +22,11 @@ setup_terminal.bat
 ```
 
 ### 2. Virtual Environment Not Activated
+
 **Problem**: Terminal shows regular prompt instead of `(.venv)`
 
 **Solutions**:
+
 ```cmd
 # Manual activation
 call .venv\Scripts\activate.bat
@@ -34,9 +38,11 @@ auto_activate.bat
 ```
 
 ### 3. Scripts Don't Run
+
 **Problem**: Python scripts fail with import errors
 
 **Solutions**:
+
 ```cmd
 # Set Python path
 set PYTHONPATH=%CD%
@@ -48,9 +54,11 @@ set PYTHONPATH=%CD%
 ```
 
 ### 4. Git Commands Don't Work
+
 **Problem**: Git commands not found or behaving unexpectedly
 
 **Solutions**:
+
 ```cmd
 # Check git installation
 "C:\Program Files\Git\cmd\git.exe" --version
@@ -65,21 +73,25 @@ set PATH=C:\Program Files\Git\cmd;%PATH%
 ## Terminal Profiles Available
 
 ### 1. Casino Calendar Environment (Default)
+
 - **Purpose**: Auto-activates Python environment
 - **Usage**: Default for all new terminals
 - **Features**: Python, pip, project scripts available
 
 ### 2. Casino Calendar Setup
+
 - **Purpose**: Full setup with detailed output
 - **Usage**: When troubleshooting environment issues
 - **Features**: Diagnostic information, error checking
 
 ### 3. Command Prompt
+
 - **Purpose**: Standard Windows command prompt
 - **Usage**: When you need a clean environment
 - **Features**: No auto-activation
 
 ### 4. PowerShell
+
 - **Purpose**: Windows PowerShell
 - **Usage**: When PowerShell-specific features needed
 - **Features**: Advanced scripting capabilities
@@ -89,23 +101,28 @@ set PATH=C:\Program Files\Git\cmd;%PATH%
 Access via `Ctrl+Shift+P` → "Tasks: Run Task":
 
 ### 1. Setup Terminal Environment
+
 - Configures terminal for Python development
 - Verifies all dependencies
 
 ### 2. Run Casino Calendar
+
 - Starts the main application
 - Uses correct Python interpreter
 
 ### 3. Run Test Script
+
 - Runs all tests with pytest
 - Shows detailed output
 
 ### 4. Log Cleanup Tasks
+
 - Info: Show log directory status
 - Dry Run: Preview cleanup actions
 - Execute: Perform cleanup
 
 ### 5. Install Dependencies
+
 - Installs/updates Python packages
 - Uses virtual environment pip
 
@@ -114,18 +131,22 @@ Access via `Ctrl+Shift+P` → "Tasks: Run Task":
 Access via `F5` or Debug panel:
 
 ### 1. Casino Calendar - Debug
+
 - Runs app with debug logging
 - Breakpoint support enabled
 
 ### 2. Casino Calendar - Production
+
 - Runs app with production settings
 - Minimal logging output
 
 ### 3. Run Tests
+
 - Debug test execution
 - Step through test code
 
 ### 4. Log Cleanup Script
+
 - Debug cleanup script issues
 - Step through cleanup logic
 
@@ -142,6 +163,7 @@ PATH=.venv\Scripts;[original PATH]
 ## Common Command Patterns
 
 ### Python Commands
+
 ```cmd
 # Run main application
 python app.py
@@ -157,6 +179,7 @@ python scripts\cleanup_logs.py --info
 ```
 
 ### Git Commands
+
 ```cmd
 # Check status
 git status
@@ -170,6 +193,7 @@ git push
 ```
 
 ### Project Commands
+
 ```cmd
 # Setup environment
 setup_terminal.bat
@@ -184,11 +208,13 @@ cleanup_logs.bat --info
 ## Advanced Troubleshooting
 
 ### Reset Terminal Environment
+
 1. Close all terminals
 2. Run `setup_terminal.bat`
 3. Create new terminal
 
 ### Check Virtual Environment
+
 ```cmd
 # Verify virtual environment
 dir .venv\Scripts
@@ -201,14 +227,17 @@ dir .venv\Scripts
 ```
 
 ### Environment Conflicts
+
 If you have multiple Python installations:
 
 1. **Check system Python**:
+
    ```cmd
    where python
    ```
 
 2. **Force virtual environment**:
+
    ```cmd
    .venv\Scripts\python.exe
    ```
@@ -218,6 +247,7 @@ If you have multiple Python installations:
    - Choose `.venv\Scripts\python.exe`
 
 ### Performance Issues
+
 If terminal is slow:
 
 1. **Disable auto-activation**:
@@ -229,9 +259,11 @@ If terminal is slow:
    - Avoid repeated environment setup
 
 ### Permission Issues
+
 If scripts fail to run:
 
 1. **Check file permissions**:
+
    ```cmd
    dir setup_terminal.bat
    ```
@@ -240,6 +272,7 @@ If scripts fail to run:
    - Right-click VSCode → "Run as administrator"
 
 3. **Execution policy** (PowerShell):
+
    ```powershell
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    ```
@@ -248,11 +281,13 @@ If scripts fail to run:
 
 1. **Check this guide** for common issues
 2. **Run diagnostic commands**:
+
    ```cmd
    setup_terminal.bat
    python --version
    pip list
    ```
+
 3. **Use VSCode tasks** instead of terminal commands
 4. **Check VSCode settings** in `.vscode/settings.json`
 5. **Reset environment** by closing terminals and reopening

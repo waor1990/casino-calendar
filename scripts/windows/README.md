@@ -1,94 +1,19 @@
-# Tools Directory
+# Windows Scripts
 
-This directory contains utility scripts and batch files for managing the Casino Calendar application.
+Batch helpers for setting up, running, and maintaining the Casino Calendar app. Root launchers (`setup.bat`, `run.bat`) proxy to the scripts in this folder.
 
-## Quick Start Scripts
+## Quick Start
 
-These scripts provide convenient access to main functionality:
+1. `setup.bat` (or `scripts\windows\setup.bat`) to create/validate `.venv`, install Python deps, validate `package.json`, clean npm staging dirs, run `npm install`, and install pre-commit hooks.
+2. `run.bat` (or `scripts\windows\run_direct.bat`) to build CSS via npm and start the Dash server on <http://localhost:8050>.
 
-### `setup.bat`
+## Script Details
 
-- **Purpose**: Initial project setup and dependency installation
-- **Usage**: Double-click or run `tools\setup.bat`
-- **What it does**:
-  - Creates Python virtual environment
-  - Installs Python dependencies from requirements.txt
-  - Installs Node.js dependencies (if npm available)
-  - Installs pre-commit hooks
-  - Prepares environment for development
+- `setup.bat` – Creates the virtual environment if missing, checks for stale venvs, dry-runs pip to highlight dependency drift, installs Python requirements, validates `package.json`, cleans npm staging directories, runs `npm install`, and installs pre-commit hooks when available.
+- `run_direct.bat` – Ensures `.venv` exists, sets UTF-8 console encoding, builds `assets/dist/style.css` via `npm run build:css` if npm is available, and launches the app with the venv Python.
+- `cleanup_logs.bat` – Rotate/prune log files; supports `--info`, `--dry-run`, and `--archive`.
+- `create_scheduled_cleanup.bat` – Optional scheduled task creator for periodic log cleanup.
 
-### `run_direct.bat`
+## VSCode Integration
 
-- **Purpose**: Run the Casino Calendar application
-- **Usage**: Double-click or run `tools\run_direct.bat`
-- **What it does**:
-  - Activates virtual environment
-  - Builds CSS from SCSS (if npm available)
-  - Starts the Dash application on <http://localhost:8050>
-  - Provides detailed status messages
-
-### `cleanup_logs.bat`
-
-- **Purpose**: Log file management and cleanup
-- **Usage**:
-  - `tools\cleanup_logs.bat` - Clean logs older than 30 days
-  - `tools\cleanup_logs.bat --info` - Show log directory information
-  - `tools\cleanup_logs.bat --dry-run` - Preview what would be deleted
-  - `tools\cleanup_logs.bat --archive` - Archive current log file
-
-## Root Directory Convenience Scripts
-
-The project root contains simple launcher scripts that call the tools:
-
-- `setup.bat` → `tools\setup.bat`
-- `run.bat` → `tools\run_direct.bat`
-
-This design keeps the root directory clean while maintaining easy access to common operations.
-
-## Integration with Development Environment
-
-### VSCode Tasks
-
-All tools are integrated with VSCode tasks accessible via `Ctrl+Shift+P` → "Tasks: Run Task":
-
-- **Run Casino Calendar App**: Uses `tools\run_direct.bat`
-- **Log Cleanup - Info**: Uses Python script directly  
-- **Log Cleanup - Execute**: Uses Python script directly
-
-### Debug Configurations
-
-VSCode debug configurations (F5) also use these tools for consistent environment setup.
-
-## Organization
-
-Tools are organized for clarity:
-
-- **Root-level batch files**: Primary user interface, kept minimal
-- **tools/ directory**: Implementation scripts with full functionality
-- **scripts/maintenance/**: Python utilities for log management
-- **scripts/setup/**: Setup and installation scripts
-- **scripts/dev/**: Development and testing utilities
-
-## Dependencies
-
-- **Python 3.11+**: Required for application and scripts
-- **Node.js/npm**: Optional, for CSS building
-- **Virtual environment**: Created automatically by setup
-
-## Error Handling
-
-All batch files include:
-
-- Environment validation
-- Clear error messages
-- Graceful fallbacks where possible
-- Detailed status reporting
-
-## Maintenance
-
-These tools are designed to be self-contained and require minimal maintenance. If paths change, update:
-
-1. Root launcher scripts (setup.bat, run.bat)
-2. VSCode tasks.json
-3. Documentation references
-4. Internal script paths
+The F5 debug profile and "Run Casino Calendar App" task call `scripts\windows\run_direct.bat`. Log cleanup tasks call the Python maintenance script directly. Keep the script paths stable if you adjust tasks or launch configurations.

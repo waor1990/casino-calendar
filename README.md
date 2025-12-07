@@ -60,7 +60,7 @@ REM Launch the Dash development server
 scripts\windows\run_direct.bat
 ```
 
-Convenience launchers (`setup.bat`, `run.bat`, `un_direct.bat`) proxy to the scripts above.
+Convenience launchers (`setup.bat`, `run.bat`, `run_direct.bat`) proxy to the scripts above.
 
 ### Linux / macOS
 
@@ -87,7 +87,7 @@ flake8
 python app.py
 ```
 
-When using `python-dotenv`, environment variables are loaded from `.env` in the project root. See [Environment configuration] (#environment-configuration) for details.
+When using `python-dotenv`, environment variables are loaded from `.env` in the project root. See [Environment configuration](#environment-configuration) for details.
 
 ---
 
@@ -222,7 +222,7 @@ Create a `.env` file alongside `app.py` to override these values when developing
 3. Ensure linters and tests pass before opening a PR (`scripts/shell/test.sh`).
 4. Review the documentation under [`docs/`](docs/)—especially the architecture and operations guides—before large changes.
 
-Commit messages follow Conventional Commits with a required scope and imperative lowercase subjects. Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `build`, `revert`, `merge`. Allowed scopes: `data`, `ui`, `theme`, `dark-theme`, `modal`, `layout`, `filters`, `config`, `build`, `lint`, `tests`, `docs`, `logging`, `maintenance`, `scripts`, `assets`, `deps`.
+Commit messages follow Conventional Commits with a required scope and imperative lowercase subjects. Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `merge`, `revert`. Allowed scopes: `app`, `dash`, `components`, `layout`, `styles`, `theme`, `data`, `services`, `logging`, `config`, `assets`, `scripts`, `deps`, `branch`, `tests`, `docs`, `ci`, `infra`. Run `npm run commit` (Commitizen) to get a guided prompt that enforces these lists from `.cz-config.js`.
 
 Issues and feature ideas are tracked in [`docs/guides/TODO.md`](docs/guides/TODO.md). Pull requests should include updates to documentation and tests where appropriate.
 

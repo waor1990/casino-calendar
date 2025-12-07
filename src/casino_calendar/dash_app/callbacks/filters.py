@@ -7,6 +7,7 @@ from uuid import uuid4
 import dash
 import pandas as pd
 from casino_calendar.logging.config import setup_logger
+from casino_calendar.services.data_parsing import filter_week_events
 from casino_calendar.settings import APP_TIMEZONE
 from dash import ALL, Input, Output, State, html, no_update
 
@@ -224,9 +225,7 @@ def register_callbacks(app, df) -> None:
             week_start = _week_start_from_offset(normalized_offset)
             week_end = week_start + timedelta(days=7)
 
-            weekly_events = df[
-                (df["EndDate"] > week_start) & (df["StartDate"] < week_end)
-            ]
+            weekly_events = filter_week_events(df, week_start, week_end)
             filtered_df = _apply_filters(weekly_events, selected_casinos, None)
 
             counts = (

@@ -78,9 +78,9 @@
         "text_dark": "#f7f4ff"
     },
     "Wildhorse Casino": {
-        "bg": "#d21245",
+        "bg": "#d31346",
         "text": "#ffffff",
-        "bg_dark": "#e1416c",
+        "bg_dark": "#c22d4a",
         "text_dark": "#f7f4ff"
     },
     "Tulalip Casino": {
@@ -90,9 +90,9 @@
         "text_dark": "#f7f4ff"
     },
     "Quil Ceda Creek Casino": {
-        "bg": "#9a0709",
+        "bg": "#a31c2a",
         "text": "#ffffff",
-        "bg_dark": "#d41a1d",
+        "bg_dark": "#b61f2e",
         "text_dark": "#f7f4ff"
     },
     "Seven Feathers Casino": {

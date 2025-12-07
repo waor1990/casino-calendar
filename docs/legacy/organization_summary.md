@@ -1,6 +1,6 @@
 # Project Organization Improvements Summary
 
-> **📋 Note**: This document provides historical context about organization improvements made to the project. For current project structure and file organization, see [project_structure.md](project_structure.md).
+> **📋 Note**: This document provides historical context about organization improvements made to the project. For current project structure and file organization, see [project_structure.md](project_structure.md). The original "tools/" directory referenced below has since been folded into `scripts/windows/` with lightweight launchers in the project root.
 
 ## Overview
 
@@ -20,25 +20,14 @@ This document summarizes the structural and organizational improvements made to 
 ### 2. Script Organization
 
 **Before**: Mixed scripts and tools in root and `scripts/` directory
-**After**: Logical separation by purpose
+**After**: Logical separation by runtime under `scripts/` with root-level launchers
 
 #### New Structure
 
-- **`tools/`**: User-facing utility scripts
-  - `setup.bat` - Environment setup
-  - `run_direct.bat` - Application launcher  
-  - `cleanup_logs.bat` - Log management
-  - `README.md` - Comprehensive documentation
-  
-- **`scripts/maintenance/`**: System maintenance utilities
-  - `cleanup_logs.py` - Log cleanup and rotation
-  - `create_scheduled_cleanup.bat` - Scheduled task creation
-  
-- **`scripts/setup/`**: Installation and setup scripts
-  - `setup.sh` - Linux/Mac setup script
-  
-- **`scripts/dev/`**: Development and testing utilities (existing)
-  - Various development test scripts
+- **`scripts/windows/`**: User-facing batch helpers (`setup.bat`, `run_direct.bat`, `cleanup_logs.bat`, `README.md`) invoked via the root launchers.
+- **`scripts/shell/`**: Unix-friendly setup and test orchestration (`setup.sh`, `test.sh`).
+- **`scripts/python/`**: Maintenance utilities (log cleanup, environment checks, CSV normalisation).
+- **`scripts/node/`**: Data ingestion and housekeeping scripts for CSV/Node workflows.
 
 ### 3. Root Directory Cleanup
 
@@ -47,8 +36,8 @@ This document summarizes the structural and organizational improvements made to 
 
 #### Added Convenience Launchers
 
-- `setup.bat` - Simple launcher for `tools\setup.bat`
-- `run.bat` - Simple launcher for `tools\run_direct.bat`
+- `setup.bat` - Simple launcher for `scripts\windows\setup.bat`
+- `run.bat` - Simple launcher for `scripts\windows\run_direct.bat`
 
 #### Maintained Root Files
 
@@ -98,24 +87,20 @@ This document summarizes the structural and organizational improvements made to 
 
 📁 Casino Calendar Root
 ├── 📄 app.py                    # Main application entry
-├── 📄 setup.bat                 # Convenience setup launcher
-├── 📄 run.bat                   # Convenience run launcher
-├── 📁 tools/                    # User-facing utilities
-│   ├── 📄 setup.bat
-│   ├── 📄 run_direct.bat
-│   ├── 📄 cleanup_logs.bat
-│   └── 📄 README.md
+├── 📄 setup.bat / run.bat       # Convenience launchers into scripts\windows\
 ├── 📁 scripts/                  # Organized utility scripts
-│   ├── 📁 maintenance/          # Log management, etc.
-│   ├── 📁 setup/               # Installation scripts
-│   └── 📁 dev/                 # Development utilities
+│   ├── 📁 windows/              # User-facing batch helpers
+│   ├── 📁 shell/                # Unix setup and test scripts
+│   ├── 📁 python/               # Maintenance utilities
+│   └── 📁 node/                 # Data ingestion helpers
+├── 📁 src/casino_calendar/      # Application package
+├── 📁 assets/                   # Static web assets (Sass + dist CSS)
+├── 📁 data/                     # CSV + lookup data
 ├── 📁 config/                   # Tool configurations
-├── 📁 app_components/           # Application modules
-├── 📁 assets/                   # Static web assets
+├── 📁 docs/                     # Current documentation set
 ├── 📁 tests/                    # Test suite
-├── 📁 docs/                     # Documentation
-├── 📁 archive/                  # Archived files
-├── 📁 logs/                     # Application logs
+├── 📁 legacy/                   # Archived code/docs
+├── 📁 deploy/                   # Deployment configuration
 └── 📁 utils/                    # Shared utilities
 
 ## Migration Path
@@ -131,17 +116,17 @@ All existing workflows continue to work:
 
 ### Adding New Scripts
 
-- **User tools**: Add to `tools/` directory
-- **Maintenance**: Add to `scripts/maintenance/`
-- **Development**: Add to `scripts/dev/`
-- **Setup**: Add to `scripts/setup/`
+- **Windows helpers**: Add batch files to `scripts/windows/` and, if needed, update the root launchers.
+- **Unix helpers**: Add to `scripts/shell/`.
+- **Maintenance**: Add Python utilities to `scripts/python/`.
+- **Data/automation**: Add Node utilities to `scripts/node/`.
 
 ### Updating Paths
 
-- Check `tools/` batch files
-- Check `.vscode/tasks.json`
-- Check documentation references
-- Update README files as needed
+- Check `scripts/windows/` batch files and root proxies.
+- Check `.vscode/tasks.json`.
+- Check documentation references.
+- Update README files as needed.
 
 ## Validation
 
