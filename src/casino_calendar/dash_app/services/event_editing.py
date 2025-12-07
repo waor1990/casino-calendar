@@ -8,7 +8,7 @@ import pandas as pd
 from casino_calendar.logging.config import setup_logger
 from dash import dcc, html
 
-from .layout_state import build_event_info_rows, to_naive_utc, to_pdt
+from .layout_state import build_event_info_rows, to_pdt
 
 logger = setup_logger(__name__)
 

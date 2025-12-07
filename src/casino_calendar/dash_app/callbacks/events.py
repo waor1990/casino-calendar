@@ -697,7 +697,7 @@ def register_callbacks(app, df, repository=None) -> None:
 
             # Send update to API
             logger.info("Saving event %s via API", event_id)
-            result = repository.update_event(event_id, update_payload)
+            repository.update_event(event_id, update_payload)
 
             # Reload the event data to show updated values
             updated_df = repository.get_events()
