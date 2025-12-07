@@ -6,6 +6,7 @@ from typing import Any
 import pandas as pd
 import pytest
 import requests
+
 from casino_calendar.dash_app.data.api_repository import APIEventRepository
 
 

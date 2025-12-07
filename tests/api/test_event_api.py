@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
+
 from api.event_api import create_app, load_events
 
 

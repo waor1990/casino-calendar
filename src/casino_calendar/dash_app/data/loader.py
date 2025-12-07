@@ -11,6 +11,7 @@ import time
 from pathlib import Path
 
 import pandas as pd
+
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.settings import DATA_DIR
 

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Protocol
 
 import pandas as pd
+
 from casino_calendar.settings import DATA_DIR
 
 from .api_repository import APIEventRepository

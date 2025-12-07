@@ -6,6 +6,7 @@ from typing import Any
 
 import pandas as pd
 import requests
+
 from casino_calendar.dash_app.data.transforms import (
     categorize_offer_types,
     to_naive_utc,

@@ -6,10 +6,11 @@ import time
 from pathlib import Path
 from typing import Any, Tuple
 
+from dash import Dash
+
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.config_cache import warm_cache
 from casino_calendar.settings import get_env, get_env_bool
-from dash import Dash
 
 from .callbacks import register_callbacks
 from .data import APIEventRepository
