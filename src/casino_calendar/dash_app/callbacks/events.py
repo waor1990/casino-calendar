@@ -14,6 +14,7 @@ from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color, resolve_casino_color
 from casino_calendar.settings import APP_TIMEZONE
 
+from ..services.event_editing import build_event_modal_children, build_form_defaults
 from ..services.layout_state import build_event_info_rows, to_naive_utc
 from ..visualization import charts as day_charts
 
@@ -23,7 +24,7 @@ PDT = APP_TIMEZONE
 logger = setup_logger(__name__)
 
 
-def register_callbacks(app, df) -> None:
+def register_callbacks(app, df, repository=None) -> None:
     """Register event related callbacks on the given Dash ``app``."""
     logger.info("Registering event callbacks")
 
@@ -602,5 +603,148 @@ def register_callbacks(app, df) -> None:
                 end_time - start_time,
             )
             raise
+
+    # Event editing and saving callbacks
+    @app.callback(
+        Output("event-modal-body", "children", allow_duplicate=True),
+        Output("event-edit-form-container", "children", allow_duplicate=True),
+        Output("event-save-status", "children"),
+        Output("event-save-status", "className"),
+        Output("event-edit-footer", "open"),
+        Input("event-save-button", "n_clicks"),
+        State("event-modal-body", "children"),
+        State("event-edit-eventname", "value"),
+        State("event-edit-offertype", "value"),
+        State("event-edit-offer", "value"),
+        State("event-edit-startdate", "value"),
+        State("event-edit-enddate", "value"),
+        prevent_initial_call=True,
+    )
+    def persist_event_changes(
+        n_clicks: int,
+        modal_body: list[Any],
+        name: str | None,
+        offer_type: str | None,
+        offer: str | None,
+        start_value: str | None,
+        end_value: str | None,
+    ) -> tuple[Any, ...]:
+        """Persist edited event information via REST API."""
+
+        if not n_clicks or not repository:
+            raise dash.exceptions.PreventUpdate
+
+        try:
+            # Extract the EventID from the current modal content
+            event_id = None
+            if isinstance(modal_body, list) and len(modal_body) > 0:
+                first_item = modal_body[0]
+                if isinstance(first_item, dict) and "props" in first_item:
+                    children = first_item.get("props", {}).get("children", [])
+                    if isinstance(children, list):
+                        for child in children:
+                            if isinstance(child, dict) and "props" in child:
+                                child_props = child["props"]
+                                if "children" in child_props:
+                                    child_children = child_props["children"]
+                                    if isinstance(child_children, list):
+                                        for item in child_children:
+                                            if isinstance(item, dict) and "props" in item:
+                                                if (
+                                                    item["props"].get("children")
+                                                    == "EventID"
+                                                ):
+                                                    # Next sibling should have the ID
+                                                    idx = child_children.index(item)
+                                                    if idx + 1 < len(child_children):
+                                                        next_item = child_children[
+                                                            idx + 1
+                                                        ]
+                                                        if isinstance(
+                                                            next_item, dict
+                                                        ) and "props" in next_item:
+                                                            event_id = next_item[
+                                                                "props"
+                                                            ].get("children")
+
+            if not event_id:
+                logger.warning(
+                    "Could not extract EventID from modal body, aborting save"
+                )
+                return (
+                    no_update,
+                    no_update,
+                    html.Div(
+                        "Error: Could not identify event",
+                        className="event-save-error",
+                    ),
+                    "event-save-error",
+                    no_update,
+                )
+
+            # Build the update payload
+            update_payload = {
+                "EventName": name or "",
+                "OfferType": offer_type or "",
+                "Offer": offer or "",
+                "StartDate": start_value or "",
+                "EndDate": end_value or "",
+            }
+
+            # Send update to API
+            logger.info("Saving event %s via API", event_id)
+            result = repository.update_event(event_id, update_payload)
+
+            # Reload the event data to show updated values
+            updated_df = repository.get_events()
+            event_row = updated_df[updated_df.get("EventID") == event_id]
+
+            if event_row.empty:
+                logger.warning("Event %s not found after save", event_id)
+                status_msg = html.Div(
+                    "Error: Event not found after save",
+                    className="event-save-error",
+                )
+                return (
+                    no_update,
+                    no_update,
+                    status_msg,
+                    "event-save-error",
+                    no_update,
+                )
+
+            event_series = event_row.iloc[0]
+            form_defaults = build_form_defaults(event_series)
+            modal_body_children, form_component = build_event_modal_children(
+                event_series, form_defaults
+            )
+
+            status_msg = html.Div(
+                "✓ Event saved successfully",
+                className="event-save-success",
+            )
+
+            logger.info("Event %s saved successfully", event_id)
+            return (
+                modal_body_children,
+                form_component,
+                status_msg,
+                "event-save-success",
+                False,  # Close the edit footer
+            )
+
+        except Exception as err:
+            logger.error("Failed to persist event changes: %s", err, exc_info=True)
+            status_msg = html.Div(
+                f"Error saving event: {str(err)}",
+                className="event-save-error",
+            )
+            return (
+                no_update,
+                no_update,
+                status_msg,
+                "event-save-error",
+                no_update,
+            )
 
     logger.info("Event callbacks ready")
