@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Any
 from urllib.parse import urlparse
 
-import plotly.graph_objs as go
+import plotly.graph_objs as go  # type: ignore
 from dash import dcc, html
 
 from casino_calendar.services.casino_index import load_casino_index
@@ -164,15 +164,18 @@ def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
     palette = get_color()
     palette_entry = palette.get(casino_name, {})
     fallback_colors = _DEFAULT_CASINO_COLORS.get(casino_name, {})
-    bg_color = (
+    bg_color: str | None = (
         casino.get("color") or palette_entry.get("bg") or fallback_colors.get("bg")
     )
-    bg_dark_color = palette_entry.get("bg_dark") or fallback_colors.get("bg_dark")
+    bg_dark_color: str | None = palette_entry.get("bg_dark") or fallback_colors.get(
+        "bg_dark"
+    )
     entry_style: dict[str, str] = {}
     if bg_color:
-        entry_style["--bg"] = bg_color
-    if bg_dark_color or bg_color:
-        entry_style["--bg-dark"] = bg_dark_color or bg_color
+        entry_style["--bg"] = str(bg_color)
+    final_bg_dark = bg_dark_color or bg_color
+    if final_bg_dark:
+        entry_style["--bg-dark"] = str(final_bg_dark)
     today_label = datetime.now().strftime("%A")
     today_label_lower = today_label.lower()
 

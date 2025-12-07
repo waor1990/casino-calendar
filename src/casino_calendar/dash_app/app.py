@@ -74,6 +74,8 @@ def create_dash_app() -> Tuple[Dash, Any]:
     )
 
     api_base_url = get_env("EVENT_API_BASE_URL", "http://localhost:5001")
+    if not api_base_url:
+        api_base_url = "http://localhost:5001"
     repository = APIEventRepository(base_url=api_base_url)
 
     logger.info("Loading event data")
