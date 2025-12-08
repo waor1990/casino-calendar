@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 from typing import Any, Tuple
 
+import requests  # type: ignore
 from dash import Dash
 
 from casino_calendar.logging.config import setup_logger
@@ -45,6 +46,43 @@ def _build_index_string() -> str:
 """
 
 
+def _wait_for_api(
+    api_url: str, max_retries: int = 10, retry_delay: float = 0.5
+) -> bool:
+    """Check if the API is available and ready to serve requests.
+
+    Args:
+        api_url: The base URL of the API (e.g., http://localhost:5001)
+        max_retries: Maximum number of connection attempts
+        retry_delay: Delay in seconds between retries
+
+    Returns:
+        True if API is available, False if max retries exceeded
+    """
+    health_url = f"{api_url}/events"
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            response = requests.get(health_url, timeout=2)
+            if response.status_code == 200:
+                logger.info("API is healthy and responding")
+                return True
+        except (requests.ConnectionError, requests.Timeout) as e:
+            logger.debug(
+                "API connection attempt %d/%d failed: %s", attempt, max_retries, e
+            )
+            if attempt < max_retries:
+                time.sleep(retry_delay)
+
+    logger.error(
+        "Failed to connect to API at %s after %d attempts. "
+        "Please ensure the API is running (e.g., python api/event_api.py)",
+        api_url,
+        max_retries,
+    )
+    return False
+
+
 def create_dash_app() -> Tuple[Dash, Any]:
     """Create and configure the Dash application."""
 
@@ -76,6 +114,18 @@ def create_dash_app() -> Tuple[Dash, Any]:
     api_base_url = get_env("EVENT_API_BASE_URL", "http://localhost:5001")
     if not api_base_url:
         api_base_url = "http://localhost:5001"
+
+    # Check if API is available before proceeding
+    logger.info("Checking API availability at %s", api_base_url)
+    if not _wait_for_api(api_base_url):
+        logger.error(
+            "Cannot proceed without API. Please start the API and try again."
+        )
+        raise RuntimeError(
+            f"Event API at {api_base_url} is not available. "
+            "Please start it with: python api/event_api.py"
+        )
+
     repository = APIEventRepository(base_url=api_base_url)
 
     logger.info("Loading event data")

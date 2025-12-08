@@ -110,7 +110,18 @@ def register_callbacks(app, df, repository=None) -> None:
         screen_width: int,
         selected_casinos: list[str] | None,
         event_modal_class: str | None = None,
-    ) -> Tuple[Any, Any, Any, Any, dict[str, Any] | None, int | NoUpdate, bool | NoUpdate, Any, Any, Any]:
+    ) -> Tuple[
+        Any,
+        Any,
+        Any,
+        Any,
+        dict[str, Any] | None,
+        int | NoUpdate,
+        bool | NoUpdate,
+        Any,
+        Any,
+        Any,
+    ]:
         """Handle modal open and close events.
 
         Unused parameters prefixed with an underscore are included solely so the
@@ -346,10 +357,10 @@ def register_callbacks(app, df, repository=None) -> None:
                 # Build the edit form
                 form_defaults = build_form_defaults(row)
                 _, form_component = build_event_modal_children(row, form_defaults)
-                
+
                 # Store the EventID in context for the save callback
                 event_context = {"EventID": str(row.get("EventID", ""))}
-                
+
                 return (
                     style,
                     "modal show",
