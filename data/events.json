@@ -6840,14 +6840,14 @@
     "Location": "1 Cowlitz Way, Ridgefield, WA 98642"
   },
   {
-    "EventID": "a2fa469c-525e-4597-8308-2d8b7ef05402",
     "EventName": "Holiday Slot Tournament",
-    "OfferType": "Free-Play",
+    "OfferType": "Special-Events",
     "Offer": "Holiday slot tournament with $3,500 in slot play every hour and up to $1,000 in slot play per winner.",
     "StartDate": "2025-12-07T19:00:00Z",
     "EndDate": "2025-12-08T04:00:00Z",
     "Casino": "ilani",
-    "Location": "1 Cowlitz Way, Ridgefield, WA 98642"
+    "Location": "1 Cowlitz Way, Ridgefield, WA 98642",
+    "EventID": "a2fa469c-525e-4597-8308-2d8b7ef05402"
   },
   {
     "EventID": "23aa009e-6ea8-4995-8981-7364296ee031",
@@ -6900,14 +6900,14 @@
     "Location": "1 Cowlitz Way, Ridgefield, WA 98642"
   },
   {
-    "EventID": "d42f1884-c007-4cba-8546-d50dd4155c85",
     "EventName": "Winter of Winnings Entry Multiplier",
-    "OfferType": "Giveaway",
+    "OfferType": "Point-Based",
     "Offer": "Earn 2x-6x entries per status point toward Winter of Winnings.",
     "StartDate": "2025-12-08T08:00:00Z",
     "EndDate": "2025-12-09T07:59:00Z",
     "Casino": "ilani",
-    "Location": "1 Cowlitz Way, Ridgefield, WA 98642"
+    "Location": "1 Cowlitz Way, Ridgefield, WA 98642",
+    "EventID": "d42f1884-c007-4cba-8546-d50dd4155c85"
   },
   {
     "EventID": "267f8dd5-f866-44ef-975e-0861d9d4087a",
@@ -7040,14 +7040,14 @@
     "Location": "1 Cowlitz Way, Ridgefield, WA 98642"
   },
   {
-    "EventID": "6e42fa26-bf83-4989-a10b-ae93154bded1",
     "EventName": "Winter of Winnings Entry Multiplier",
-    "OfferType": "Giveaway",
+    "OfferType": "Point-Based",
     "Offer": "Earn 2x-6x entries per status point toward Winter of Winnings.",
     "StartDate": "2025-12-09T08:00:00Z",
     "EndDate": "2025-12-10T07:59:00Z",
     "Casino": "ilani",
-    "Location": "1 Cowlitz Way, Ridgefield, WA 98642"
+    "Location": "1 Cowlitz Way, Ridgefield, WA 98642",
+    "EventID": "6e42fa26-bf83-4989-a10b-ae93154bded1"
   },
   {
     "EventID": "967b212d-4ce3-4949-b4d3-7e71b8cbee7a",
@@ -7130,14 +7130,14 @@
     "Location": "1 Cowlitz Way, Ridgefield, WA 98642"
   },
   {
-    "EventID": "5ac95dc0-8584-4215-9c69-22651d447826",
     "EventName": "Winter of Winnings Entry Multiplier",
-    "OfferType": "Giveaway",
+    "OfferType": "Point-Based",
     "Offer": "Earn 2x-6x entries per status point toward Winter of Winnings.",
     "StartDate": "2025-12-10T08:00:00Z",
     "EndDate": "2025-12-11T07:59:00Z",
     "Casino": "ilani",
-    "Location": "1 Cowlitz Way, Ridgefield, WA 98642"
+    "Location": "1 Cowlitz Way, Ridgefield, WA 98642",
+    "EventID": "5ac95dc0-8584-4215-9c69-22651d447826"
   },
   {
     "EventID": "e47a5777-9a9a-493b-b8c0-28ac9a6c0eab",

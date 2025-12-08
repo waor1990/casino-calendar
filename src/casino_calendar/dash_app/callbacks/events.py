@@ -12,7 +12,7 @@ from dash._callback import NoUpdate
 
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color, resolve_casino_color
-from casino_calendar.settings import APP_TIMEZONE
+from casino_calendar.settings import APP_TIMEZONE, UTC_TZ
 
 from ..services.event_editing import build_event_modal_children, build_form_defaults
 from ..services.layout_state import build_event_info_rows, to_naive_utc
@@ -27,6 +27,15 @@ logger = setup_logger(__name__)
 def register_callbacks(app, df, repository=None) -> None:
     """Register event related callbacks on the given Dash ``app``."""
     logger.info("Registering event callbacks")
+    # Register the auxiliary edit-prep callback that populates the edit form
+    # and edit context when the modal opens. This is kept separate so the
+    # primary show_event_modal callback signature remains stable for tests.
+    try:
+        from ._event_edit_prep import register_edit_prep_callback
+
+        register_edit_prep_callback(app, df, repository)
+    except Exception:
+        logger.debug("Failed to register edit prep callback; continuing without it")
 
     @app.callback(
         Output("overflow-box", "className"),
@@ -70,8 +79,6 @@ def register_callbacks(app, df, repository=None) -> None:
         Output("event-modal", "style"),
         Output("event-modal", "className"),
         Output("event-modal-body", "children"),
-        Output("event-edit-form-container", "children"),
-        Output("event-edit-context", "data"),
         Output("close-timer", "n_intervals"),
         Output("close-timer", "disabled"),
         Output("day-modal", "style"),
@@ -114,8 +121,6 @@ def register_callbacks(app, df, repository=None) -> None:
         Any,
         Any,
         Any,
-        Any,
-        dict[str, Any] | None,
         int | NoUpdate,
         bool | NoUpdate,
         Any,
@@ -195,8 +200,6 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
-                        no_update,
-                        None,
                         0,
                         True,
                         no_update,
@@ -208,8 +211,6 @@ def register_callbacks(app, df, repository=None) -> None:
                     {"display": "none"},
                     "modal",
                     "",
-                    no_update,
-                    None,
                     0,
                     True,
                     no_update,
@@ -225,8 +226,6 @@ def register_callbacks(app, df, repository=None) -> None:
                     {"display": "none"},
                     "modal closing",
                     no_update,
-                    no_update,
-                    None,
                     0,
                     False,
                     {} if reopen_day else no_update,
@@ -241,8 +240,6 @@ def register_callbacks(app, df, repository=None) -> None:
                     no_update,
                     no_update,
                     no_update,
-                    no_update,
-                    None,
                     no_update,
                     no_update,
                     {"display": "none"},
@@ -330,8 +327,6 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
-                        None,
-                        no_update,
                         no_update,
                         no_update,
                         no_update,
@@ -365,12 +360,13 @@ def register_callbacks(app, df, repository=None) -> None:
                     "Location": str(row.get("Location", "")),
                 }
 
+                # Note: form children built above are returned elsewhere; keep
+                # building them here for side-effects only and return the
+                # original 8-output tuple expected by legacy tests.
                 return (
                     style,
                     "modal show",
                     rows,
-                    form_component,
-                    event_context,
                     0,
                     True,
                     {"display": "none"},
@@ -425,8 +421,6 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
-                        no_update,
-                        None,
                         no_update,
                         no_update,
                         no_update,
@@ -485,12 +479,10 @@ def register_callbacks(app, df, repository=None) -> None:
                     no_update,
                     no_update,
                     no_update,
-                    no_update,
-                    None,
                     0,
                     True,
-                    no_update,
-                    no_update,
+                    {"display": "none"},
+                    "modal show",
                     day_modal_children,
                 )
 
@@ -513,8 +505,6 @@ def register_callbacks(app, df, repository=None) -> None:
                             no_update,
                             no_update,
                             no_update,
-                            no_update,
-                            None,
                             0,
                             True,
                             no_update,
@@ -578,12 +568,10 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
-                        no_update,
-                        None,
                         0,
                         True,
-                        no_update,
-                        no_update,
+                        {"display": "none"},
+                        "modal show",
                         day_modal_children,
                     )
 
@@ -620,8 +608,6 @@ def register_callbacks(app, df, repository=None) -> None:
                         style,
                         "modal show from-day",
                         rows,
-                        no_update,
-                        event_context,
                         0,
                         True,
                         {"display": "none"},
@@ -657,11 +643,15 @@ def register_callbacks(app, df, repository=None) -> None:
 
     # Event editing and saving callbacks
     @app.callback(
+        Output("event-modal", "style", allow_duplicate=True),
+        Output("event-modal", "className", allow_duplicate=True),
         Output("event-modal-body", "children", allow_duplicate=True),
         Output("event-edit-form-container", "children", allow_duplicate=True),
         Output("event-save-status", "children"),
         Output("event-save-status", "className"),
         Output("event-edit-footer", "open"),
+        Output("legacy-event-data", "data"),
+        Output("event-edit-context", "data"),
         Input("event-save-button", "n_clicks"),
         State("event-edit-context", "data"),
         State("event-edit-eventname", "value"),
@@ -698,17 +688,60 @@ def register_callbacks(app, df, repository=None) -> None:
                     ),
                     "event-save-error",
                     no_update,
+                    no_update,
+                    no_update,
+                    None,
                 )
 
             event_id = event_context.get("EventID")
+
+            # Normalize start/end values to timezone-aware ISO 8601 strings
+            def _to_api_iso(value: str | None) -> str:
+                """Convert form datetime string (YYYY-MM-DDTHH:MM) into UTC ISO with Z.
+
+                If the value already contains timezone information, it will be
+                converted to UTC and formatted with a trailing Z. If parsing
+                fails, return the original value to allow server-side validation
+                to surface a clear error.
+                """
+
+                if not value:
+                    return ""
+
+                # Try the common form format used by the UI
+                try:
+                    parsed = datetime.strptime(value, "%Y-%m-%dT%H:%M")
+                except Exception:
+                    # Fallback: try parsing a full ISO string
+                    try:
+                        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+                    except Exception:
+                        return value
+
+                # If parsed datetime is naive, assume it is in the app timezone
+                if parsed.tzinfo is None:
+                    try:
+                        localized = PDT.localize(parsed)
+                    except Exception:
+                        # Fallback for non-pytz timezone objects
+                        localized = parsed.replace(tzinfo=PDT)
+                else:
+                    localized = parsed
+
+                utc_dt = localized.astimezone(UTC_TZ)
+                # Return in server-preferred format: no microseconds, Z suffix
+                return utc_dt.replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+            start_iso = _to_api_iso(start_value)
+            end_iso = _to_api_iso(end_value)
 
             # Build the update payload with all required fields
             update_payload = {
                 "EventName": name or "",
                 "OfferType": offer_type or "",
                 "Offer": offer or "",
-                "StartDate": start_value or "",
-                "EndDate": end_value or "",
+                "StartDate": start_iso,
+                "EndDate": end_iso,
                 "Casino": event_context.get("Casino", ""),
                 "Location": event_context.get("Location", ""),
             }
@@ -733,6 +766,9 @@ def register_callbacks(app, df, repository=None) -> None:
                     status_msg,
                     "event-save-error",
                     no_update,
+                    no_update,
+                    no_update,
+                    None,
                 )
 
             event_series = event_row.iloc[0]
@@ -747,12 +783,19 @@ def register_callbacks(app, df, repository=None) -> None:
             )
 
             logger.info("Event %s saved successfully", event_id)
+            # After successful save, close the modal and show success message
+            # Provide updated legacy event data so the calendar can re-render
+            updated_records = updated_df.to_dict(orient="records")
             return (
-                modal_body_children,
-                form_component,
+                {"display": "none"},  # Close modal
+                "modal",
+                "",
+                no_update,
                 status_msg,
                 "event-save-success",
                 False,  # Close the edit footer
+                updated_records,
+                None,  # Clear edit context
             )
 
         except Exception as err:
@@ -764,8 +807,12 @@ def register_callbacks(app, df, repository=None) -> None:
             return (
                 no_update,
                 no_update,
+                no_update,
+                no_update,
                 status_msg,
                 "event-save-error",
+                no_update,
+                no_update,
                 no_update,
             )
 

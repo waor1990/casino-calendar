@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Mapping
+from typing import Any, Mapping, cast
 
 import pandas as pd
 from casino_calendar.logging.config import setup_logger
@@ -94,11 +94,20 @@ def build_event_modal_children(
                                 rows=4,
                             )
                             if field["component"] == "textarea"
-                            else dcc.Input(
-                                id=f"event-edit-{field['key'].lower()}",
-                                value=defaults.get(field["key"], ""),
-                                type="text",
-                                className="event-edit-input",
+                            else (
+                                dcc.Input(
+                                    id=f"event-edit-{field['key'].lower()}",
+                                    value=defaults.get(field["key"], ""),
+                                    type=cast(
+                                        Any,
+                                        (
+                                            "datetime-local"
+                                            if field["component"] == "datetime"
+                                            else "text"
+                                        ),
+                                    ),
+                                    className="event-edit-input",
+                                )
                             )
                         ),
                     ],
@@ -110,7 +119,8 @@ def build_event_modal_children(
         ),
     ]
 
-    return [details], form_children
+    # Return the modal details and a single Div wrapper for the editable form
+    return [details], html.Div(form_children, className="event-edit-form-container")
 
 
 __all__ = ["build_form_defaults", "build_event_modal_children", "FORM_FIELDS"]

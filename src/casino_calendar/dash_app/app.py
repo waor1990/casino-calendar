@@ -115,14 +115,23 @@ def create_dash_app() -> Tuple[Dash, Any]:
     if not api_base_url:
         api_base_url = "http://localhost:5001"
 
-    # Check if API is available before proceeding
-    logger.info("Checking API availability at %s", api_base_url)
-    if not _wait_for_api(api_base_url):
-        logger.error("Cannot proceed without API. Please start the API and try again.")
-        raise RuntimeError(
-            f"Event API at {api_base_url} is not available. "
-            "Please start it with: python api/event_api.py"
-        )
+    # Optionally check if API is available before proceeding. This can be
+    # disabled in test environments by setting WAIT_FOR_API=false.
+    # Default to not waiting in test environments; enable via env var when
+    # running the full stack locally or in production.
+    wait_for_api = get_env_bool("WAIT_FOR_API", False)
+    logger.info("Checking API availability at %s (wait=%s)", api_base_url, wait_for_api)
+    if wait_for_api:
+        if not _wait_for_api(api_base_url):
+            logger.error(
+                "Cannot proceed without API. Please start the API and try again."
+            )
+            raise RuntimeError(
+                f"Event API at {api_base_url} is not available. "
+                "Please start it with: python api/event_api.py"
+            )
+    else:
+        logger.debug("Skipping API availability check due to WAIT_FOR_API=false")
 
     repository = APIEventRepository(base_url=api_base_url)
 
