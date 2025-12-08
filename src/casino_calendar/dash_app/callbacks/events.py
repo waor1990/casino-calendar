@@ -347,12 +347,15 @@ def register_callbacks(app, df, repository=None) -> None:
                 form_defaults = build_form_defaults(row)
                 _, form_component = build_event_modal_children(row, form_defaults)
                 
+                # Store the EventID in context for the save callback
+                event_context = {"EventID": str(row.get("EventID", ""))}
+                
                 return (
                     style,
                     "modal show",
                     rows,
                     form_component,
-                    None,
+                    event_context,
                     0,
                     True,
                     {"display": "none"},
@@ -593,12 +596,13 @@ def register_callbacks(app, df, repository=None) -> None:
                         "--bg-dark": casino_colors["bg_dark"],
                         "--fg-dark": casino_colors["text_dark"],
                     }
+                    event_context = {"EventID": str(data.get("EventID", ""))}
                     return (
                         style,
                         "modal show from-day",
                         rows,
                         no_update,
-                        None,
+                        event_context,
                         0,
                         True,
                         {"display": "none"},
