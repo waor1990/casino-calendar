@@ -644,7 +644,7 @@ def register_callbacks(app, df, repository=None) -> None:
         Output("event-save-status", "className"),
         Output("event-edit-footer", "open"),
         Input("event-save-button", "n_clicks"),
-        State("event-modal-body", "children"),
+        State("event-edit-context", "data"),
         State("event-edit-eventname", "value"),
         State("event-edit-offertype", "value"),
         State("event-edit-offer", "value"),
@@ -654,7 +654,7 @@ def register_callbacks(app, df, repository=None) -> None:
     )
     def persist_event_changes(
         n_clicks: int,
-        modal_body: list[Any],
+        event_context: dict[str, Any] | None,
         name: str | None,
         offer_type: str | None,
         offer: str | None,
@@ -667,46 +667,9 @@ def register_callbacks(app, df, repository=None) -> None:
             raise dash.exceptions.PreventUpdate
 
         try:
-            # Extract the EventID from the current modal content
-            event_id = None
-            if isinstance(modal_body, list) and len(modal_body) > 0:
-                first_item = modal_body[0]
-                if isinstance(first_item, dict) and "props" in first_item:
-                    children = first_item.get("props", {}).get("children", [])
-                    if isinstance(children, list):
-                        for child in children:
-                            if isinstance(child, dict) and "props" in child:
-                                child_props = child["props"]
-                                if "children" in child_props:
-                                    child_children = child_props["children"]
-                                    if isinstance(child_children, list):
-                                        for item in child_children:
-                                            if (
-                                                isinstance(item, dict)
-                                                and "props" in item
-                                            ):
-                                                if (
-                                                    item["props"].get("children")
-                                                    == "EventID"
-                                                ):
-                                                    # Next sibling should have the ID
-                                                    idx = child_children.index(item)
-                                                    if idx + 1 < len(child_children):
-                                                        next_item = child_children[
-                                                            idx + 1
-                                                        ]
-                                                        if (
-                                                            isinstance(next_item, dict)
-                                                            and "props" in next_item
-                                                        ):
-                                                            event_id = next_item[
-                                                                "props"
-                                                            ].get("children")
-
-            if not event_id:
-                logger.warning(
-                    "Could not extract EventID from modal body, aborting save"
-                )
+            # Get EventID from context store (much simpler than DOM parsing!)
+            if not event_context or "EventID" not in event_context:
+                logger.warning("No EventID found in context, aborting save")
                 return (
                     no_update,
                     no_update,
@@ -717,6 +680,8 @@ def register_callbacks(app, df, repository=None) -> None:
                     "event-save-error",
                     no_update,
                 )
+
+            event_id = event_context.get("EventID")
 
             # Build the update payload
             update_payload = {
