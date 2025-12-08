@@ -110,9 +110,7 @@ def build_event_modal_children(
         ),
     ]
 
-    form_component = html.Div(form_children, id="event-edit-form-container")
-
-    return [details], form_component
+    return [details], form_children
 
 
 __all__ = ["build_form_defaults", "build_event_modal_children", "FORM_FIELDS"]
