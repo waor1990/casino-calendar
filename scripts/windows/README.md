@@ -21,14 +21,18 @@ Batch helpers for setting up, running, and maintaining the Casino Calendar app. 
 ## Startup Options
 
 ### Development with Auto-Start (Recommended)
+
 ```cmd
 scripts\windows\start_all.bat
 ```
+
 This opens two new windows:
+
 - One for the REST API (handles event data)
 - One for the Dash application (web interface)
 
 ### Manual Service Management
+
 ```cmd
 REM Terminal 1: Start REST API
 scripts\windows\start_api.bat
@@ -38,7 +42,9 @@ scripts\windows\start_dash.bat
 ```
 
 ### API Health Check
+
 The Dash application now includes automatic health checks:
+
 - Waits up to 10 seconds for the API to become available
 - Retries with exponential backoff
 - Provides clear error messages if API is unavailable

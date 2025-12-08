@@ -118,9 +118,7 @@ def create_dash_app() -> Tuple[Dash, Any]:
     # Check if API is available before proceeding
     logger.info("Checking API availability at %s", api_base_url)
     if not _wait_for_api(api_base_url):
-        logger.error(
-            "Cannot proceed without API. Please start the API and try again."
-        )
+        logger.error("Cannot proceed without API. Please start the API and try again.")
         raise RuntimeError(
             f"Event API at {api_base_url} is not available. "
             "Please start it with: python api/event_api.py"
