@@ -157,17 +157,18 @@ def archive_current_log(
     if not log_path.exists():
         raise FileNotFoundError(f"Log file {log_file} does not exist")
 
+    # Normalize archive_dir to a Path for local operations
     if archive_dir is None:
-        archive_dir = log_path.parent / "archive"
+        arch_dir = log_path.parent / "archive"
     else:
-        archive_dir = Path(archive_dir)
-    archive_dir.mkdir(parents=True, exist_ok=True)
+        arch_dir = Path(archive_dir)
+    arch_dir.mkdir(parents=True, exist_ok=True)
 
     if archive_suffix is None:
         archive_suffix = time.strftime("%Y%m%d_%H%M%S")
 
     archive_name = f"{log_path.stem}_{archive_suffix}{log_path.suffix}"
-    archive_path = archive_dir / archive_name
+    archive_path = arch_dir / archive_name
 
     if move:
         log_path.replace(archive_path)
@@ -318,22 +319,35 @@ def _rebucket_existing_archives(log_path: Path, archive_dir: Path) -> None:
 
     # Collect lines from existing files
     for file_path in archive_dir.glob("*.log"):
+        # If another process removed the file between globbing and handling,
+        # ignore FileNotFoundError and continue.
         if file_path.name == f"{base_name}_all.log":
-            file_path.unlink()
+            try:
+                file_path.unlink()
+            except FileNotFoundError:
+                # already removed concurrently; ignore
+                pass
             continue
         if not file_path.name.startswith(base_name):
             continue
 
-        lines = file_path.read_text(encoding="utf-8").splitlines(True)
+        try:
+            lines = file_path.read_text(encoding="utf-8").splitlines(True)
+        except FileNotFoundError:
+            # file disappeared between listing and read; skip it
+            continue
         if not lines:
-            file_path.unlink()
+            try:
+                file_path.unlink()
+            except FileNotFoundError:
+                pass
             continue
 
         # If the entire file only contains logs from 2025-10-12, drop it
-        distinct_dates = {
-            (_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None)
-            for line in lines
-        }
+        distinct_dates = set()
+        for line in lines:
+            dt = _parse_log_timestamp(line)
+            distinct_dates.add(dt.date() if dt is not None else None)
         if distinct_dates == {datetime(2025, 10, 12).date()}:
             file_path.unlink()
             continue
@@ -369,10 +383,11 @@ def archive_and_trim_by_days(
     if not log_path.exists():
         raise FileNotFoundError(f"Log file {log_file} does not exist")
 
+    # Normalize archive_dir to a Path for local operations
     if archive_dir is None:
-        archive_dir = str(log_path.parent / "archive")
-
-    arch_dir = Path(archive_dir)
+        arch_dir = log_path.parent / "archive"
+    else:
+        arch_dir = Path(archive_dir)
     arch_dir.mkdir(parents=True, exist_ok=True)
 
     cutoff_ts = time.time() - (days_to_keep * 24 * 60 * 60)
@@ -409,14 +424,10 @@ def archive_and_trim_by_days(
         base_name = log_path.stem
         for month_key, month_lines in buckets.items():
             # Skip files that would contain only 2025-10-12 entries
-            dates = {
-                (
-                    _parse_log_timestamp(line).date()
-                    if _parse_log_timestamp(line)
-                    else None
-                )
-                for line in month_lines
-            }
+            dates = set()
+            for line in month_lines:
+                dt = _parse_log_timestamp(line)
+                dates.add(dt.date() if dt is not None else None)
             if dates == {datetime(2025, 10, 12).date()}:
                 continue
 
@@ -447,10 +458,11 @@ def archive_and_trim_by_month(
     if not log_path.exists():
         raise FileNotFoundError(f"Log file {log_file} does not exist")
 
+    # Normalize archive_dir to a Path for local operations
     if archive_dir is None:
-        archive_dir = str(log_path.parent / "archive")
-
-    arch_dir = Path(archive_dir)
+        arch_dir = log_path.parent / "archive"
+    else:
+        arch_dir = Path(archive_dir)
     arch_dir.mkdir(parents=True, exist_ok=True)
 
     now = datetime.now()
@@ -479,10 +491,10 @@ def archive_and_trim_by_month(
     base = log_path.stem
 
     for key, lines in buckets.items():
-        dates = {
-            (_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None)
-            for line in lines
-        }
+        dates = set()
+        for line in lines:
+            dt = _parse_log_timestamp(line)
+            dates.add(dt.date() if dt is not None else None)
         if dates == {datetime(2025, 10, 12).date()}:
             continue
 
@@ -513,10 +525,11 @@ def copy_lines_by_days(
     if not log_path.exists():
         raise FileNotFoundError(f"Log file {log_file} does not exist")
 
+    # Normalize archive_dir to a Path for local operations
     if archive_dir is None:
-        archive_dir = str(log_path.parent / "archive")
-
-    arch_dir = Path(archive_dir)
+        arch_dir = log_path.parent / "archive"
+    else:
+        arch_dir = Path(archive_dir)
     arch_dir.mkdir(parents=True, exist_ok=True)
 
     cutoff_ts = time.time() - (days * 24 * 60 * 60)
@@ -545,10 +558,10 @@ def copy_lines_by_days(
     archive_files: List[str] = []
     copied_payload: List[str] = []
     for month_key, month_lines in buckets.items():
-        dates = {
-            (_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None)
-            for line in month_lines
-        }
+        dates = set()
+        for line in month_lines:
+            dt = _parse_log_timestamp(line)
+            dates.add(dt.date() if dt is not None else None)
         if dates == {datetime(2025, 10, 12).date()}:
             continue
 
@@ -585,10 +598,10 @@ def copy_current_log(log_file: str, archive_dir: Optional[str] = None) -> str:
 
     payload: List[str] = []
     for month_key, month_lines in buckets.items():
-        dates = {
-            (_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None)
-            for line in month_lines
-        }
+        dates = set()
+        for line in month_lines:
+            dt = _parse_log_timestamp(line)
+            dates.add(dt.date() if dt is not None else None)
         if dates == {datetime(2025, 10, 12).date()}:
             continue
 
