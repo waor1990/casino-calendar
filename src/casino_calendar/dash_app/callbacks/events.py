@@ -70,6 +70,8 @@ def register_callbacks(app, df, repository=None) -> None:
         Output("event-modal", "style"),
         Output("event-modal", "className"),
         Output("event-modal-body", "children"),
+        Output("event-edit-form-container", "children"),
+        Output("event-edit-context", "data"),
         Output("close-timer", "n_intervals"),
         Output("close-timer", "disabled"),
         Output("day-modal", "style"),
@@ -108,7 +110,7 @@ def register_callbacks(app, df, repository=None) -> None:
         screen_width: int,
         selected_casinos: list[str] | None,
         event_modal_class: str | None = None,
-    ) -> Tuple[Any, Any, Any, int | NoUpdate, bool | NoUpdate, Any, Any, Any]:
+    ) -> Tuple[Any, Any, Any, Any, dict[str, Any] | None, int | NoUpdate, bool | NoUpdate, Any, Any, Any]:
         """Handle modal open and close events.
 
         Unused parameters prefixed with an underscore are included solely so the
@@ -182,6 +184,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        no_update,
+                        None,
                         0,
                         True,
                         no_update,
@@ -193,6 +197,8 @@ def register_callbacks(app, df, repository=None) -> None:
                     {"display": "none"},
                     "modal",
                     "",
+                    no_update,
+                    None,
                     0,
                     True,
                     no_update,
@@ -208,6 +214,8 @@ def register_callbacks(app, df, repository=None) -> None:
                     {"display": "none"},
                     "modal closing",
                     no_update,
+                    no_update,
+                    None,
                     0,
                     False,
                     {} if reopen_day else no_update,
@@ -222,6 +230,8 @@ def register_callbacks(app, df, repository=None) -> None:
                     no_update,
                     no_update,
                     no_update,
+                    no_update,
+                    None,
                     no_update,
                     no_update,
                     {"display": "none"},
@@ -309,6 +319,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        None,
+                        no_update,
                         no_update,
                         no_update,
                         no_update,
@@ -331,10 +343,16 @@ def register_callbacks(app, df, repository=None) -> None:
                     "--bg-dark": casino_colors["bg_dark"],
                     "--fg-dark": casino_colors["text_dark"],
                 }
+                # Build the edit form
+                form_defaults = build_form_defaults(row)
+                _, form_component = build_event_modal_children(row, form_defaults)
+                
                 return (
                     style,
                     "modal show",
                     rows,
+                    form_component,
+                    None,
                     0,
                     True,
                     {"display": "none"},
@@ -389,6 +407,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        no_update,
+                        None,
                         no_update,
                         no_update,
                         no_update,
@@ -448,9 +468,11 @@ def register_callbacks(app, df, repository=None) -> None:
                     no_update,
                     no_update,
                     no_update,
+                    None,
+                    0,
+                    True,
                     no_update,
-                    {},
-                    "modal show",
+                    no_update,
                     day_modal_children,
                 )
 
@@ -474,7 +496,9 @@ def register_callbacks(app, df, repository=None) -> None:
                             no_update,
                             no_update,
                             no_update,
-                            no_update,
+                            None,
+                            0,
+                            True,
                             no_update,
                             no_update,
                             no_update,
@@ -537,9 +561,11 @@ def register_callbacks(app, df, repository=None) -> None:
                         no_update,
                         no_update,
                         no_update,
+                        None,
+                        0,
+                        True,
                         no_update,
-                        {},
-                        "modal show",
+                        no_update,
                         day_modal_children,
                     )
 
@@ -571,6 +597,8 @@ def register_callbacks(app, df, repository=None) -> None:
                         style,
                         "modal show from-day",
                         rows,
+                        no_update,
+                        None,
                         0,
                         True,
                         {"display": "none"},
