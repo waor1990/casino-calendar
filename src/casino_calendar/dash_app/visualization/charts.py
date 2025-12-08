@@ -5,7 +5,7 @@ from math import floor
 from typing import TYPE_CHECKING, Any, Callable
 
 import pandas as pd
-import plotly.graph_objs as go
+import plotly.graph_objs as go  # type: ignore[import-untyped]
 from dash import dcc, html
 
 from casino_calendar.settings import APP_TIMEZONE
@@ -527,7 +527,7 @@ def generate_day_view_parts(
 
     if events.empty:
         grid_children = [html.Div("No events scheduled.", className="no-events")]
-        return header_text, grid_children, build_day_overlay_figure(10, []), 10
+        return header_text, grid_children, build_day_overlay_figure(10, []), 10  # type: ignore[return-value]
 
     events["adj_start"] = events["StartDate"].where(
         events["StartDate"] >= day_start, day_start

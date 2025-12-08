@@ -15,8 +15,8 @@ for candidate in (src_dir, project_root):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
-from casino_calendar.logging import config as logging_config  # noqa: E402
-from casino_calendar.logging import rotation  # noqa: E402
+from casino_calendar.logging import config as logging_config  # noqa: E402, type: ignore[import-not-found]
+from casino_calendar.logging import rotation  # noqa: E402, type: ignore[import-not-found]
 
 logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.cleanup_logs")
 

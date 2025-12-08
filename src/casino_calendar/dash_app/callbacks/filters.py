@@ -384,7 +384,7 @@ def register_callbacks(app, df) -> None:
                 ],
             )
         else:
-            overflow_toggle = html.Div()
+            overflow_toggle = html.Div()  # type: ignore[assignment]
             overflow_box = html.Div()
 
         data_attr: dict[str, Any] = {"data-week": str(week_offset)}

@@ -657,8 +657,10 @@ def register_callbacks(app, df, repository=None) -> None:
         State("event-edit-eventname", "value"),
         State("event-edit-offertype", "value"),
         State("event-edit-offer", "value"),
-        State("event-edit-startdate", "value"),
-        State("event-edit-enddate", "value"),
+        State("event-edit-startdate-date", "date"),
+        State("event-edit-startdate-time", "value"),
+        State("event-edit-enddate-date", "date"),
+        State("event-edit-enddate-time", "value"),
         prevent_initial_call=True,
     )
     def persist_event_changes(
@@ -667,8 +669,10 @@ def register_callbacks(app, df, repository=None) -> None:
         name: str | None,
         offer_type: str | None,
         offer: str | None,
-        start_value: str | None,
-        end_value: str | None,
+        start_date: str | None,
+        start_time: str | None,
+        end_date: str | None,
+        end_time: str | None,
     ) -> tuple[Any, ...]:
         """Persist edited event information via REST API."""
 
@@ -694,6 +698,14 @@ def register_callbacks(app, df, repository=None) -> None:
                 )
 
             event_id = event_context.get("EventID")
+
+            # Combine date and time values into datetime strings for API
+            def _combine_date_time(date_value: str | None, time_value: str | None) -> str:
+                """Combine date (YYYY-MM-DD) and time (HH:MM) into datetime string (YYYY-MM-DDTHH:MM)."""
+                if not date_value:
+                    return ""
+                time_part = time_value or "00:00"
+                return f"{date_value}T{time_part}"
 
             # Normalize start/end values to timezone-aware ISO 8601 strings
             def _to_api_iso(value: str | None) -> str:
@@ -732,8 +744,12 @@ def register_callbacks(app, df, repository=None) -> None:
                 # Return in server-preferred format: no microseconds, Z suffix
                 return utc_dt.replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
-            start_iso = _to_api_iso(start_value)
-            end_iso = _to_api_iso(end_value)
+            # Combine date and time for start and end
+            start_datetime = _combine_date_time(start_date, start_time)
+            end_datetime = _combine_date_time(end_date, end_time)
+
+            start_iso = _to_api_iso(start_datetime)
+            end_iso = _to_api_iso(end_datetime)
 
             # Build the update payload with all required fields
             update_payload = {

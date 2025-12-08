@@ -12,12 +12,22 @@ from .layout_state import build_event_info_rows, to_pdt
 
 logger = setup_logger(__name__)
 
-FORM_FIELDS: list[dict[str, str]] = [
+# Available offer types that can be selected in the dropdown
+OFFER_TYPE_OPTIONS = [
+    "Free-Play",
+    "Hospitality-Rewards",
+    "Point-Based",
+    "Giveaway",
+    "Special-Events",
+    "Offer",
+]
+
+FORM_FIELDS: list[dict[str, Any]] = [
     {"key": "EventName", "label": "Event Name", "component": "input"},
-    {"key": "OfferType", "label": "Offer Type", "component": "input"},
+    {"key": "OfferType", "label": "Offer Type", "component": "dropdown"},
     {"key": "Offer", "label": "Offer Details", "component": "textarea"},
-    {"key": "StartDate", "label": "Start Date", "component": "datetime"},
-    {"key": "EndDate", "label": "End Date", "component": "datetime"},
+    {"key": "StartDate", "label": "Start Date", "component": "date_picker"},
+    {"key": "EndDate", "label": "End Date", "component": "date_picker"},
 ]
 
 
@@ -32,6 +42,7 @@ def _clean_string(value: Any) -> str:
 
 
 def _format_timestamp_for_form(value: Any) -> str:
+    """Format timestamp as ISO 8601 date-time string (YYYY-MM-DDTHH:MM) for datetime-local input."""
     if value is None:
         return ""
     try:
@@ -44,6 +55,34 @@ def _format_timestamp_for_form(value: Any) -> str:
     return to_pdt(ts.to_pydatetime()).strftime("%Y-%m-%dT%H:%M")
 
 
+def _format_timestamp_for_date_picker(value: Any) -> str:
+    """Format timestamp as ISO 8601 date string (YYYY-MM-DD) for date picker."""
+    if value is None:
+        return ""
+    try:
+        ts = pd.to_datetime(value)
+    except Exception:  # pragma: no cover - defensive
+        logger.debug("Unable to parse timestamp value %s", value)
+        return ""
+    if pd.isna(ts):
+        return ""
+    return to_pdt(ts.to_pydatetime()).strftime("%Y-%m-%d")
+
+
+def _format_timestamp_for_time_picker(value: Any) -> str:
+    """Format timestamp as time string (HH:MM) for time input."""
+    if value is None:
+        return ""
+    try:
+        ts = pd.to_datetime(value)
+    except Exception:  # pragma: no cover - defensive
+        logger.debug("Unable to parse timestamp value %s", value)
+        return ""
+    if pd.isna(ts):
+        return ""
+    return to_pdt(ts.to_pydatetime()).strftime("%H:%M")
+
+
 def build_form_defaults(row: pd.Series) -> dict[str, str]:
     """Return default form values derived from ``row``."""
 
@@ -51,7 +90,9 @@ def build_form_defaults(row: pd.Series) -> dict[str, str]:
     for field in FORM_FIELDS:
         key = field["key"]
         if key in {"StartDate", "EndDate"}:
-            defaults[key] = _format_timestamp_for_form(row.get(key))
+            # Store as dict with date and time separately for date picker
+            defaults[f"{key}_date"] = _format_timestamp_for_date_picker(row.get(key))
+            defaults[f"{key}_time"] = _format_timestamp_for_time_picker(row.get(key))
         else:
             defaults[key] = _clean_string(row.get(key))
     return defaults
@@ -69,7 +110,14 @@ def build_event_modal_children(
 
     defaults = build_form_defaults(row)
     if form_values:
-        defaults.update({k: _clean_string(v) for k, v in form_values.items()})
+        for key, value in form_values.items():
+            if key not in {
+                "StartDate_date",
+                "StartDate_time",
+                "EndDate_date",
+                "EndDate_time",
+            }:
+                defaults[key] = _clean_string(value)
 
     form_children: list[Any] = [
         html.Div(
@@ -78,40 +126,109 @@ def build_event_modal_children(
         ),
         html.Div(
             [
-                html.Div(
-                    [
-                        html.Label(
-                            field["label"],
-                            className="event-edit-label",
-                            htmlFor=f"event-edit-{field['key'].lower()}",
-                        ),
-                        html.Span(":", className="event-edit-separator"),
-                        (
-                            dcc.Textarea(
-                                id=f"event-edit-{field['key'].lower()}",
-                                value=defaults.get(field["key"], ""),
-                                className="event-edit-input",
-                                rows=4,
+                (
+                    # Offer Type dropdown field
+                    html.Div(
+                        [
+                            html.Label(
+                                "Offer Type",
+                                className="event-edit-label",
+                                htmlFor="event-edit-offertype",
+                            ),
+                            html.Span(":", className="event-edit-separator"),
+                            dcc.Dropdown(
+                                id="event-edit-offertype",
+                                options=[  # type: ignore[arg-type]
+                                    {"label": opt, "value": opt}
+                                    for opt in OFFER_TYPE_OPTIONS
+                                ],
+                                value=defaults.get("OfferType", ""),
+                                className="event-edit-input event-edit-dropdown",
+                                clearable=False,
+                            ),
+                        ],
+                        className="event-edit-field",
+                    )
+                    if field["key"] == "OfferType"
+                    else (
+                        # Date picker with time field
+                        html.Div(
+                            [
+                                html.Label(
+                                    field["label"],
+                                    className="event-edit-label",
+                                    htmlFor=f"event-edit-{field['key'].lower()}-date",
+                                ),
+                                html.Span(":", className="event-edit-separator"),
+                                html.Div(
+                                    [
+                                        dcc.DatePickerSingle(
+                                            id=f"event-edit-{field['key'].lower()}-date",
+                                            date=defaults.get(
+                                                f"{field['key']}_date", ""
+                                            ),
+                                            className="event-edit-date-picker",
+                                            display_format="YYYY-MM-DD",
+                                        ),
+                                        dcc.Input(
+                                            id=f"event-edit-{field['key'].lower()}-time",
+                                            type=cast(Any, "time"),
+                                            value=defaults.get(
+                                                f"{field['key']}_time", ""
+                                            ),
+                                            className="event-edit-time-input",
+                                        ),
+                                    ],
+                                    className="event-edit-datetime-wrapper",
+                                ),
+                            ],
+                            className="event-edit-field event-edit-datetime-field",
+                        )
+                        if field["component"] == "date_picker"
+                        else (
+                            # Textarea field
+                            html.Div(
+                                [
+                                    html.Label(
+                                        field["label"],
+                                        className="event-edit-label",
+                                        htmlFor=f"event-edit-{field['key'].lower()}",
+                                    ),
+                                    html.Span(":", className="event-edit-separator"),
+                                    dcc.Textarea(
+                                        id=f"event-edit-{field['key'].lower()}",
+                                        value=defaults.get(field["key"], ""),
+                                        className="event-edit-input",
+                                        rows=4,
+                                    ),
+                                ],
+                                className="event-edit-field",
                             )
                             if field["component"] == "textarea"
                             else (
-                                dcc.Input(
-                                    id=f"event-edit-{field['key'].lower()}",
-                                    value=defaults.get(field["key"], ""),
-                                    type=cast(
-                                        Any,
-                                        (
-                                            "datetime-local"
-                                            if field["component"] == "datetime"
-                                            else "text"
+                                # Regular input field
+                                html.Div(
+                                    [
+                                        html.Label(
+                                            field["label"],
+                                            className="event-edit-label",
+                                            htmlFor=f"event-edit-{field['key'].lower()}",
                                         ),
-                                    ),
-                                    className="event-edit-input",
+                                        html.Span(
+                                            ":", className="event-edit-separator"
+                                        ),
+                                        dcc.Input(
+                                            id=f"event-edit-{field['key'].lower()}",
+                                            value=defaults.get(field["key"], ""),
+                                            type="text",
+                                            className="event-edit-input",
+                                        ),
+                                    ],
+                                    className="event-edit-field",
                                 )
                             )
-                        ),
-                    ],
-                    className="event-edit-field",
+                        )
+                    )
                 )
                 for field in FORM_FIELDS
             ],

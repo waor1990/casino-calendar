@@ -536,6 +536,148 @@
     opacity: 0.7;
 }
 
+// Dropdown styling for Offer Type field
+.event-edit-dropdown {
+    padding: 0 !important;
+
+    // Target the Select component inside dcc.Dropdown
+    .select-control {
+        background-color: var(--color-background);
+        border: var(--border-thin) solid var(--color-border-grid-light);
+        border-radius: var(--border-radius-sm);
+        padding: var(--padding-xs) var(--padding-small);
+
+        [data-theme="dark"] & {
+            background-color: rgb(33 33 33 / 70%);
+            border-color: var(--color-border-primary);
+        }
+    }
+
+    .select-input {
+        color: var(--bg);
+
+        [data-theme="dark"] & {
+            color: var(--bg-dark, var(--bg));
+        }
+    }
+
+    .select-value {
+        color: var(--bg);
+
+        [data-theme="dark"] & {
+            color: var(--bg-dark, var(--bg));
+        }
+    }
+
+    .select-menu-outer {
+        background-color: var(--color-background);
+        border: var(--border-thin) solid var(--color-border-grid-light);
+
+        [data-theme="dark"] & {
+            background-color: rgb(33 33 33 / 85%);
+            border-color: var(--color-border-primary);
+        }
+    }
+
+    .select-option {
+        color: var(--bg);
+
+        &.is-focused {
+            background-color: rgb(0 0 0 / 10%);
+
+            [data-theme="dark"] & {
+                background-color: rgb(255 255 255 / 10%);
+            }
+        }
+
+        &.is-selected {
+            background-color: rgb(0 0 0 / 20%);
+
+            [data-theme="dark"] & {
+                background-color: rgb(255 255 255 / 20%);
+            }
+        }
+
+        [data-theme="dark"] & {
+            color: var(--bg-dark, var(--bg));
+        }
+    }
+}
+
+// Date/time picker styling
+.event-edit-datetime-field {
+    grid-template-columns: auto auto minmax(0, 1fr);
+}
+
+.event-edit-datetime-wrapper {
+    display: flex;
+    gap: var(--padding-small);
+    align-items: center;
+    width: 100%;
+}
+
+.event-edit-date-picker {
+    flex: 1;
+    min-width: 0;
+
+    // Target the DatePickerSingle input
+    input {
+        width: 100% !important;
+        box-sizing: border-box;
+        padding: var(--padding-xs) var(--padding-small) !important;
+        border: var(--border-thin) solid var(--color-border-grid-light) !important;
+        border-radius: var(--border-radius-sm) !important;
+        font-size: var(--font-small) !important;
+        background-color: var(--color-background) !important;
+        color: var(--bg) !important;
+        caret-color: var(--bg) !important;
+
+        [data-theme="dark"] & {
+            border-color: var(--color-border-primary) !important;
+            background-color: rgb(33 33 33 / 70%) !important;
+            color: var(--bg-dark, var(--bg)) !important;
+            caret-color: var(--bg-dark, var(--bg)) !important;
+        }
+
+        &::placeholder {
+            color: var(--bg);
+            opacity: 0.7;
+
+            [data-theme="dark"] & {
+                color: var(--bg-dark, var(--bg));
+            }
+        }
+    }
+}
+
+.event-edit-time-input {
+    width: 7rem;
+    box-sizing: border-box;
+    padding: var(--padding-xs) var(--padding-small);
+    border: var(--border-thin) solid var(--color-border-grid-light);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-small);
+    background-color: var(--color-background);
+    color: var(--bg);
+    caret-color: var(--bg);
+
+    [data-theme="dark"] & {
+        border-color: var(--color-border-primary);
+        background-color: rgb(33 33 33 / 70%);
+        color: var(--bg-dark, var(--bg));
+        caret-color: var(--bg-dark, var(--bg));
+    }
+
+    &::placeholder {
+        color: var(--bg);
+        opacity: 0.7;
+
+        [data-theme="dark"] & {
+            color: var(--bg-dark, var(--bg));
+        }
+    }
+}
+
 @include mixins.desktop {
     #event-modal-content {
         max-width: 40rem;
