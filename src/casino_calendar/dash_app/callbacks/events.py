@@ -358,8 +358,12 @@ def register_callbacks(app, df, repository=None) -> None:
                 form_defaults = build_form_defaults(row)
                 _, form_component = build_event_modal_children(row, form_defaults)
 
-                # Store the EventID in context for the save callback
-                event_context = {"EventID": str(row.get("EventID", ""))}
+                # Store complete event data in context for the save callback
+                event_context = {
+                    "EventID": str(row.get("EventID", "")),
+                    "Casino": str(row.get("Casino", "")),
+                    "Location": str(row.get("Location", "")),
+                }
 
                 return (
                     style,
@@ -607,7 +611,11 @@ def register_callbacks(app, df, repository=None) -> None:
                         "--bg-dark": casino_colors["bg_dark"],
                         "--fg-dark": casino_colors["text_dark"],
                     }
-                    event_context = {"EventID": str(data.get("EventID", ""))}
+                    event_context = {
+                        "EventID": str(data.get("EventID", "")),
+                        "Casino": str(data.get("Casino", "")),
+                        "Location": str(data.get("Location", "")),
+                    }
                     return (
                         style,
                         "modal show from-day",
@@ -694,13 +702,15 @@ def register_callbacks(app, df, repository=None) -> None:
 
             event_id = event_context.get("EventID")
 
-            # Build the update payload
+            # Build the update payload with all required fields
             update_payload = {
                 "EventName": name or "",
                 "OfferType": offer_type or "",
                 "Offer": offer or "",
                 "StartDate": start_value or "",
                 "EndDate": end_value or "",
+                "Casino": event_context.get("Casino", ""),
+                "Location": event_context.get("Location", ""),
             }
 
             # Send update to API
