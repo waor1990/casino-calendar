@@ -87,7 +87,7 @@ flake8
 python app.py
 ```
 
-When using `python-dotenv`, environment variables are loaded from `.env` in the project root. See [Environment configuration](#environment-configuration) for details.
+When using `python-dotenv`, environment variables are loaded from `.env` in the project root. See [Environment configuration](#-environment-configuration) for details.
 
 ---
 
