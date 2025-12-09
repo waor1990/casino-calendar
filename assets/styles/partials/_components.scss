@@ -405,6 +405,10 @@ h1,
         color: var(--color-accent);
     }
 
+    .event-label span {
+        color: var(--bg-dark);
+    }
+
     .day-label,
     .legend-title,
     #overflow-box,
