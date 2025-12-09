@@ -623,6 +623,50 @@
     }
 }
 
+/* Ensure inner react-select elements inherit the parent input styling.
+   Different react-select versions use different class names, so target
+   the common variants and any input elements to force transparent
+   background and inherited text color. */
+.event-edit-dropdown .Select__control,
+.event-edit-dropdown .select-control,
+.event-edit-dropdown .react-select__control,
+.event-edit-dropdown .css-1hwfws3,
+.event-edit-dropdown [class*="react-select"],
+.event-edit-dropdown .Select,
+.event-edit-dropdown .Select-control {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.event-edit-dropdown .Select__value,
+.event-edit-dropdown .select-value,
+.event-edit-dropdown .react-select__single-value,
+.event-edit-dropdown .css-1uccc91-singleValue,
+.event-edit-dropdown .Select-value {
+    color: inherit !important;
+}
+
+.event-edit-dropdown input,
+.event-edit-dropdown textarea {
+    background: transparent !important;
+    color: inherit !important;
+}
+
+/* Tighter spacing between date picker and time input */
+.event-edit-form .event-edit-datetime-wrapper {
+    gap: 0.25rem !important;
+}
+
+.event-edit-date-picker {
+    margin-right: 0.25rem !important;
+}
+
+.event-edit-time-input {
+    margin-left: 0 !important;
+}
+
 // Date/time picker styling
 .event-edit-datetime-field {
     grid-template-columns: auto auto minmax(0, 1fr);
