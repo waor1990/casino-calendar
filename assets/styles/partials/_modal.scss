@@ -538,7 +538,26 @@
 
 // Dropdown styling for Offer Type field
 .event-edit-dropdown {
-    padding: 0 !important;
+    /* Make the dropdown container visually match other text inputs */
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: var(--padding-xs) var(--padding-small) !important;
+    border: var(--border-thin) solid var(--color-border-grid-light);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-small);
+    background-color: var(--color-background) !important;
+    color: var(--bg) !important;
+    caret-color: var(--bg) !important;
+
+    [data-theme="dark"] & {
+        border-color: var(--color-border-primary);
+        background-color: rgb(33 33 33 / 70%) !important;
+        color: var(--bg-dark, var(--bg)) !important;
+        caret-color: var(--bg-dark, var(--bg)) !important;
+    }
+
+    /* Remove extra internal padding from react-select wrapper */
 
     // Target the Select component inside dcc.Dropdown
     .select-control {
@@ -611,7 +630,7 @@
 
 .event-edit-datetime-wrapper {
     display: flex;
-    gap: var(--padding-small);
+    gap: var(--padding-xs);
     align-items: center;
     width: 100%;
 }
