@@ -627,6 +627,7 @@
    Different react-select versions use different class names, so target
    the common variants and any input elements to force transparent
    background and inherited text color. */
+/* stylelint-disable selector-class-pattern, no-descending-specificity */
 .event-edit-dropdown .Select__control,
 .event-edit-dropdown .select-control,
 .event-edit-dropdown .react-select__control,
@@ -647,24 +648,12 @@
 .event-edit-dropdown .Select-value {
     color: inherit !important;
 }
+/* stylelint-enable selector-class-pattern, no-descending-specificity */
 
 .event-edit-dropdown input,
 .event-edit-dropdown textarea {
     background: transparent !important;
     color: inherit !important;
-}
-
-/* Tighter spacing between date picker and time input */
-.event-edit-form .event-edit-datetime-wrapper {
-    gap: 0.25rem !important;
-}
-
-.event-edit-date-picker {
-    margin-right: 0.25rem !important;
-}
-
-.event-edit-time-input {
-    margin-left: 0 !important;
 }
 
 // Date/time picker styling
@@ -682,6 +671,7 @@
 .event-edit-date-picker {
     flex: 1;
     min-width: 0;
+    margin-right: 0.25rem !important;
 
     // Target the DatePickerSingle input
     input {
@@ -723,6 +713,7 @@
     background-color: var(--color-background);
     color: var(--bg);
     caret-color: var(--bg);
+    margin-left: 0 !important;
 
     [data-theme="dark"] & {
         border-color: var(--color-border-primary);
@@ -739,6 +730,11 @@
             color: var(--bg-dark, var(--bg));
         }
     }
+}
+
+/* Tighter spacing between date picker and time input */
+.event-edit-form .event-edit-datetime-wrapper {
+    gap: 0.25rem !important;
 }
 
 @include mixins.desktop {

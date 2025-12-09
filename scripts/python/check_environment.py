@@ -17,7 +17,7 @@ for candidate in (SRC_DIR, PROJECT_ROOT):
         sys.path.insert(0, str(candidate))
 
 try:
-    from casino_calendar.logging import config as logging_config  # noqa: E402, type: ignore[import-not-found]
+    from casino_calendar.logging import config as logging_config  # type: ignore[import-not-found]  # noqa: E402
 except Exception as exc:  # pragma: no cover - fallback path
     logging.basicConfig(
         level=logging.INFO,
