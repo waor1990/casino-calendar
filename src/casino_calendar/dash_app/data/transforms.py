@@ -49,13 +49,17 @@ def categorize_offer_type(event_name: str | None, offer: str | None) -> str:
     special_event_keywords = keywords["special_event_keywords"]
     vehicle_car_giveaway_keywords = keywords["vehicle_car_giveaway_keywords"]
 
+    free_play_pattern = _build_keyword_pattern(free_play_cash_drawing_keywords)
+    free_play_prize_pattern = re.compile(
+        rf"(?:chance to win|enter to win|win\s+(?:up to\s+)?)"
+        rf"[^\n]{{0,80}}?(?:{free_play_pattern})"
+    )
+
     patterns = {
         "vehicle": re.compile(_build_keyword_pattern(vehicle_car_giveaway_keywords)),
         "drawing": re.compile(_build_keyword_pattern(drawing_keywords)),
         "giveaway": re.compile(_build_keyword_pattern(giveaway_keywords)),
-        "free_play": re.compile(
-            _build_keyword_pattern(free_play_cash_drawing_keywords)
-        ),
+        "free_play": re.compile(free_play_pattern),
         "multiplier": re.compile(_build_keyword_pattern(multiplier_points_keywords)),
         "hospitality": re.compile(
             _build_keyword_pattern(hotel_travel_dining_shopping_keywords)
@@ -63,10 +67,19 @@ def categorize_offer_type(event_name: str | None, offer: str | None) -> str:
         "special": re.compile(_build_keyword_pattern(special_event_keywords)),
     }
 
+    has_free_play_prize = bool(
+        free_play_prize_pattern.search(event_name)
+        or free_play_prize_pattern.search(offer)
+    )
+
     # Check for categories in a specific order of precedence
     if patterns["vehicle"].search(event_name) or patterns["vehicle"].search(offer):
         return "Giveaway"
-    if patterns["drawing"].search(event_name) or patterns["drawing"].search(offer):
+    if (
+        has_free_play_prize
+        or patterns["drawing"].search(event_name)
+        or patterns["drawing"].search(offer)
+    ):
         return "Drawings"
     if patterns["giveaway"].search(event_name) or patterns["giveaway"].search(offer):
         return "Giveaway"
@@ -108,6 +121,14 @@ def categorize_offer_types(df: pd.DataFrame) -> pd.Series:
             pattern, regex=True
         )
 
+    free_play_pattern = _build_keyword_pattern(
+        keywords["free_play_cash_drawing_keywords"]
+    )
+    free_play_prize_pattern = re.compile(
+        rf"(?:chance to win|enter to win|win\s+(?:up to\s+)?)"
+        rf"[^\n]{{0,80}}?(?:{free_play_pattern})"
+    )
+
     masks = {
         "vehicle": match(keywords["vehicle_car_giveaway_keywords"]),
         "drawing": match(keywords["drawing_keywords"]),
@@ -116,11 +137,14 @@ def categorize_offer_types(df: pd.DataFrame) -> pd.Series:
         "multiplier": match(keywords["multiplier_points_keywords"]),
         "hospitality": match(keywords["hotel_travel_dining_shopping_keywords"]),
         "special": match(keywords["special_event_keywords"]),
+        "free_play_prize": event_name.str.contains(free_play_prize_pattern, regex=True)
+        | offer.str.contains(free_play_prize_pattern, regex=True),
     }
 
     category[masks["vehicle"]] = "Giveaway"
-    category[masks["drawing"] & ~masks["vehicle"]] = "Drawings"
-    used = masks["vehicle"] | masks["drawing"]
+    drawing_mask = masks["drawing"] | masks["free_play_prize"]
+    category[drawing_mask & ~masks["vehicle"]] = "Drawings"
+    used = masks["vehicle"] | drawing_mask
     category[masks["giveaway"] & ~used] = "Giveaway"
     used |= masks["giveaway"]
     category[masks["free_play"] & ~used] = "Free-Play"
