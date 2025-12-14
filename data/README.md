@@ -17,3 +17,4 @@ Authoritative CSV and lookup data that drive the Casino Calendar UI.
 - Keep CSV headers stable; new columns should be handled in `src/casino_calendar/dash_app/data/transforms.py`.
 - Dates must be parseable by pandas (`StartDate`, `EndDate`); invalid rows are logged.
 - Preserve JSON indentation and ordering where possible to keep diffs small.
+- Win-based free-play phrasing (e.g., "win up to $500 in free play") is classified as a drawing to separate prize chances from guaranteed free-play awards.
