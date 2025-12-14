@@ -7,6 +7,7 @@ from typing import Any
 import pandas as pd
 from dash import dcc, html
 
+from casino_calendar.dash_app.services.layout_state import offer_type_emoji
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color
 
@@ -23,15 +24,15 @@ def build_header(events: pd.DataFrame) -> html.Div:
     offer_series = events["OfferType"].dropna().astype(str)
     offer_counts = offer_series.value_counts()
     offer_types = sorted(offer_counts.index.tolist())
-    dropdown_options = [
-        {
-            "label": f"{offer_type} ({offer_counts.get(offer_type, 0)})",
-            "value": offer_type,
-        }
-        for offer_type in offer_types
-    ]
+    dropdown_options: list[dcc.Dropdown.Options] = []
+    dropdown_labels: list[str] = []
+    for offer_type in offer_types:
+        emoji = offer_type_emoji(offer_type)
+        label = f"{emoji} {offer_type} ({offer_counts.get(offer_type, 0)})"
+        dropdown_labels.append(label)
+        dropdown_options.append({"label": label, "value": offer_type})
     longest_label = max(
-        (len(option["label"]) for option in dropdown_options),
+        (len(option_label) for option_label in dropdown_labels),
         default=len("Filter by event type"),
     )
     dropdown_min_width = longest_label + 2
