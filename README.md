@@ -187,7 +187,7 @@ Create a `.env` file alongside `app.py` to override these values when developing
 3. Ensure linters and tests pass before opening a PR (`scripts/shell/test.sh`).
 4. Review the documentation under [`docs/`](docs/)—especially the architecture and operations guides—before large changes.
 
-Commit messages follow Conventional Commits with a required scope and imperative lowercase subjects. Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `merge`, `revert`. Allowed scopes: `app`, `dash`, `components`, `layout`, `styles`, `theme`, `data`, `services`, `logging`, `config`, `assets`, `scripts`, `deps`, `branch`, `tests`, `docs`, `ci`, `infra`. Run `npm run commit` (Commitizen) to get a guided prompt that enforces these lists from `.cz-config.js`.
+Commit messages follow Conventional Commits with a required scope and imperative lowercase subjects. Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `merge`, `revert`. Allowed scopes: `app`, `dash`, `components`, `layout`, `styles`, `theme`, `data`, `services`, `logging`, `config`, `assets`, `scripts`, `deps`, `branch`, `tests`, `docs`, `ci`, `infra`. Run `npm run commit` (Commitizen) for a guided prompt with short type/scope descriptions enforced by `.cz-config.js`.
 
 Issues and feature ideas are tracked in [`docs/guides/TODO.md`](docs/guides/TODO.md). Pull requests should include updates to documentation and tests where appropriate.
 
