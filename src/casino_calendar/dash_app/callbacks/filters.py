@@ -237,13 +237,13 @@ def register_callbacks(app, df) -> None:
 
             all_offer_types = sorted(map(str, df["OfferType"].dropna().unique()))
 
-            options = [
-                {
-                    "label": f"{offer_type} ({int(counts.get(offer_type, 0))})",
-                    "value": offer_type,
-                }
-                for offer_type in all_offer_types
-            ]
+            options = []
+            for offer_type in all_offer_types:
+                emoji = layout_state.offer_type_emoji(offer_type)
+                count = int(counts.get(offer_type, 0))
+                options.append(
+                    {"label": f"{emoji} {offer_type} ({count})", "value": offer_type}
+                )
 
             logger.debug(
                 "Event type options refreshed for casinos=%s week_offset=%s",
