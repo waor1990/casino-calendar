@@ -40,6 +40,7 @@ def categorize_offer_type(event_name: str | None, offer: str | None) -> str:
         return "Offer"
 
     giveaway_keywords = keywords["giveaway_keywords"]
+    drawing_keywords = keywords["drawing_keywords"]
     free_play_cash_drawing_keywords = keywords["free_play_cash_drawing_keywords"]
     multiplier_points_keywords = keywords["multiplier_points_keywords"]
     hotel_travel_dining_shopping_keywords = keywords[
@@ -50,6 +51,7 @@ def categorize_offer_type(event_name: str | None, offer: str | None) -> str:
 
     patterns = {
         "vehicle": re.compile(_build_keyword_pattern(vehicle_car_giveaway_keywords)),
+        "drawing": re.compile(_build_keyword_pattern(drawing_keywords)),
         "giveaway": re.compile(_build_keyword_pattern(giveaway_keywords)),
         "free_play": re.compile(
             _build_keyword_pattern(free_play_cash_drawing_keywords)
@@ -64,6 +66,8 @@ def categorize_offer_type(event_name: str | None, offer: str | None) -> str:
     # Check for categories in a specific order of precedence
     if patterns["vehicle"].search(event_name) or patterns["vehicle"].search(offer):
         return "Giveaway"
+    if patterns["drawing"].search(event_name) or patterns["drawing"].search(offer):
+        return "Drawings"
     if patterns["giveaway"].search(event_name) or patterns["giveaway"].search(offer):
         return "Giveaway"
     if patterns["free_play"].search(event_name) or patterns["free_play"].search(offer):
@@ -106,6 +110,7 @@ def categorize_offer_types(df: pd.DataFrame) -> pd.Series:
 
     masks = {
         "vehicle": match(keywords["vehicle_car_giveaway_keywords"]),
+        "drawing": match(keywords["drawing_keywords"]),
         "giveaway": match(keywords["giveaway_keywords"]),
         "free_play": match(keywords["free_play_cash_drawing_keywords"]),
         "multiplier": match(keywords["multiplier_points_keywords"]),
@@ -114,8 +119,10 @@ def categorize_offer_types(df: pd.DataFrame) -> pd.Series:
     }
 
     category[masks["vehicle"]] = "Giveaway"
-    category[masks["giveaway"] & ~masks["vehicle"]] = "Giveaway"
-    used = masks["vehicle"] | masks["giveaway"]
+    category[masks["drawing"] & ~masks["vehicle"]] = "Drawings"
+    used = masks["vehicle"] | masks["drawing"]
+    category[masks["giveaway"] & ~used] = "Giveaway"
+    used |= masks["giveaway"]
     category[masks["free_play"] & ~used] = "Free-Play"
     used |= masks["free_play"]
     category[masks["multiplier"] & ~used] = "Point-Based"
