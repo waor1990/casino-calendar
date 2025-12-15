@@ -85,11 +85,12 @@ body {
     box-sizing: border-box;
     font-size: var(--font-header);
     font-weight: var(--font-weight-bold);
-    padding: var(--padding-base) var(--padding-small);
+    padding: var(--padding-base);
     margin: 0 auto var(--gap-legend);
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     width: fit-content;
     max-width: 100%;
 }
@@ -124,7 +125,7 @@ body {
     align-items: flex-start;
     text-align: left;
     gap: var(--gap-legend);
-    padding: 0 var(--padding-small) var(--padding-small);
+    padding: 0 var(--padding-small) var(--padding-base);
 }
 
 .sticky-header {
