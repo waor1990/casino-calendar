@@ -10,7 +10,7 @@ from casino_calendar.dash_app.callbacks import register_callbacks
 from casino_calendar.dash_app.layout.week_grid import _build_block
 from casino_calendar.dash_app.services.layout_state import to_naive_utc
 from casino_calendar.services.data_parsing import prepare_week_events
-from dash import Dash
+from dash import Dash, html
 
 freeze_time = pytest.importorskip("freezegun").freeze_time
 
@@ -75,4 +75,9 @@ def test_week_label_matches_grid():
     register_callbacks(app, pd.DataFrame())
     func = app.callback_map["week-label.children"]["callback"].__wrapped__
     label = func(0)
-    assert label == "Events for the Week of April 13 - April 19, 2025"
+    assert isinstance(label, html.Div)
+    children = list(label.children)
+    assert children[0] == "Events for the Week of"
+    assert isinstance(children[1], html.Br)
+    assert children[2] == "April 13 - April 19"
+    assert label.style == {"textAlign": "center"}

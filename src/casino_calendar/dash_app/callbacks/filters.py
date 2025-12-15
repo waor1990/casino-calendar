@@ -88,12 +88,15 @@ def register_callbacks(app, df) -> None:
             week_start_pdt = current_sunday + timedelta(weeks=week_offset)
             week_end_pdt = week_start_pdt + timedelta(days=6)
 
-            label = (
-                f"Events for the Week of {week_start_pdt.strftime('%B %d')} - "
-                f"{week_end_pdt.strftime('%B %d, %Y')}"
+            label_header = "Events for the Week of"
+            label_range = (
+                f"{week_start_pdt.strftime('%B %d')} - {week_end_pdt.strftime('%B %d')}"
             )
-            logger.debug("Week label generated: %s", label)
-            return label
+            logger.debug("Week label generated: %s | %s", label_header, label_range)
+            return html.Div(
+                [label_header, html.Br(), label_range],
+                style={"textAlign": "center"},
+            )
 
         except Exception as e:
             logger.error("Failed to generate week label: %s", e, exc_info=True)

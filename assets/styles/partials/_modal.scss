@@ -38,9 +38,9 @@
     position: fixed;
     inset: 0;
     background-color: var(--modal-overlay-color);
-    backdrop-filter: blur(var(--modal-overlay-blur));
     /* stylelint-disable-next-line property-no-vendor-prefix */
     -webkit-backdrop-filter: blur(var(--modal-overlay-blur));
+    backdrop-filter: blur(var(--modal-overlay-blur));
     z-index: -1;
     pointer-events: none;
 }
@@ -213,6 +213,19 @@
 }
 
 @include mixins.mobile {
+    #casino-index-modal-content {
+        width: 100%;
+        max-width: 100vw;
+    }
+
+    #casino-index-modal .casino-index-field {
+        grid-template-columns: minmax(5rem, 35%) 1fr;
+    }
+
+    #casino-index-modal .casino-index-fields a {
+        word-break: break-all;
+    }
+
     .event-block-day-text {
         font-size: var(--font-small);
         /* Keep consistent with base size */
@@ -237,7 +250,6 @@
     border: var(--border-thin) solid var(--color-border-grid);
     border-radius: var(--border-radius-md);
     padding: var(--padding-small);
-    box-shadow: var(--box-shadow-subtle);
     background-color: var(--color-surface, #fff);
 
     [data-theme="dark"] & {
@@ -248,7 +260,7 @@
 
 .casino-index-name {
     font-weight: var(--font-weight-bold);
-    font-size: var(--font-subtitle);
+    font-size: clamp(var(--font-subtitle), 2vw, var(--font-header));
     margin-bottom: var(--padding-xxs);
 }
 
@@ -257,10 +269,20 @@
     flex-direction: column;
     gap: var(--padding-xxs);
     color: var(--color-accent);
+    word-break: normal;
+    overflow-wrap: anywhere;
 
     a {
         color: inherit;
         text-decoration: underline;
+        display: inline-block;
+        padding: var(--padding-xxs) 0;
+        touch-action: manipulation;
+        pointer-events: auto;
+        line-height: 1.4;
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: normal;
 
         &:hover {
             text-decoration: underline;
@@ -296,7 +318,7 @@
 }
 
 #casino-index-modal .modal-title {
-    font-size: var(--font-header);
+    font-size: clamp(var(--font-header), 4vw, var(--font-title));
 }
 
 
@@ -374,6 +396,30 @@
 @include mixins.mobile {
     #event-modal-content {
         width: var(--modal-width-mobile) !important;
+        max-height: 80vh;
+        height: auto;
+    }
+
+    #casino-index-modal .casino-index-field {
+        grid-template-columns: 1fr;
+        align-items: start;
+        row-gap: var(--padding-xxs);
+    }
+
+    #casino-index-modal .casino-index-label {
+        margin-bottom: var(--padding-xxs);
+    }
+
+    #casino-index-modal .casino-index-fields a {
+        display: block;
+        margin-bottom: var(--padding-xxs);
+        overflow-wrap: break-word;
+        word-break: normal;
+        line-height: 1.4;
+    }
+
+    #event-modal-body {
+        padding-bottom: var(--padding-base);
     }
 
     #day-modal-content {

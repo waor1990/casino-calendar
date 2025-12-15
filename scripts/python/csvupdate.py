@@ -12,19 +12,11 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SRC_DIR = PROJECT_ROOT / "src"
-for candidate in (SRC_DIR, PROJECT_ROOT):
-    if str(candidate) not in sys.path:
-        sys.path.insert(0, str(candidate))
 
-from casino_calendar.logging import config as logging_config  # noqa: E402
-from casino_calendar.services.csv_normalizer import (  # noqa: E402
-    DEFAULT_OUTPUT_PATH,
-    NormalizationResult,
-    find_candidate_csv_paths,
-    normalize_csv,
-)
 
-logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.csvupdate")
+def _ensure_project_on_path() -> None:
+    """Ensure the repository root and src/ are importable for local execution."""
+    sys.path[:0] = [str(SRC_DIR), str(PROJECT_ROOT)]
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -69,6 +61,20 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    _ensure_project_on_path()
+
+    from casino_calendar.logging import config as logging_config
+    from casino_calendar.services.csv_normalizer import (
+        DEFAULT_OUTPUT_PATH,
+        NormalizationResult,
+        find_candidate_csv_paths,
+        normalize_csv,
+    )
+
+    logger = logging_config.setup_maintenance_logger(
+        "casino_calendar.scripts.csvupdate"
+    )
+
     parser = build_parser()
     args = parser.parse_args(argv)
 
