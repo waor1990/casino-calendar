@@ -52,6 +52,7 @@
     --color-border-primary: var(--color-primary-dark);
     --color-border-accent: var(--color-accent);
     --color-border-grid: var(--color-primary-dark);
+    --color-border-grid-header: var(--color-primary-dark);
     --color-border-grid-light: var(--color-primary-dark);
 
     /* Borders and shadows */
@@ -190,6 +191,7 @@ body {
     --color-border-primary: rgb(var(--color-accent-rgb) / 70%);
     --color-border-accent: var(--color-accent);
     --color-border-grid: var(--color-primary);
+    --color-border-grid-header: var(--color-primary-dark);
     --color-border-grid-light: var(--color-primary);
 
     /* Shadows tuned to casino purples */
