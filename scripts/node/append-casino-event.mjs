@@ -4,27 +4,27 @@
 
 /**
  * Casino Event CSV Appender for iOS Scriptable
- * 
+ *
  * This script is designed to run in the iOS Scriptable app and integrates with
  * the Casino Calendar project to add new casino events to the main CSV file.
- * 
+ *
  * USAGE:
  * - Run via iOS Shortcuts app with casino event data
  * - Input: JavaScript array of 6-item arrays
  * - Format: [EventName, Casino, Location, Offer, StartDate, EndDate]
- * 
+ *
  * DATA FORMAT REQUIREMENTS:
  * - Must be actual JavaScript array, not escaped string
  * - Each event must have exactly 6 items
  * - No escaped characters (\[, \], \$, etc.)
  * - Dates in format: "M/D/YYYY H:MM"
- * 
+ *
  * FEATURES:
  * - Duplicate detection based on Casino, StartDate, EndDate
  * - Data validation with detailed error messages
  * - iCloud file sync integration
  * - Comprehensive logging
- * 
+ *
  * INTEGRATION:
  * - Writes to: iCloud/CasinoEvents/casino_events.csv
  * - Compatible with Casino Calendar Dash app data loading

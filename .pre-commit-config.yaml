@@ -1,23 +1,40 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: check-yaml
+
   - repo: https://github.com/psf/black
-    rev: 24.3.0
+    rev: 24.10.0
     hooks:
       - id: black
-        language_version: python3
+        language_version: python3.11
 
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.13.2
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
     hooks:
       - id: isort
-        args: ["--profile", "black", "--settings-path", "config/formatting/.isort.cfg"]
+        args:
+          ["--profile", "black", "--settings-path", "config/formatting/.isort.cfg"]
+        language_version: python3.11
 
   - repo: https://github.com/pycqa/flake8
-    rev: 6.1.0
+    rev: 7.1.0
     hooks:
       - id: flake8
         args: ["--config", "config/linting/.flake8"]
+        language_version: python3.11
 
-  - id: python-check
-    name: py_compile
-    entry: python -m compileall src
-    language: python
+  - repo: local
+    hooks:
+      - id: python-check
+        name: py_compile
+        entry: python -m compileall src
+        language: python
+        language_version: python3.11
+        pass_filenames: false

@@ -124,7 +124,7 @@ schtasks /delete /tn "Casino Calendar Log Cleanup" /f
 - **Retention**: 7 days
 - **Reason**: Frequent testing generates many logs, shorter retention saves space
 
-### Production Environment  
+### Production Environment
 
 - **Retention**: 30-90 days
 - **Reason**: Longer retention helps with debugging issues that might surface later
