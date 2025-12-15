@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from dash import Dash, dcc, html
-
 from casino_calendar.logging import config as logging_config
+from dash import Dash, dcc, html
 
 from .components import header as header_components
 from .components import modals as modal_components
