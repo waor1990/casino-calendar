@@ -1,13 +1,38 @@
 # Casino Calendar – Agent Notes
 
-Welcome to the Casino Calendar project. Follow these guidelines when making changes:
+Follow these project-wide conventions when working in this repository.
 
-1. **Source layout** – Python code lives under `src/casino_calendar/`. Use module imports rather than relative filesystem paths.
-2. **Documentation** – Update `README.md` and the relevant guide under `docs/` whenever behaviour or configuration changes.
-3. **Assets** – Never edit `assets/dist/style.css` directly. Modify the SCSS files under `assets/styles/` and rebuild with `npm run build:css`.
-4. **Python style** – Run `black`, `isort`, and `flake8` before committing. Type hints should use Python 3.11 syntax (PEP 604 unions, etc.). Avoid adding `try/except` around imports.
-5. **Testing** – Execute `scripts/shell/test.sh` (or at minimum `pytest`) before submitting a PR. Dash integration tests require Chrome/Chromedriver.
-6. **Logging** – Use `casino_calendar.logging.config.setup_logger(__name__)` for new modules so logging configuration remains consistent.
-7. **Secrets** – Do not commit `.env` files or production credentials. Environment-specific overrides belong in deployment configuration, not the repository.
+## Repository layout
+- Python application code lives under `src/casino_calendar/`. Prefer package imports over ad-hoc filesystem access.
+- Dash entry points are `app.py` and `wsgi.py`; keep configuration changes centralized rather than duplicating settings.
+- Documentation lives in `docs/` with onboarding in `README.md` and `QUICKSTART.md`.
 
-Pull requests should describe the change, reference impacted modules, and list verification steps (linting/tests). Use the documentation set in `docs/` for additional context.
+## Development practices
+- Target Python 3.11 syntax (including PEP 604 unions) and avoid wrapping imports in `try/except` blocks.
+- Initialize loggers with `casino_calendar.logging.config.setup_logger(__name__)` for new modules to keep logging consistent.
+- Keep user-facing behaviour changes accompanied by documentation updates in the relevant guide.
+- Default to `scripts/shell/test.sh` for full verification during development.
+
+## Frontend assets
+- Do not edit `assets/dist/style.css` directly. Update SCSS under `assets/styles/` and rebuild with `npm run build:css` (or `npm run watch:css` during development).
+- Use the Stylelint configs in `config/linting` via `npm run lint:css` when touching styles.
+- Node tooling is pinned to the version in `package.json`/`volta`; avoid introducing tools that conflict with it.
+
+## Testing and quality checks
+- Run `black`, `isort`, and `flake8` before committing. Prefer running `scripts/shell/test.sh` for a single entry point.
+- Execute `pytest` for Python changes and `npm run lint:css` when styles are modified.
+- Clean up build/test artifacts before committing.
+
+## Security and hygiene
+- Never commit `.env` files or other credentials. Keep environment-specific secrets in deployment configuration, not source control.
+- Avoid leaking private data in tests, fixtures, or documentation examples.
+
+## Pull requests
+- Summarize impacted modules, list verification steps (linting/tests), and mention documentation updates in your PR description.
+- Reference relevant context from `docs/` when explaining behaviour changes.
+
+## Commit formatting
+- Follow Conventional Commit syntax: `<type>(<scope>): <subject>` using lower-case subjects.
+- Use one of the allowed types from `commitlint.config.js` (`feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `merge`, `revert`).
+- Choose a non-empty scope from `commitlint.config.js` (e.g., `app`, `layout`, `styles`, `data`, `scripts`, `tests`, `docs`, `infra`).
+- Keep subjects concise (≤72 characters) and avoid trailing punctuation.
