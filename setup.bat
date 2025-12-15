@@ -18,7 +18,7 @@ echo   [1] Activate this terminal session now
 echo   [2] Open a new CMD window with (.venv) active
 echo   [S] Skip activation (default)
 set "POST_CHOICE="
-set /p POST_CHOICE=Select option [default S]: 
+set /p POST_CHOICE=Select option [default S]:
 if not defined POST_CHOICE set "POST_CHOICE=S"
 call set "POST_CHOICE=%%POST_CHOICE:~0,1%%"
 if /I "%POST_CHOICE%"=="2" goto OPEN_NEW_WINDOW
