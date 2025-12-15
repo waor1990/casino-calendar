@@ -158,11 +158,11 @@
 
 [data-theme="dark"] {
     .day-click-area:hover {
-        background-color: var(--color-accent);
+        background-color: var(--color-primary);
     }
 
     .day-click-area:hover::after {
-        background-color: var(--color-accent);
+        background-color: var(--color-primary);
         box-shadow: var(--box-shadow-light);
     }
 

@@ -10,7 +10,7 @@ h1,
     background-color: var(--color-background);
     box-shadow: 0 0 16px rgb(0 115 255 / 28%);
     border-radius: var(--border-radius-sm);
-    border: var(--border-thick) solid var(--color-border-grid);
+    border: var(--border-thick) solid var(--color-border-grid-header);
     padding: var(--padding-base);
     margin: 0 auto;
     display: inline-flex;
@@ -31,11 +31,12 @@ h1,
     align-items: center;
     width: 100%;
     box-sizing: border-box;
-    padding: var(--padding-base) 0;
+    padding: 0;
     gap: var(--padding-small);
     background-color: transparent;
     color: inherit;
     margin: 0;
+    margin-bottom: var(--padding-base);
 }
 
 .header-title-row>.header-title-spacer {
@@ -109,7 +110,7 @@ h1,
     font-size: clamp(var(--font-subtitle), 2.5vw, var(--font-header));
     font-weight: var(--font-weight-bold);
     text-align: center;
-    color: var(--color-sticky-header-text);
+    color: var(--color-accent);
     gap: var(--gap-legend);
     margin-bottom: var(--padding-small);
     width: 100%;
@@ -159,17 +160,19 @@ h1,
 
 .event-type-dropdown {
     width: 100%;
+    color: var(--color-accent);
 
     [class~="Select-control"] {
         background-color: var(--color-background);
-        border: var(--border-thin) solid #0073ff;
+        border: var(--border-thin) solid var(--color-border-grid-header);
         box-shadow: none;
         transition: border-color 0.2s ease;
+        color: var(--color-day-header-text);
     }
 
     [class~="Select-control"].is-focused,
     [class~="Select-control"]:hover {
-        border-color: #0073ff;
+        border-color: var(--color-border-grid-header);
         box-shadow: none;
     }
 
@@ -200,7 +203,7 @@ h1,
     [class~="Select-option"],
     [class~="VirtualizedSelectOption"],
     [class~="Select-input"] input {
-        color: var(--color-sticky-header-text);
+        color: var(--color-accent);
     }
 
     [class~="Select-input"] input {
@@ -396,13 +399,12 @@ h1,
 [data-theme="dark"] {
 
     .calendar-title,
-    .week-label,
     .overflow-title,
     .event-label-title,
     .day-modal-title,
     .event-label strong,
     .no-events {
-        color: var(--color-accent);
+        color: var(--color-primary);
     }
 
     .event-label span {
@@ -415,11 +417,19 @@ h1,
     .day-label-grid,
     .overflow-toggle,
     .hour-label {
-        color: var(--color-sticky-header-text);
+        color: var(--color-primary-dark);
+    }
+
+    .week-label {
+        color: var(--color-primary-dark);
+    }
+
+    .legend-title {
+        color: var(--color-primary);
     }
 
     .day-label.day-modal-title {
-        color: var(--color-accent);
+        color: var(--color-primary);
     }
 
     .calendar-title {
@@ -427,8 +437,8 @@ h1,
     }
 
     .legend-selected {
-        outline: var(--border-thin) solid var(--color-accent-dark);
-        background-color: var(--color-accent-light);
+        outline: var(--border-thin) solid var(--color-primary-dark);
+        background-color: var(--color-primary-light);
     }
 
     .event-type-dropdown {
@@ -436,19 +446,20 @@ h1,
         [class~="Select-menu-outer"],
         [class~="Select-menu"] {
             background-color: var(--color-background);
-            border: var(--border-thin) solid var(--color-border-grid);
+            border: var(--border-thin) solid var(--color-border-grid-header);
         }
 
         [class~="Select-control"] {
             background-color: var(--color-background);
-            border: var(--border-thin) solid #6af;
+            border: var(--border-thin) solid var(--color-border-grid);
             box-shadow: none;
             transition: border-color 0.2s ease;
+            color: var(--color-primary-dark);
         }
 
         [class~="Select-control"].is-focused,
         [class~="Select-control"]:hover {
-            border-color: #6af;
+            border-color: var(--color-border-grid);
             box-shadow: none;
         }
 
@@ -457,7 +468,7 @@ h1,
         [class~="Select-option"],
         [class~="VirtualizedSelectOption"],
         [class~="Select-input"] input {
-            color: var(--color-sticky-header-text);
+            color: var(--color-primary-dark);
             caret-color: transparent;
         }
     }
@@ -467,11 +478,11 @@ h1,
     }
 
     #hotel-booking-container a {
-        color: var(--color-accent);
-        border-color: var(--color-accent);
+        color: var(--color-primary);
+        border-color: var(--color-primary);
 
         &:hover {
-            background-color: var(--color-accent);
+            background-color: var(--color-primary);
             color: var(--color-background);
             transform: translateY(-2px);
             box-shadow: var(--box-shadow-light);

@@ -95,6 +95,7 @@ body {
 }
 
 [data-theme="dark"] .week-label {
+    color: var(--color-primary-dark);
     box-shadow: 0 0 18px 8px rgb(102 170 255 / 28%);
 }
 
@@ -123,7 +124,7 @@ body {
     align-items: flex-start;
     text-align: left;
     gap: var(--gap-legend);
-    padding: var(--padding-small);
+    padding: 0 var(--padding-small) var(--padding-small);
 }
 
 .sticky-header {
@@ -131,6 +132,7 @@ body {
     top: 0;
     z-index: 100;
     background-color: var(--color-background);
+    padding-top: var(--padding-base);
 
     @include mixins.tablet {
         position: static;
