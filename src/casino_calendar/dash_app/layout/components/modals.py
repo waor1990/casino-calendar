@@ -7,10 +7,9 @@ from typing import Any
 from urllib.parse import urlparse
 
 import plotly.graph_objs as go
-from dash import dcc, html
-
 from casino_calendar.services.casino_index import load_casino_index
 from casino_calendar.services.colors import get_color
+from dash import dcc, html
 
 _DEFAULT_CASINO_COLORS: dict[str, dict[str, str]] = {
     "Muckleshoot Casino": {"bg": "#1e1c29", "bg_dark": "#a6a1c1"},
