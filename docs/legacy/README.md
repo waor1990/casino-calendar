@@ -9,7 +9,7 @@ This directory contains files that are no longer actively used but are preserved
 Contains scripts that are no longer functional or have been replaced by the maintained helpers under `scripts/windows/` and `scripts/shell/`:
 
 - `run.bat` - Empty script file from the old scripts directory
-- `setup.bat` - Empty script file from the old scripts directory
+- `setup.bat` - Empty script file from the old scripts directory  
 - `create_issues-v1.py` - Legacy script that referenced non-existent files (`docs/refactor_plan.md`)
 
 ### `legacy_docs/`
@@ -17,12 +17,6 @@ Contains scripts that are no longer functional or have been replaced by the main
 Contains documentation about deprecated features:
 
 - `legacy_plotly.md` - Documentation about removed Plotly-based calendar rendering (replaced with CSS grid)
-
-### `_archived/`
-
-Historical utilities that used to live in the root-level `legacy/` folder. These are preserved for reference only and should not be executed:
-
-- `deprecated_scripts/import_sanity.py` - Deprecated import validator for the removed `app_components` package
 
 ### `old_batch_files/`
 

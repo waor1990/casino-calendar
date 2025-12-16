@@ -27,7 +27,7 @@ echo   [2] casino_calendar_maintenance.log
 echo   [3] casino_calendar_http.log
 echo   [4] All log files
 echo   [5] Exit
-set /p LOGCHOICE=Enter choice [1-5]:
+set /p LOGCHOICE=Enter choice [1-5]: 
 
 if "%LOGCHOICE%"=="1" (
     set "TARGET_LOG=logs\casino_calendar_prod.log"
@@ -61,7 +61,7 @@ echo   [3] Copy current log file into archive folder
 echo   [4] Show log directory info
 echo   [5] Custom days: copy-and-archive (enter days)
 echo   [6] Exit
-set /p CHOICE=Enter choice [2-6]:
+set /p CHOICE=Enter choice [2-6]: 
 
 if "%CHOICE%"=="2" goto OPT2_BYMONTH
 if "%CHOICE%"=="3" goto OPT3_COPY
@@ -103,7 +103,7 @@ echo Showing log directory information...
 goto DONE
 
 :OPT5_CUSTOM
-set /p DAYS=Enter number of days to copy to archive (e.g., 30):
+set /p DAYS=Enter number of days to copy to archive (e.g., 30): 
 if "%DAYS%"=="" goto MENU
 echo Copying lines older than %DAYS% day(s) into the archive...
 if defined MULTI_LOG (
