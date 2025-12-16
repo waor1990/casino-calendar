@@ -10,8 +10,9 @@ echo.
 REM Navigate to project root (two levels above this script)
 cd /d "%~dp0\..\.."
 
-REM Set environment variables
-set "PYTHONPATH=%CD%\src;%CD%;%PYTHONPATH%"
+REM Set environment variables (isolate from any pre-set PYTHONPATH)
+set "PYTHONPATH=%CD%\src;%CD%"
+set "PYTHONNOUSERSITE=1"
 set "PYTHONIOENCODING=utf-8"
 
 REM Check if virtual environment exists
