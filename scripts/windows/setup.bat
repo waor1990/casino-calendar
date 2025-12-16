@@ -38,7 +38,7 @@ if "%STALE_VENV%"=="1" (
   echo Detected a stale or moved virtual environment at:
   echo   %EXPECTED_VENV%
   if defined ACTUAL_VENV echo Actual VIRTUAL_ENV is: %ACTUAL_VENV%
-  set /p RECREATE_VENV=Recreate the virtual environment now? ^(Y/N^):
+  set /p RECREATE_VENV=Recreate the virtual environment now? ^(Y/N^): 
   set "ANS_RECREATE="
   call set "ANS_RECREATE=%%RECREATE_VENV:~0,1%%"
   if /I "%ANS_RECREATE%"=="Y" (
@@ -187,7 +187,7 @@ echo Note: CSS is now built automatically when running the app for convenience.
 echo.
 set "OPEN_VENV="
 set "ANS_OPEN="
-set /p OPEN_VENV=Open a new CMD window activated in the virtual environment now? ^(Y/N^):
+set /p OPEN_VENV=Open a new CMD window activated in the virtual environment now? ^(Y/N^): 
 call set "ANS_OPEN=%%OPEN_VENV:~0,1%%"
 if /I "%ANS_OPEN%"=="Y" (
     echo Launching a new CMD window with the venv activated...

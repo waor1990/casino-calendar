@@ -5,8 +5,6 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.mypy_cache/
-.pytest_cache/
 
 # Virtual environments
 .venv/
@@ -24,18 +22,12 @@ Thumbs.db
 .idea/
 
 # Logs and artifacts
-logs/
 *.log
 *.log.1
 *.log.2
 *.log.3
 *.log.4
 *.log.5
-.coverage
-.coverage.*
-coverage.xml
-htmlcov/
-.cache/
 
 # Render-specific (if any local build artifacts)
 build/

@@ -4,33 +4,33 @@
 
 /**
  * Casino Event CSV Cleanup for iOS Scriptable
- *
+ * 
  * This script removes old casino events from the CSV file to prevent it from
  * growing too large over time. It integrates with the Casino Calendar project
  * data management workflow.
- *
+ * 
  * USAGE:
  * - Run periodically in iOS Scriptable app (manually or via automation)
  * - No input required - automatically processes the existing CSV file
- *
+ * 
  * CLEANUP CRITERIA:
  * - Removes events where EndDate is older than 2 months
  * - Uses robust date parsing for M/D/YYYY H:MM format
  * - Preserves events with invalid/unparseable dates (safety first)
- *
+ * 
  * FEATURES:
  * - Casino-specific removal counting and reporting
  * - Robust CSV parsing with proper quote handling
  * - Alert dialog showing detailed removal summary
  * - iCloud file sync integration
  * - Safe date parsing with fallback handling
- *
+ * 
  * INTEGRATION:
  * - Reads/writes: iCloud/CasinoEvents/casino_events.csv
  * - Compatible with Casino Calendar Dash app data loading
  * - Works alongside AppendCasinoEventToCSV.js for complete data lifecycle
  * - Part of the overall casino event data management workflow
- *
+ * 
  * SAFETY:
  * - Preserves file structure and CSV formatting
  * - Only removes events with valid, old end dates
@@ -47,11 +47,11 @@ function parseCSVLine(line) {
   const result = [];
   let inQuotes = false;
   let field = '';
-
+  
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
     const nextChar = line[i + 1];
-
+    
     if (char === '"' && inQuotes && nextChar === '"') {
       field += '"';
       i++
@@ -64,7 +64,7 @@ function parseCSVLine(line) {
       field += char;
     }
   }
-
+  
   result.push(field.trim());
   return result;
 }
@@ -113,7 +113,7 @@ for (let i = 1; i < lines.length; i++) {
   const endDateStr = cols[endDateIndex];
   const casino = cols[casinoIndex].trim();
   const endDate = parseMDYDateTime(endDateStr);
-
+  
   if (!endDate || isNaN(endDate.getTime()) || endDate >= cutoff) {
     kept.push(lines[i]);
   } else {

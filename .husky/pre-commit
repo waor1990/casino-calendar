@@ -1,5 +1,2 @@
-# Run code quality checks via pre-commit (staged files only for speed).
-pre-commit run --hook-stage commit
-
-# Fall back to npm tests if defined in package.json.
+#!/usr/bin/env sh
 npm test --if-present

@@ -36,7 +36,7 @@
 # BEFORE
 logger.error(f"Error in show_event_modal callback: {e}")
 
-# AFTER
+# AFTER  
 logger.error(f"Error in show_event_modal callback: {e}", exc_info=True)
 ```
 

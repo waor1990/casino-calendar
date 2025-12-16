@@ -43,7 +43,7 @@ if %errorlevel% neq 0 (
 
 echo.
 echo ✓ Virtual environment activated
-echo ✓ Python version:
+echo ✓ Python version: 
 python --version
 echo ✓ Project root: %CD%
 echo ✓ Python path: %PYTHONPATH%
