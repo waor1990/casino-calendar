@@ -547,7 +547,7 @@ def setup_maintenance_logger(
 
     http_filter = _suppress_http_logs()
 
-    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler = logging.StreamHandler(sys.__stdout__)
     console_handler.setLevel(level)
     console_handler.setFormatter(logging.Formatter("%(message)s"))
     if http_filter is not None:
