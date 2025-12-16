@@ -12,6 +12,32 @@ os.environ.setdefault("CASINO_MINIMAL_TEST_LOG", "1")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = PROJECT_ROOT / "src"
+
+
+def _strip_numpy_source_paths() -> None:
+    """Remove numpy source checkouts from ``sys.path`` to avoid import errors.
+
+    Some Windows environments leak a local ``numpy`` repository into
+    ``PYTHONPATH``. When that happens, importing pandas (and numpy itself)
+    fails with the "do not import numpy from its source directory" message.
+    Removing those entries keeps tests using the installed wheel from the
+    virtual environment.
+    """
+
+    for entry in list(sys.path):
+        if not entry:
+            continue
+
+        path = Path(entry)
+        if path.name.lower() != "numpy":
+            continue
+
+        # Heuristic: a numpy repo contains its own setup/pyproject files.
+        if (path / "setup.py").exists() or (path / "pyproject.toml").exists():
+            sys.path.remove(entry)
+
+
+_strip_numpy_source_paths()
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
