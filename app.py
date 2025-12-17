@@ -12,6 +12,10 @@ if str(SRC_DIR) not in sys.path:
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from casino_calendar.bootstrap import bootstrap_environment  # noqa: E402
+
+bootstrap_environment(PROJECT_ROOT)
+
 from casino_calendar.dash_app import create_dash_app  # noqa: E402
 from casino_calendar.dash_app.app import run_app  # noqa: E402
 

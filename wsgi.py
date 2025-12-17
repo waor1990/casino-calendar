@@ -14,6 +14,10 @@ if str(SRC_DIR) not in sys.path:
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from casino_calendar.bootstrap import bootstrap_environment
+
+bootstrap_environment(PROJECT_ROOT)
+
 CreateDashAppType = Callable[[], Tuple[Any, Any]]
 
 create_dash_app = cast(
