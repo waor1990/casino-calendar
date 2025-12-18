@@ -50,7 +50,7 @@ body {
 }
 
 /* If the event modal is open, disable pointer events on the day catcher */
-#event-modal.show ~ #day-modal .day-event-catcher {
+#event-modal.show~#day-modal .day-event-catcher {
     pointer-events: none;
 }
 
@@ -61,7 +61,11 @@ body {
     box-sizing: border-box;
     background-color: var(--color-background);
     -ms-overflow-style: none;
-    scrollbar-width: none;
+
+    @supports (scrollbar-width: none) {
+        /* Firefox-only scrollbar hiding */
+        scrollbar-width: none;
+    }
 
     &::-webkit-scrollbar {
         display: none;

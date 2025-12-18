@@ -8,6 +8,7 @@ import pytest
 
 MODULE_PATH = Path(__file__).resolve().parents[3] / "src" / "casino_calendar" / "logging" / "rotation.py"
 spec = importlib.util.spec_from_file_location("rotation_under_test", MODULE_PATH)
+assert spec is not None
 rotation = importlib.util.module_from_spec(spec)
 sys.modules["rotation_under_test"] = rotation
 assert spec.loader is not None

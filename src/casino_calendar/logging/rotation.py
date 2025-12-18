@@ -7,7 +7,7 @@ import logging.handlers
 import shutil
 import time
 from collections import defaultdict
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
@@ -138,7 +138,7 @@ def get_log_directory_info(log_directory: str) -> dict:
 def archive_current_log(
     log_file: str,
     archive_suffix: Optional[str] = None,
-    archive_dir: Optional[str] = None,
+    archive_dir: str | Path | None = None,
     move: bool = True,
 ) -> str:
     """
@@ -158,16 +158,16 @@ def archive_current_log(
         raise FileNotFoundError(f"Log file {log_file} does not exist")
 
     if archive_dir is None:
-        archive_dir = log_path.parent / "archive"
+        archive_dir_path = log_path.parent / "archive"
     else:
-        archive_dir = Path(archive_dir)
-    archive_dir.mkdir(parents=True, exist_ok=True)
+        archive_dir_path = Path(archive_dir)
+    archive_dir_path.mkdir(parents=True, exist_ok=True)
 
     if archive_suffix is None:
         archive_suffix = time.strftime("%Y%m%d_%H%M%S")
 
     archive_name = f"{log_path.stem}_{archive_suffix}{log_path.suffix}"
-    archive_path = archive_dir / archive_name
+    archive_path = archive_dir_path / archive_name
 
     if move:
         log_path.replace(archive_path)
@@ -326,7 +326,10 @@ def _rebucket_existing_archives(log_path: Path, archive_dir: Path) -> None:
             continue
 
         # If the entire file only contains logs from 2025-10-12, drop it
-        distinct_dates = {(_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None) for line in lines}
+        distinct_dates: set[Optional[date]] = set()
+        for line in lines:
+            parsed = _parse_log_timestamp(line)
+            distinct_dates.add(parsed.date() if parsed else None)
         if distinct_dates == {datetime(2025, 10, 12).date()}:
             file_path.unlink()
             continue
@@ -402,9 +405,10 @@ def archive_and_trim_by_days(
         base_name = log_path.stem
         for month_key, month_lines in buckets.items():
             # Skip files that would contain only 2025-10-12 entries
-            dates = {
-                (_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None) for line in month_lines
-            }
+            dates: set[Optional[date]] = set()
+            for line in month_lines:
+                parsed = _parse_log_timestamp(line)
+                dates.add(parsed.date() if parsed else None)
             if dates == {datetime(2025, 10, 12).date()}:
                 continue
 
@@ -465,7 +469,10 @@ def archive_and_trim_by_month(log_file: str, archive_dir: Optional[str] = None) 
     base = log_path.stem
 
     for key, lines in buckets.items():
-        dates = {(_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None) for line in lines}
+        dates: set[Optional[date]] = set()
+        for line in lines:
+            parsed = _parse_log_timestamp(line)
+            dates.add(parsed.date() if parsed else None)
         if dates == {datetime(2025, 10, 12).date()}:
             continue
 
@@ -528,7 +535,10 @@ def copy_lines_by_days(
     archive_files: List[str] = []
     copied_payload: List[str] = []
     for month_key, month_lines in buckets.items():
-        dates = {(_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None) for line in month_lines}
+        dates: set[Optional[date]] = set()
+        for line in month_lines:
+            parsed = _parse_log_timestamp(line)
+            dates.add(parsed.date() if parsed else None)
         if dates == {datetime(2025, 10, 12).date()}:
             continue
 
@@ -563,7 +573,10 @@ def copy_current_log(log_file: str, archive_dir: Optional[str] = None) -> str:
 
     payload: List[str] = []
     for month_key, month_lines in buckets.items():
-        dates = {(_parse_log_timestamp(line).date() if _parse_log_timestamp(line) else None) for line in month_lines}
+        dates: set[Optional[date]] = set()
+        for line in month_lines:
+            parsed = _parse_log_timestamp(line)
+            dates.add(parsed.date() if parsed else None)
         if dates == {datetime(2025, 10, 12).date()}:
             continue
 

@@ -28,9 +28,13 @@ def test_build_weekly_figure_structure(casino, offer_type):
     fig = day_charts.build_weekly_figure(annot, 1024, week_start)
 
     assert isinstance(fig, go.Figure)
-    assert fig.layout.shapes
+    shapes = getattr(fig.layout, "shapes", None)
+    assert shapes
     assert fig.data
-    assert len(fig.layout.xaxis.ticktext) == 7
+    xaxis = getattr(fig.layout, "xaxis", None)
+    ticktext = getattr(xaxis, "ticktext", None) if xaxis else None
+    assert ticktext is not None
+    assert len(ticktext) == 7
 
 
 def test_generate_day_view_width_scales_with_tracks():
@@ -55,7 +59,7 @@ def test_generate_day_view_width_scales_with_tracks():
     )
 
     result = day_charts.generate_day_view_html(df, clicked, get_color, 1024)
-    grid_style = result[1].style
+    grid_style = getattr(result[1], "style", {}) or {}
     char_rem = 0.55
     max_len = max(len(n) for n in df["EventName"])
     expected = max(
@@ -89,7 +93,7 @@ def test_event_block_min_width_for_few_events():
     )
 
     result = day_charts.generate_day_view_html(df, clicked, get_color, 1024)
-    grid_children = result[1].children
+    grid_children = result[1].children or []
     event_divs = [c for c in grid_children if getattr(c, "className", "") and "event-block-day" in c.className]
 
     assert len(event_divs) == 2
@@ -125,7 +129,7 @@ def test_day_view_includes_overlapping_events():
     mon_result = day_charts.generate_day_view_html(df, sunday + timedelta(days=1), get_color, 1024)
 
     for result in (sun_result, mon_result):
-        grid_children = result[1].children
+        grid_children = result[1].children or []
         event_divs = [c for c in grid_children if getattr(c, "className", "") and "event-block-day" in c.className]
         assert len(event_divs) == 2
 
@@ -150,7 +154,7 @@ def test_short_events_near_midnight_do_not_overlap_or_overflow():
     )
 
     result = day_charts.generate_day_view_html(df, clicked, get_color, 1024)
-    grid_children = result[1].children
+    grid_children = result[1].children or []
     event_divs = [c for c in grid_children if getattr(c, "className", "") and "event-block-day" in c.className]
     assert len(event_divs) == 2
 

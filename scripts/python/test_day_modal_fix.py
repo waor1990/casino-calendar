@@ -56,14 +56,15 @@ try:
         header = result[0]
         grid = result[1]
 
-        header_text = header.children if hasattr(header, "children") else "OK"
-        class_name = grid.className if hasattr(grid, "className") else "day-grid"
+        header_text = getattr(header, "children", "OK")
+        class_name = getattr(grid, "className", "day-grid")
 
         logger.info("Header text: %s", header_text)
         logger.info("Grid container class: %s", class_name)
 
-        if hasattr(grid, "style") and "height" in getattr(grid, "style", {}):
-            height_str = grid.style["height"]
+        grid_style = getattr(grid, "style", {}) or {}
+        if "height" in grid_style:
+            height_str = grid_style["height"]
             logger.info("Grid height: %s", height_str)
             height_px = int(height_str.replace("px", ""))
             expected_max = 24 * 24  # 24 hours * 24px max height

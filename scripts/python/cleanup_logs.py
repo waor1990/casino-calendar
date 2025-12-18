@@ -7,6 +7,7 @@ This script can be run manually or scheduled to clean up old log files.
 import argparse
 import sys
 from pathlib import Path
+from typing import Sequence, cast
 
 # Add project root/src to Python path (script lives in scripts/python)
 project_root = Path(__file__).resolve().parents[2]
@@ -233,7 +234,7 @@ Examples:
                 days_to_keep=args.archive_split_days,
                 archive_dir=args.archive_dir,
             )
-            files = summary.get("archive_files", [])
+            files: Sequence[str] = cast(Sequence[str], summary.get("archive_files", ()))
             (logger.debug if args.quiet else logger.info)(
                 "Archived %d lines into %d file(s) and kept %d lines in %s",
                 summary["archived_lines"],
@@ -258,7 +259,7 @@ Examples:
         try:
             logger.info("Archiving earlier months for %s", log_file)
             summary = rotation.archive_and_trim_by_month(str(log_file), archive_dir=args.archive_dir)
-            files = summary.get("archive_files", [])
+            files: Sequence[str] = cast(Sequence[str], summary.get("archive_files", ()))
             (logger.debug if args.quiet else logger.info)(
                 "Archived %d lines into %d file(s) and kept %d lines in %s",
                 summary["archived_lines"],
@@ -290,7 +291,7 @@ Examples:
                 args.copy_split_days,
                 archive_dir=args.archive_dir,
             )
-            files = summary.get("archive_files", [])
+            files: Sequence[str] = cast(Sequence[str], summary.get("archive_files", ()))
             (logger.debug if args.quiet else logger.info)(
                 "Copied %d lines into %d archive file(s) from %s",
                 summary["copied_lines"],
