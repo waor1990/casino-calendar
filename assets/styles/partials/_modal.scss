@@ -350,7 +350,7 @@
 
 [data-theme="dark"] {
     .event-block-day {
-        background-color: var(--bg-dark, var(--bg));
+        background-color: var(--bg);
         border: var(--border-event) solid var(--color-primary);
         color: var(--fg-dark, var(--fg));
         box-shadow: 0 0 0 1px var(--color-accent);
@@ -365,7 +365,7 @@
     }
 
     .event-block-day:hover::after {
-        background-color: var(--bg-dark, var(--bg));
+        background-color: var(--bg);
         color: var(--fg-dark, var(--fg));
     }
 
@@ -376,6 +376,16 @@
     #casino-index-modal .casino-index-name {
         color: var(--bg-dark, var(--bg, inherit));
     }
+}
+
+[data-theme="dark"] .event-block-day[data-casino="Muckleshoot Casino"] {
+    background-color: var(--bg-dark, var(--bg));
+    color: var(--fg-dark, var(--fg));
+}
+
+[data-theme="dark"] .event-block-day[data-casino="Muckleshoot Casino"]:hover::after {
+    background-color: var(--bg-dark, var(--bg));
+    color: var(--fg-dark, var(--fg));
 }
 
 /* Modal Responsiveness */

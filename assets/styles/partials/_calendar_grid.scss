@@ -167,10 +167,15 @@
     }
 
     .event-block-grid {
-        background-color: var(--bg-dark, var(--bg));
-        color: var(--fg-dark, var(--fg));
+        background-color: var(--bg);
+        color: var(--fg);
     }
 
+}
+
+[data-theme="dark"] .event-block-grid[data-casino="Muckleshoot Casino"] {
+    background-color: var(--bg-dark, var(--bg));
+    color: var(--fg-dark, var(--fg));
 }
 
 

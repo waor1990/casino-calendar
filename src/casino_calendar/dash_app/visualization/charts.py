@@ -651,7 +651,10 @@ def generate_day_view_parts(
             title=row["EventName"],
             className=" ".join(block_classes),
             style=style_dict,
-            **{"data-tooltip": tooltip},
+            **{
+                "data-tooltip": tooltip,
+                "data-casino": casino_name,
+            },
         )
         event_blocks.append(
             html.Div(
