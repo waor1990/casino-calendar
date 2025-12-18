@@ -131,6 +131,19 @@ h1,
     white-space: nowrap;
 }
 
+.legend-labels {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--padding-xxs);
+}
+
+.legend-hint {
+    font-size: var(--font-small);
+    color: var(--color-day-header-text);
+    line-height: 1.3;
+}
+
 .legend-item {
     display: flex;
     align-items: center;
