@@ -14,7 +14,7 @@ repos:
     rev: 6.1.0
     hooks:
       - id: flake8
-        args: ["--config", "config/linting/.flake8"]
+        args: ["--config", ".flake8"]
 
   - repo: local
     hooks:

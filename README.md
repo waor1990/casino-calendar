@@ -158,7 +158,7 @@ pytest tests/integration
 # Static analysis
 black --check .
 isort --check-only .
-flake8
+flake8 --config .flake8
 npm run lint:css          # Check Sass formatting
 npm run lint:css:fix      # Auto-fix Sass formatting
 python scripts/python/check_environment.py  # Validate Python/Node versions

@@ -13,7 +13,7 @@ This document summarizes the structural and organizational improvements made to 
 **Before**: Configuration files scattered in root directory
 **After**: Centralized in `config/` directory
 
-- Moved `.flake8`, `.isort.cfg`, `mypy.ini`, `.stylelintrc.json` to `config/`
+- Centralized lint/format configs: `.flake8` now lives at repo root for discoverability; `.isort.cfg`, `mypy.ini`, `.stylelintrc.json` remain under `config/`
 - Updated tool configurations to reference new paths
 - Removed orphaned configuration files
 

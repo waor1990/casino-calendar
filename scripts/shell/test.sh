@@ -19,8 +19,8 @@ if command -v isort >/dev/null 2>&1; then
     isort --check-only .
 fi
 if command -v flake8 >/dev/null 2>&1; then
-    # Use the centralized flake8 config to avoid default 79 char limit
-    flake8 --config config/linting/.flake8 .
+    # Use the centralized flake8 config to avoid default 79 char limit and skip vendor dirs
+    flake8 --config .flake8 .
 fi
 if command -v mypy >/dev/null 2>&1; then
     mypy --config-file config/typing/mypy.ini .
