@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import cast
 
 import pandas as pd
 import pytest
@@ -47,7 +48,8 @@ def test_load_event_data_localizes_dates(tmp_path: Path, casino):
 
     result = loader.load_event_data(csv_path)
 
-    assert result["StartDate"].dt.tz is None
+    start_tz = getattr(result["StartDate"].dt, "tz", None)
+    assert start_tz is None
     assert result.loc[0, "OfferType"] == "Free-Play"
 
 
@@ -68,7 +70,9 @@ def test_load_event_data_handles_dst(tmp_path: Path, casino):
 
     result = loader.load_event_data(csv_path)
 
-    delta = result.loc[0, "EndDate"] - result.loc[0, "StartDate"]
+    end_ts = cast(pd.Timestamp, result.loc[0, "EndDate"])
+    start_ts = cast(pd.Timestamp, result.loc[0, "StartDate"])
+    delta: pd.Timedelta = end_ts - start_ts
     assert delta.total_seconds() == 3600
 
 
@@ -89,7 +93,9 @@ def test_load_event_data_handles_dst_fall(tmp_path: Path, casino):
 
     result = loader.load_event_data(csv_path)
 
-    delta = result.loc[0, "EndDate"] - result.loc[0, "StartDate"]
+    end_ts = cast(pd.Timestamp, result.loc[0, "EndDate"])
+    start_ts = cast(pd.Timestamp, result.loc[0, "StartDate"])
+    delta: pd.Timedelta = end_ts - start_ts
     assert delta.total_seconds() == 10800
 
 

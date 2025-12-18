@@ -424,7 +424,7 @@ def generate_day_view_parts(
     clicked_date: datetime,
     get_color_fn: Callable[[], dict[str, dict[str, str]]],
     screen_width: int = 1024,
-) -> tuple[str, "list[Component]", go.Figure, int]:
+) -> tuple[str, list[html.Div], go.Figure, int]:
     """Return (title_text, grid_children, overlay_figure, height_px) for the day modal."""
 
     # Reuse the main function to compute content and also reconstruct markers.

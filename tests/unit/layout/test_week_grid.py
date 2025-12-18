@@ -77,8 +77,9 @@ def test_week_label_matches_grid():
     func = app.callback_map["week-label.children"]["callback"].__wrapped__
     label = func(0)
     assert isinstance(label, html.Div)
-    children = list(label.children)
+    children = list(label.children or [])
     assert children[0] == "Events for the Week of"
     assert isinstance(children[1], html.Br)
     assert children[2] == "April 13 - April 19"
-    assert label.style == {"textAlign": "center"}
+    style = getattr(label, "style", {}) or {}
+    assert style == {"textAlign": "center"}

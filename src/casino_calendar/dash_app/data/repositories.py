@@ -17,6 +17,7 @@ class SupportsEvents(Protocol):
 
     def load_events(self) -> pd.DataFrame:
         """Return event data."""
+        ...
 
 
 class EventRepository:

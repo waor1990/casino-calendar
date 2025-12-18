@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from typing import Any, cast
+
 from casino_calendar.dash_app.layout.components import modals
 from casino_calendar.dash_app.layout.components.modals import _build_casino_index_entry, build_casino_index_modal
 
@@ -18,15 +20,18 @@ def test_build_casino_index_modal_renders_entries():
         ]
     )
 
-    modal_content = modal.children[0]
-    body = modal_content.children[1]
-    entry = body.children[0]
+    modal_children = cast(list[Any], modal.children)
+    modal_content = cast(Any, modal_children[0])
+    body_children = cast(list[Any], modal_content.children)
+    body = cast(Any, body_children[1])
+    entry_children = cast(list[Any], body.children)
+    entry = cast(Any, entry_children[0])
 
     assert entry.className == "casino-index-entry"
     assert entry.style["--bg"] == "#ff00ff"
     assert entry.style["--bg-dark"] == "#ff00ff"
 
-    fields = entry.children[1].children
+    fields = cast(list[Any], entry.children[1].children)
     labels = [field.children[0].children for field in fields]
     assert "Address:" in labels
     assert "Hours:" in labels
@@ -38,7 +43,7 @@ def test_build_casino_index_entry_handles_missing_fields():
     entry = _build_casino_index_entry({"name": "No Details"})
 
     assert entry.children[0].children == "No Details"
-    field_block = entry.children[1]
+    field_block = cast(Any, entry.children[1])
     assert "No additional details" in field_block.children[0].children
 
 
@@ -77,5 +82,6 @@ def test_hours_field_parses_multiline_string(monkeypatch):
         }
     )
 
-    hours_field = next(field for field in entry.children[1].children if field.children[0].children == "Hours:")
+    hours_children = cast(list[Any], entry.children[1].children)
+    hours_field = next(field for field in hours_children if field.children[0].children == "Hours:")
     assert hours_field.children[1].children == "10am-6pm"

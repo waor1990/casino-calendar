@@ -77,7 +77,7 @@ def register_callbacks(app, df) -> None:
     logger.debug("Clientside screen dimension callback registered")
 
     @app.callback(Output("week-label", "children"), Input("week-offset", "data"))
-    def update_week_label(week_offset: int) -> str:
+    def update_week_label(week_offset: int) -> html.Div | str:
         """Return a label for the currently selected week."""
         logger.debug("Updating week label for offset %s", week_offset)
 

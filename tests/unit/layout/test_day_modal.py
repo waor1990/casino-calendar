@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timedelta
+from typing import Any
 
 import dash
 import pandas as pd
@@ -20,7 +21,13 @@ from casino_calendar.services.colors import get_color
 class DummyCtx:
     """Minimal stand-in for Dash's callback context."""
 
-    def __init__(self, triggered_id, value=1, states=None, prop="n_clicks"):
+    def __init__(
+        self,
+        triggered_id: Any,
+        value: Any = 1,
+        states: dict[str, Any] | None = None,
+        prop: str = "n_clicks",
+    ):
         self.triggered_id = triggered_id
         if isinstance(triggered_id, dict):
             trigger_key = json.dumps(triggered_id, separators=(",", ":"))

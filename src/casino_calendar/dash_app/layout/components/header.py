@@ -14,6 +14,7 @@ from casino_calendar.services.colors import get_color, resolve_casino_color
 logger = setup_logger(__name__)
 
 LEGEND_CASINOS: list[str] = []
+ARIA_HIDDEN_TRUE: dict[str, Any] = {"aria-hidden": "true"}
 
 
 def build_header(events: pd.DataFrame) -> html.Div:
@@ -41,7 +42,7 @@ def build_header(events: pd.DataFrame) -> html.Div:
         [
             html.Div(
                 [
-                    html.Div(className="header-title-spacer", **{"aria-hidden": "true"}),
+                    html.Div(className="header-title-spacer", **ARIA_HIDDEN_TRUE),
                     html.H1(
                         html.Button(
                             "🎰 Casino Event Calendar 📅",
@@ -52,7 +53,7 @@ def build_header(events: pd.DataFrame) -> html.Div:
                         ),
                         className="calendar-title",
                     ),
-                    html.Div(className="header-title-spacer", **{"aria-hidden": "true"}),
+                    html.Div(className="header-title-spacer", **ARIA_HIDDEN_TRUE),
                 ],
                 className="header-title-row",
             ),
@@ -168,7 +169,7 @@ def create_legend(df: pd.DataFrame) -> list[Any]:
                 "color": base_color,
                 "marginRight": "4px",
             }
-            legend_data_attributes = {
+            legend_data_attributes: dict[str, Any] = {
                 "data-color": base_color,
                 "data-dark-color": dark_theme_color,
             }
