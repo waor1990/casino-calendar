@@ -6,10 +6,11 @@ from datetime import datetime
 from typing import Any
 from urllib.parse import urlparse
 
-import plotly.graph_objs as go
+import plotly.graph_objs as go  # type: ignore[import-untyped]
+from dash import dcc, html
+
 from casino_calendar.services.casino_index import load_casino_index
 from casino_calendar.services.colors import get_color
-from dash import dcc, html
 
 _DEFAULT_CASINO_COLORS: dict[str, dict[str, str]] = {
     "Muckleshoot Casino": {"bg": "#1e1c29", "bg_dark": "#a6a1c1"},
@@ -121,17 +122,21 @@ def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
 
     casino_name = casino.get("name", "Unknown Casino")
     palette = get_color()
-    palette_entry = palette.get(casino_name, {})
-    fallback_colors = _DEFAULT_CASINO_COLORS.get(casino_name, {})
-    bg_color = (
+    palette_entry: dict[str, str] = palette.get(casino_name, {})
+    fallback_colors: dict[str, str] = _DEFAULT_CASINO_COLORS.get(casino_name, {})
+    bg_color: str | None = (
         casino.get("color") or palette_entry.get("bg") or fallback_colors.get("bg")
     )
-    bg_dark_color = palette_entry.get("bg_dark") or fallback_colors.get("bg_dark")
+    bg_dark_color: str | None = palette_entry.get("bg_dark") or fallback_colors.get(
+        "bg_dark"
+    )
     entry_style: dict[str, str] = {}
     if bg_color:
         entry_style["--bg"] = bg_color
-    if bg_dark_color or bg_color:
-        entry_style["--bg-dark"] = bg_dark_color or bg_color
+    if bg_dark_color:
+        entry_style["--bg-dark"] = bg_dark_color
+    elif bg_color:
+        entry_style["--bg-dark"] = bg_color
     today_label = datetime.now().strftime("%A")
     today_label_lower = today_label.lower()
 
