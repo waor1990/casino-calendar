@@ -22,7 +22,7 @@ ignore_missing_imports = true
 ignore_errors = true
 
 [tool.pytest.ini_options]
-miniversion = "6.0"
+minversion = "6.0"
 addopts = "-ra -q"
 testpaths = ["tests"]
 
