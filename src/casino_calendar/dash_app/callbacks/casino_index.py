@@ -5,8 +5,9 @@ from __future__ import annotations
 from typing import Any, Tuple
 
 import dash
-from casino_calendar.logging.config import setup_logger
 from dash import Input, Output
+
+from casino_calendar.logging.config import setup_logger
 
 logger = setup_logger(__name__)
 

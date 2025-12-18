@@ -6,11 +6,12 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 import pytest
+from dash import Dash, html
+
 from casino_calendar.dash_app.callbacks import register_callbacks
 from casino_calendar.dash_app.layout.week_grid import _build_block
 from casino_calendar.dash_app.services.layout_state import to_naive_utc
 from casino_calendar.services.data_parsing import prepare_week_events
-from dash import Dash, html
 
 freeze_time = pytest.importorskip("freezegun").freeze_time
 
