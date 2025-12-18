@@ -4,9 +4,10 @@ from datetime import datetime
 from typing import Any, cast
 
 import pandas as pd
+from dash import html
+
 from casino_calendar.services.colors import get_color, resolve_casino_color
 from casino_calendar.services.data_parsing import prepare_week_events
-from dash import html
 
 from ..services.layout_state import get_week_range, to_pdt, trim_label
 

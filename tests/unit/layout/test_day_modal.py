@@ -8,12 +8,13 @@ from datetime import datetime, timedelta
 import dash
 import pandas as pd
 import pytest
+from dash import Dash, no_update
+
 from casino_calendar.dash_app.callbacks import register_callbacks
 from casino_calendar.dash_app.services.layout_state import to_naive_utc
 from casino_calendar.dash_app.visualization import charts as day_charts
 from casino_calendar.services import data_parsing
 from casino_calendar.services.colors import get_color
-from dash import Dash, no_update
 
 
 class DummyCtx:

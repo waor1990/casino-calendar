@@ -2,9 +2,7 @@ from datetime import datetime
 
 from casino_calendar.dash_app.layout.components import modals
 from casino_calendar.dash_app.layout.components.modals import (
-    _build_casino_index_entry,
-    build_casino_index_modal,
-)
+    _build_casino_index_entry, build_casino_index_modal)
 
 
 def test_build_casino_index_modal_renders_entries():
