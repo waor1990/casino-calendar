@@ -7,8 +7,8 @@
       python scripts/python/verify_requirements.py requirements.txt &&
       npm ci &&
       python -m compileall app.py src &&
-      black --check --config config/formatting/pyproject.toml . &&
-      isort --check-only --settings-path config/formatting/.isort.cfg . &&
+      black --check . &&
+      isort --check-only . &&
       flake8 --config config/linting/.flake8 . &&
       npm run lint:css &&
       npm run build:css

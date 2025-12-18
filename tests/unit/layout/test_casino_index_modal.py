@@ -1,8 +1,7 @@
 from datetime import datetime
 
 from casino_calendar.dash_app.layout.components import modals
-from casino_calendar.dash_app.layout.components.modals import (
-    _build_casino_index_entry, build_casino_index_modal)
+from casino_calendar.dash_app.layout.components.modals import _build_casino_index_entry, build_casino_index_modal
 
 
 def test_build_casino_index_modal_renders_entries():
@@ -58,11 +57,7 @@ def test_hours_field_only_shows_current_day(monkeypatch):
         }
     )
 
-    hours_field = next(
-        field
-        for field in entry.children[1].children
-        if field.children[0].children == "Hours:"
-    )
+    hours_field = next(field for field in entry.children[1].children if field.children[0].children == "Hours:")
     assert hours_field.children[1].children == "9am-5pm"
 
 
@@ -82,9 +77,5 @@ def test_hours_field_parses_multiline_string(monkeypatch):
         }
     )
 
-    hours_field = next(
-        field
-        for field in entry.children[1].children
-        if field.children[0].children == "Hours:"
-    )
+    hours_field = next(field for field in entry.children[1].children if field.children[0].children == "Hours:")
     assert hours_field.children[1].children == "10am-6pm"

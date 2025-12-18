@@ -51,14 +51,10 @@ def monitoring_tips():
     logger.info("Error monitoring tips")
     logger.info("Monitor logs in real time: tail -f logs/casino_calendar_prod.log")
     logger.info("Filter for errors only: grep 'ERROR' logs/casino_calendar_prod.log")
-    logger.info(
-        "Search for callback errors: grep 'show_event_modal callback' logs/casino_calendar_prod.log"
-    )
+    logger.info("Search for callback errors: grep 'show_event_modal callback' logs/casino_calendar_prod.log")
     logger.info("In VS Code use Ctrl+F for 'ERROR' and review Traceback sections")
     logger.info("Pay attention to line numbers referenced in tracebacks")
-    logger.info(
-        "Common triggers to reproduce: click events, day headers, navigation, and overflow toggles"
-    )
+    logger.info("Common triggers to reproduce: click events, day headers, navigation, and overflow toggles")
 
 
 def debugging_steps():
@@ -71,9 +67,7 @@ def debugging_steps():
     logger.info("Check for tracebacks following the show_event_modal callback entry")
     logger.info("Capture the file, line number, and exception type from the traceback")
     logger.info("Inspect the referenced code to confirm data assumptions")
-    logger.info(
-        "Common causes include missing data, invalid dates, null values, or mismatched types"
-    )
+    logger.info("Common causes include missing data, invalid dates, null values, or mismatched types")
 
 
 if __name__ == "__main__":

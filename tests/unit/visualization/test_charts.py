@@ -7,8 +7,7 @@ import pytest
 from casino_calendar.dash_app.services.layout_state import to_naive_utc
 from casino_calendar.dash_app.visualization import charts as day_charts
 from casino_calendar.services.colors import get_color
-from casino_calendar.services.data_parsing import (annotate_events_with_flags,
-                                                   filter_week_events)
+from casino_calendar.services.data_parsing import annotate_events_with_flags, filter_week_events
 
 
 @pytest.mark.usefixtures("casino", "offer_type")
@@ -25,9 +24,7 @@ def test_build_weekly_figure_structure(casino, offer_type):
     )
 
     events = filter_week_events(df, week_start, week_start + timedelta(days=7))
-    annot = annotate_events_with_flags(
-        events, week_start, week_start + timedelta(days=7)
-    )
+    annot = annotate_events_with_flags(events, week_start, week_start + timedelta(days=7))
     fig = day_charts.build_weekly_figure(annot, 1024, week_start)
 
     assert isinstance(fig, go.Figure)
@@ -93,11 +90,7 @@ def test_event_block_min_width_for_few_events():
 
     result = day_charts.generate_day_view_html(df, clicked, get_color, 1024)
     grid_children = result[1].children
-    event_divs = [
-        c
-        for c in grid_children
-        if getattr(c, "className", "") and "event-block-day" in c.className
-    ]
+    event_divs = [c for c in grid_children if getattr(c, "className", "") and "event-block-day" in c.className]
 
     assert len(event_divs) == 2
     for div, name in zip(event_divs, df["EventName"], strict=False):
@@ -129,17 +122,11 @@ def test_day_view_includes_overlapping_events():
     )
 
     sun_result = day_charts.generate_day_view_html(df, sunday, get_color, 1024)
-    mon_result = day_charts.generate_day_view_html(
-        df, sunday + timedelta(days=1), get_color, 1024
-    )
+    mon_result = day_charts.generate_day_view_html(df, sunday + timedelta(days=1), get_color, 1024)
 
     for result in (sun_result, mon_result):
         grid_children = result[1].children
-        event_divs = [
-            c
-            for c in grid_children
-            if getattr(c, "className", "") and "event-block-day" in c.className
-        ]
+        event_divs = [c for c in grid_children if getattr(c, "className", "") and "event-block-day" in c.className]
         assert len(event_divs) == 2
 
 
@@ -164,11 +151,7 @@ def test_short_events_near_midnight_do_not_overlap_or_overflow():
 
     result = day_charts.generate_day_view_html(df, clicked, get_color, 1024)
     grid_children = result[1].children
-    event_divs = [
-        c
-        for c in grid_children
-        if getattr(c, "className", "") and "event-block-day" in c.className
-    ]
+    event_divs = [c for c in grid_children if getattr(c, "className", "") and "event-block-day" in c.className]
     assert len(event_divs) == 2
 
     hour_height, _ = day_charts.get_layout_config(1024)

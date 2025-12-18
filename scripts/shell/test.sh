@@ -15,8 +15,8 @@ if command -v black >/dev/null 2>&1; then
     black --check .
 fi
 if command -v isort >/dev/null 2>&1; then
-    # Use the project isort settings to align with Black
-    isort --check-only --settings-path config/formatting/.isort.cfg .
+    # Use the project isort settings from pyproject.toml to align with Black
+    isort --check-only .
 fi
 if command -v flake8 >/dev/null 2>&1; then
     # Use the centralized flake8 config to avoid default 79 char limit

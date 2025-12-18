@@ -9,9 +9,7 @@ import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 BANNED_MODULES = ("app_components",)
-IMPORT_PATTERN = re.compile(
-    r"^\s*(?:from|import)\s+({modules})\b".format(modules="|".join(BANNED_MODULES))
-)
+IMPORT_PATTERN = re.compile(r"^\s*(?:from|import)\s+({modules})\b".format(modules="|".join(BANNED_MODULES)))
 
 
 def iter_python_files() -> list[Path]:

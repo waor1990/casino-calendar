@@ -24,9 +24,7 @@ def annotate_events_with_flags(events_df, week_start, week_end):
     events_df = events_df.copy()
     events_df["orig_index"] = events_df.index
 
-    events_df["Duration"] = (
-        events_df["EndDate"] - events_df["StartDate"]
-    ).dt.total_seconds()
+    events_df["Duration"] = (events_df["EndDate"] - events_df["StartDate"]).dt.total_seconds()
     events_df["has_left_arrow"] = events_df["StartDate"] < week_start
     events_df["has_right_arrow"] = events_df["EndDate"] > week_end
 
@@ -123,17 +121,13 @@ def assign_event_rows(events_df, week_start):
             row_assigned = False
 
             if preferred_row is not None and all(
-                preferred_row not in used_rows_by_day[d]
-                for d in range(start_day, end_day + 1)
+                preferred_row not in used_rows_by_day[d] for d in range(start_day, end_day + 1)
             ):
                 assigned_row = preferred_row
                 row_assigned = True
             else:
                 for r in range(current_row, 100):
-                    if all(
-                        r not in used_rows_by_day[d]
-                        for d in range(start_day, end_day + 1)
-                    ):
+                    if all(r not in used_rows_by_day[d] for d in range(start_day, end_day + 1)):
                         assigned_row = r
                         recurring_rows[recurring_key] = r
                         row_assigned = True
@@ -171,9 +165,7 @@ def prepare_week_events(events_df, week_start, *, include_sunday_duplicates=Fals
     annotated = annotate_events_with_flags(week_events, week_start, week_end)
 
     if include_sunday_duplicates:
-        sunday_mask = (annotated["StartDate"].dt.weekday <= 5) & (
-            annotated["EndDate"].dt.weekday == 6
-        )
+        sunday_mask = (annotated["StartDate"].dt.weekday <= 5) & (annotated["EndDate"].dt.weekday == 6)
 
         if sunday_mask.any():
             dup = annotated[sunday_mask].copy()

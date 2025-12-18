@@ -46,8 +46,8 @@ This document outlines the Casino Calendar repository. The layout emphasises a c
 
 ### `config/`
 
-- `formatting/pyproject.toml` – Black configuration.
-- `formatting/.isort.cfg` – isort profile aligned to Black.
+- `pyproject.toml` (repo root) – Black/isort/Ruff/pytest/mypy configuration.
+- `formatting/.isort.cfg` – Legacy isort profile (mirrors `pyproject.toml`).
 - `linting/.flake8` – Flake8 configuration.
 - `linting/.stylelintrc.json` – Stylelint rules for Sass.
 - `typing/mypy.ini` – Mypy configuration.

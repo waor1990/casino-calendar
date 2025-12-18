@@ -78,7 +78,7 @@ npm run watch:css
 bash scripts/shell/test.sh
 pytest
 black .
-isort --settings-path config/formatting/.isort.cfg .
+isort .
 flake8 --config config/linting/.flake8
 npm run lint:css
 ```

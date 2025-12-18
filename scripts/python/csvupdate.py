@@ -18,18 +18,18 @@ for candidate in (SRC_DIR, PROJECT_ROOT):
 
 from casino_calendar.logging import config as logging_config  # noqa: E402
 from casino_calendar.services.csv_normalizer import (  # noqa: E402
-    DEFAULT_OUTPUT_PATH, NormalizationResult, find_candidate_csv_paths,
-    normalize_csv)
+    DEFAULT_OUTPUT_PATH,
+    NormalizationResult,
+    find_candidate_csv_paths,
+    normalize_csv,
+)
 
 logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.csvupdate")
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description=(
-            "Normalize a casino events CSV so that it matches the format "
-            "expected by the app."
-        )
+        description=("Normalize a casino events CSV so that it matches the format " "expected by the app.")
     )
     parser.add_argument(
         "-i",
@@ -78,8 +78,7 @@ def main(argv: list[str] | None = None) -> int:
         elif len(candidates) > 1:
             joined = ", ".join(str(path) for path in candidates)
             logger.error(
-                "Multiple CSV candidates detected (%s). "
-                "Use --input to specify the desired file.",
+                "Multiple CSV candidates detected (%s). " "Use --input to specify the desired file.",
                 joined,
             )
             return 2

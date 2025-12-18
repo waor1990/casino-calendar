@@ -5,11 +5,10 @@ repos:
       - id: black
         language_version: python3
 
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.13.2
+  - repo: https://github.com/pycqa/isort
+    rev: 7.0.0
     hooks:
       - id: isort
-        args: ["--profile", "black", "--settings-path", "config/formatting/.isort.cfg"]
 
   - repo: https://github.com/pycqa/flake8
     rev: 6.1.0
@@ -17,7 +16,10 @@ repos:
       - id: flake8
         args: ["--config", "config/linting/.flake8"]
 
-  - id: python-check
-    name: py_compile
-    entry: python -m compileall src
-    language: python
+  - repo: local
+    hooks:
+      - id: python-check
+        name: py_compile
+        entry: python -m compileall src
+        language: system
+        pass_filenames: false
