@@ -167,7 +167,7 @@
     }
 
     .event-block-grid {
-        background-color: var(--bg);
+        background-color: var(--bg-dark, var(--bg));
         color: var(--fg-dark, var(--fg));
     }
 

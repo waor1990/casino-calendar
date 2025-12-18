@@ -56,6 +56,17 @@
             }
         });
 
+        const boxes = document.querySelectorAll('.legend-color-box[data-color]');
+        boxes.forEach((box) => {
+            const baseColor = box.getAttribute('data-color') || '';
+            const darkColor = box.getAttribute('data-dark-color') || baseColor;
+            const targetColor = theme === 'dark' ? darkColor : baseColor;
+
+            if (targetColor) {
+                box.style.backgroundColor = targetColor;
+            }
+        });
+
     }
 
     window.CasinoCalendar.updateLegendTextColors = function (theme) {

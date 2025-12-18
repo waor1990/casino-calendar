@@ -188,7 +188,8 @@ def create_legend(df: pd.DataFrame) -> list[Any]:
                     children=[
                         html.Div(
                             className="legend-color-box",
-                            style={"backgroundColor": color["bg"]},
+                            style={"backgroundColor": base_color},
+                            **legend_data_attributes,
                         ),
                         html.Div(
                             [
