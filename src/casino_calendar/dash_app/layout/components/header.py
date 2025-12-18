@@ -9,7 +9,7 @@ from dash import dcc, html
 
 from casino_calendar.dash_app.services.layout_state import offer_type_emoji
 from casino_calendar.logging.config import setup_logger
-from casino_calendar.services.colors import get_color
+from casino_calendar.services.colors import get_color, resolve_casino_color
 
 logger = setup_logger(__name__)
 
@@ -153,42 +153,58 @@ def create_legend(df: pd.DataFrame) -> list[Any]:
 
     try:
         colors = get_color()
-        unique_casinos = df["Casino"].unique()
+        unique_casinos = pd.unique(df["Casino"].dropna())
         logger.debug("Unique casinos found: %d", len(unique_casinos))
 
-        for casino, color in colors.items():
-            if casino in unique_casinos:
-                LEGEND_CASINOS.append(casino)
-                base_color = color["bg"]
-                dark_theme_color = color.get("bg_dark") or base_color
-                legend_text_style: dict[str, str] = {
-                    "color": base_color,
-                    "marginRight": "4px",
-                }
-                legend_data_attributes = {
-                    "data-color": base_color,
-                    "data-dark-color": dark_theme_color,
-                }
+        for casino_name in unique_casinos:
+            casino = str(casino_name)
+            has_configured_color = casino in colors
+            color = resolve_casino_color(casino, colors)
 
-                legend_items.append(
-                    html.Button(
-                        className="legend-item legend-button",
-                        id={"type": "casino-filter", "index": casino},
-                        n_clicks=0,
-                        children=[
-                            html.Div(
-                                className="legend-color-box",
-                                style={"backgroundColor": color["bg"]},
-                            ),
-                            html.Span(
-                                f"{casino}",
-                                className="legend-text legend-gap",
-                                style=legend_text_style,
-                                **legend_data_attributes,
-                            ),
-                        ],
-                    )
+            LEGEND_CASINOS.append(casino)
+            base_color = color["bg"]
+            dark_theme_color = color.get("bg_dark") or base_color
+            legend_text_style: dict[str, str] = {
+                "color": base_color,
+                "marginRight": "4px",
+            }
+            legend_data_attributes = {
+                "data-color": base_color,
+                "data-dark-color": dark_theme_color,
+            }
+
+            hint = None
+            if not has_configured_color:
+                hint = html.Span(
+                    "No color assigned yet. Add one in data/lookups/casino_colors.json.",
+                    className="legend-hint",
                 )
+
+            legend_items.append(
+                html.Button(
+                    className="legend-item legend-button",
+                    id={"type": "casino-filter", "index": casino},
+                    n_clicks=0,
+                    children=[
+                        html.Div(
+                            className="legend-color-box",
+                            style={"backgroundColor": color["bg"]},
+                        ),
+                        html.Div(
+                            [
+                                html.Span(
+                                    f"{casino}",
+                                    className="legend-text legend-gap",
+                                    style=legend_text_style,
+                                    **legend_data_attributes,
+                                ),
+                                *([hint] if hint else []),
+                            ],
+                            className="legend-labels",
+                        ),
+                    ],
+                )
+            )
 
         logger.info("Generated %d legend entries", len(legend_items))
         return legend_items
