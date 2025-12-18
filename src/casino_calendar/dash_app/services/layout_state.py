@@ -5,7 +5,9 @@ from typing import Any, Iterable, Tuple
 
 import pandas as pd
 from dash import html
+from pytz import AmbiguousTimeError, NonExistentTimeError
 
+from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.config_cache import get_config
 from casino_calendar.settings import APP_TIMEZONE, UTC_TZ
 
@@ -17,15 +19,25 @@ def offer_type_emoji(offer_type: str) -> str:
 
 
 PDT = APP_TIMEZONE
+logger = setup_logger(__name__)
 
 
 def to_naive_utc(dt: datetime) -> datetime:
-    """Return ``dt`` converted to naive UTC."""
+    """Return ``dt`` converted to naive UTC handling DST edges."""
 
     if dt.tzinfo is None:
-        localized = PDT.localize(dt)
+        try:
+            localized = PDT.localize(dt, is_dst=None)
+            logger.debug("Successfully localized datetime %s", dt)
+        except AmbiguousTimeError:
+            localized = PDT.localize(dt, is_dst=False)
+            logger.warning("Ambiguous time encountered for %s; using DST=False", dt)
+        except NonExistentTimeError:
+            localized = PDT.localize(dt + timedelta(hours=1))
+            logger.warning("Non-existent time encountered for %s; adding 1 hour", dt)
     else:
-        localized = dt
+        localized = dt.astimezone(PDT)
+
     return localized.astimezone(UTC_TZ).replace(tzinfo=None)
 
 
