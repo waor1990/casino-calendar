@@ -24,9 +24,7 @@ def register_callbacks(app, _df) -> None:
         Input("close-casino-index-modal", "n_clicks"),
         prevent_initial_call=True,
     )
-    def toggle_casino_index_modal(
-        open_clicks: int, close_clicks: int
-    ) -> Tuple[str, dict[str, Any]]:
+    def toggle_casino_index_modal(open_clicks: int, close_clicks: int) -> Tuple[str, dict[str, Any]]:
         """Open the casino index modal on click and close when requested."""
 
         ctx = dash.callback_context

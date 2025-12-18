@@ -26,14 +26,11 @@ except Exception as exc:  # pragma: no cover - fallback path
     )
     logger = logging.getLogger("casino_calendar.scripts.check_environment")
     logger.warning(
-        "Falling back to basic logging because casino_calendar logging config "
-        "could not be imported: %s",
+        "Falling back to basic logging because casino_calendar logging config " "could not be imported: %s",
         exc,
     )
 else:
-    logger = logging_config.setup_maintenance_logger(
-        "casino_calendar.scripts.check_environment"
-    )
+    logger = logging_config.setup_maintenance_logger("casino_calendar.scripts.check_environment")
 
 PYTHON_MIN_VERSION = (3, 11, 0)
 
@@ -188,18 +185,13 @@ def attempt_node_fix(
 ) -> bool:
     volta = shutil.which("volta")
     if not volta:
-        logger.warning(
-            "Volta is not installed. Install it from https://volta.sh/ to manage Node versions."
-        )
+        logger.warning("Volta is not installed. Install it from https://volta.sh/ to manage Node versions.")
         return False
 
-    message = (
-        f"Install Node.js {target_version} with Volta using "
-        "`volta install node@{version}`?".format(version=target_version)
+    message = f"Install Node.js {target_version} with Volta using " "`volta install node@{version}`?".format(
+        version=target_version
     )
-    run_install = auto_fix or prompt_yes_no(
-        message, default=False, interactive=interactive
-    )
+    run_install = auto_fix or prompt_yes_no(message, default=False, interactive=interactive)
     if not run_install:
         return False
 
@@ -261,9 +253,7 @@ def check_node(
         guidance=guidance,
     )
 
-    if target_version and attempt_node_fix(
-        target_version, auto_fix=auto_fix, interactive=interactive
-    ):
+    if target_version and attempt_node_fix(target_version, auto_fix=auto_fix, interactive=interactive):
         refreshed = detect_node_version()
         if refreshed and satisfies_spec(refreshed, node_spec):
             logger.info(
@@ -272,9 +262,7 @@ def check_node(
                 node_spec,
             )
             return None
-        logger.warning(
-            "Node.js still does not satisfy the requirement after attempting to fix."
-        )
+        logger.warning("Node.js still does not satisfy the requirement after attempting to fix.")
 
     return failure
 

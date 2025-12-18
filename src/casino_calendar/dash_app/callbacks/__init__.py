@@ -1,7 +1,6 @@
 """Callback registration package."""
 
-from .casino_index import \
-    register_callbacks as _register_casino_index_callbacks
+from .casino_index import register_callbacks as _register_casino_index_callbacks
 from .events import register_callbacks as _register_event_callbacks
 from .filters import register_callbacks as _register_filter_callbacks
 from .navigation import register_callbacks as _register_navigation_callbacks

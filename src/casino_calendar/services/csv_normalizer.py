@@ -12,9 +12,7 @@ from typing import Iterable, Sequence
 
 from casino_calendar.logging import config as logging_config
 
-logger = logging_config.setup_maintenance_logger(
-    "casino_calendar.services.csv_normalizer"
-)
+logger = logging_config.setup_maintenance_logger("casino_calendar.services.csv_normalizer")
 
 DEFAULT_OUTPUT_PATH = Path("data") / "raw" / "casino_events.csv"
 EXPECTED_COLUMNS = ["EventName", "Casino", "Location", "Offer", "StartDate", "EndDate"]
@@ -282,9 +280,7 @@ def _normalise_row(
     if not casino:
         raise ValueError(f"Row {row_number}: missing casino name")
 
-    location_segments = _collect_values(
-        row, categories.get(_CATEGORY_LOCATION_PRIMARY, ())
-    )
+    location_segments = _collect_values(row, categories.get(_CATEGORY_LOCATION_PRIMARY, ()))
     location_parts = _collect_values(row, categories.get(_CATEGORY_LOCATION_PART, ()))
     location = _combine_segments(location_segments, ", ")
     if location_parts:
@@ -300,9 +296,7 @@ def _normalise_row(
         offer = f"{offer} - {extra_text}" if offer else extra_text
 
     start_dt, start_warning = _resolve_datetime(
-        datetime_values=_collect_values(
-            row, categories.get(_CATEGORY_START_DATETIME, ())
-        ),
+        datetime_values=_collect_values(row, categories.get(_CATEGORY_START_DATETIME, ())),
         date_values=_collect_values(row, categories.get(_CATEGORY_START_DATE, ())),
         time_values=_collect_values(row, categories.get(_CATEGORY_START_TIME, ())),
         fallback=time(0, 0),
@@ -313,9 +307,7 @@ def _normalise_row(
         warnings.append(start_warning)
 
     end_dt, end_warning = _resolve_datetime(
-        datetime_values=_collect_values(
-            row, categories.get(_CATEGORY_END_DATETIME, ())
-        ),
+        datetime_values=_collect_values(row, categories.get(_CATEGORY_END_DATETIME, ())),
         date_values=_collect_values(row, categories.get(_CATEGORY_END_DATE, ())),
         time_values=_collect_values(row, categories.get(_CATEGORY_END_TIME, ())),
         fallback=time(23, 59),
@@ -351,10 +343,7 @@ def _resolve_datetime(
         parsed = _parse_datetime(value)
         if parsed:
             if minimum and parsed < minimum:
-                return minimum, (
-                    f"Row {row_number}: {label} earlier than start; "
-                    "clamping to start time"
-                )
+                return minimum, (f"Row {row_number}: {label} earlier than start; " "clamping to start time")
             return parsed, None
 
     parsed_date = None
@@ -382,16 +371,11 @@ def _resolve_datetime(
     warning = None
     if parsed_time is None:
         parsed_time = fallback
-        warning = (
-            f"Row {row_number}: missing {label} time; defaulting to "
-            f"{fallback.hour}:{fallback.minute:02d}"
-        )
+        warning = f"Row {row_number}: missing {label} time; defaulting to " f"{fallback.hour}:{fallback.minute:02d}"
 
     combined = datetime.combine(parsed_date, parsed_time)
     if minimum and combined < minimum:
-        warning = (
-            f"Row {row_number}: {label} earlier than start; clamping to start time"
-        )
+        warning = f"Row {row_number}: {label} earlier than start; clamping to start time"
         combined = minimum
 
     return combined, warning

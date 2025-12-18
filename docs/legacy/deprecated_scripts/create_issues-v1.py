@@ -41,9 +41,7 @@ for category in categories:
 
 # Create issues
 for issue in issues:
-    res = requests.post(
-        f"https://api.github.com/repos/{REPO}/issues", json=issue, headers=HEADERS
-    )
+    res = requests.post(f"https://api.github.com/repos/{REPO}/issues", json=issue, headers=HEADERS)
     if res.status_code == 201:
         url = res.json().get("html_url")
         # Note: Using print here since this is a one-off utility script

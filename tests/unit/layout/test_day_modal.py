@@ -71,13 +71,9 @@ def test_show_event_modal_handles_duplicate(monkeypatch, casino):
     callback = _event_modal_callback(casino)
 
     def fake_prepare(events_df, week_start):
-        return data_parsing.prepare_week_events(
-            events_df, week_start, include_sunday_duplicates=True
-        )
+        return data_parsing.prepare_week_events(events_df, week_start, include_sunday_duplicates=True)
 
-    monkeypatch.setattr(
-        "casino_calendar.services.data_parsing.prepare_week_events", fake_prepare
-    )
+    monkeypatch.setattr("casino_calendar.services.data_parsing.prepare_week_events", fake_prepare)
     monkeypatch.setattr(
         "dash.callback_context",
         DummyCtx({"type": "grid-event", "index": 0}),
@@ -275,9 +271,7 @@ def test_close_timer_ignores_reopened_modal(monkeypatch, casino):
 @pytest.mark.usefixtures("casino")
 def test_day_column_allows_zero_click_value(monkeypatch, casino):
     callback = _event_modal_callback(casino)
-    trigger_key = json.dumps(
-        {"type": "day-column", "index": "2025-07-12"}, separators=(",", ":")
-    )
+    trigger_key = json.dumps({"type": "day-column", "index": "2025-07-12"}, separators=(",", ":"))
     ctx = DummyCtx(
         {"type": "day-column", "index": "2025-07-12"},
         value=0,

@@ -41,9 +41,7 @@ def build_header(events: pd.DataFrame) -> html.Div:
         [
             html.Div(
                 [
-                    html.Div(
-                        className="header-title-spacer", **{"aria-hidden": "true"}
-                    ),
+                    html.Div(className="header-title-spacer", **{"aria-hidden": "true"}),
                     html.H1(
                         html.Button(
                             "🎰 Casino Event Calendar 📅",
@@ -54,9 +52,7 @@ def build_header(events: pd.DataFrame) -> html.Div:
                         ),
                         className="calendar-title",
                     ),
-                    html.Div(
-                        className="header-title-spacer", **{"aria-hidden": "true"}
-                    ),
+                    html.Div(className="header-title-spacer", **{"aria-hidden": "true"}),
                 ],
                 className="header-title-row",
             ),
@@ -92,9 +88,7 @@ def build_header(events: pd.DataFrame) -> html.Div:
                                 role="button",
                                 tabIndex=0,
                             ),
-                            html.Div(
-                                create_legend(events), className="legend-container"
-                            ),
+                            html.Div(create_legend(events), className="legend-container"),
                             html.Div(
                                 id="hotel-booking-container",
                                 style={

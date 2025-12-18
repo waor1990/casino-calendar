@@ -111,25 +111,17 @@ def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
 
     known_fields = ["address", "hours", "distance"]
     reserved_fields = {"name", "color"}
-    ordered_fields: list[tuple[str, Any]] = [
-        (field, casino.get(field)) for field in known_fields if field in casino
-    ]
+    ordered_fields: list[tuple[str, Any]] = [(field, casino.get(field)) for field in known_fields if field in casino]
     ordered_fields.extend(
-        (field, value)
-        for field, value in casino.items()
-        if field not in reserved_fields and field not in known_fields
+        (field, value) for field, value in casino.items() if field not in reserved_fields and field not in known_fields
     )
 
     casino_name = casino.get("name", "Unknown Casino")
     palette = get_color()
     palette_entry: dict[str, str] = palette.get(casino_name, {})
     fallback_colors: dict[str, str] = _DEFAULT_CASINO_COLORS.get(casino_name, {})
-    bg_color: str | None = (
-        casino.get("color") or palette_entry.get("bg") or fallback_colors.get("bg")
-    )
-    bg_dark_color: str | None = palette_entry.get("bg_dark") or fallback_colors.get(
-        "bg_dark"
-    )
+    bg_color: str | None = casino.get("color") or palette_entry.get("bg") or fallback_colors.get("bg")
+    bg_dark_color: str | None = palette_entry.get("bg_dark") or fallback_colors.get("bg_dark")
     entry_style: dict[str, str] = {}
     if bg_color:
         entry_style["--bg"] = bg_color
@@ -145,11 +137,7 @@ def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
             className="casino-index-field",
             children=[
                 html.Span(f"{field.title()}:", className="casino-index-label"),
-                html.Span(
-                    _format_casino_field_value(
-                        field, value, today_label, today_label_lower
-                    )
-                ),
+                html.Span(_format_casino_field_value(field, value, today_label, today_label_lower)),
             ],
         )
         for field, value in ordered_fields
@@ -173,9 +161,7 @@ def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
     )
 
 
-def _format_casino_field_value(
-    field: str, value: Any, today_label: str, today_label_lower: str
-) -> Any:
+def _format_casino_field_value(field: str, value: Any, today_label: str, today_label_lower: str) -> Any:
     """Format casino index field values with special handling for hours."""
 
     if value in (None, ""):
@@ -223,9 +209,7 @@ def _format_casino_link(value: Any) -> Any:
     return html.A(display, href=href, target="_blank", rel="noopener noreferrer")
 
 
-def _format_hours_value(
-    hours: Any, today_label: str, today_label_lower: str
-) -> str | None:
+def _format_hours_value(hours: Any, today_label: str, today_label_lower: str) -> str | None:
     """Return hours for the current weekday when present.
 
     Supports dictionaries keyed by weekday names as well as multiline

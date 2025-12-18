@@ -12,9 +12,7 @@ def test_load_casino_index_enriches_missing_color(monkeypatch):
         assert filename.endswith("casino_index.json")
         return sample_data
 
-    monkeypatch.setattr(
-        "casino_calendar.services.casino_index.get_config", fake_get_config
-    )
+    monkeypatch.setattr("casino_calendar.services.casino_index.get_config", fake_get_config)
 
     entries = load_casino_index()
 
@@ -25,9 +23,7 @@ def test_load_casino_index_enriches_missing_color(monkeypatch):
 
 
 def test_load_casino_index_handles_invalid_root(monkeypatch, caplog):
-    monkeypatch.setattr(
-        "casino_calendar.services.casino_index.get_config", lambda filename: "oops"
-    )
+    monkeypatch.setattr("casino_calendar.services.casino_index.get_config", lambda filename: "oops")
 
     with caplog.at_level("ERROR", logger="casino_calendar.services.casino_index"):
         entries = load_casino_index()

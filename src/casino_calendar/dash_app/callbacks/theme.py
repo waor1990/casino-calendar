@@ -20,9 +20,7 @@ def register_callbacks(app, _df) -> None:
     )
     def toggle_theme(_n_clicks: int, current: str) -> str:
         # Simple light/dark toggle with dark3 as the dark theme
-        logger.debug(
-            "Theme toggle clicked %s time(s); current theme %s", _n_clicks, current
-        )
+        logger.debug("Theme toggle clicked %s time(s); current theme %s", _n_clicks, current)
 
         if current == "light":
             new_theme = "dark"
