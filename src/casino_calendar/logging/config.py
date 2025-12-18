@@ -16,14 +16,10 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Callable, Iterable, Optional
 
-# Load environment variables from .env file
-try:
-    from dotenv import load_dotenv
+from casino_calendar import settings
 
-    load_dotenv()  # This loads the .env file automatically
-except ImportError:
-    # python-dotenv not installed, continue without it
-    pass
+# Ensure logging picks up environment variables loaded centrally via settings.
+ENV_FILE: Path = settings.ENV_FILE
 
 # Import our custom log rotation utilities with safe typing
 CleanupFn = Callable[[str, int], int]

@@ -1,6 +1,7 @@
 """Tests for the logging system implementation."""
 
 import contextlib
+import importlib
 import logging
 import os
 import tempfile
@@ -96,11 +97,31 @@ def test_setup_logger_with_file():
             logger.removeHandler(handler)
             handler.close()
 
-        if os.path.exists(log_file):
-            try:
-                os.unlink(log_file)
-            except PermissionError:
-                pass  # Windows file locking issue
+
+def test_logging_import_ignores_cwd_dotenv(tmp_path, monkeypatch):
+    """Logging config should not implicitly load dotenv files from the CWD."""
+    tmp_env = tmp_path / ".env"
+    tmp_env.write_text("LOG_LEVEL=CRITICAL\n", encoding="utf-8")
+
+    log_path = tmp_path / "logs" / "deterministic_import.log"
+
+    monkeypatch.chdir(tmp_path)
+
+    with patch.dict(os.environ, {"LOG_FILE": str(log_path), "SUPPRESS_HTTP_LOGS": "true"}, clear=True):
+        base_logger = logging.getLogger("casino_calendar")
+        for handler in base_logger.handlers[:]:
+            base_logger.removeHandler(handler)
+            handler.close()
+
+        fresh_logging_config = importlib.reload(logging_config)
+
+        try:
+            assert "LOG_LEVEL" not in os.environ
+            assert fresh_logging_config.get_log_level() == logging.INFO
+        finally:
+            for handler in fresh_logging_config.app_logger.handlers[:]:
+                fresh_logging_config.app_logger.removeHandler(handler)
+                handler.close()
 
 
 def test_http_access_logs_written_when_not_suppressed(tmp_path, monkeypatch):
