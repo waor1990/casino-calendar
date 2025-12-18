@@ -19,6 +19,24 @@ def test_get_week_range_handles_naive_datetime():
     assert start.tzinfo is None
 
 
+def test_to_naive_utc_handles_ambiguous_time():
+    dt = datetime(2023, 11, 5, 1, 30)
+
+    result = layout_state.to_naive_utc(dt)
+
+    assert result == datetime(2023, 11, 5, 9, 30)
+    assert result.tzinfo is None
+
+
+def test_to_naive_utc_handles_missing_time():
+    dt = datetime(2023, 3, 12, 2, 30)
+
+    result = layout_state.to_naive_utc(dt)
+
+    assert result == datetime(2023, 3, 12, 10, 30)
+    assert result.tzinfo is None
+
+
 def test_trim_label_truncates_and_emojis():
     text = "This is a very long label"
     assert layout_state.trim_label(text, 10, "Giveaway").endswith("...")
