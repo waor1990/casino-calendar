@@ -144,6 +144,10 @@ h1,
     line-height: 1.3;
 }
 
+.legend-button {
+    all: unset;
+}
+
 .legend-item {
     display: flex;
     align-items: center;
@@ -151,6 +155,7 @@ h1,
     box-shadow: var(--box-shadow-subtle);
     border-radius: var(--border-radius-sm);
     padding: var(--padding-xxs) var(--padding-small);
+    cursor: pointer;
 }
 
 .legend-color-box {
@@ -159,11 +164,6 @@ h1,
     display: inline-block;
     border-radius: var(--padding-xs);
     margin-right: var(--padding-xs);
-}
-
-.legend-button {
-    all: unset;
-    cursor: pointer;
 }
 
 .legend-selected {
