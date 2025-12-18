@@ -6,8 +6,9 @@ This directory contains configuration files for development tooling used in the 
 
 - `ci/workflows/` – Canonical GitHub Actions workflow definitions consumed via symlinks in `.github/workflows/`.
 - `formatting/` – Legacy formatting extras (`.isort.cfg` fallback for tools that cannot read `pyproject.toml`).
-- `linting/` – Linting configuration (`.flake8`, `.stylelintrc.json`).
+- `linting/` – Linting configuration for Stylelint (`.stylelintrc.json`).
 - `typing/` – Static typing configuration (`mypy.ini`).
+- `.flake8` (repo root) – Canonical Python linting configuration.
 - `pyproject.toml` (repo root) – Canonical configuration for Black, isort, Ruff, pytest, and mypy.
 
 ## Usage
@@ -20,7 +21,7 @@ black .
 isort .
 
 # Python linting
-flake8 --config config/linting/.flake8
+flake8 --config .flake8
 
 # Type checking
 mypy --config-file config/typing/mypy.ini

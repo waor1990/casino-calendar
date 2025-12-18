@@ -9,7 +9,7 @@
       python -m compileall app.py src &&
       black --check . &&
       isort --check-only . &&
-      flake8 --config config/linting/.flake8 . &&
+      flake8 --config .flake8 . &&
       npm run lint:css &&
       npm run build:css
     startCommand: gunicorn app:server

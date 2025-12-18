@@ -79,6 +79,6 @@ bash scripts/shell/test.sh
 pytest
 black .
 isort .
-flake8 --config config/linting/.flake8
+flake8 --config .flake8
 npm run lint:css
 ```
