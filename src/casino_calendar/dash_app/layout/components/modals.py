@@ -12,6 +12,11 @@ from dash import dcc, html
 from casino_calendar.services.casino_index import load_casino_index
 from casino_calendar.services.colors import get_color
 
+DAY_MODAL_FOOTNOTE_TEXT = (
+    "Only events that overlap the selected date (+/- 2 days) are shown. "
+    "Events that span the entire week remain in the weekly grid. "
+)
+
 _DEFAULT_CASINO_COLORS: dict[str, dict[str, str]] = {
     "Muckleshoot Casino": {"bg": "#1e1c29", "bg_dark": "#a6a1c1"},
     "Tulalip Resort Casino": {"bg": "#155e6d", "bg_dark": "#2c94aa"},
@@ -58,6 +63,11 @@ def build_day_modal() -> html.Div:
                                     html.H2(
                                         id="day-modal-title",
                                         className="day-label day-modal-title",
+                                    ),
+                                    html.P(
+                                        DAY_MODAL_FOOTNOTE_TEXT,
+                                        className="day-modal-footnote",
+                                        role="note",
                                     ),
                                     html.Div(
                                         id="day-grid-wrapper",

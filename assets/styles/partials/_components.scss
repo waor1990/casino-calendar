@@ -389,6 +389,15 @@ h1,
     text-align: center;
 }
 
+.day-modal-footnote {
+    font-size: var(--font-small);
+    color: var(--color-primary-dark);
+    margin-top: calc(var(--padding-xxs) * -1);
+    margin-bottom: var(--padding-base);
+    text-align: center;
+    line-height: 1.4;
+}
+
 .event-label strong {
     color: var(--color-accent);
 }
@@ -443,6 +452,10 @@ h1,
 
     .day-label.day-modal-title {
         color: var(--color-primary);
+    }
+
+    .day-modal-footnote {
+        color: var(--color-primary-dark);
     }
 
     .calendar-title {
