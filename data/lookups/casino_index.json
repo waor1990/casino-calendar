@@ -86,10 +86,10 @@
             "Monday": "8am to 3am",
             "Tuesday": "8am to 3am",
             "Wednesday": "8am to 3am",
-            "Thursday": "8am to 3am",
-            "Friday": "8am to 3am",
-            "Saturday": "8am to 3am",
-            "Sunday": "8am to 3am"
+            "Thursday": "8am to midnight",
+            "Friday": "24 hours",
+            "Saturday": "24 hours",
+            "Sunday": "24 hours"
         },
         "location": "12819 Yelm Hwy. SE, Olympia, WA 98513",
         "phone": "(360) 412-5000",

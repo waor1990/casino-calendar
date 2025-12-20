@@ -14,6 +14,7 @@ from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.colors import get_color, resolve_casino_color
 from casino_calendar.settings import APP_TIMEZONE
 
+from ..layout.components.modals import DAY_MODAL_FOOTNOTE_TEXT
 from ..services.layout_state import build_event_info_rows, to_naive_utc
 from ..visualization import charts as day_charts
 
@@ -383,6 +384,11 @@ def register_callbacks(app, df) -> None:
                             className="day-label day-modal-title",
                             children=title_text,
                         ),
+                        html.P(
+                            DAY_MODAL_FOOTNOTE_TEXT,
+                            className="day-modal-footnote",
+                            role="note",
+                        ),
                         html.Div(
                             id="day-grid-wrapper",
                             style={"position": "relative"},
@@ -463,6 +469,11 @@ def register_callbacks(app, df) -> None:
                                 id="day-modal-title",
                                 className="day-label day-modal-title",
                                 children=title_text,
+                            ),
+                            html.P(
+                                DAY_MODAL_FOOTNOTE_TEXT,
+                                className="day-modal-footnote",
+                                role="note",
                             ),
                             html.Div(
                                 id="day-grid-wrapper",
