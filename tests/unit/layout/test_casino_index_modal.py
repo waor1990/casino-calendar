@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from typing import Any, cast
 
 from casino_calendar.dash_app.layout.components import modals
