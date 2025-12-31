@@ -255,27 +255,40 @@ def register_callbacks(app, df) -> None:
     def update_hotel_booking_link(selected_casinos):
         """Update hotel booking link based on selected casino."""
         logger.debug("Updating hotel booking link for selection: %s", selected_casinos)
-        if not selected_casinos or len(selected_casinos) != 1:
-            logger.debug("Hotel booking link hidden due to selection count")
+        selected_casinos = selected_casinos or []
+        if not selected_casinos:
+            logger.debug("Hotel booking link hidden due to empty selection")
             return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
 
-        casino_name = selected_casinos[0]
         hotel_booking_sites = _get_hotel_booking_sites()
-        booking_url = hotel_booking_sites.get(casino_name)
+        available_links = [
+            (casino_name, hotel_booking_sites.get(casino_name))
+            for casino_name in selected_casinos
+            if hotel_booking_sites.get(casino_name) not in (None, "N/A")
+        ]
 
-        if booking_url and booking_url != "N/A":
+        if len(available_links) == 1:
+            casino_name, booking_url = available_links[0]
             logger.info("Showing hotel booking link for %s", casino_name)
-            link_content = html.A(
-                "🏨 Hotel Booking",
-                href=booking_url,
-                target="_blank",
-            )
-            return [link_content], {
+            link_children = [
+                html.A(
+                    "🏨 Hotel Booking",
+                    href=booking_url,
+                    target="_blank",
+                )
+            ]
+            if len(selected_casinos) > 1:
+                link_children.extend([html.Br(), html.Span(f"({casino_name})")])
+            return link_children, {
                 "display": "block",
                 "textAlign": "center",
                 "marginTop": "10px",
             }
-        logger.info("Hiding hotel booking link for %s; URL not available", casino_name)
+        logger.info(
+            "Hiding hotel booking link for selection %s; available_links=%d",
+            selected_casinos,
+            len(available_links),
+        )
         return [], {"display": "none", "textAlign": "center", "marginTop": "10px"}
 
     @app.callback(
