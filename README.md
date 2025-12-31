@@ -1,6 +1,6 @@
 # 🎰 Casino Event Calendar
 
-A Dash application that visualizes casino promotions on a responsive weekly calendar. Interactive callbacks power event modals, casino and offer filters, and a hotel booking helper that surfaces links for the selected venue. The project targets **Python 3.11** and **Node 22**.
+A Dash application that visualizes casino promotions on a responsive weekly calendar. Interactive callbacks power event modals, casino and offer filters, and a hotel booking helper that surfaces links for the selected venue (including when multiple venues are filtered and only one offers booking). The project targets **Python 3.11** and **Node 22**.
 
 ---
 
