@@ -24,7 +24,7 @@ bash scripts/shell/setup.sh
 python app.py
 ```
 
-The development server binds to `0.0.0.0:8050`. Open `http://localhost:8050` or use your machine IP.
+The development server binds to `0.0.0.0:8050`. The startup log shows `http://localhost:8050` and, when available, a LAN URL (for example `http://192.168.4.50:8050`) for other devices.
 
 ## 📂 Key Scripts
 
@@ -61,6 +61,8 @@ python app.py
 
 - `LOG_LEVEL` - Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 - `LOG_FILE` - Optional log file path
+- `DASH_HOST` - Bind address for the Dash server (default: `0.0.0.0`)
+- `DASH_PUBLIC_HOST` - Optional LAN address to advertise in startup logs (overrides auto-detect)
 
 Example:
 

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+import socket
 import time
 from pathlib import Path
 from typing import Any, Tuple
@@ -10,13 +12,70 @@ from dash import Dash
 
 from casino_calendar.logging.config import setup_logger
 from casino_calendar.services.config_cache import warm_cache
-from casino_calendar.settings import get_env_bool
+from casino_calendar.settings import get_env, get_env_bool
 
 from .callbacks import register_callbacks
 from .data import EventRepository
 from .layout.root import create_layout
 
 logger = setup_logger(__name__)
+
+
+class _DashStartupHostFilter(logging.Filter):
+    def __init__(self, display_host: str, public_host: str | None, public_port: int) -> None:
+        super().__init__()
+        self._display_host = display_host
+        self._public_host = public_host
+        self._public_port = public_port
+
+    def filter(self, record: logging.LogRecord) -> bool:  # type: ignore[override]
+        if isinstance(record.msg, str) and record.msg.startswith("Dash is running on") and record.args:
+            args = list(record.args)
+            if len(args) >= 2:
+                args[1] = self._display_host
+                record.args = tuple(args)
+            if self._public_host:
+                message = record.msg
+                if not message.endswith("\n"):
+                    message = f"{message}\n"
+                record.msg = f"{message}Network access: http://{self._public_host}:{self._public_port}\n"
+        return True
+
+
+def _install_dash_startup_filter(app: Dash, display_host: str, public_host: str | None, port: int) -> None:
+    dash_logger = getattr(app, "logger", None)
+    if dash_logger is None:
+        return
+
+    for existing in dash_logger.filters:
+        if isinstance(existing, _DashStartupHostFilter):
+            existing._display_host = display_host
+            existing._public_host = public_host
+            existing._public_port = port
+            return
+
+    dash_logger.addFilter(_DashStartupHostFilter(display_host, public_host, port))
+
+
+def _resolve_public_host(host: str) -> str | None:
+    override = get_env("DASH_PUBLIC_HOST")
+    if override:
+        return override
+
+    if host != "0.0.0.0":
+        return None
+
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(("8.8.8.8", 80))
+            address = sock.getsockname()[0]
+    except OSError:
+        return None
+
+    if not address or address.startswith("127."):
+        return None
+
+    return address
 
 
 def _build_index_string() -> str:
@@ -111,8 +170,15 @@ def run_app(app: Dash | None = None) -> None:
     else:
         logger.info("Starting production server")
 
+    host = get_env("DASH_HOST", "0.0.0.0") or "0.0.0.0"
+    display_host = "localhost" if host == "0.0.0.0" else host
+    public_host = _resolve_public_host(host)
+    if public_host == display_host:
+        public_host = None
+    _install_dash_startup_filter(app, display_host, public_host, 8050)
+
     try:
-        app.run(host="0.0.0.0", port=8050, debug=debug_mode)
+        app.run(host=host, port=8050, debug=debug_mode)
     except KeyboardInterrupt:  # pragma: no cover - manual shutdown
         logger.info("Server stopped by user")
     except Exception as exc:  # pragma: no cover - defensive logging
