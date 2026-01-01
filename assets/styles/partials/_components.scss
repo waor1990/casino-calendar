@@ -243,6 +243,14 @@ h1,
 }
 
 /* Hotel booking link styles */
+#hotel-booking-container {
+    color: var(--color-accent);
+}
+
+#hotel-booking-container .legend-hint {
+    color: var(--color-accent);
+}
+
 #hotel-booking-container a {
     display: inline-block;
     color: var(--color-accent-dark);
@@ -517,6 +525,14 @@ h1,
         &:active {
             transform: translateY(0);
         }
+    }
+
+    #hotel-booking-container {
+        color: var(--color-primary-dark);
+    }
+
+    #hotel-booking-container .legend-hint {
+        color: var(--color-primary-dark);
     }
 
     // Override Muckleshoot Casino text color for better contrast in dark theme
