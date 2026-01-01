@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import quote_plus, urlparse
 
 import plotly.graph_objs as go  # type: ignore[import-untyped]
 from dash import dcc, html
@@ -119,7 +119,7 @@ def build_day_modal() -> html.Div:
 def _build_casino_index_entry(casino: dict[str, Any]) -> html.Div:
     """Return a single casino entry for the casino index modal."""
 
-    known_fields = ["address", "hours", "distance"]
+    known_fields = ["address", "location", "hours", "distance"]
     reserved_fields = {"name", "color"}
     ordered_fields: list[tuple[str, Any]] = [(field, casino.get(field)) for field in known_fields if field in casino]
     ordered_fields.extend(
@@ -177,6 +177,9 @@ def _format_casino_field_value(field: str, value: Any, today_label: str, today_l
     if value in (None, ""):
         return "Not provided"
 
+    if field.lower() in {"address", "location"}:
+        return _format_casino_directions_link(value)
+
     if field.lower() in {"website", "player portal", "tax docs portal"}:
         return _format_casino_link(value)
 
@@ -185,6 +188,24 @@ def _format_casino_field_value(field: str, value: Any, today_label: str, today_l
         return formatted_hours if formatted_hours is not None else "Not provided"
 
     return str(value)
+
+
+def _format_casino_directions_link(value: Any) -> Any:
+    """Return a directions link for casino addresses."""
+
+    if value in (None, ""):
+        return "Not provided"
+
+    if not isinstance(value, str):
+        return str(value)
+
+    address = value.strip()
+    if not address:
+        return "Not provided"
+
+    destination = quote_plus(address)
+    href = f"https://www.google.com/maps/dir/?api=1&destination={destination}"
+    return html.A(address, href=href, target="_blank", rel="noopener noreferrer")
 
 
 def _format_casino_link(value: Any) -> Any:
