@@ -98,7 +98,7 @@ When using `python-dotenv`, environment variables are loaded from `.env` in the 
 python app.py
 ```
 
-The development server binds to `0.0.0.0:8050`. Open `http://localhost:8050` or use your machine IP.
+The development server binds to `0.0.0.0:8050`. The startup log shows `http://localhost:8050` and, when available, a LAN URL (for example `http://192.168.4.50:8050`) for other devices.
 
 `app.py` instantiates the Dash application and exposes both `app` and `server` so the same entry point can be used by Gunicorn:
 
@@ -175,6 +175,8 @@ Continuous integration scripts (`scripts/shell/test.sh`) run the same suite loca
 `src/casino_calendar/settings.py` defines helper functions for reading environment variables. Notable options:
 
 - `DEBUG` – Enable Dash debug server features.
+- `DASH_HOST` - Bind address for the Dash server (default: `0.0.0.0`).
+- `DASH_PUBLIC_HOST` - Optional LAN address to advertise in startup logs (overrides auto-detect).
 - `APP_TIMEZONE` – Defaults to `America/Los_Angeles`; controls how timestamps are rendered.
 - `CONFIG_CACHE_BUST` – Forces configuration caches to reload JSON files.
 
