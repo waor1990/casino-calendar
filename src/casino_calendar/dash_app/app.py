@@ -112,7 +112,7 @@ def run_app(app: Dash | None = None) -> None:
         logger.info("Starting production server")
 
     try:
-        app.run(debug=debug_mode)
+        app.run(host="0.0.0.0", port=8050, debug=debug_mode)
     except KeyboardInterrupt:  # pragma: no cover - manual shutdown
         logger.info("Server stopped by user")
     except Exception as exc:  # pragma: no cover - defensive logging

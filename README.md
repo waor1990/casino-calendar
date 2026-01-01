@@ -98,6 +98,8 @@ When using `python-dotenv`, environment variables are loaded from `.env` in the 
 python app.py
 ```
 
+The development server binds to `0.0.0.0:8050`. Open `http://localhost:8050` or use your machine IP.
+
 `app.py` instantiates the Dash application and exposes both `app` and `server` so the same entry point can be used by Gunicorn:
 
 ```bash
