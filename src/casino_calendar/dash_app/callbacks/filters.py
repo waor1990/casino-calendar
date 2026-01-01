@@ -278,7 +278,7 @@ def register_callbacks(app, df) -> None:
                 )
             ]
             if len(selected_casinos) > 1:
-                link_children.extend([html.Br(), html.Span(f"({casino_name})")])
+                link_children.extend([html.Br(), html.Span(f"({casino_name})", className="legend-hint")])
             return link_children, {
                 "display": "block",
                 "textAlign": "center",
