@@ -24,6 +24,8 @@ bash scripts/shell/setup.sh
 python app.py
 ```
 
+The development server binds to `0.0.0.0:8050`. Open `http://localhost:8050` or use your machine IP.
+
 ## 📂 Key Scripts
 
 - `setup.bat` / `scripts\windows\setup.bat` – Complete Windows setup
