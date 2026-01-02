@@ -22,6 +22,8 @@ Note: Text-layer extraction strips email header metadata (From/To/Reply-To lines
 scoring and saving `.txt` outputs.
 
 Note: `scripts/python/scan_ingest.py` stops after step 8 and only saves OCR outputs under `<scan inbox>/<pdf-stem>/`.
+To prepare OCR text for AI-assisted event extraction, run `scripts/python/format_scan_prompts.py` to
+generate prompt-ready `.prompt.txt` files alongside the OCR output.
 
 ## Required OCR Fields
 
@@ -105,6 +107,20 @@ When enabled via configuration, extra outputs are written to the same folder:
 If the console window closes quickly, check `logs/scan_ingest.log` for the full run output (override with
 `SCAN_INGEST_LOG_FILE` if you relocate the executable). A bootstrap line is written at startup to help
 diagnose failures that occur before standard logging is configured.
+
+## Formatting OCR prompts
+
+After OCR text files are available, format them into prompt-ready instructions for AI extraction.
+When scans are stored under per-scan subfolders (the default), point the formatter at the scan folder
+to produce a single prompt file for that scan:
+
+```bash
+python scripts/python/format_scan_prompts.py --input-dir data/raw/Casino_Scans/<pdf-stem>
+```
+
+This produces `data/raw/Casino_Scans/<pdf-stem>.prompt.txt`, which embeds the extraction instructions and
+the best OCR text available in that folder (even if multiple source `.txt` files were saved). Use
+`--output-dir` to write prompts elsewhere, and `--overwrite` to replace existing prompt files.
 
 ## Rebuilding scan_ingest.exe
 
