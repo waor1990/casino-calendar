@@ -10,6 +10,7 @@ This directory collects the living documentation for the project.
 - `guides/`
   - [commit_conventions.md](guides/commit_conventions.md) — Allowed commit types/scopes and formatting rules enforced by commitlint/cz.
   - [handoff.md](guides/handoff.md) — High-level feature tour and current state summary for new contributors.
+  - [scan_ingest.md](guides/scan_ingest.md) — Scanned PDF ingestion workflow and configuration.
   - [TODO.md](guides/TODO.md) — Backlog of enhancements and stretch goals.
   - [vscode_terminal_troubleshooting.md](guides/vscode_terminal_troubleshooting.md) — Terminal configuration tips for Windows users.
 - `operations/`
