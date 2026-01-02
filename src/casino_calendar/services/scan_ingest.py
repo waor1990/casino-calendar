@@ -158,6 +158,7 @@ def ingest_scan_pdf(pdf_path: Path, *, config: ScanIngestConfig) -> AppendResult
     """Process a scanned PDF and append events to the CSV file."""
 
     ocr_text = extract_text_from_pdf(pdf_path, config=config)
+    save_ocr_text(ocr_text, pdf_path=pdf_path)
     events = parse_events_from_text(ocr_text)
     return append_events_to_csv(events, csv_path=config.csv_path)
 
@@ -244,6 +245,16 @@ def _run_command(command: list[str]) -> str:
         stderr = result.stderr.strip() or "(no stderr)"
         raise OcrCommandError(f"Command failed ({result.returncode}): {' '.join(command)}\n{stderr}")
     return result.stdout
+
+
+def save_ocr_text(ocr_text: str, *, pdf_path: Path) -> Path:
+    """Persist OCR text alongside the scanned PDF."""
+
+    ocr_path = Path(pdf_path).with_suffix(".txt")
+    ocr_path.parent.mkdir(parents=True, exist_ok=True)
+    ocr_path.write_text(ocr_text, encoding="utf-8")
+    logger.info("Saved OCR text to %s", ocr_path)
+    return ocr_path
 
 
 def _load_csv_with_header(csv_path: Path) -> tuple[list[str], list[list[str]]]:
