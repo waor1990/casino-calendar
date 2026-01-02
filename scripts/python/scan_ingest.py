@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -12,6 +13,13 @@ for candidate in (SRC_DIR, PROJECT_ROOT):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
+DEFAULT_LOG_PATH = PROJECT_ROOT / "logs" / "scan_ingest.log"
+scan_log_override = os.getenv("SCAN_INGEST_LOG_FILE")
+if scan_log_override:
+    os.environ["LOG_FILE"] = scan_log_override
+elif "LOG_FILE" not in os.environ:
+    os.environ["LOG_FILE"] = str(DEFAULT_LOG_PATH)
+
 from casino_calendar.logging.config import setup_logger  # noqa: E402
 from casino_calendar.services.scan_ingest import (  # noqa: E402
     ingest_scan_pdf,
@@ -19,7 +27,7 @@ from casino_calendar.services.scan_ingest import (  # noqa: E402
     load_scan_ingest_config,
 )
 
-logger = setup_logger(__name__)
+logger = setup_logger(__name__, log_file=os.environ.get("LOG_FILE"))
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -36,6 +44,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     config = load_scan_ingest_config()
+    logger.info("Scan ingest starting (log file: %s)", os.environ.get("LOG_FILE"))
 
     if args.pdf:
         pdf_path = args.pdf
