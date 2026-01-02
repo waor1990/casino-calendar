@@ -57,10 +57,13 @@ def load_event_data(csv_path: str | Path | None = None) -> pd.DataFrame:
 
         df[column] = df[column].map(to_naive_utc)
 
-    logger.debug("Categorizing offer types")
-    df["OfferType"] = categorize_offer_types(df)
-    offer_counts = df["OfferType"].value_counts()
-    logger.info("Offer type distribution: %s", offer_counts.to_dict())
+    if "OfferType" not in df.columns:
+        logger.debug("Categorizing offer types")
+        df["OfferType"] = categorize_offer_types(df)
+        offer_counts = df["OfferType"].value_counts()
+        logger.info("Offer type distribution: %s", offer_counts.to_dict())
+    else:
+        logger.debug("OfferType column detected; skipping categorization step.")
 
     load_time = time.time() - start_time
     logger.info("Processed event data in %.3f seconds", load_time)
