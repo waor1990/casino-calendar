@@ -9,9 +9,10 @@ The workflow mirrors the structure expected by `scripts/node/append-casino-event
 1. Scanner software saves PDFs into a scan inbox directory.
 2. Ghostscript renders PDF pages to images.
 3. Tesseract OCR extracts text from each page.
-4. The OCR text is parsed into the required event fields.
-5. `OfferType` is classified using the keyword rules used by the app.
-6. Events are appended to `data/raw/casino_events.csv` with duplicate detection.
+4. The raw OCR text is saved next to the scanned PDF as a `.txt` file.
+5. The OCR text is parsed into the required event fields.
+6. `OfferType` is classified using the keyword rules used by the app.
+7. Events are appended to `data/raw/casino_events.csv` with duplicate detection.
 
 ## Required OCR Fields
 
@@ -66,3 +67,4 @@ python scripts/python/scan_ingest.py --pdf path/to/scan.pdf
 ```
 
 The CLI logs the JSON payload generated from OCR and the number of rows written or skipped.
+The raw OCR text is saved alongside the PDF using the same filename with a `.txt` extension.
