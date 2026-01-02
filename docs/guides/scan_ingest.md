@@ -47,6 +47,7 @@ The ingest pipeline uses environment variables for configuration:
 - `SCAN_INBOX_DIR` (default: `data/raw/scan_inbox`)
 - `SCAN_OCR_OUTPUT_DIR` (default: `data/cache/ocr`)
 - `CASINO_EVENTS_CSV` (default: `data/raw/casino_events.csv`)
+- `SCAN_INGEST_LOG_FILE` (default: `logs/scan_ingest.log`)
 - `GHOSTSCRIPT_BIN` (default: `gs`)
 - `TESSERACT_BIN` (default: `tesseract`)
 - `TESSERACT_LANG` (default: `eng`)
@@ -68,3 +69,4 @@ python scripts/python/scan_ingest.py --pdf path/to/scan.pdf
 
 The CLI logs the JSON payload generated from OCR and the number of rows written or skipped.
 The raw OCR text is saved alongside the PDF using the same filename with a `.txt` extension.
+If the console window closes quickly, check `logs/scan_ingest.log` for the full run output.
