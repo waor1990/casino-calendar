@@ -7,7 +7,17 @@ import os
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+def resolve_project_root() -> Path:
+    if getattr(sys, "frozen", False):
+        exe_path = Path(sys.executable).resolve()
+        candidate = exe_path.parents[2] if len(exe_path.parents) > 2 else exe_path.parent
+        if (candidate / "src" / "casino_calendar").exists():
+            return candidate
+        return Path.cwd()
+    return Path(__file__).resolve().parents[2]
+
+
+PROJECT_ROOT = resolve_project_root()
 SRC_DIR = PROJECT_ROOT / "src"
 for candidate in (SRC_DIR, PROJECT_ROOT):
     if str(candidate) not in sys.path:
@@ -61,7 +71,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         result = ingest_scan_pdf(pdf_path, config=config)
     except Exception as exc:
-        logger.error("Scan ingest failed: %s", exc)
+        logger.exception("Scan ingest failed: %s", exc)
         return 1
 
     logger.info(
