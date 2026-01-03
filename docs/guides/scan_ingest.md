@@ -19,6 +19,8 @@ The workflow mirrors the structure expected by `scripts/node/append-casino-event
 11. Events are appended to `data/raw/casino_events.csv` with duplicate detection.
 
 Note: `scripts/python/scan_ingest.py` stops after step 8 and only saves OCR outputs next to the PDF.
+To prepare OCR text for AI-assisted event extraction, run `scripts/python/format_scan_prompts.py` to
+generate prompt-ready `.prompt.txt` files alongside the OCR output.
 
 ## Required OCR Fields
 
@@ -101,3 +103,14 @@ When enabled via configuration, extra outputs are written alongside the PDF:
 If the console window closes quickly, check `logs/scan_ingest.log` for the full run output (override with
 `SCAN_INGEST_LOG_FILE` if you relocate the executable). A bootstrap line is written at startup to help
 diagnose failures that occur before standard logging is configured.
+
+## Formatting OCR prompts
+
+After OCR text files are available, format them into prompt-ready instructions for AI extraction:
+
+```bash
+python scripts/python/format_scan_prompts.py --input-dir data/raw/Casino_Scans
+```
+
+This produces `.prompt.txt` files that embed the extraction instructions and OCR text for each scan.
+Use `--output-dir` to write prompts elsewhere, and `--overwrite` to replace existing prompt files.
