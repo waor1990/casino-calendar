@@ -101,3 +101,22 @@ When enabled via configuration, extra outputs are written alongside the PDF:
 If the console window closes quickly, check `logs/scan_ingest.log` for the full run output (override with
 `SCAN_INGEST_LOG_FILE` if you relocate the executable). A bootstrap line is written at startup to help
 diagnose failures that occur before standard logging is configured.
+
+## Parsing OCR text into event rows
+
+Use `scripts/python/parse_event_texts.py` to turn the extracted `.txt` files into structured JSON payloads (and
+optionally append them to `data/raw/casino_events.csv`).
+
+```bash
+python scripts/python/parse_event_texts.py --input data/raw/Casino_Scans --recursive
+```
+
+To append the parsed rows to the main CSV:
+
+```bash
+python scripts/python/parse_event_texts.py --input data/raw/Casino_Scans --recursive --append-csv
+```
+
+The parser applies the same field rules used by the manual AI prompt: one event per unique occurrence, default
+times when missing, and recurring weekday expansion (for phrases like "every Thursday in April"). The output JSON
+files are written to `data/cache/parsed_events` by default.
