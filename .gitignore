@@ -43,9 +43,19 @@ dist/
 # Database files
 *.sqlite3
 
+# Scan inbox artifacts
+data/raw/Casino_Scans/
+
 # Node dependencies
 node_modules/
 
-.fake
 # Generated Dash assets
 assets/dist/*.css
+
+# Temporary files
+*.tmp
+
+# Cache files
+data/cache/
+
+.fake
