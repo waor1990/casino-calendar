@@ -40,6 +40,13 @@ _FIELD_LABELS = {
     "end": "EndDate",
 }
 
+_EMAIL_ADDRESS_PATTERN = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+_EMAIL_HEADER_LABEL_PATTERN = re.compile(
+    r"^\s*(from|to|cc|bcc|reply-to|subject|date|sent):\s*",
+    re.IGNORECASE,
+)
+_EMAIL_MESSAGE_COUNT_PATTERN = re.compile(r"^\s*\d+\s+message(s)?\s*$", re.IGNORECASE)
+
 
 class OcrCommandError(RuntimeError):
     """Raised when OCR tooling returns a non-zero exit code."""
@@ -230,6 +237,53 @@ def _get_pdf_page_count(pdf_path: Path) -> int | None:
         return None
 
 
+def _is_email_metadata_line(line: str) -> bool:
+    return (
+        _EMAIL_HEADER_LABEL_PATTERN.match(line)
+        or _EMAIL_MESSAGE_COUNT_PATTERN.match(line)
+        or _EMAIL_ADDRESS_PATTERN.search(line)
+    )
+
+
+def _strip_email_metadata(text: str) -> str:
+    if not text:
+        return text
+
+    lines = text.splitlines()
+    header_indices = [idx for idx, line in enumerate(lines) if _is_email_metadata_line(line)]
+    if not header_indices:
+        return text.strip()
+
+    remove_indices: set[int] = set()
+    block_start = header_indices[0]
+    block_end = header_indices[0]
+    header_count = 1
+
+    for idx in header_indices[1:]:
+        if idx - block_end <= 2:
+            block_end = idx
+            header_count += 1
+            continue
+
+        if header_count >= 2:
+            remove_indices.update(range(block_start, block_end + 1))
+        block_start = idx
+        block_end = idx
+        header_count = 1
+
+    if header_count >= 2:
+        remove_indices.update(range(block_start, block_end + 1))
+
+    for idx, line in enumerate(lines):
+        if idx in remove_indices:
+            continue
+        if _is_email_metadata_line(line):
+            remove_indices.add(idx)
+
+    cleaned = "\n".join(line for idx, line in enumerate(lines) if idx not in remove_indices)
+    return cleaned.strip()
+
+
 def _extract_text_with_pymupdf(pdf_path: Path) -> str | None:
     try:
         with fitz.open(pdf_path) as doc:
@@ -243,8 +297,10 @@ def _extract_text_with_pymupdf(pdf_path: Path) -> str | None:
         logger.warning("PyMuPDF failed to read %s: %s", _format_log_path(pdf_path), exc)
         return None
 
-    combined = "\n".join(text for text in page_texts if text)
-    combined = combined.strip()
+    combined = "\n".join(text for text in page_texts if text).strip()
+    if not combined:
+        return None
+    combined = _strip_email_metadata(combined)
     return combined or None
 
 
@@ -326,6 +382,9 @@ def _extract_text_layer(pdf_path: Path, *, config: ScanIngestConfig) -> str | No
         if not output_path.exists():
             return None
         text = output_path.read_text(encoding="utf-8", errors="ignore").strip()
+        if not text:
+            return None
+        text = _strip_email_metadata(text)
         return text or None
 
 

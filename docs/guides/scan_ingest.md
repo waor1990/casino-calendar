@@ -18,6 +18,9 @@ The workflow mirrors the structure expected by `scripts/node/append-casino-event
 10. `OfferType` is classified using the keyword rules used by the app.
 11. Events are appended to `data/raw/casino_events.csv` with duplicate detection.
 
+Note: Text-layer extraction strips email header metadata (From/To/Reply-To lines, message counts, email addresses) before
+scoring and saving `.txt` outputs.
+
 Note: `scripts/python/scan_ingest.py` stops after step 8 and only saves OCR outputs under `<scan inbox>/<pdf-stem>/`.
 
 ## Required OCR Fields
@@ -96,8 +99,24 @@ python scripts/python/scan_ingest.py path/to/scan.pdf
 The CLI logs the OCR extraction status and where the `.txt` output was saved.
 The raw OCR text is saved under `<scan inbox>/<pdf-stem>/` as `<pdf-stem>.txt`, even if parsing fails.
 When enabled via configuration, extra outputs are written to the same folder:
+
 - `<pdf-stem>.ocr.json` metadata describing extraction sources and scores.
 - `<pdf-stem>.<source>.txt` per-source text files (PyMuPDF, txtwrite, OCRmyPDF, Tesseract).
 If the console window closes quickly, check `logs/scan_ingest.log` for the full run output (override with
 `SCAN_INGEST_LOG_FILE` if you relocate the executable). A bootstrap line is written at startup to help
 diagnose failures that occur before standard logging is configured.
+
+## Rebuilding scan_ingest.exe
+
+`scripts/python/scan_ingest.exe` is built with PyInstaller from `scripts/python/scan_ingest.py`. Rebuild it any time
+you change scan ingest logic or dependencies.
+
+From the repo root in the project virtual environment:
+
+```bash
+pip install pyinstaller
+pyinstaller --onefile --name scan_ingest --distpath scripts/python --workpath build/scan_ingest --specpath build/scan_ingest scripts/python/scan_ingest.py
+```
+
+The executable will be written to `scripts/python/scan_ingest.exe`. Remove `build/scan_ingest` when you are done if
+you do not need the build artifacts.
