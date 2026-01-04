@@ -54,6 +54,14 @@ def _write_json(payload: list[dict[str, str]], *, output_path: Path) -> None:
     output_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def _group_text_files(text_files: list[Path]) -> dict[str, list[Path]]:
+    grouped: dict[str, list[Path]] = {}
+    for text_file in text_files:
+        group_name = text_file.parent.name
+        grouped.setdefault(group_name, []).append(text_file)
+    return grouped
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -65,29 +73,34 @@ def main(argv: list[str] | None = None) -> int:
         logger.error("No .txt files found in %s", input_path)
         return 1
 
-    all_events: list[dict[str, str]] = []
-    for text_file in text_files:
-        text = text_file.read_text(encoding="utf-8", errors="ignore")
-        try:
-            events = parse_events_from_text(text)
-        except ValueError as exc:
-            logger.warning("Skipping %s due to parse error: %s", text_file, exc)
-            continue
+    grouped_files = _group_text_files(text_files)
+    timestamp = datetime.now()
+    for group_name, group_files in grouped_files.items():
+        group_events = []
+        for text_file in group_files:
+            text = text_file.read_text(encoding="utf-8", errors="ignore")
+            try:
+                events = parse_events_from_text(text)
+            except ValueError as exc:
+                logger.warning("Skipping %s due to parse error: %s", text_file, exc)
+                continue
 
-        payload = [event.to_payload() for event in events]
-        output_path = args.output_dir / f"{text_file.stem}.events.json"
-        _write_json(payload, output_path=output_path)
-        logger.info("Wrote %s", output_path)
-        all_events.extend(payload)
+            payload = [event.to_payload() for event in events]
+            output_path = args.output_dir / group_name / f"{text_file.stem}.events.json"
+            _write_json(payload, output_path=output_path)
+            logger.info("Wrote %s", output_path)
+            group_events.extend(events)
 
-        if args.append_csv:
-            rows = [event.to_row() for event in events]
-            append_events_to_csv(rows, csv_path=config.csv_path)
+            if args.append_csv:
+                rows = [event.to_row() for event in events if event.is_complete(allow_empty_offer=True)]
+                if rows:
+                    append_events_to_csv(rows, csv_path=config.csv_path)
 
-    if all_events:
-        combined_path = args.output_dir / f"parsed_events_{datetime.now():%Y%m%d_%H%M%S}.json"
-        _write_json(all_events, output_path=combined_path)
-        logger.info("Wrote combined payload %s", combined_path)
+        complete_payload = [event.to_payload() for event in group_events if event.is_complete(allow_empty_offer=True)]
+        if complete_payload:
+            combined_path = args.output_dir / group_name / f"parsed_events_{timestamp:%Y%m%d_%H%M%S}.json"
+            _write_json(complete_payload, output_path=combined_path)
+            logger.info("Wrote combined payload %s", combined_path)
 
     return 0
 
