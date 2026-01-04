@@ -13,12 +13,12 @@ The workflow mirrors the structure expected by `scripts/node/append-casino-event
 5. OCRmyPDF runs for scanned PDFs when installed.
 6. Ghostscript renders PDF pages to images.
 7. Tesseract OCR preprocesses pages and runs a PSM sweep for higher-accuracy text.
-8. The raw OCR text is saved next to the scanned PDF as a `.txt` file.
+8. The raw OCR text is saved under `<scan inbox>/<pdf-stem>/` as a `.txt` file.
 9. The OCR text is parsed into the required event fields.
 10. `OfferType` is classified using the keyword rules used by the app.
 11. Events are appended to `data/raw/casino_events.csv` with duplicate detection.
 
-Note: `scripts/python/scan_ingest.py` stops after step 8 and only saves OCR outputs next to the PDF.
+Note: `scripts/python/scan_ingest.py` stops after step 8 and only saves OCR outputs under `<scan inbox>/<pdf-stem>/`.
 
 ## Required OCR Fields
 
@@ -94,10 +94,10 @@ python scripts/python/scan_ingest.py path/to/scan.pdf
 ```
 
 The CLI logs the OCR extraction status and where the `.txt` output was saved.
-The raw OCR text is saved alongside the PDF using the same filename with a `.txt` extension, even if parsing fails.
-When enabled via configuration, extra outputs are written alongside the PDF:
-- `<pdf>.ocr.json` metadata describing extraction sources and scores.
-- `<pdf>.<source>.txt` per-source text files (PyMuPDF, txtwrite, OCRmyPDF, Tesseract).
+The raw OCR text is saved under `<scan inbox>/<pdf-stem>/` as `<pdf-stem>.txt`, even if parsing fails.
+When enabled via configuration, extra outputs are written to the same folder:
+- `<pdf-stem>.ocr.json` metadata describing extraction sources and scores.
+- `<pdf-stem>.<source>.txt` per-source text files (PyMuPDF, txtwrite, OCRmyPDF, Tesseract).
 If the console window closes quickly, check `logs/scan_ingest.log` for the full run output (override with
 `SCAN_INGEST_LOG_FILE` if you relocate the executable). A bootstrap line is written at startup to help
 diagnose failures that occur before standard logging is configured.
