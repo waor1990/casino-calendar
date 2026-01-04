@@ -670,11 +670,23 @@ def _is_sparse_text(text: str, threshold: int = 10) -> bool:
     return _text_score(text) < threshold
 
 
-def save_ocr_text(ocr_text: str, *, pdf_path: Path) -> Path:
-    """Persist OCR text alongside the scanned PDF."""
+def _resolve_scan_text_dir(pdf_path: Path, config: ScanIngestConfig) -> Path:
+    output_root = Path(config.inbox_dir)
+    return output_root / Path(pdf_path).stem
 
-    ocr_path = Path(pdf_path).with_suffix(".txt")
-    ocr_path.parent.mkdir(parents=True, exist_ok=True)
+
+def save_ocr_text(
+    ocr_text: str,
+    *,
+    pdf_path: Path,
+    output_dir: Path | None = None,
+) -> Path:
+    """Persist OCR text for a scanned PDF."""
+
+    pdf_path = Path(pdf_path)
+    output_dir = Path(output_dir) if output_dir is not None else pdf_path.parent
+    output_dir.mkdir(parents=True, exist_ok=True)
+    ocr_path = output_dir / pdf_path.with_suffix(".txt").name
     ocr_path.write_text(ocr_text, encoding="utf-8")
     logger.info("Saved OCR text to %s", _format_log_path(ocr_path))
     return ocr_path
@@ -687,15 +699,17 @@ def save_ocr_outputs(
     config: ScanIngestConfig,
 ) -> dict[str, Path]:
     pdf_path = Path(pdf_path)
-    base_dir = pdf_path.parent
+    output_dir = _resolve_scan_text_dir(pdf_path, config)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    base_dir = output_dir.parent
     outputs: dict[str, Path] = {}
     source_paths: dict[str, Path] = {}
 
-    outputs["best_text"] = save_ocr_text(bundle.best_text, pdf_path=pdf_path)
+    outputs["best_text"] = save_ocr_text(bundle.best_text, pdf_path=pdf_path, output_dir=output_dir)
 
     if config.save_source_texts:
         for source in bundle.sources:
-            source_path = pdf_path.with_suffix(f".{source.name}.txt")
+            source_path = output_dir / f"{pdf_path.stem}.{source.name}.txt"
             source_path.write_text(source.text, encoding="utf-8")
             source_paths[source.name] = source_path
             logger.info(
@@ -705,7 +719,7 @@ def save_ocr_outputs(
             )
 
     if config.save_metadata:
-        metadata_path = pdf_path.with_suffix(".ocr.json")
+        metadata_path = output_dir / f"{pdf_path.stem}.ocr.json"
         source_payload = []
         for source in bundle.sources:
             entry = {
