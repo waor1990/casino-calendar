@@ -209,11 +209,46 @@ def parse_events_from_text(text: str, *, reference_date: date | None = None) -> 
     for block in blocks:
         parsed.extend(_parse_block(block, reference_date=reference_date, casino=casino, location=location))
 
-    unique: dict[tuple[str, str, str, str, str, str], ParsedEvent] = {}
-    for event in parsed:
-        key = tuple(event.to_row())
-        unique.setdefault(key, event)
+    return dedupe_events(parsed)
+
+
+def dedupe_events(
+    events: Iterable[ParsedEvent],
+    *,
+    include_offer: bool = True,
+    normalize: bool = False,
+) -> list[ParsedEvent]:
+    """Return unique events, preserving input order."""
+
+    unique: dict[tuple[str, ...], ParsedEvent] = {}
+    for event in events:
+        key = _event_dedupe_key(event, include_offer=include_offer, normalize=normalize)
+        if key in unique:
+            if include_offer:
+                continue
+            unique[key] = _prefer_event(unique[key], event)
+            continue
+        unique[key] = event
     return list(unique.values())
+
+
+def _event_dedupe_key(event: ParsedEvent, *, include_offer: bool, normalize: bool) -> tuple[str, ...]:
+    row = event.to_row()
+    if not include_offer:
+        row = [row[0], row[1], row[2], row[4], row[5]]
+    if normalize:
+        return tuple(_normalize_dedupe_value(value) for value in row)
+    return tuple(row)
+
+
+def _prefer_event(existing: ParsedEvent, candidate: ParsedEvent) -> ParsedEvent:
+    if len(candidate.offer.strip()) > len(existing.offer.strip()):
+        return candidate
+    return existing
+
+
+def _normalize_dedupe_value(value: str) -> str:
+    return " ".join(value.split()).strip().casefold()
 
 
 def _normalize_line(line: str) -> str:

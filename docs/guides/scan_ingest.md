@@ -121,6 +121,14 @@ To append the parsed rows to the main CSV:
 python scripts/python/parse_event_texts.py --input data/raw/Casino_Scans --recursive --append-csv
 ```
 
+To append a reviewed combined JSON payload after edits:
+
+```bash
+python scripts/python/parse_event_texts.py --append-json data/cache/parsed_events/<source>/parsed_events_YYYYMMDD_HHMMSS.json
+```
+
+Events missing `EventName`, `Casino`, `Location`, `StartDate`, or `EndDate` are skipped. `Offer` may be empty.
+
 The parser applies the same field rules used by the manual AI prompt: one event per unique occurrence, default
 times when missing (or invalid), recurring weekday expansion (for phrases like "every Thursday in April"), and
 strips email-style headers (including header labels, email addresses, and nav bars) before parsing. Offer text is
@@ -128,7 +136,8 @@ scrubbed of date/time tokens (including weekdays) before output. Event blocks ar
 sections, with undated lines folded into the nearest dated block. Wrapped sentence lines are merged before
 selecting the event name to avoid partial-line titles. Per-file JSON outputs can include incomplete
 fields; the combined `parsed_events_*.json` file requires EventName, Casino, Location, StartDate, and EndDate,
-but allows empty Offer values. The parser uses
+but allows empty Offer values. The combined payload deduplicates events across OCR sources using those
+required fields and keeps the entry with the longest Offer text when duplicates appear. The parser uses
 `data/lookups/casino_index.json` to detect the casino once per source file and applies the casino name and
 location to every event it finds. Output JSON files are written to
 `data/cache/parsed_events/<source-folder>/` by default, where `<source-folder>` matches the folder name under
