@@ -107,11 +107,14 @@ diagnose failures that occur before standard logging is configured.
 
 ## Formatting OCR prompts
 
-After OCR text files are available, format them into prompt-ready instructions for AI extraction:
+After OCR text files are available, format them into prompt-ready instructions for AI extraction.
+When scans are stored under per-scan subfolders (the default), point the formatter at the scan folder
+to produce a single prompt file for that scan:
 
 ```bash
-python scripts/python/format_scan_prompts.py --input-dir data/raw/Casino_Scans
+python scripts/python/format_scan_prompts.py --input-dir data/raw/Casino_Scans/<pdf-stem>
 ```
 
-This produces `.prompt.txt` files that embed the extraction instructions and OCR text for each scan.
-Use `--output-dir` to write prompts elsewhere, and `--overwrite` to replace existing prompt files.
+This produces `data/raw/Casino_Scans/<pdf-stem>.prompt.txt`, which embeds the extraction instructions and
+the best OCR text available in that folder (even if multiple source `.txt` files were saved). Use
+`--output-dir` to write prompts elsewhere, and `--overwrite` to replace existing prompt files.
