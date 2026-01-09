@@ -11,6 +11,7 @@ Batch helpers for setting up, running, and maintaining the Casino Calendar app. 
 
 - `setup.bat` – Creates the virtual environment if missing, checks for stale venvs, dry-runs pip to highlight dependency drift, installs Python requirements, validates `package.json`, cleans npm staging directories, runs `npm install`, and installs pre-commit hooks when available.
 - `run_direct.bat` – Ensures `.venv` exists, sets UTF-8 console encoding, builds `assets/dist/style.css` via `npm run build:css` if npm is available, and launches the app with the venv Python.
+- `test.bat` - Runs compile checks, linters, CSS lint (when npm is available), and pytest from the project root; writes timestamped log lines to `logs\casino_calendar_maintenance.log`.
 - `cleanup_logs.bat` – Rotate/prune log files; supports `--info`, `--dry-run`, and `--archive`.
 - `create_scheduled_cleanup.bat` – Optional scheduled task creator for periodic log cleanup.
 

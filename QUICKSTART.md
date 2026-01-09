@@ -33,6 +33,9 @@ The development server binds to `0.0.0.0:8050`. The startup log shows `http://lo
 - `scripts\windows\cleanup_logs.bat` – Log rotation/cleanup helper
 - `scripts/shell/setup.sh` – Unix-like setup (Python + Node + Sass build)
 - `scripts/shell/test.sh` – Linters plus pytest wrapper
+- `test.bat` / `scripts\windows\test.bat` - Windows test runner (compile checks, linters, CSS lint, pytest); logs timestamped output to `logs\casino_calendar_batch_test_windows.log` (override with `WIN_TEST_BAT_LOG_FILE`)
+- `scripts/python/check_environment.py` - Validate Python/Node/npm versions (supports `--auto-fix` with Volta)
+- `scripts/python/verify_requirements.py` - Compare installed packages to `requirements.txt`
 
 ## 🔧 Manual Setup
 
@@ -61,6 +64,7 @@ python app.py
 
 - `LOG_LEVEL` - Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 - `LOG_FILE` - Optional log file path
+- `*_BAT_LOG_FILE` - Batch script log destinations (see `.env.example` for defaults)
 - `DASH_HOST` - Bind address for the Dash server (default: `0.0.0.0`)
 - `DASH_PUBLIC_HOST` - Optional LAN address to advertise in startup logs (overrides auto-detect)
 
