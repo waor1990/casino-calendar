@@ -180,7 +180,7 @@ def _format_casino_field_value(field: str, value: Any, today_label: str, today_l
     if field.lower() in {"address", "location"}:
         return _format_casino_directions_link(value)
 
-    if field.lower() in {"website", "player portal", "tax docs portal"}:
+    if field.lower() in {"website", "player portal", "tax docs portal", "booking site"}:
         return _format_casino_link(value)
 
     if field == "hours":
@@ -218,6 +218,8 @@ def _format_casino_link(value: Any) -> Any:
         return str(value)
 
     href = value.strip()
+    if href.lower() in {"n/a", "na"}:
+        return "Not provided"
     parsed = urlparse(href)
     if not parsed.scheme:
         href = f"https://{href}"

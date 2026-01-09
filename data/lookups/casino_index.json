@@ -14,7 +14,8 @@
         "location": "1 Cowlitz Way, Ridgefield, WA 98642",
         "phone": "(877) 464-5264",
         "website": "https://ilaniresort.com/",
-        "player portal": "https://ilaniresort.com/gaming/forever-rewards/login/"
+        "player portal": "https://ilaniresort.com/gaming/forever-rewards/login/",
+        "booking site": "https://book.rguest.com/onecart/wbe/offers/1917/IlaniCasinoResort?_ga=2.91335826.928640695.1710344868-1849442247.1710344868"
     },
     {
         "name": "Spirit Mountain Casino",
@@ -30,7 +31,8 @@
         "promo day begins": "Unknown",
         "location": "27100 SW Salmon River Hwy, Grand Ronde, OR 97347",
         "phone": "(800) 760-7977",
-        "website": "https://www.spiritmountain.com/"
+        "website": "https://www.spiritmountain.com/",
+        "booking site": "https://book.rguest.com/onecart/wbe/calendar/1909/SMCHotel/RACK?_gl=1*1bobfnp*_ga*MTg5ODkwNDE3My4xNzUzOTU2MjQ5*_ga_2HXJYB8Y41*czE3NTM5NTYyNDkkbzEkZzEkdDE3NTM5NTYyNjEkajQ4JGwwJGgw"
     },
     {
         "name": "Chinook Winds Casino",
@@ -47,7 +49,8 @@
         "location": "1777 NW 44th St, Lincoln City, OR 97367",
         "phone": "(888) 244-6665",
         "website": "https://www.chinookwindscasino.com/",
-        "player portal": "https://chinookwindsportal.tpiwebservices.com/"
+        "player portal": "https://chinookwindsportal.tpiwebservices.com/",
+        "booking site": "https://bookings.travelclick.com/99805?domain=www.chinookwindscasino.com#/guestsandrooms"
     },
     {
         "name": "Lucky Eagle Casino",
@@ -62,7 +65,8 @@
         },
         "location": "12888 188th Avenue SW, Rochester, WA 98579",
         "phone": "(800) 720-1788",
-        "website": "https://luckyeagle.com/"
+        "website": "https://luckyeagle.com/",
+        "booking site": "https://book.rguest.com/onecart/wbe/calendar/1838/LuckyEagle/DAILY?_gl=1*19xfe4m*_ga*OTUxMTY3MDYyLjE3NDcyMzU3MTg.*_ga_YYFDY786ML*czE3NTM5NTU2OTAkbzIkZzEkdDE3NTM5NTU4MDQkajQ3JGwwJGgw#_gl=1*i0kp1*_gcl_au*MTE4ODk3NzQzNS4xNzQ3MjM1NzE4"
     },
     {
         "name": "Little Creek Casino",
@@ -78,7 +82,8 @@
         "location": "91 W State Route 108, Shelton, WA 98584",
         "phone": "(800) 667-7711",
         "website": "https://www.littlecreek.com/",
-        "player portal": "https://littlecreek.joingo.com/"
+        "player portal": "https://littlecreek.joingo.com/",
+        "booking site": "https://book.rguest.com/onecart/wbe/offers/1937/LittleCreekCasinoResort?_gl=1*1d8f4ep*_ga*MjIyNjEwMTQwLjE3NDcyMzUzOTA.*_ga_TVXFPN49ZE*czE3NTM5NTYwODkkbzMkZzAkdDE3NTM5NTYwODkkajYwJGwwJGgw"
     },
     {
         "name": "Red Wind Casino",
@@ -94,7 +99,8 @@
         "location": "12819 Yelm Hwy. SE, Olympia, WA 98513",
         "phone": "(360) 412-5000",
         "website": "https://www.redwindcasino.com/",
-        "player portal": "https://www.redwindcasino.com/club-red/login/"
+        "player portal": "https://www.redwindcasino.com/club-red/login/",
+        "booking site": "N/A"
     },
     {
         "name": "Emerald Queen Casino",
@@ -111,7 +117,8 @@
         "location": "2920 East R St., Tacoma, WA 98404",
         "phone": "(888) 820-3555",
         "website": "https://www.emeraldqueen.com/",
-        "player portal": "https://emeraldqueen.tpiwebservices.com/Account/Login"
+        "player portal": "https://emeraldqueen.tpiwebservices.com/Account/Login",
+        "booking site": "https://book.rguest.com/onecart/wbe/offers/1298/Emerald-Queen-Casino"
     },
     {
         "name": "Lucky Dog Casino",
@@ -127,7 +134,8 @@
         "location": "19330 N US HWY 101, Skokomish, WA 98584",
         "phone": "(360) 384-0777",
         "website": "https://myluckydogcasino.com/",
-        "player portal": "http://ldc.skokomishenterprises.org/Widget/control.aspx#"
+        "player portal": "http://ldc.skokomishenterprises.org/Widget/control.aspx#",
+        "booking site": "N/A"
     },
     {
         "name": "Muckleshoot Casino",
@@ -145,7 +153,8 @@
         "phone": "(800) 804-4944",
         "website": "https://www.muckleshootcasino.com/",
         "player portal": "https://sgwidget.muckleshootcasino.com/widget/Control.aspx?_gl=1*1ldq14k*_gcl_au*MTkyMDc5NDk1Ny4xNzY0NzE5NjI3",
-        "tax docs portal": "https://muckleshootrewardstax.com/"
+        "tax docs portal": "https://muckleshootrewardstax.com/",
+        "booking site": "https://reservations.muckleshootcasino.com/search?locale=en&offerCode=&flow=tf"
     },
     {
         "name": "Snoqualmie Casino",
@@ -162,7 +171,8 @@
         "location": "37500 SE North Bend Way, Snoqualmie, WA 98065",
         "phone": "(425) 888-1234",
         "website": "https://www.snoqualmiecasino.com/",
-        "player portal": "https://club.snocasino.com/?_ga=2.160854644.817421285.1764719205-1124739054.1745531057"
+        "player portal": "https://club.snocasino.com/?_ga=2.160854644.817421285.1764719205-1124739054.1745531057",
+        "booking site": "https://book.snocasino.com/onecart/wbe/calendar/2275/snocasino/BAR?_ga=2.265148495.1114677104.1753956292-233828593.1753956292"
     },
     {
         "name": "Legends Casino",
@@ -177,7 +187,8 @@
         },
         "location": "580 Fort Road, Toppenish, WA 98948",
         "phone": "(509) 865-8800",
-        "website": "https://www.legendscasino.com/"
+        "website": "https://www.legendscasino.com/",
+        "booking site": "https://be.synxis.com/?adult=1&arrive=2025-07-31&chain=21809&child=0&currency=USD&depart=2025-08-01&hotel=77053&level=hotel&locale=en-US&productcurrency=USD&rooms=1"
     },
     {
         "name": "Seven Feathers Casino",
@@ -193,7 +204,8 @@
         "location": "146 Chief Miwaleta Ln, Canyonville, OR 97417",
         "phone": "(888) 677-7771",
         "website": "https://www.sevenfeathers.com/",
-        "player portal": "https://rewards.sevenfeathers.com/"
+        "player portal": "https://rewards.sevenfeathers.com/",
+        "booking site": "https://res.windsurfercrs.com/ibe/default.aspx?hgID=1644"
     },
     {
         "name": "Quil Ceda Creek Casino",
@@ -210,7 +222,8 @@
         "location": "6221 31st Ave NE, Tulalip, WA 98271",
         "phone": "(360) 716-1700",
         "website": "https://www.everythingtulalip.com/casino-properties/quil-ceda-creek-casino/",
-        "player portal": "https://www.everythingtulalip.com/one-club/"
+        "player portal": "https://www.everythingtulalip.com/one-club/",
+        "booking site": "N/A"
     },
     {
         "name": "Tulalip Casino",
@@ -227,7 +240,8 @@
         "location": "10200 Quil Ceda Blvd, Tulalip, WA 98271",
         "phone": "(360) 716-6000",
         "website": "https://www.everythingtulalip.com/casino-properties/tulalip-resort-casino/",
-        "player portal": "https://www.oneclubforall.com/"
+        "player portal": "https://www.oneclubforall.com/",
+        "booking site": "https://www.oneclubforall.com/"
     },
     {
         "name": "Angel of the Winds Casino",
@@ -244,7 +258,8 @@
         "location": "33438 Stoluckquamish Lane, Arlington, Washington 98223",
         "phone": "(877) 394-8210",
         "website": "https://www.angelofthewinds.com/",
-        "player portal": "https://angelofthewinds.com/player-portal-2/"
+        "player portal": "https://angelofthewinds.com/player-portal-2/",
+        "booking site": "https://book.rguest.com/onecart/wbe/calendar/663/angelofthewinds/BAR"
     },
     {
         "name": "Wildhorse Casino",
@@ -260,7 +275,8 @@
         "promo day begins": "Unknown",
         "location": "46510 Wildhorse Blvd, Pendleton, OR 97801",
         "phone": "(800) 654-9453",
-        "website": "https://www.wildhorseresort.com/"
+        "website": "https://www.wildhorseresort.com/",
+        "booking site": "https://book.rguest.com/onecart/wbe/offers/2211/wildhorseresort"
     },
     {
         "name": "Rolling Hills Casino",
@@ -276,6 +292,7 @@
         "promo day begins": "Unknown",
         "location": "2655 Everett Freeman Way, Corning, CA 96021",
         "phone": "(530) 528-3500",
-        "website": "https://rollinghillscasino.com/"
+        "website": "https://rollinghillscasino.com/",
+        "booking site": "https://gettaroom.b4checkin.com/rollinghillscasino"
     }
 ]
