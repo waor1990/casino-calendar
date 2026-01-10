@@ -2,20 +2,16 @@
 REM Casino Calendar - Log Cleanup Launcher
 REM Proxies to the Windows log cleanup utility in scripts\windows
 
-for %%I in ("%~dp0.") do set "CC_ROOT_DIR=%%~fI"
-set "CC_ENV_PATH=%CC_ROOT_DIR%\.env"
+set "CC_ROOT_DIR=%~dp0"
+set "CC_ENV_PATH=%CC_ROOT_DIR%.env"
 set "CC_LOG_SOURCE=root/cleanup.bat"
 call :CC_RESOLVE_LOG_FILE "%CC_ENV_PATH%" "ROOT_CLEANUP_BAT_LOG_FILE" "logs\casino_calendar_batch_cleanup.log" "%CC_ROOT_DIR%"
 
-call :CC_LOG INFO Starting Casino Calendar Log Cleanup...
-call "scripts\windows\cleanup_logs.bat" %*
-set "CC_EXIT_CODE=%ERRORLEVEL%"
-if "%CC_EXIT_CODE%"=="0" (
-    call :CC_LOG INFO Log cleanup completed.
-) else (
-    call :CC_LOG ERROR Log cleanup failed with exit code %CC_EXIT_CODE%.
-)
-exit /b %CC_EXIT_CODE%
+call :CC_LOG INFO Running Casino Calendar log cleanup...
+
+call "scripts\windows\cleanup_logs.bat"
+exit /b %ERRORLEVEL%
+
 
 :CC_READ_ENV
 set "CC_ENV_PATH=%~1"
@@ -50,26 +46,20 @@ for %%I in ("%CC_LOG_FILE%") do set "CC_LOG_DIR=%%~dpI"
 if not exist "%CC_LOG_DIR%" mkdir "%CC_LOG_DIR%" >nul 2>nul
 exit /b 0
 
-:CC_LOG_TIMESTAMP
-for /f "usebackq delims=" %%A in (`powershell -NoProfile -Command "Get-Date -Format \"yyyy-MM-dd HH:mm:ss\""` ) do (
-    set "CC_LOG_TIMESTAMP=%%A"
-)
-exit /b 0
-
 :CC_LOG
 setlocal EnableDelayedExpansion
 set "CC_LEVEL=%~1"
 shift /1
 set "CC_MESSAGE=%*"
-if not defined CC_MESSAGE (
-    echo.
-    endlocal
-    exit /b 0
-)
+if not defined CC_MESSAGE set "CC_MESSAGE="
 if /I "!CC_LEVEL!"=="WARN" set "CC_LEVEL=WARNING"
-call :CC_LOG_TIMESTAMP
-set "CC_LOG_LINE=!CC_LOG_TIMESTAMP! | !CC_LEVEL! | !CC_LOG_SOURCE! | !CC_MESSAGE!"
-echo !CC_MESSAGE!
->> "!CC_LOG_FILE!" echo !CC_LOG_LINE!
+if "!CC_MESSAGE!"=="" (
+    >CON echo.
+) else (
+    >CON echo !CC_MESSAGE!
+)
+if defined CC_LOG_FILE (
+    >> "!CC_LOG_FILE!" echo !CC_LEVEL! | !CC_LOG_SOURCE! | !CC_MESSAGE!
+)
 endlocal
 exit /b 0
