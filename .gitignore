@@ -22,12 +22,7 @@ Thumbs.db
 .idea/
 
 # Logs and artifacts
-*.log
-*.log.1
-*.log.2
-*.log.3
-*.log.4
-*.log.5
+logs/
 
 # Render-specific (if any local build artifacts)
 build/
