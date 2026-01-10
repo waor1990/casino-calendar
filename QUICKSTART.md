@@ -33,7 +33,7 @@ The development server binds to `0.0.0.0:8050`. The startup log shows `http://lo
 - `scripts\windows\cleanup_logs.bat` – Log rotation/cleanup helper
 - `scripts/shell/setup.sh` – Unix-like setup (Python + Node + Sass build)
 - `scripts/shell/test.sh` – Linters plus pytest wrapper
-- `test.bat` / `scripts\windows\test.bat` - Windows test runner (compile checks, linters, CSS lint, pytest); logs timestamped output to `logs\casino_calendar_batch_test_windows.log` (override with `WIN_TEST_BAT_LOG_FILE`)
+- `test.bat` / `scripts\windows\test.bat` - Windows test runner (compile checks, linters, CSS lint, pytest); logs timestamped output to `logs\casino_calendar_batch_test_windows.log` (override with `WIN_TEST_BAT_LOG_FILE`), writes Bandit/Pydocstyle reports to `logs\bandit_report.txt` and `logs\pydocstyle_report.txt` (Bandit/Pydocstyle focus on `src\casino_calendar` plus `app.py`/`wsgi.py` via `config\linting\bandit.yaml` and `config\linting\pydocstyle.ini`)
 - `scripts/python/check_environment.py` - Validate Python/Node/npm versions (supports `--auto-fix` with Volta)
 - `scripts/python/verify_requirements.py` - Compare installed packages to `requirements.txt`
 
@@ -65,6 +65,7 @@ python app.py
 - `LOG_LEVEL` - Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 - `LOG_FILE` - Optional log file path
 - `*_BAT_LOG_FILE` - Batch script log destinations (see `.env.example` for defaults)
+- Batch script logs mirror console output and apply the standard `timestamp | level | source | message` format
 - `DASH_HOST` - Bind address for the Dash server (default: `0.0.0.0`)
 - `DASH_PUBLIC_HOST` - Optional LAN address to advertise in startup logs (overrides auto-detect)
 

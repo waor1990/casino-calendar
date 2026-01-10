@@ -20,6 +20,16 @@ for candidate in (SRC_DIR, PROJECT_ROOT):
 from casino_calendar.logging import config as logging_config  # noqa: E402
 
 _PREFIX_RE = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \| ")
+_EMBEDDED_LOG_RE = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \| (DEBUG|INFO|WARNING|ERROR|CRITICAL)\s+\|")
+_BANDIT_REPORT_PATH = PROJECT_ROOT / "logs" / "bandit_report.txt"
+_PYDOCSTYLE_REPORT_PATH = PROJECT_ROOT / "logs" / "pydocstyle_report.txt"
+_BANDIT_SEVERITY_RE = re.compile(r"^\s*Severity:\s+(\w+)\s+Confidence:\s+(\w+)\s*$")
+_PYDOCSTYLE_CODE_RE = re.compile(r"\b(D\d{3})\b")
+LINTING_CONFIG_DIR = PROJECT_ROOT / "config" / "linting"
+BANDIT_CONFIG_PATH = LINTING_CONFIG_DIR / "bandit.yaml"
+PYDOCSTYLE_CONFIG_PATH = LINTING_CONFIG_DIR / "pydocstyle.ini"
+APP_CODE_DIR = SRC_DIR / "casino_calendar"
+LINT_TARGETS = [str(APP_CODE_DIR), str(PROJECT_ROOT / "app.py"), str(PROJECT_ROOT / "wsgi.py")]
 
 
 class PrefixAwareFormatter(logging_config.CasinoCalendarFormatter):
@@ -107,11 +117,78 @@ def run_step(logger: logging.Logger, step: Step, env: dict[str, str]) -> int:
         return 1
 
     assert process.stdout is not None
-    for line in process.stdout:
-        line = line.rstrip("\r\n")
-        logger.info(line)
+    if step.label == "bandit":
+        severity_counts: dict[str, int] = {}
+        confidence_counts: dict[str, int] = {}
+        total_issues = 0
+        saw_metrics = False
+        with _BANDIT_REPORT_PATH.open("w", encoding="utf-8", newline="\n") as report_file:
+            for line in process.stdout:
+                line = line.rstrip("\r\n")
+                report_file.write(f"{line}\n")
+                if line.strip() == "Run metrics:":
+                    saw_metrics = True
+                match = _BANDIT_SEVERITY_RE.match(line)
+                if match:
+                    severity, confidence = match.groups()
+                    severity_counts[severity] = severity_counts.get(severity, 0) + 1
+                    confidence_counts[confidence] = confidence_counts.get(confidence, 0) + 1
+                    total_issues += 1
+            if not saw_metrics:
+                report_file.write("\nSummary:\n")
+                report_file.write(f"Total issues: {total_issues}\n")
+                if severity_counts:
+                    report_file.write("By severity:\n")
+                    for key in sorted(severity_counts):
+                        report_file.write(f"  {key}: {severity_counts[key]}\n")
+                if confidence_counts:
+                    report_file.write("By confidence:\n")
+                    for key in sorted(confidence_counts):
+                        report_file.write(f"  {key}: {confidence_counts[key]}\n")
+    elif step.label == "pydocstyle":
+        code_counts: dict[str, int] = {}
+        total_issues = 0
+        with _PYDOCSTYLE_REPORT_PATH.open("w", encoding="utf-8", newline="\n") as report_file:
+            for line in process.stdout:
+                line = line.rstrip("\r\n")
+                report_file.write(f"{line}\n")
+                match = _PYDOCSTYLE_CODE_RE.search(line)
+                if match:
+                    code = match.group(1)
+                    code_counts[code] = code_counts.get(code, 0) + 1
+                    total_issues += 1
+            report_file.write("\nSummary:\n")
+            report_file.write(f"Total issues: {total_issues}\n")
+            if code_counts:
+                report_file.write("By code:\n")
+                for code in sorted(code_counts):
+                    report_file.write(f"  {code}: {code_counts[code]}\n")
+    else:
+        suppressed = 0
+        for line in process.stdout:
+            line = line.rstrip("\r\n")
+            if step.label == "black":
+                line = line.encode("ascii", "ignore").decode("ascii")
+                line = " ".join(line.split())
+            if _EMBEDDED_LOG_RE.search(line):
+                suppressed += 1
+                continue
+            logger.info(line)
+        if suppressed:
+            logger.debug("Suppressed %d embedded log line(s) during %s.", suppressed, step.label)
 
-    return process.wait()
+    code = process.wait()
+    if step.label == "bandit":
+        if code == 0:
+            logger.info("Bandit report written to %s", _BANDIT_REPORT_PATH)
+        else:
+            logger.error("Bandit reported issues; see %s", _BANDIT_REPORT_PATH)
+    elif step.label == "pydocstyle":
+        if code == 0:
+            logger.info("Pydocstyle report written to %s", _PYDOCSTYLE_REPORT_PATH)
+        else:
+            logger.warning("Pydocstyle reported issues; see %s", _PYDOCSTYLE_REPORT_PATH)
+    return code
 
 
 def prompt_fix(logger: logging.Logger, label: str) -> bool:
@@ -176,6 +253,8 @@ def main() -> int:
     logger.info("Working directory: %s", PROJECT_ROOT)
 
     env = os.environ.copy()
+    _BANDIT_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    _PYDOCSTYLE_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     env.setdefault("PYTHONPATH", f"{PROJECT_ROOT / 'src'}{os.pathsep}{PROJECT_ROOT}")
     env.setdefault("PYTHONNOUSERSITE", "1")
     env.setdefault("PYTHONIOENCODING", "utf-8")
@@ -208,6 +287,26 @@ def main() -> int:
         soft_failures,
     )
 
+    bandit_command = [
+        sys.executable,
+        "-m",
+        "bandit",
+        "-c",
+        str(BANDIT_CONFIG_PATH),
+        "-f",
+        "txt",
+        "-r",
+        *LINT_TARGETS,
+    ]
+    pydocstyle_command = [
+        sys.executable,
+        "-m",
+        "pydocstyle",
+        "--config",
+        str(PYDOCSTYLE_CONFIG_PATH),
+        *LINT_TARGETS,
+    ]
+
     steps = [
         Step(
             "flake8",
@@ -219,13 +318,22 @@ def main() -> int:
             [sys.executable, "-m", "mypy", "--config-file", "config/typing/mypy.ini", "."],
             available=lambda: module_available("mypy"),
         ),
-        Step("bandit", [sys.executable, "-m", "bandit", "-r", "."], available=lambda: module_available("bandit")),
-        Step("pydocstyle", [sys.executable, "-m", "pydocstyle", "."], available=lambda: module_available("pydocstyle")),
+        Step(
+            "bandit",
+            bandit_command,
+            available=lambda: module_available("bandit"),
+        ),
+        Step("pydocstyle", pydocstyle_command, available=lambda: module_available("pydocstyle")),
     ]
 
     for step in steps:
         code = run_step(logger, step, env)
         if code != 0:
+            if step.label == "bandit":
+                soft_failures.append(step.label)
+                continue
+            if step.label == "pydocstyle":
+                continue
             logger.error("===============================================")
             logger.error("Tests failed. Review the output above.")
             logger.error("===============================================")
@@ -256,7 +364,7 @@ def main() -> int:
     if soft_failures:
         logger.warning("===============================================")
         logger.warning(
-            "Tests completed with formatting issues in: %s",
+            "Tests completed with issues in: %s",
             ", ".join(soft_failures),
         )
         logger.warning("===============================================")

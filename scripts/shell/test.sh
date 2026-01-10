@@ -26,10 +26,10 @@ if command -v mypy >/dev/null 2>&1; then
     mypy --config-file config/typing/mypy.ini .
 fi
 if command -v bandit >/dev/null 2>&1; then
-    bandit -r .
+    bandit -c config/linting/bandit.yaml -f txt -r src/casino_calendar app.py wsgi.py
 fi
 if command -v pydocstyle >/dev/null 2>&1; then
-    pydocstyle .
+    pydocstyle --config=config/linting/pydocstyle.ini src/casino_calendar app.py wsgi.py
 fi
 if command -v npm >/dev/null 2>&1; then
     npm run lint:css

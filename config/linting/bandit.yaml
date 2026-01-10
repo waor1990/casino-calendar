@@ -1,0 +1,14 @@
+exclude:
+  - .venv
+  - node_modules
+  - tests
+  - docs
+  - scripts
+  - logs
+  - assets
+  - legacy
+  - data
+  - deploy
+  - .mypy_cache
+  - .pytest_cache
+  - __pycache__
