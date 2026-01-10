@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Callable, Iterable, Optional
 
 from casino_calendar import settings
+from casino_calendar.logging import rotation as rotation_utils
 
 # Ensure logging picks up environment variables loaded centrally via settings.
 ENV_FILE: Path = settings.ENV_FILE
@@ -25,18 +26,8 @@ ENV_FILE: Path = settings.ENV_FILE
 CleanupFn = Callable[[str, int], int]
 SetupFn = Callable[[str, str, int, int, int, bool], logging.Logger]
 
-# Declare optional callables; assign within try/except to satisfy mypy
-cleanup_old_logs: Optional[CleanupFn]
-setup_rotating_logger: Optional[SetupFn]
-
-try:
-    from casino_calendar.logging import rotation as rotation_utils
-
-    cleanup_old_logs = rotation_utils.cleanup_old_logs
-    setup_rotating_logger = rotation_utils.setup_rotating_logger
-except ImportError:
-    cleanup_old_logs = None
-    setup_rotating_logger = None
+cleanup_old_logs: CleanupFn = rotation_utils.cleanup_old_logs
+setup_rotating_logger: SetupFn = rotation_utils.setup_rotating_logger
 
 
 _LEVEL_MAP = {
@@ -64,6 +55,9 @@ _HTTP_LOGGER_NAMES = (
 
 _HTTP_LOG_BASE_PATH: Optional[Path] = None
 _HTTP_FILE_HANDLER: Optional[RotatingFileHandler] = None
+_HANDLER_ROLE_ATTR = "_casino_handler_role"
+_CONSOLE_ROLE = "console"
+_FILE_ROLE = "file"
 
 
 def _http_logs_are_suppressed() -> bool:
@@ -230,6 +224,82 @@ def _get_http_suppression_filter() -> _HttpSuppressionFilter:
     return _HTTP_SUPPRESSION_FILTER
 
 
+def _apply_filter(handler: logging.Handler, filter_instance: Optional[logging.Filter]) -> None:
+    if filter_instance is None:
+        handler.filters = [existing for existing in handler.filters if not isinstance(existing, _HttpSuppressionFilter)]
+        return
+    if filter_instance not in handler.filters:
+        handler.addFilter(filter_instance)
+
+
+def _find_handler(logger: logging.Logger, role: str) -> Optional[logging.Handler]:
+    for handler in logger.handlers:
+        if getattr(handler, _HANDLER_ROLE_ATTR, None) == role:
+            return handler
+    return None
+
+
+def _ensure_console_handler(
+    logger: logging.Logger,
+    *,
+    level: int,
+    formatter: logging.Formatter,
+    http_filter: Optional[logging.Filter],
+    stream: Optional[object] = None,
+    role: str = _CONSOLE_ROLE,
+) -> None:
+    handler = _find_handler(logger, role)
+    if handler is None:
+        handler = logging.StreamHandler(stream or sys.stderr)
+        setattr(handler, _HANDLER_ROLE_ATTR, role)
+        logger.addHandler(handler)
+
+    handler.setLevel(level)
+    handler.setFormatter(formatter)
+    _apply_filter(handler, http_filter)
+
+
+def _ensure_file_handler(
+    logger: logging.Logger,
+    *,
+    log_path: Path,
+    level: int,
+    max_bytes: int,
+    backup_count: int,
+    formatter: logging.Formatter,
+    minimal_filter: Optional[logging.Filter],
+    role: str = _FILE_ROLE,
+) -> None:
+    handler = _find_handler(logger, role)
+    if handler is not None and isinstance(handler, RotatingFileHandler):
+        existing_path = Path(handler.baseFilename)
+        if existing_path != log_path:
+            logger.removeHandler(handler)
+            try:
+                handler.close()
+            finally:
+                handler = None
+    else:
+        handler = None
+
+    if handler is None:
+        handler = RotatingFileHandler(
+            str(log_path),
+            maxBytes=max_bytes,
+            backupCount=backup_count,
+            encoding="utf-8",
+        )
+        setattr(handler, _HANDLER_ROLE_ATTR, role)
+        logger.addHandler(handler)
+
+    handler.setLevel(level)
+    handler.setFormatter(formatter)
+    if minimal_filter is None:
+        handler.filters = [existing for existing in handler.filters if not isinstance(existing, _MinimalTestFilter)]
+    elif minimal_filter not in handler.filters:
+        handler.addFilter(minimal_filter)
+
+
 class CasinoCalendarFormatter(logging.Formatter):
     """Custom formatter with enhanced formatting for different log levels."""
 
@@ -327,23 +397,19 @@ def setup_logger(name: str, log_file: Optional[str] = None, level: Optional[int]
     """
     logger = logging.getLogger(name)
 
-    # Avoid duplicate handlers if logger already configured
-    if logger.handlers:
-        return logger
-
     resolved_level = level if level is not None else get_log_level()
     logger.setLevel(resolved_level)
 
     # Suppress noisy HTTP request logs from console (but keep in file)
     http_filter = _suppress_http_logs()
 
-    # Console handler
-    console_handler = logging.StreamHandler(sys.stderr)
-    console_handler.setLevel(resolved_level)
-    console_handler.setFormatter(CasinoCalendarFormatter(use_colors=True))
-    if http_filter is not None:
-        console_handler.addFilter(http_filter)
-    logger.addHandler(console_handler)
+    _ensure_console_handler(
+        logger,
+        level=resolved_level,
+        formatter=CasinoCalendarFormatter(use_colors=True),
+        http_filter=http_filter,
+        stream=sys.stderr,
+    )
 
     # File handler - use log_file parameter or fall back to LOG_FILE env var
     file_path = log_file or os.getenv("LOG_FILE")
@@ -355,12 +421,16 @@ def setup_logger(name: str, log_file: Optional[str] = None, level: Optional[int]
         max_bytes = 10 * 1024 * 1024  # 10MB per file
         backup_count = 5  # Keep 5 backup files
 
-        file_handler = RotatingFileHandler(file_path, maxBytes=max_bytes, backupCount=backup_count, encoding="utf-8")
-        file_handler.setLevel(logging.DEBUG)  # File gets all levels
-        file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
-        if _should_apply_minimal_filter(log_path):
-            file_handler.addFilter(_MinimalTestFilter())
-        logger.addHandler(file_handler)
+        minimal_filter = _MinimalTestFilter() if _should_apply_minimal_filter(log_path) else None
+        _ensure_file_handler(
+            logger,
+            log_path=log_path,
+            level=logging.DEBUG,
+            max_bytes=max_bytes,
+            backup_count=backup_count,
+            formatter=CasinoCalendarFormatter(use_colors=False),
+            minimal_filter=minimal_filter,
+        )
         _ensure_http_file_handler(log_path)
 
     # Prevent propagation to root logger to avoid duplicate messages
@@ -400,7 +470,7 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
 
     archive_directory = log_file.parent / "archive"
     archive_mode = os.getenv("ARCHIVE_APP_LOG_ON_STARTUP", "false").lower()
-    if log_file.exists() and setup_rotating_logger is not None:
+    if log_file.exists():
         try:
             if archive_mode in {"true", "1", "yes", "on", "move"}:
                 archived_path = rotation_utils.archive_current_log(
@@ -422,44 +492,42 @@ def setup_production_logger(name: str = "casino_calendar") -> logging.Logger:
             print(f"Warning: Could not process archive for {log_file}: {exc}")
 
     # Clean up old logs (keep last 30 days)
-    if cleanup_old_logs is not None:
-        try:
-            deleted_count = cleanup_old_logs(str(log_file.parent), 30)
-            if deleted_count > 0:
-                print(f"Cleaned up {deleted_count} old log files")
-        except Exception as e:
-            print(f"Warning: Could not clean up old logs: {e}")
+    try:
+        deleted_count = cleanup_old_logs(str(log_file.parent), 30)
+        if deleted_count > 0:
+            print(f"Cleaned up {deleted_count} old log files")
+    except Exception as e:
+        print(f"Warning: Could not clean up old logs: {e}")
 
-    # Use custom rotating logger if available, otherwise fallback
+    # Use custom rotating logger for production
     minimal_filter: Optional[_MinimalTestFilter] = None
     if _should_apply_minimal_filter(log_file):
         minimal_filter = _MinimalTestFilter()
 
-    if setup_rotating_logger is not None:
-        logger = setup_rotating_logger(
-            name,
-            str(log_file),
-            logging.INFO,  # Production level
-            10 * 1024 * 1024,  # 10MB
-            5,
-            True,
-        )
-        if http_filter is not None:
-            for handler in logger.handlers:
-                if isinstance(handler, logging.StreamHandler):
-                    handler.addFilter(http_filter)
+    logger = setup_rotating_logger(
+        name,
+        str(log_file),
+        logging.INFO,  # Production level
+        10 * 1024 * 1024,  # 10MB
+        5,
+        True,
+    )
+    if http_filter is not None:
         for handler in logger.handlers:
-            if isinstance(handler, logging.FileHandler) and Path(handler.baseFilename).name == log_file.name:
-                _ensure_http_file_handler(Path(handler.baseFilename))
-        if minimal_filter:
-            for handler in logger.handlers:
-                if isinstance(handler, RotatingFileHandler) and Path(handler.baseFilename).name == log_file.name:
-                    handler.addFilter(minimal_filter)
-        logger.info("Configured production logging with rotation")
-    else:
-        # Fallback to standard setup
-        logger = setup_logger(name, str(log_file))
-        logger.info("Configured standard logging")
+            if isinstance(handler, logging.StreamHandler):
+                _apply_filter(handler, http_filter)
+                setattr(handler, _HANDLER_ROLE_ATTR, _CONSOLE_ROLE)
+    for handler in logger.handlers:
+        if isinstance(handler, logging.FileHandler) and Path(handler.baseFilename).name == log_file.name:
+            _ensure_http_file_handler(Path(handler.baseFilename))
+            setattr(handler, _HANDLER_ROLE_ATTR, _FILE_ROLE)
+            if minimal_filter:
+                handler.addFilter(minimal_filter)
+        if isinstance(handler, logging.StreamHandler):
+            handler.setFormatter(CasinoCalendarFormatter(use_colors=True))
+        elif isinstance(handler, logging.FileHandler):
+            handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
+    logger.info("Configured production logging with rotation")
 
     if not getattr(logger, "_casino_shutdown_registered", False):
 
@@ -506,28 +574,33 @@ def setup_maintenance_logger(
     """Configure a logger for setup, cleanup, and maintenance scripts."""
 
     logger = logging.getLogger(name)
-    if logger.handlers:
-        return logger
-
     level = get_maintenance_log_level()
     logger.setLevel(logging.DEBUG)
 
     log_path = get_maintenance_log_path()
 
-    file_handler = RotatingFileHandler(str(log_path), maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8")
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(CasinoCalendarFormatter(use_colors=False))
-    logger.addHandler(file_handler)
+    _ensure_file_handler(
+        logger,
+        log_path=log_path,
+        level=logging.DEBUG,
+        max_bytes=5 * 1024 * 1024,
+        backup_count=3,
+        formatter=CasinoCalendarFormatter(use_colors=False),
+        minimal_filter=None,
+        role=f"{_FILE_ROLE}_maintenance",
+    )
     _ensure_http_file_handler(log_path)
 
     http_filter = _suppress_http_logs()
 
-    console_handler = logging.StreamHandler(sys.__stdout__)
-    console_handler.setLevel(level)
-    console_handler.setFormatter(logging.Formatter("%(message)s"))
-    if http_filter is not None:
-        console_handler.addFilter(http_filter)
-    logger.addHandler(console_handler)
+    _ensure_console_handler(
+        logger,
+        level=level,
+        formatter=logging.Formatter("%(message)s"),
+        http_filter=http_filter,
+        stream=sys.__stdout__,
+        role=f"{_CONSOLE_ROLE}_maintenance",
+    )
 
     logger.propagate = False
 
