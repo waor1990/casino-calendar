@@ -94,7 +94,7 @@ When using `python-dotenv`, environment variables are loaded from `.env` in the 
 ## Dependency automation
 
 - Windows: `scripts\windows\setup.bat` checks the venv, compares installed packages to `requirements.txt`, dry-runs pip for conflicts, and installs updates on request; it also validates `package.json` and runs `npm install`.
-- Linux/macOS: `bash scripts/shell/setup.sh` upgrades pip, installs Python requirements, installs Node dependencies, and builds CSS.
+- Linux/macOS: `bash scripts/shell/setup.sh` upgrades pip, installs Python requirements, installs Node dependencies, and builds CSS. If `core.hooksPath` is set, pre-commit hooks are skipped; run `git config --unset-all core.hooksPath` to enable hooks.
 - Any OS: `python scripts/python/verify_requirements.py` checks installed packages against `requirements.txt`; `python scripts/python/check_environment.py --auto-fix` validates Python/Node/npm versions and can update Node via Volta.
 
 ---

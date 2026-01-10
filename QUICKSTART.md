@@ -18,7 +18,7 @@ The full-featured scripts live under `scripts\windows\` if you want to call them
 
 ```bash
 # Bootstrap dependencies, build CSS, and install pre-commit hooks
-bash scripts/shell/setup.sh
+source scripts/shell/setup.sh
 
 # Run the Dash app
 python app.py
@@ -31,7 +31,7 @@ The development server binds to `0.0.0.0:8050`. The startup log shows `http://lo
 - `setup.bat` / `scripts\windows\setup.bat` – Complete Windows setup
 - `run.bat` / `scripts\windows\run_direct.bat` – Start the Dash server on Windows
 - `scripts\windows\cleanup_logs.bat` – Log rotation/cleanup helper
-- `scripts/shell/setup.sh` – Unix-like setup (Python + Node + Sass build)
+- `scripts/shell/setup.sh` – Unix-like setup (Python + Node + Sass build). If `core.hooksPath` is set, pre-commit hooks are skipped; run `git config --unset-all core.hooksPath` to enable hooks.
 - `scripts/shell/test.sh` – Linters plus pytest wrapper
 - `test.bat` / `scripts\windows\test.bat` - Windows test runner (compile checks, linters, CSS lint, pytest); logs timestamped output to `logs\casino_calendar_batch_test_windows.log` (override with `WIN_TEST_BAT_LOG_FILE`), writes Bandit/Pydocstyle reports to `logs\bandit_report.txt` and `logs\pydocstyle_report.txt` (Bandit/Pydocstyle focus on `src\casino_calendar` plus `app.py`/`wsgi.py` via `config\linting\bandit.yaml` and `config\linting\pydocstyle.ini`)
 - `scripts/python/check_environment.py` - Validate Python/Node/npm versions (supports `--auto-fix` with Volta)

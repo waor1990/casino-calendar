@@ -9,8 +9,15 @@ if [ ! -d ".venv" ]; then
     python3 -m venv .venv
 fi
 
-# Activate the venv (will work within Codex)
-source .venv/bin/activate
+# Activate the venv (prefer Unix path, fallback to Windows path)
+if [ -f ".venv/bin/activate" ]; then
+    source .venv/bin/activate
+elif [ -f ".venv/Scripts/activate" ]; then
+    source .venv/Scripts/activate
+else
+    echo "[ERROR] Could not find venv activation script in .venv."
+    exit 1
+fi
 
 # Now install Python dependencies
 if [ -f requirements.txt ]; then
@@ -26,5 +33,11 @@ fi
 
 # Install pre-commit hooks if available
 if command -v pre-commit >/dev/null 2>&1; then
-    pre-commit install
+    hooks_path="$(git config --get core.hooksPath || true)"
+    if [ -n "$hooks_path" ]; then
+        echo "[WARN] Skipping pre-commit install because core.hooksPath is set to '$hooks_path'."
+        echo "       To enable hooks, run: git config --unset-all core.hooksPath"
+    else
+        pre-commit install
+    fi
 fi
