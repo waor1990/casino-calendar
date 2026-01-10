@@ -18,6 +18,10 @@ from casino_calendar.bootstrap import bootstrap_environment  # noqa: E402
 
 bootstrap_environment(PROJECT_ROOT)
 
+from casino_calendar.logging.config import setup_logging  # noqa: E402
+
+setup_logging("casino_calendar")
+
 CreateDashAppType = Callable[[], Tuple[Any, Any]]
 
 create_dash_app = cast(

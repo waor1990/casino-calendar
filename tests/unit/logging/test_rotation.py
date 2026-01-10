@@ -19,7 +19,10 @@ _write_lines_with_fallback = rotation._write_lines_with_fallback
 
 
 def _line(year: int, month: int, day: int, message: str) -> str:
-    return f"{year:04d}-{month:02d}-{day:02d} 10:00:00 | INFO     | test.module       | {message}\n"
+    return (
+        f"{year:04d}-{month:02d}-{day:02d} 10:00:00.000 | INFO     | "
+        f"pid=1 tid=1 | test.module:test_func:1 | service=app env=local | {message}\n"
+    )
 
 
 class FrozenDateTime(datetime.datetime):

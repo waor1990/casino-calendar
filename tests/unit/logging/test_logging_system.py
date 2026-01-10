@@ -2,14 +2,18 @@
 
 import contextlib
 import importlib
+import io
+import json
 import logging
 import os
-import tempfile
+import re
+from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
+from casino_calendar.logging import app_logging
 from casino_calendar.logging import config as logging_config
 
 
@@ -67,35 +71,118 @@ def test_get_maintenance_log_path_override(tmp_path, monkeypatch):
     assert resolved.parent.exists()
 
 
-def test_setup_logger_basic():
-    """Test basic logger setup."""
-    logger = logging_config.setup_logger("test_logger")
-    assert logger.name == "test_logger"
-    assert len(logger.handlers) > 0
+def test_setup_logging_is_idempotent(tmp_path, monkeypatch):
+    log_file = tmp_path / "app.log"
+    monkeypatch.setenv("LOG_FILE", str(log_file))
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
+
+    logger = app_logging.setup_logging("test_idempotent")
+    handler_ids_first = [id(handler) for handler in logger.handlers]
+
+    logger = app_logging.setup_logging("test_idempotent")
+    handler_ids_second = [id(handler) for handler in logger.handlers]
+
+    assert handler_ids_first == handler_ids_second
+    assert len(logger.handlers) == 2
 
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
         handler.close()
 
 
-def test_setup_logger_with_file():
-    """Test logger setup with file output."""
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".log", delete=False) as tmp:
-        log_file = tmp.name
+def test_console_format_pattern(tmp_path, monkeypatch):
+    log_stream = io.StringIO()
+    log_file = tmp_path / "console.log"
+    monkeypatch.setenv("LOG_FILE", str(log_file))
 
-    try:
-        logger = logging_config.setup_logger("test_file_logger", log_file=log_file)
-        assert len(logger.handlers) == 2  # Console + file handlers
+    logger = app_logging.setup_logging("test_console", console_stream=log_stream, level=logging.INFO)
+    logger.info("Console format check")
 
-        logger.info("Test log message")
+    output = log_stream.getvalue().strip()
+    assert re.search(r"\d{2}:\d{2}:\d{2} \| INFO\s+\|", output)
+    assert "test_logging_system" in output
+    assert "test_console_format_pattern" in output
 
-        with open(log_file, "r", encoding="utf-8") as file_handle:
-            content = file_handle.read()
-            assert "Test log message" in content
-    finally:
-        for handler in logger.handlers[:]:
-            logger.removeHandler(handler)
-            handler.close()
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+        handler.close()
+
+
+def test_file_format_and_rotation(tmp_path, monkeypatch):
+    log_file = tmp_path / "app.log"
+    monkeypatch.setenv("LOG_FILE", str(log_file))
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+
+    logger = app_logging.setup_logging("test_file_format")
+    logger.info("File format check")
+
+    file_handler = next(handler for handler in logger.handlers if isinstance(handler, TimedRotatingFileHandler))
+    file_handler.flush()
+    content = log_file.read_text(encoding="utf-8")
+    assert re.search(
+        r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} \| INFO\s+\| pid=\d+ tid=\d+ \|",
+        content,
+    )
+
+    file_handler.doRollover()
+
+    rotated_files = list(tmp_path.glob("app.log.*"))
+    assert rotated_files
+
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+        handler.close()
+
+
+def test_context_enrichment_with_adapter(tmp_path, monkeypatch):
+    log_file = tmp_path / "context.log"
+    monkeypatch.setenv("LOG_FILE", str(log_file))
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+
+    adapter = app_logging.get_context_logger(
+        "test_context",
+        request_id="req-123",
+        user_id="user-42",
+    )
+    adapter.info("Context test")
+
+    for handler in adapter.logger.handlers:
+        if hasattr(handler, "flush"):
+            handler.flush()
+
+    content = log_file.read_text(encoding="utf-8")
+    assert "request_id=req-123" in content
+    assert "user_id=user-42" in content
+
+    for handler in adapter.logger.handlers[:]:
+        adapter.logger.removeHandler(handler)
+        handler.close()
+
+
+def test_env_toggles_log_dir_and_json(tmp_path, monkeypatch):
+    monkeypatch.setenv("LOG_DIR", str(tmp_path / "logs"))
+    monkeypatch.setenv("LOG_FILE_JSON", "true")
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+
+    logger = app_logging.setup_logging("test_json")
+    logger.info("json payload")
+
+    for handler in logger.handlers:
+        if hasattr(handler, "flush"):
+            handler.flush()
+
+    log_file = Path(os.environ["LOG_DIR"]) / "app.log"
+    assert log_file.exists()
+
+    line = log_file.read_text(encoding="utf-8").strip()
+    payload = json.loads(line)
+    assert payload["message"] == "json payload"
+    assert payload["level"] == "INFO"
+
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+        handler.close()
 
 
 def test_logging_import_ignores_cwd_dotenv(tmp_path, monkeypatch):
@@ -160,7 +247,7 @@ def test_http_access_logs_written_when_not_suppressed(tmp_path, monkeypatch):
             http_logger.addHandler(handler)
 
         monkeypatch.setenv("SUPPRESS_HTTP_LOGS", "true")
-        logging_config._suppress_http_logs()
+        app_logging._suppress_http_logs()
 
         with contextlib.suppress(FileNotFoundError):
             os.remove(http_log_path)
@@ -199,9 +286,9 @@ def test_setup_production_logger_archives_existing(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     log_dir = Path("logs")
     log_dir.mkdir()
-    log_file = log_dir / "casino_calendar.log"
+    log_file = log_dir / "app.log"
     log_file.write_text(
-        "2025-09-01 10:00:00 | INFO     | casino_calendar | old log content\n",
+        "2025-09-01 10:00:00.000 | INFO     | pid=1 tid=1 | module:func:1 | service=app | old log content\n",
         encoding="utf-8",
     )
 
@@ -214,7 +301,7 @@ def test_setup_production_logger_archives_existing(tmp_path, monkeypatch):
     try:
         assert log_file.exists()
         archive_dir = log_dir / "archive"
-        all_file = archive_dir / "casino_calendar_all.log"
+        all_file = archive_dir / "app_all.log"
         assert all_file.exists()
         assert "old log content" in all_file.read_text(encoding="utf-8")
     finally:
@@ -223,11 +310,9 @@ def test_setup_production_logger_archives_existing(tmp_path, monkeypatch):
             handler.close()
 
 
-def test_formatter():
-    """Test custom formatter."""
-    formatter = logging_config.CasinoCalendarFormatter(use_colors=False)
-
-    import logging
+def test_console_formatter():
+    """Test custom console formatter."""
+    formatter = app_logging.ConsoleFormatter(use_colors=False, use_rich_markup=False)
 
     record = logging.LogRecord(
         name="test_module",
@@ -237,11 +322,12 @@ def test_formatter():
         msg="Test message",
         args=(),
         exc_info=None,
+        func="test_func",
     )
 
     formatted = formatter.format(record)
     assert "INFO" in formatted
-    assert "test_module" in formatted
+    assert "test:test_func:1" in formatted
     assert "Test message" in formatted
 
 
@@ -268,7 +354,7 @@ def test_app_import_with_logging():
 def test_minimal_log_mode_filters_production_messages(tmp_path, monkeypatch):
     log_dir = tmp_path / "logs"
     log_dir.mkdir()
-    prod_log = log_dir / "casino_calendar_prod.log"
+    prod_log = log_dir / "app.log"
     monkeypatch.setenv("LOG_FILE", str(prod_log))
     monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "1")
 

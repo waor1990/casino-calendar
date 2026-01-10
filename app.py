@@ -16,6 +16,10 @@ from casino_calendar.bootstrap import bootstrap_environment  # noqa: E402
 
 bootstrap_environment(PROJECT_ROOT)
 
+from casino_calendar.logging.config import setup_logging  # noqa: E402
+
+setup_logging("casino_calendar")
+
 from casino_calendar.dash_app import create_dash_app  # noqa: E402
 from casino_calendar.dash_app.app import run_app  # noqa: E402
 

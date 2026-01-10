@@ -63,7 +63,10 @@ python app.py
 ## 📊 Environment Variables
 
 - `LOG_LEVEL` - Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-- `LOG_FILE` - Optional log file path
+- `LOG_DIR` - Directory for log output (default: `./logs`)
+- `LOG_FILE` - Optional log file path override (default: `LOG_DIR/app.log`)
+- `LOG_DEBUG_FILE` - Optional debug log override (set blank to disable)
+- `LOG_FILE_JSON` - Set `true` to emit JSON log lines to files
 - `*_BAT_LOG_FILE` - Batch script log destinations (see `.env.example` for defaults)
 - Batch script logs mirror console output and apply the standard `timestamp | level | source | message` format
 - `DASH_HOST` - Bind address for the Dash server (default: `0.0.0.0`)
@@ -74,6 +77,7 @@ Example:
 ```cmd
 set LOG_LEVEL=DEBUG
 set LOG_FILE=app.log
+set LOG_FILE_JSON=true
 run.bat
 ```
 
