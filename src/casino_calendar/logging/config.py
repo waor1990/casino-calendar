@@ -11,6 +11,7 @@ This module provides centralized logging setup with the following features:
 import atexit
 import logging
 import os
+import re
 import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -50,6 +51,13 @@ _HTTP_LOGGER_NAMES = (
     "gunicorn.access",
     "uvicorn.access",
     "cherrypy.access",
+)
+_MAINTENANCE_LOGGER_BLOCKLIST = (
+    "casino_calendar.tests",
+    "casino_calendar.scripts.run_tests",
+)
+_MAINTENANCE_EMBEDDED_LOG_RE = re.compile(
+    r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \| (DEBUG|INFO|WARNING|ERROR|CRITICAL)\s+\|"
 )
 
 
@@ -212,7 +220,30 @@ class _HttpSuppressionFilter(logging.Filter):
                 pass
 
 
+class _MaintenanceDedupFilter(logging.Filter):
+    """Filter that drops duplicate entries from the maintenance log."""
+
+    def __init__(self, blocked_prefixes: Iterable[str]):
+        super().__init__()
+        self._blocked_prefixes = tuple(blocked_prefixes)
+
+    def _is_blocked_logger(self, name: str) -> bool:
+        for prefix in self._blocked_prefixes:
+            if name == prefix or name.startswith(f"{prefix}."):
+                return True
+        return False
+
+    def filter(self, record: logging.LogRecord) -> bool:  # type: ignore[override]
+        if self._is_blocked_logger(record.name):
+            return False
+        message = record.getMessage()
+        if _MAINTENANCE_EMBEDDED_LOG_RE.search(message):
+            return False
+        return True
+
+
 _HTTP_SUPPRESSION_FILTER: Optional[_HttpSuppressionFilter] = None
+_MAINTENANCE_DEDUP_FILTER: Optional[_MaintenanceDedupFilter] = None
 
 
 def _get_http_suppression_filter() -> _HttpSuppressionFilter:
@@ -222,6 +253,13 @@ def _get_http_suppression_filter() -> _HttpSuppressionFilter:
     else:
         _HTTP_SUPPRESSION_FILTER._notified = False
     return _HTTP_SUPPRESSION_FILTER
+
+
+def _get_maintenance_dedup_filter() -> _MaintenanceDedupFilter:
+    global _MAINTENANCE_DEDUP_FILTER
+    if _MAINTENANCE_DEDUP_FILTER is None:
+        _MAINTENANCE_DEDUP_FILTER = _MaintenanceDedupFilter(_MAINTENANCE_LOGGER_BLOCKLIST)
+    return _MAINTENANCE_DEDUP_FILTER
 
 
 def _apply_filter(handler: logging.Handler, filter_instance: Optional[logging.Filter]) -> None:
@@ -250,7 +288,8 @@ def _ensure_console_handler(
 ) -> None:
     handler = _find_handler(logger, role)
     if handler is None:
-        handler = logging.StreamHandler(stream or sys.stderr)
+        target_stream = stream if stream is not None else sys.stderr
+        handler = logging.StreamHandler(target_stream)  # type: ignore[arg-type]
         setattr(handler, _HANDLER_ROLE_ATTR, role)
         logger.addHandler(handler)
 
@@ -590,6 +629,12 @@ def setup_maintenance_logger(
         role=f"{_FILE_ROLE}_maintenance",
     )
     _ensure_http_file_handler(log_path)
+
+    file_handler = _find_handler(logger, f"{_FILE_ROLE}_maintenance")
+    if file_handler is not None:
+        dedup_filter = _get_maintenance_dedup_filter()
+        if dedup_filter not in file_handler.filters:
+            file_handler.addFilter(dedup_filter)
 
     http_filter = _suppress_http_logs()
 

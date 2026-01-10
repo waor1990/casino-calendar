@@ -67,6 +67,8 @@ python scripts\maintenance\cleanup_logs.py --archive-current
 
 - Maintenance and utility scripts (e.g., `cleanup_logs.py`, `verify_requirements.py`, `debug_errors.py`) write to the maintenance log while mirroring messages to the terminal.
 - Pytest automatically records session summaries and per-test outcomes to the same maintenance log (`tests/conftest.py`).
+- The test runner suppresses embedded application log lines from its captured output to avoid duplicating entries already written to other log files.
+- The maintenance log excludes pytest and run_tests entries so test output stays in the batch log/report files instead of being duplicated.
 - Automated test runs set `CASINO_MINIMAL_TEST_LOG=1`, ensuring the primary production log only records initialization messages during tests.
 - Override defaults with environment variables:
   - `MAINTENANCE_LOG_FILE` - custom path for the maintenance log.
