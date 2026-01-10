@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import logging
 import os
 import sys
 from pathlib import Path
@@ -23,9 +24,29 @@ bootstrap_environment(PROJECT_ROOT)
 os.environ.setdefault("CASINO_MINIMAL_TEST_LOG", "1")
 
 
+class _PytestConsoleFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return getattr(record, "console", True)
+
+
+class _PytestConsoleFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        message = record.getMessage()
+        if record.levelno >= logging.WARNING and ("\n" in message or record.exc_info):
+            return f"{record.levelname}: details logged to maintenance log"
+        if record.exc_info:
+            return f"{message}\n{self.formatException(record.exc_info)}"
+        return message
+
+
 def _setup_maintenance_logger():
     logging_config = importlib.import_module("casino_calendar.logging.config")
-    return logging_config.setup_maintenance_logger("casino_calendar.tests.pytest")
+    logger = logging_config.setup_maintenance_logger("casino_calendar.tests.pytest")
+    for handler in logger.handlers:
+        if isinstance(handler, logging.StreamHandler) and not isinstance(handler, logging.FileHandler):
+            handler.addFilter(_PytestConsoleFilter())
+            handler.setFormatter(_PytestConsoleFormatter())
+    return logger
 
 
 MAINTENANCE_LOGGER = _setup_maintenance_logger()
@@ -84,7 +105,7 @@ def pytest_runtest_logreport(report: pytest.TestReport) -> None:
     else:
         outcome = report.outcome
 
-    MAINTENANCE_LOGGER.info("Test %s %s.", report.nodeid, outcome)
+    MAINTENANCE_LOGGER.info("Test %s %s.", report.nodeid, outcome, extra={"console": False})
     if report.failed:
         failure_details: Optional[str] = getattr(report, "longreprtext", None)
         if not failure_details and getattr(report, "longrepr", None):
