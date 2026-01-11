@@ -148,9 +148,30 @@ Environment variables:
 | Variable | Purpose |
 | --- | --- |
 | `LOG_LEVEL` | Override default log level (default: `INFO`) |
-| `LOG_FILE` | Enable file logging with rotation |
+| `LOG_DIR` | Directory for log output (default: `./logs`) |
+| `LOG_FILE` | Override the primary log file path (default: `LOG_DIR/app.log`) |
+| `LOG_DEBUG_FILE` | Optional debug log path (set blank to disable) |
+| `LOG_FILE_JSON` | Emit JSON log lines when set to `true` |
 | `SUPPRESS_HTTP_LOGS` | Toggle HTTP access log capture |
 | `ARCHIVE_APP_LOG_ON_STARTUP` | Archive existing log on startup (`move`, `copy`, or `false`) |
+| `MAINTENANCE_LOG_LEVEL` | Console log level for maintenance scripts |
+| `MAINTENANCE_LOG_FILE` | File destination for maintenance logs |
+
+Console logs are optimized for readability (`HH:MM:SS | LEVEL | module:function:line | message`), while file logs include richer context for auditability (`YYYY-MM-DD HH:MM:SS.sss | LEVEL | pid=... tid=... | module:function:line | key=val ... | message`).
+
+Legacy script formatters are deprecated. If you previously used `CasinoCalendarFormatter`, migrate to `casino_calendar.logging.app_logging.ConsoleFormatter`. The old name is now a compatibility shim that emits a deprecation warning.
+
+Script output example:
+
+Before:
+```
+2025-03-01 12:00:00 | INFO     | casino_calendar.scripts.run_tests | Step: pytest
+```
+
+After:
+```
+12:00:00 | INFO     | run_tests:run_step:112 | Step: pytest
+```
 
 Maintenance utilities for log cleanup live under `scripts/python/` and are documented in [docs/operations/log_management.md](docs/operations/log_management.md).
 

@@ -180,14 +180,16 @@ def archive_current_log(
 def _parse_log_timestamp(line: str) -> Optional[datetime]:
     """
     Parse timestamp at start of a log line using the project's formatter
-    "YYYY-MM-DD HH:MM:SS | ...". Returns None if not parseable.
+    "YYYY-MM-DD HH:MM:SS.sss | ..." or legacy "YYYY-MM-DD HH:MM:SS | ...".
+    Returns None if not parseable.
     """
     if len(line) < 19:
         return None
-    ts_str = line[:19]
+    ts_str = line[:23]
     try:
-        # Logs are local time; parse as naive datetime
-        return datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")
+        if len(ts_str) >= 23 and ts_str[19] == ".":
+            return datetime.strptime(ts_str[:23], "%Y-%m-%d %H:%M:%S.%f")
+        return datetime.strptime(line[:19], "%Y-%m-%d %H:%M:%S")
     except Exception:
         return None
 
