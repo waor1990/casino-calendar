@@ -72,6 +72,8 @@ python app.py
 - `DASH_HOST` - Bind address for the Dash server (default: `0.0.0.0`)
 - `DASH_PUBLIC_HOST` - Optional LAN address to advertise in startup logs (overrides auto-detect)
 
+Legacy script formatters (like `CasinoCalendarFormatter`) are deprecated and now map to the new console formatter with a warning. Use `casino_calendar.logging.app_logging.ConsoleFormatter` in scripts.
+
 Example:
 
 ```cmd

@@ -94,6 +94,7 @@ def test_console_format_pattern(tmp_path, monkeypatch):
     log_stream = io.StringIO()
     log_file = tmp_path / "console.log"
     monkeypatch.setenv("LOG_FILE", str(log_file))
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
 
     logger = app_logging.setup_logging("test_console", console_stream=log_stream, level=logging.INFO)
     logger.info("Console format check")
@@ -183,6 +184,32 @@ def test_env_toggles_log_dir_and_json(tmp_path, monkeypatch):
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
         handler.close()
+
+
+def test_console_minimal_mode_trims_context(tmp_path, monkeypatch):
+    log_stream = io.StringIO()
+    log_file = tmp_path / "minimal_console.log"
+    monkeypatch.setenv("LOG_FILE", str(log_file))
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "1")
+
+    logger = app_logging.setup_logging("test_minimal_console", console_stream=log_stream, level=logging.INFO)
+    logger.info("Minimal console check")
+
+    output = log_stream.getvalue().strip()
+    assert re.search(r"\d{2}:\d{2}:\d{2} \| INFO\s+\|", output)
+    assert re.search(r"test_logging_system:\d+ \|", output)
+    assert "test_console_minimal_mode_trims_context" not in output
+    assert "service=" not in output
+
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+        handler.close()
+
+
+def test_compat_shim_warns_for_legacy_formatter():
+    with pytest.warns(DeprecationWarning):
+        formatter = logging_config.CasinoCalendarFormatter
+    assert formatter is app_logging.ConsoleFormatter
 
 
 def test_logging_import_ignores_cwd_dotenv(tmp_path, monkeypatch):
@@ -281,6 +308,25 @@ def test_setup_maintenance_logger_writes_file(tmp_path, monkeypatch):
             handler.close()
 
 
+def test_maintenance_logger_is_idempotent(tmp_path, monkeypatch):
+    log_path = tmp_path / "maintenance.log"
+    monkeypatch.setenv("MAINTENANCE_LOG_FILE", str(log_path))
+    monkeypatch.setenv("MAINTENANCE_LOG_LEVEL", "INFO")
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+
+    logger = logging_config.setup_maintenance_logger("test_maintenance_idempotent")
+    handler_ids_first = [id(handler) for handler in logger.handlers]
+
+    logger = logging_config.setup_maintenance_logger("test_maintenance_idempotent")
+    handler_ids_second = [id(handler) for handler in logger.handlers]
+
+    assert handler_ids_first == handler_ids_second
+
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+        handler.close()
+
+
 def test_setup_production_logger_archives_existing(tmp_path, monkeypatch):
     """Existing app log is archived on startup when enabled."""
     monkeypatch.chdir(tmp_path)
@@ -310,8 +356,9 @@ def test_setup_production_logger_archives_existing(tmp_path, monkeypatch):
             handler.close()
 
 
-def test_console_formatter():
+def test_console_formatter(monkeypatch):
     """Test custom console formatter."""
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
     formatter = app_logging.ConsoleFormatter(use_colors=False, use_rich_markup=False)
 
     record = logging.LogRecord(

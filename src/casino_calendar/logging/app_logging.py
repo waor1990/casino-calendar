@@ -125,11 +125,24 @@ class ConsoleFormatter(_RedactingFormatter):
                 if color:
                     level = f"{color}{level}\x1b[0m"
 
-        location = f"{record.module}:{record.funcName}:{record.lineno}"
+        minimal_console = _is_minimal_log_mode()
+        if minimal_console:
+            location = f"{record.module}:{record.lineno}"
+        else:
+            location = f"{record.module}:{record.funcName}:{record.lineno}"
+        context = getattr(record, "context", "")
+        include_context = False
+        if not minimal_console:
+            request_id = getattr(record, "request_id", "-")
+            user_id = getattr(record, "user_id", "-")
+            include_context = request_id not in {"", "-"} or user_id not in {"", "-"}
         message = record.getMessage()
         if record.exc_info:
             message = f"{message}\n{self.formatException(record.exc_info)}"
-        line = f"{timestamp} | {level} | {location} | {message}"
+        if minimal_console or not context or not include_context:
+            line = f"{timestamp} | {level} | {location} | {message}"
+        else:
+            line = f"{timestamp} | {level} | {location} | {context} | {message}"
         return self._apply_redaction(line)
 
 

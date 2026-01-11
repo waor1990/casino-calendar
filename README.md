@@ -159,6 +159,22 @@ Environment variables:
 
 Console logs are optimized for readability (`HH:MM:SS | LEVEL | module:function:line | message`), while file logs include richer context for auditability (`YYYY-MM-DD HH:MM:SS.sss | LEVEL | pid=... tid=... | module:function:line | key=val ... | message`).
 
+Legacy script formatters are deprecated. If you previously used `CasinoCalendarFormatter`, migrate to `casino_calendar.logging.app_logging.ConsoleFormatter`. The old name is now a compatibility shim that emits a deprecation warning.
+
+Script output example:
+
+Before:
+
+```log
+2025-03-01 12:00:00 | INFO     | casino_calendar.scripts.run_tests | Step: pytest
+```
+
+After:
+
+```log
+12:00:00 | INFO     | run_tests:run_step:112 | Step: pytest
+```
+
 Maintenance utilities for log cleanup live under `scripts/python/` and are documented in [docs/operations/log_management.md](docs/operations/log_management.md).
 
 ---

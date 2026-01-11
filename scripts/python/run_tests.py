@@ -17,10 +17,14 @@ for candidate in (SRC_DIR, PROJECT_ROOT):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
+from casino_calendar.logging import app_logging  # noqa: E402
 from casino_calendar.logging import config as logging_config  # noqa: E402
 
-_PREFIX_RE = re.compile(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \| ")
-_EMBEDDED_LOG_RE = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \| (DEBUG|INFO|WARNING|ERROR|CRITICAL)\s+\|")
+_PREFIX_RE = re.compile(r"^(?:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{3})?|\d{2}:\d{2}:\d{2}) \| ")
+_EMBEDDED_LOG_RE = re.compile(
+    r"(?:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{3})?|\d{2}:\d{2}:\d{2}) "
+    r"\| (DEBUG|INFO|WARNING|ERROR|CRITICAL)\s+\|"
+)
 _BANDIT_REPORT_PATH = PROJECT_ROOT / "logs" / "bandit_report.txt"
 _PYDOCSTYLE_REPORT_PATH = PROJECT_ROOT / "logs" / "pydocstyle_report.txt"
 _BANDIT_SEVERITY_RE = re.compile(r"^\s*Severity:\s+(\w+)\s+Confidence:\s+(\w+)\s*$")
@@ -32,11 +36,11 @@ APP_CODE_DIR = SRC_DIR / "casino_calendar"
 LINT_TARGETS = [str(APP_CODE_DIR), str(PROJECT_ROOT / "app.py"), str(PROJECT_ROOT / "wsgi.py")]
 
 
-class PrefixAwareFormatter(logging_config.CasinoCalendarFormatter):
+class PrefixAwareFormatter(app_logging.FileFormatter):
     """Formatter that preserves already-formatted log lines."""
 
     def __init__(self) -> None:
-        super().__init__(use_colors=False)
+        super().__init__()
 
     def format(self, record: logging.LogRecord) -> str:
         message = record.getMessage()
@@ -47,7 +51,7 @@ class PrefixAwareFormatter(logging_config.CasinoCalendarFormatter):
         return super().format(record)
 
 
-class PrefixStrippingFormatter(logging.Formatter):
+class PrefixStrippingFormatter(app_logging.ConsoleFormatter):
     """Formatter that removes timestamps/levels for console output."""
 
     def format(self, record: logging.LogRecord) -> str:
@@ -55,16 +59,18 @@ class PrefixStrippingFormatter(logging.Formatter):
         if message == "":
             return ""
         if _PREFIX_RE.match(message):
-            parts = message.split(" | ", 3)
-            if len(parts) == 4:
-                logger_name = parts[2].strip()
-                remainder = parts[3]
+            parts = message.split(" | ")
+            if len(parts) >= 4:
+                has_pid = parts[2].strip().startswith("pid=")
+                location_index = 3 if has_pid else 2
+                location = parts[location_index].strip() if location_index < len(parts) else parts[-2].strip()
+                remainder = parts[-1].strip()
                 if remainder:
-                    return f"{logger_name} | {remainder}"
-                return logger_name
+                    return f"{location} | {remainder}"
+                return location
         if record.exc_info:
             return f"{message}\n{self.formatException(record.exc_info)}"
-        return message
+        return super().format(record)
 
 
 @dataclass(frozen=True)
