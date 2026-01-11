@@ -27,6 +27,34 @@ get_context_logger = app_logging.get_context_logger
 setup_logging = app_logging.setup_logging
 
 
+class CasinoCalendarFormatter(logging.Formatter):
+    """Backward-compatible formatter for scripts relying on the legacy output."""
+
+    COLORS = {
+        "DEBUG": "\033[36m",
+        "INFO": "\033[32m",
+        "WARNING": "\033[33m",
+        "ERROR": "\033[31m",
+        "CRITICAL": "\033[35m",
+        "RESET": "\033[0m",
+    }
+
+    def __init__(self, use_colors: bool = True) -> None:
+        self.use_colors = use_colors and sys.stderr.isatty()
+        super().__init__()
+
+    def format(self, record: logging.LogRecord) -> str:
+        log_format = "%(asctime)s | %(levelname)-8s | %(name)-20s | %(message)s"
+
+        if self.use_colors and record.levelname in self.COLORS:
+            color = self.COLORS[record.levelname]
+            reset = self.COLORS["RESET"]
+            log_format = f"{color}{log_format}{reset}"
+
+        formatter = logging.Formatter(log_format, datefmt="%Y-%m-%d %H:%M:%S")
+        return formatter.format(record)
+
+
 def setup_logger(name: str, log_file: Optional[str] = None, level: Optional[int] = None) -> logging.Logger:
     """Backward compatible wrapper for module-level loggers."""
 
@@ -170,6 +198,7 @@ app_logger.debug("Log level: %s", logging.getLevelName(get_log_level()))
 
 __all__ = [
     "ContextLoggerAdapter",
+    "CasinoCalendarFormatter",
     "ENV_FILE",
     "app_logger",
     "cleanup_old_logs",
