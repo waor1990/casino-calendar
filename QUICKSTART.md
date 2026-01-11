@@ -67,12 +67,11 @@ python app.py
 - `LOG_FILE` - Optional log file path override (default: `LOG_DIR/app.log`)
 - `LOG_DEBUG_FILE` - Optional debug log override (set blank to disable)
 - `LOG_FILE_JSON` - Set `true` to emit JSON log lines to files
+- `LOG_CONSOLE_TZ` - Console time zone (`LOCAL` default, or `UTC`)
 - `*_BAT_LOG_FILE` - Batch script log destinations (see `.env.example` for defaults)
 - Batch script logs mirror console output and apply the standard `timestamp | level | source | message` format
 - `DASH_HOST` - Bind address for the Dash server (default: `0.0.0.0`)
 - `DASH_PUBLIC_HOST` - Optional LAN address to advertise in startup logs (overrides auto-detect)
-
-Legacy script formatters (like `CasinoCalendarFormatter`) are deprecated and now map to the new console formatter with a warning. Use `casino_calendar.logging.app_logging.ConsoleFormatter` in scripts.
 
 Example:
 
@@ -81,6 +80,14 @@ set LOG_LEVEL=DEBUG
 set LOG_FILE=app.log
 set LOG_FILE_JSON=true
 run.bat
+```
+
+Console output now uses `LVL` codes (`DBG`, `INF`, `WRN`, `ERR`, `CRT`) and local time by default; set `LOG_CONSOLE_TZ=UTC` to emit UTC console times.
+
+File log example (UTC, audit-friendly):
+
+```log
+2025-03-01T12:00:00.123Z | INF | run_tests:run_step:112 | pid=4242 tid=1400 | Step: pytest | svc=casino_calendar env=local req=- user=-
 ```
 
 ## 🧪 Development

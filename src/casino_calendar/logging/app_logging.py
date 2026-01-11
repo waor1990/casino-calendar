@@ -8,6 +8,7 @@ import os
 import re
 import sys
 import threading
+import time
 from datetime import datetime, timezone
 from importlib import import_module, util
 from logging.handlers import TimedRotatingFileHandler
@@ -43,11 +44,13 @@ _MINIMAL_LOG_PREFIXES = (
     "Logging system shutting down",
 )
 
-_MAINTENANCE_EMBEDDED_LOG_RE = re.compile(
-    r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} \| (DEBUG|INFO|WARNING|ERROR|CRITICAL)\s+\|"
-)
+_MAINTENANCE_EMBEDDED_LOG_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \| (DBG|INF|WRN|ERR|CRT)\s+\|")
 
-_REDACTION_PATTERN = re.compile(r"(?i)\b(api_key|apikey|password|passwd|secret|token|key)\b\s*([:=])\s*([^\s,|]+)")
+_REDACTION_PATTERN = re.compile(
+    r"(?i)\b(api_key|apikey|password|passwd|secret|token|authorization|bearer)\b\s*([:=])\s*([^\s,|]+)"
+)
+_HEADER_REDACTION_PATTERN = re.compile(r"(?i)\b(authorization|cookie|set-cookie)\b\s*[:=]\s*([^\n]+)")
+_BEARER_PATTERN = re.compile(r"(?i)\bbearer\s+([^\s,|]+)")
 
 _HTTP_LOG_BASE_PATH: Path | None = None
 _HTTP_FILE_HANDLER: TimedRotatingFileHandler | None = None
@@ -83,12 +86,57 @@ def _redact_text(value: str) -> str:
         separator = match.group(2)
         return f"{key}{separator}****"
 
-    return _REDACTION_PATTERN.sub(_replace, value)
+    redacted = _REDACTION_PATTERN.sub(_replace, value)
+    redacted = _HEADER_REDACTION_PATTERN.sub(lambda m: f"{m.group(1)}=****", redacted)
+    redacted = _BEARER_PATTERN.sub("bearer ****", redacted)
+    return redacted
 
 
 class _RedactingFormatter(logging.Formatter):
     def _apply_redaction(self, message: str) -> str:
         return _redact_text(message)
+
+
+def _level_code(levelno: int) -> str:
+    if levelno >= logging.CRITICAL:
+        return "CRT"
+    if levelno >= logging.ERROR:
+        return "ERR"
+    if levelno >= logging.WARNING:
+        return "WRN"
+    if levelno >= logging.INFO:
+        return "INF"
+    return "DBG"
+
+
+def _format_callsite(record: logging.LogRecord) -> str:
+    return f"{record.module}:{record.funcName}:{record.lineno}"
+
+
+def _now_utc() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _now_local() -> datetime:
+    return datetime.now().astimezone()
+
+
+def _utc_iso_ms(epoch_seconds: float | None = None) -> str:
+    timestamp = _now_utc() if epoch_seconds is None else datetime.fromtimestamp(epoch_seconds, tz=timezone.utc)
+    if timestamp.tzinfo is None:
+        raise ValueError("UTC timestamp must be timezone-aware")
+    return timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
+
+def _console_timestamp(record: logging.LogRecord) -> str:
+    mode = os.getenv("LOG_CONSOLE_TZ", "LOCAL").upper()
+    if mode == "UTC":
+        return datetime.fromtimestamp(record.created, tz=timezone.utc).strftime("%H:%M:%SZ")
+    return datetime.fromtimestamp(record.created, tz=_now_local().tzinfo).strftime("%H:%M:%S")
+
+
+def _console_debug_context_enabled() -> bool:
+    return os.getenv("LOG_LEVEL", "").upper() == "DEBUG"
 
 
 class ConsoleFormatter(_RedactingFormatter):
@@ -113,8 +161,8 @@ class ConsoleFormatter(_RedactingFormatter):
         self._use_rich_markup = use_rich_markup
 
     def format(self, record: logging.LogRecord) -> str:
-        timestamp = datetime.fromtimestamp(record.created).strftime("%H:%M:%S")
-        level = f"{record.levelname:<8}"
+        timestamp = _console_timestamp(record)
+        level = _level_code(record.levelno)
         if self._use_colors:
             if self._use_rich_markup:
                 color = self._RICH_COLORS.get(record.levelname)
@@ -126,47 +174,48 @@ class ConsoleFormatter(_RedactingFormatter):
                     level = f"{color}{level}\x1b[0m"
 
         minimal_console = _is_minimal_log_mode()
-        if minimal_console:
-            location = f"{record.module}:{record.lineno}"
-        else:
-            location = f"{record.module}:{record.funcName}:{record.lineno}"
-        context = getattr(record, "context", "")
-        include_context = False
-        if not minimal_console:
-            request_id = getattr(record, "request_id", "-")
-            user_id = getattr(record, "user_id", "-")
-            include_context = request_id not in {"", "-"} or user_id not in {"", "-"}
+        location = _format_callsite(record)
         message = record.getMessage()
         if record.exc_info:
             message = f"{message}\n{self.formatException(record.exc_info)}"
-        if minimal_console or not context or not include_context:
-            line = f"{timestamp} | {level} | {location} | {message}"
+        if minimal_console:
+            line = f"{timestamp} | {level} | {message}"
         else:
-            line = f"{timestamp} | {level} | {location} | {context} | {message}"
+            line = f"{timestamp} | {level} | {location} | {message}"
+            if _console_debug_context_enabled():
+                request_id = getattr(record, "request_id", "-")
+                user_id = getattr(record, "user_id", "-")
+                if request_id not in {"", "-"} or user_id not in {"", "-"}:
+                    line = f"{line} | req={request_id} user={user_id}"
         return self._apply_redaction(line)
 
 
 class FileFormatter(_RedactingFormatter):
     def format(self, record: logging.LogRecord) -> str:
-        timestamp = datetime.fromtimestamp(record.created, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-        level = f"{record.levelname:<8}"
-        location = f"{record.module}:{record.funcName}:{record.lineno}"
-        context = getattr(record, "context", "")
+        timestamp = _utc_iso_ms(record.created)
+        level = _level_code(record.levelno)
+        location = _format_callsite(record)
+        service = getattr(record, "service", "-")
+        environment = getattr(record, "env", "-")
+        request_id = getattr(record, "request_id", "-")
+        user_id = getattr(record, "user_id", "-")
         message = record.getMessage()
         if record.exc_info:
             message = f"{message}\n{self.formatException(record.exc_info)}"
         line = (
-            f"{timestamp} | {level} | pid={record.process} tid={record.thread} | " f"{location} | {context} | {message}"
+            f"{timestamp} | {level} | {location} | pid={record.process} tid={record.thread} | "
+            f"{message} | svc={service} env={environment} req={request_id} user={user_id}"
         )
         return self._apply_redaction(line)
 
 
 class JsonLogFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
-        timestamp = datetime.fromtimestamp(record.created, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        timestamp = _utc_iso_ms(record.created).replace("Z", "")
         message = _redact_text(record.getMessage())
         payload = {
             "timestamp": timestamp,
+            "tz": "UTC",
             "level": record.levelname,
             "logger": record.name,
             "module": record.module,
@@ -196,10 +245,96 @@ class _ContextFilter(logging.Filter):
         record.env = getattr(record, "env", self._environment)
         record.request_id = getattr(record, "request_id", "-")
         record.user_id = getattr(record, "user_id", "-")
-        record.context = (
-            f"service={record.service} env={record.env} " f"request_id={record.request_id} user_id={record.user_id}"
-        )
         return True
+
+
+class _DedupingTimedRotatingFileHandler(TimedRotatingFileHandler):
+    def __init__(self, *args, window_seconds: float = 2.0, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._window_seconds = window_seconds
+        self._pending_record: logging.LogRecord | None = None
+        self._pending_key: tuple[str, int, str] | None = None
+        self._pending_time: float | None = None
+        self._suppressed_count = 0
+
+    def emit(self, record: logging.LogRecord) -> None:
+        self.acquire()
+        try:
+            self._emit_with_dedupe(record)
+        finally:
+            self.release()
+
+    def _emit_with_dedupe(self, record: logging.LogRecord) -> None:
+        key = (record.name, record.levelno, record.getMessage())
+        now = time.time()
+        if self._pending_record is None:
+            self._store_pending(record, key, now)
+            return
+
+        if (
+            self._pending_key == key
+            and self._pending_time is not None
+            and (now - self._pending_time) <= self._window_seconds
+        ):
+            self._suppressed_count += 1
+            return
+
+        self._emit_pending()
+        self._store_pending(record, key, now)
+
+    def flush(self) -> None:
+        self.acquire()
+        try:
+            self._emit_pending()
+            if self.stream and hasattr(self.stream, "flush"):
+                self.stream.flush()
+        finally:
+            self.release()
+
+    def close(self) -> None:
+        try:
+            self._emit_pending()
+        finally:
+            super().close()
+
+    def _store_pending(self, record: logging.LogRecord, key: tuple[str, int, str], timestamp: float) -> None:
+        self._pending_record = record
+        self._pending_key = key
+        self._pending_time = timestamp
+
+    def _emit_pending(self) -> None:
+        if self._pending_record is None:
+            return
+        record = self._pending_record
+        if self._suppressed_count:
+            suffix = f"(+{self._suppressed_count} duplicates suppressed)"
+            record = _record_with_suffix(record, suffix)
+        self._write_record(record)
+        self._pending_record = None
+        self._pending_key = None
+        self._pending_time = None
+        self._suppressed_count = 0
+
+    def _write_record(self, record: logging.LogRecord) -> None:
+        try:
+            if self.shouldRollover(record):
+                self.doRollover()
+            message = self.format(record)
+            stream = self.stream
+            if stream is None:
+                return
+            stream.write(message + self.terminator)
+            stream.flush()
+        except Exception:
+            self.handleError(record)
+
+
+def _record_with_suffix(record: logging.LogRecord, suffix: str) -> logging.LogRecord:
+    data = record.__dict__.copy()
+    message = record.getMessage()
+    data["msg"] = f"{message} {suffix}"
+    data["args"] = ()
+    return logging.makeLogRecord(data)
 
 
 class ContextLoggerAdapter(logging.LoggerAdapter):
@@ -431,6 +566,7 @@ def _ensure_timed_file_handler(
     retention_days: int,
     formatter: logging.Formatter,
     filters: Iterable[logging.Filter],
+    dedupe: bool = True,
 ) -> TimedRotatingFileHandler:
     handler = _find_handler(logger, role)
     if handler is not None and isinstance(handler, TimedRotatingFileHandler):
@@ -445,7 +581,8 @@ def _ensure_timed_file_handler(
         handler = None
 
     if handler is None:
-        handler = TimedRotatingFileHandler(
+        handler_cls = _DedupingTimedRotatingFileHandler if dedupe else TimedRotatingFileHandler
+        handler = handler_cls(
             str(log_path),
             when="midnight",
             interval=1,

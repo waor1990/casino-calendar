@@ -152,25 +152,32 @@ Environment variables:
 | `LOG_FILE` | Override the primary log file path (default: `LOG_DIR/app.log`) |
 | `LOG_DEBUG_FILE` | Optional debug log path (set blank to disable) |
 | `LOG_FILE_JSON` | Emit JSON log lines when set to `true` |
+| `LOG_CONSOLE_TZ` | Console time zone (`LOCAL` default, or `UTC`) |
 | `SUPPRESS_HTTP_LOGS` | Toggle HTTP access log capture |
 | `ARCHIVE_APP_LOG_ON_STARTUP` | Archive existing log on startup (`move`, `copy`, or `false`) |
 | `MAINTENANCE_LOG_LEVEL` | Console log level for maintenance scripts |
 | `MAINTENANCE_LOG_FILE` | File destination for maintenance logs |
 
-Console logs are optimized for readability (`HH:MM:SS | LEVEL | module:function:line | message`), while file logs include richer context for auditability (`YYYY-MM-DD HH:MM:SS.sss | LEVEL | pid=... tid=... | module:function:line | key=val ... | message`).
+Console logs are optimized for readability (`HH:MM:SS | LVL | module:function:line | message`), while file logs include richer context for auditability (`YYYY-MM-DDTHH:MM:SS.sssZ | LVL | module:function:line | pid=... tid=... | message | svc=... env=... req=... user=...`). File timestamps are always UTC with a `Z` suffix; console timestamps are local by default or UTC when `LOG_CONSOLE_TZ=UTC`.
 
-Legacy script formatters are deprecated. If you previously used `CasinoCalendarFormatter`, migrate to `casino_calendar.logging.app_logging.ConsoleFormatter`. The old name is now a compatibility shim that emits a deprecation warning.
+Level codes are 3-letter abbreviations: `DBG`, `INF`, `WRN`, `ERR`, `CRT`.
 
-Script output example:
+Script output example (updated):
 
-Before:
+```log
+12:00:00 | INF | run_tests:run_step:112 | Step: pytest
 ```
+
+File log example (UTC, audit-friendly):
+
+```log
+2025-03-01T12:00:00.123Z | INF | run_tests:run_step:112 | pid=4242 tid=1400 | Step: pytest | svc=casino_calendar env=local req=- user=-
+```
+
+Before (legacy console sample):
+
+```log
 2025-03-01 12:00:00 | INFO     | casino_calendar.scripts.run_tests | Step: pytest
-```
-
-After:
-```
-12:00:00 | INFO     | run_tests:run_step:112 | Step: pytest
 ```
 
 Maintenance utilities for log cleanup live under `scripts/python/` and are documented in [docs/operations/log_management.md](docs/operations/log_management.md).

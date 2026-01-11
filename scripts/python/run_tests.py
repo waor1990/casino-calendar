@@ -20,10 +20,13 @@ for candidate in (SRC_DIR, PROJECT_ROOT):
 from casino_calendar.logging import app_logging  # noqa: E402
 from casino_calendar.logging import config as logging_config  # noqa: E402
 
-_PREFIX_RE = re.compile(r"^(?:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{3})?|\d{2}:\d{2}:\d{2}) \| ")
+_PREFIX_RE = re.compile(
+    r"^(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z|\d{2}:\d{2}:\d{2}Z?|\d{4}-\d{2}-\d{2} "
+    r"\d{2}:\d{2}:\d{2}(?:\.\d{3})?) \| "
+)
 _EMBEDDED_LOG_RE = re.compile(
-    r"(?:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{3})?|\d{2}:\d{2}:\d{2}) "
-    r"\| (DEBUG|INFO|WARNING|ERROR|CRITICAL)\s+\|"
+    r"(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z|\d{2}:\d{2}:\d{2}Z?|\d{4}-\d{2}-\d{2} "
+    r"\d{2}:\d{2}:\d{2}(?:\.\d{3})?) \| (DBG|INF|WRN|ERR|CRT)\s+\|"
 )
 _BANDIT_REPORT_PATH = PROJECT_ROOT / "logs" / "bandit_report.txt"
 _PYDOCSTYLE_REPORT_PATH = PROJECT_ROOT / "logs" / "pydocstyle_report.txt"
