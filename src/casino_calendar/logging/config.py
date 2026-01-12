@@ -6,7 +6,6 @@ import atexit
 import logging
 import os
 import sys
-import warnings
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -26,21 +25,6 @@ get_log_level = app_logging.get_log_level
 ContextLoggerAdapter = app_logging.ContextLoggerAdapter
 get_context_logger = app_logging.get_context_logger
 setup_logging = app_logging.setup_logging
-
-
-ConsoleFormatter = app_logging.ConsoleFormatter
-FileFormatter = app_logging.FileFormatter
-
-
-def __getattr__(name: str):  # pragma: no cover - compatibility shim
-    if name == "CasinoCalendarFormatter":
-        warnings.warn(
-            "CasinoCalendarFormatter is deprecated; use casino_calendar.logging.app_logging.ConsoleFormatter",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return app_logging.ConsoleFormatter
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def setup_logger(name: str, log_file: Optional[str] = None, level: Optional[int] = None) -> logging.Logger:
@@ -186,9 +170,7 @@ app_logger.debug("Log level: %s", logging.getLevelName(get_log_level()))
 
 __all__ = [
     "ContextLoggerAdapter",
-    "ConsoleFormatter",
     "ENV_FILE",
-    "FileFormatter",
     "app_logger",
     "cleanup_old_logs",
     "get_context_logger",

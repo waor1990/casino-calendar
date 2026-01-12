@@ -95,14 +95,13 @@ def test_console_format_pattern(tmp_path, monkeypatch):
     log_file = tmp_path / "console.log"
     monkeypatch.setenv("LOG_FILE", str(log_file))
     monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
 
     logger = app_logging.setup_logging("test_console", console_stream=log_stream, level=logging.INFO)
     logger.info("Console format check")
 
     output = log_stream.getvalue().strip()
-    assert re.search(r"\d{2}:\d{2}:\d{2} \| INFO\s+\|", output)
-    assert "test_logging_system" in output
-    assert "test_console_format_pattern" in output
+    assert re.search(r"\d{2}:\d{2}:\d{2} \| INF \| [\w\.]+:\w+:\d+ \|", output)
 
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
@@ -122,7 +121,8 @@ def test_file_format_and_rotation(tmp_path, monkeypatch):
     file_handler.flush()
     content = log_file.read_text(encoding="utf-8")
     assert re.search(
-        r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} \| INFO\s+\| pid=\d+ tid=\d+ \|",
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \| INF \| [\w\.]+:\w+:\d+ \| "
+        r"pid=\d+ tid=\d+ \| .* \| svc=\S+ env=\S+ req=\S+ user=\S+$",
         content,
     )
 
@@ -153,8 +153,8 @@ def test_context_enrichment_with_adapter(tmp_path, monkeypatch):
             handler.flush()
 
     content = log_file.read_text(encoding="utf-8")
-    assert "request_id=req-123" in content
-    assert "user_id=user-42" in content
+    assert "req=req-123" in content
+    assert "user=user-42" in content
 
     for handler in adapter.logger.handlers[:]:
         adapter.logger.removeHandler(handler)
@@ -180,6 +180,7 @@ def test_env_toggles_log_dir_and_json(tmp_path, monkeypatch):
     payload = json.loads(line)
     assert payload["message"] == "json payload"
     assert payload["level"] == "INFO"
+    assert payload["tz"] == "UTC"
 
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
@@ -191,25 +192,55 @@ def test_console_minimal_mode_trims_context(tmp_path, monkeypatch):
     log_file = tmp_path / "minimal_console.log"
     monkeypatch.setenv("LOG_FILE", str(log_file))
     monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "1")
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
 
     logger = app_logging.setup_logging("test_minimal_console", console_stream=log_stream, level=logging.INFO)
     logger.info("Minimal console check")
 
     output = log_stream.getvalue().strip()
-    assert re.search(r"\d{2}:\d{2}:\d{2} \| INFO\s+\|", output)
-    assert re.search(r"test_logging_system:\d+ \|", output)
-    assert "test_console_minimal_mode_trims_context" not in output
-    assert "service=" not in output
+    assert re.search(r"\d{2}:\d{2}:\d{2} \| INF \| ", output)
+    assert "test_logging_system:" not in output
 
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
         handler.close()
 
 
-def test_compat_shim_warns_for_legacy_formatter():
-    with pytest.warns(DeprecationWarning):
-        formatter = logging_config.CasinoCalendarFormatter
-    assert formatter is app_logging.ConsoleFormatter
+def test_console_utc_mode_adds_z(tmp_path, monkeypatch):
+    log_stream = io.StringIO()
+    log_file = tmp_path / "utc_console.log"
+    monkeypatch.setenv("LOG_FILE", str(log_file))
+    monkeypatch.setenv("LOG_CONSOLE_TZ", "UTC")
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
+
+    logger = app_logging.setup_logging("test_console_utc", console_stream=log_stream, level=logging.INFO)
+    logger.info("UTC console check")
+
+    output = log_stream.getvalue().strip()
+    assert re.search(r"\d{2}:\d{2}:\d{2}Z \| INF \|", output)
+
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+        handler.close()
+
+
+def test_console_debug_context_suffix(tmp_path, monkeypatch):
+    log_stream = io.StringIO()
+    log_file = tmp_path / "debug_console.log"
+    monkeypatch.setenv("LOG_FILE", str(log_file))
+    monkeypatch.setenv("LOG_LEVEL", "DEBUG")
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+
+    logger = app_logging.setup_logging("test_console_debug", console_stream=log_stream, level=logging.DEBUG)
+    logger.info("Debug console check", extra={"request_id": "req-9", "user_id": "user-9"})
+
+    output = log_stream.getvalue().strip()
+    assert "req=req-9 user=user-9" in output
+
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+        handler.close()
 
 
 def test_logging_import_ignores_cwd_dotenv(tmp_path, monkeypatch):
@@ -296,6 +327,10 @@ def test_setup_maintenance_logger_writes_file(tmp_path, monkeypatch):
         logger.info("maintenance info message")
         logger.debug("maintenance debug message")
 
+        for handler in logger.handlers:
+            if hasattr(handler, "flush"):
+                handler.flush()
+
         assert log_path.exists()
         content = log_path.read_text(encoding="utf-8")
         assert "maintenance info message" in content
@@ -334,7 +369,7 @@ def test_setup_production_logger_archives_existing(tmp_path, monkeypatch):
     log_dir.mkdir()
     log_file = log_dir / "app.log"
     log_file.write_text(
-        "2025-09-01 10:00:00.000 | INFO     | pid=1 tid=1 | module:func:1 | service=app | old log content\n",
+        "2025-09-01T10:00:00.000Z | INF | module:func:1 | pid=1 tid=1 | old log content | svc=app env=local req=- user=-\n",
         encoding="utf-8",
     )
 
@@ -373,9 +408,60 @@ def test_console_formatter(monkeypatch):
     )
 
     formatted = formatter.format(record)
-    assert "INFO" in formatted
+    assert "INF" in formatted
     assert "test:test_func:1" in formatted
     assert "Test message" in formatted
+
+
+def test_duplicate_filter_suppresses_file_duplicates(tmp_path, monkeypatch):
+    log_file = tmp_path / "dedupe.log"
+    monkeypatch.setenv("LOG_FILE", str(log_file))
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+
+    logger = app_logging.setup_logging("test_dedupe", level=logging.INFO)
+    for _ in range(5):
+        logger.info("repeat me")
+
+    for handler in logger.handlers:
+        if isinstance(handler, TimedRotatingFileHandler):
+            handler.flush()
+
+    lines = log_file.read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 1
+    assert "(+4 duplicates suppressed)" in lines[0]
+
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+        handler.close()
+
+
+def test_redaction_in_console_and_file(tmp_path, monkeypatch):
+    log_stream = io.StringIO()
+    log_file = tmp_path / "redaction.log"
+    monkeypatch.setenv("LOG_FILE", str(log_file))
+    monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+    monkeypatch.setenv("LOG_LEVEL", "INFO")
+
+    logger = app_logging.setup_logging("test_redaction", console_stream=log_stream, level=logging.INFO)
+    logger.info("token=abc Authorization: Bearer SECRET Cookie: foo=bar")
+
+    for handler in logger.handlers:
+        if hasattr(handler, "flush"):
+            handler.flush()
+
+    console_output = log_stream.getvalue()
+    file_output = log_file.read_text(encoding="utf-8")
+
+    for output in (console_output, file_output):
+        assert "token=****" in output
+        assert "authorization=****" in output.lower()
+        assert "SECRET" not in output
+        assert "foo=bar" not in output
+        assert "cookie:" not in output.lower()
+
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+        handler.close()
 
 
 def test_data_module_logging():
