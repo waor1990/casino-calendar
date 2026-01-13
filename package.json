@@ -23,7 +23,7 @@
         "dev": "npm run watch:css",
         "prepare": "husky",
         "commit": "git-cz",
-        "auto-commit": "python scripts/python/auto_commit.py"
+        "auto-commit": ".venv\\Scripts\\python.exe scripts/python/auto_commit.py"
     },
     "devDependencies": {
         "@commitlint/cli": "^20.3.0",
