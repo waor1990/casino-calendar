@@ -67,9 +67,9 @@ python app.py
 - `LOG_FILE` - Optional log file path override (default: `LOG_DIR/app.log`)
 - `LOG_DEBUG_FILE` - Optional debug log override (set blank to disable)
 - `LOG_FILE_JSON` - Set `true` to emit JSON log lines to files
-- `LOG_CONSOLE_TZ` - Console time zone (`LOCAL` default, or `UTC`)
+- `LOG_CONSOLE_TZ` - Console time zone (`LOCAL` default, or `UTC`) (unused when console timestamps are hidden)
 - `*_BAT_LOG_FILE` - Batch script log destinations (see `.env.example` for defaults)
-- Batch script logs mirror console output and apply the standard `timestamp | level | source | message` format
+- Batch script logs use the `timestamp | level | source | message` format, even when console output omits timestamps
 - `DASH_HOST` - Bind address for the Dash server (default: `0.0.0.0`)
 - `DASH_PUBLIC_HOST` - Optional LAN address to advertise in startup logs (overrides auto-detect)
 
@@ -82,7 +82,7 @@ set LOG_FILE_JSON=true
 run.bat
 ```
 
-Console output now uses `LVL` codes (`DBG`, `INF`, `WRN`, `ERR`, `CRT`) and local time by default; set `LOG_CONSOLE_TZ=UTC` to emit UTC console times.
+Console output now omits timestamps and level codes; warnings/errors/critical logs are highlighted using console colors.
 
 File log example (UTC, audit-friendly):
 

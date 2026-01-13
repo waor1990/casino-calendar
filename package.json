@@ -22,7 +22,8 @@
         "setup": "npm run clean:node-modules && npm install && npm run build:css",
         "dev": "npm run watch:css",
         "prepare": "husky",
-        "commit": "git-cz"
+        "commit": "git-cz",
+        "auto-commit": ".venv\\Scripts\\python.exe scripts/python/auto_commit.py"
     },
     "devDependencies": {
         "@commitlint/cli": "^20.3.0",

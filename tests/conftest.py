@@ -43,7 +43,7 @@ def _setup_maintenance_logger():
     logging_config = importlib.import_module("casino_calendar.logging.config")
     logger = logging_config.setup_maintenance_logger("casino_calendar.tests.pytest")
     for handler in logger.handlers:
-        if isinstance(handler, logging.StreamHandler) and not isinstance(handler, logging.FileHandler):
+        if not isinstance(handler, logging.FileHandler):
             handler.addFilter(_PytestConsoleFilter())
             handler.setFormatter(_PytestConsoleFormatter())
     return logger

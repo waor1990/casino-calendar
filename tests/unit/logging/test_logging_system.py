@@ -101,7 +101,7 @@ def test_console_format_pattern(tmp_path, monkeypatch):
     logger.info("Console format check")
 
     output = log_stream.getvalue().strip()
-    assert re.search(r"\d{2}:\d{2}:\d{2} \| INF \| [\w\.]+:\w+:\d+ \|", output)
+    assert re.search(r"^[\w\.]+:\w+:\d+ \| Console format check$", output)
 
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
@@ -198,15 +198,14 @@ def test_console_minimal_mode_trims_context(tmp_path, monkeypatch):
     logger.info("Minimal console check")
 
     output = log_stream.getvalue().strip()
-    assert re.search(r"\d{2}:\d{2}:\d{2} \| INF \| ", output)
-    assert "test_logging_system:" not in output
+    assert output == "Minimal console check"
 
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
         handler.close()
 
 
-def test_console_utc_mode_adds_z(tmp_path, monkeypatch):
+def test_console_utc_mode_omits_timestamp(tmp_path, monkeypatch):
     log_stream = io.StringIO()
     log_file = tmp_path / "utc_console.log"
     monkeypatch.setenv("LOG_FILE", str(log_file))
@@ -218,7 +217,7 @@ def test_console_utc_mode_adds_z(tmp_path, monkeypatch):
     logger.info("UTC console check")
 
     output = log_stream.getvalue().strip()
-    assert re.search(r"\d{2}:\d{2}:\d{2}Z \| INF \|", output)
+    assert not re.search(r"\d{2}:\d{2}:\d{2}", output)
 
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
@@ -408,7 +407,6 @@ def test_console_formatter(monkeypatch):
     )
 
     formatted = formatter.format(record)
-    assert "INF" in formatted
     assert "test:test_func:1" in formatted
     assert "Test message" in formatted
 

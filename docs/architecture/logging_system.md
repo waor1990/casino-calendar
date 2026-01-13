@@ -14,7 +14,7 @@ The Casino Calendar application implements a comprehensive logging system to fac
 
 ### 📊 Structured Output
 
-- Timestamp, log level, module name, and message
+- Structured file output with UTC timestamps and level codes
 - Color-coded console output for better readability
 - Optional file output with rotation
 
@@ -36,6 +36,7 @@ The Casino Calendar application implements a comprehensive logging system to fac
 
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
+
 | `LOG_LEVEL` | Sets the minimum log level | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` |
 | `LOG_FILE` | Optional file output path | None | `logs/casino_calendar.log` |
 | `MAINTENANCE_LOG_LEVEL` | Console level for maintenance scripts | `INFO` | `WARNING` |
@@ -110,17 +111,19 @@ LOG_FILE=logs/casino_calendar_dev.log
 ### Console Output (with colors)
 
 ```log
-2025-07-29 10:15:30 | INFO     | app                  | Casino Calendar application starting up
-2025-07-29 10:15:30 | DEBUG    | casino_calendar.dash_app.data.loader  | Loading event data from data/casino_events.csv
-2025-07-29 10:15:31 | INFO     | casino_calendar.dash_app.data.loader  | Event data loaded successfully in 0.234s
+app:startup:42 | Casino Calendar application starting up
+loader:load_event_data:25 | Loading event data from data/casino_events.csv
+loader:load_event_data:31 | Event data loaded successfully in 0.234s
 ```
+
+When console colors are enabled, levels map to: `DEBUG` (cyan), `INFO` (green), `WARNING` (yellow), `ERROR` (red), `CRITICAL` (magenta).
 
 ### File Output (no colors)
 
 ```log
-2025-07-29 10:15:30 | INFO     | app                  | Casino Calendar application starting up
-2025-07-29 10:15:30 | DEBUG    | casino_calendar.dash_app.data.loader  | Loading event data from data/casino_events.csv
-2025-07-29 10:15:31 | INFO     | casino_calendar.dash_app.data.loader  | Event data loaded successfully in 0.234s
+2025-07-29T10:15:30.123Z | INF | app:startup:42 | pid=4242 tid=1400 | Casino Calendar application starting up | svc=casino_calendar env=local req=- user=-
+2025-07-29T10:15:30.456Z | DBG | loader:load_event_data:25 | pid=4242 tid=1400 | Loading event data from data/casino_events.csv | svc=casino_calendar env=local req=- user=-
+2025-07-29T10:15:31.001Z | INF | loader:load_event_data:31 | pid=4242 tid=1400 | Event data loaded successfully in 0.234s | svc=casino_calendar env=local req=- user=-
 ```
 
 ## Maintenance Logging

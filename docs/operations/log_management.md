@@ -82,7 +82,7 @@ python scripts\maintenance\cleanup_logs.py --archive-current
 
 Running `cleanup.bat` now prompts for the target log file (`casino_calendar_prod.log`, `casino_calendar_maintenance.log`, `casino_calendar_http.log`, or **all logs at once**) and displays the following actions:
 
-```
+```log
 [2] Archive by month (keep only current month in active log)
 [3] Copy current log file into archive folder
 [4] Show log directory info

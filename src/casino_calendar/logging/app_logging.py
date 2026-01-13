@@ -30,6 +30,18 @@ _HTTP_LOGGER_NAMES = (
     "cherrypy.access",
 )
 
+_PROJECT_ROOT = Path(__file__).resolve().parents[3]
+_PROJECT_ROOT_STR = str(_PROJECT_ROOT)
+_PROJECT_ROOT_POSIX = _PROJECT_ROOT.as_posix()
+_PROJECT_ROOT_PATTERN = re.compile(
+    re.escape(_PROJECT_ROOT_STR),
+    re.IGNORECASE if os.name == "nt" else 0,
+)
+_PROJECT_ROOT_POSIX_PATTERN = re.compile(
+    re.escape(_PROJECT_ROOT_POSIX),
+    re.IGNORECASE if os.name == "nt" else 0,
+)
+
 _LEVEL_MAP = {
     "DEBUG": logging.DEBUG,
     "INFO": logging.INFO,
@@ -44,7 +56,9 @@ _MINIMAL_LOG_PREFIXES = (
     "Logging system shutting down",
 )
 
-_MAINTENANCE_EMBEDDED_LOG_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \| (DBG|INF|WRN|ERR|CRT)\s+\|")
+_MAINTENANCE_EMBEDDED_LOG_RE = re.compile(
+    r"(?:" r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \| (DBG|INF|WRN|ERR|CRT)\s+\|" r"|[\w\.]+:[\w<>-]+:\d+ \|" r")"
+)
 
 _REDACTION_PATTERN = re.compile(
     r"(?i)\b(api_key|apikey|password|passwd|secret|token|authorization|bearer)\b\s*([:=])\s*([^\s,|]+)"
@@ -92,9 +106,18 @@ def _redact_text(value: str) -> str:
     return redacted
 
 
+def _relativize_paths(value: str) -> str:
+    if not value:
+        return value
+    normalized = _PROJECT_ROOT_PATTERN.sub(".", value)
+    if _PROJECT_ROOT_POSIX != _PROJECT_ROOT_STR:
+        normalized = _PROJECT_ROOT_POSIX_PATTERN.sub(".", normalized)
+    return normalized
+
+
 class _RedactingFormatter(logging.Formatter):
     def _apply_redaction(self, message: str) -> str:
-        return _redact_text(message)
+        return _redact_text(_relativize_paths(message))
 
 
 def _level_code(levelno: int) -> str:
@@ -161,33 +184,31 @@ class ConsoleFormatter(_RedactingFormatter):
         self._use_rich_markup = use_rich_markup
 
     def format(self, record: logging.LogRecord) -> str:
-        timestamp = _console_timestamp(record)
-        level = _level_code(record.levelno)
-        if self._use_colors:
-            if self._use_rich_markup:
-                color = self._RICH_COLORS.get(record.levelname)
-                if color:
-                    level = f"[{color}]{level}[/{color}]"
-            else:
-                color = self._ANSI_COLORS.get(record.levelname)
-                if color:
-                    level = f"{color}{level}\x1b[0m"
-
         minimal_console = _is_minimal_log_mode()
         location = _format_callsite(record)
         message = record.getMessage()
         if record.exc_info:
             message = f"{message}\n{self.formatException(record.exc_info)}"
         if minimal_console:
-            line = f"{timestamp} | {level} | {message}"
+            line = message
         else:
-            line = f"{timestamp} | {level} | {location} | {message}"
+            line = f"{location} | {message}"
             if _console_debug_context_enabled():
                 request_id = getattr(record, "request_id", "-")
                 user_id = getattr(record, "user_id", "-")
                 if request_id not in {"", "-"} or user_id not in {"", "-"}:
                     line = f"{line} | req={request_id} user={user_id}"
-        return self._apply_redaction(line)
+        line = self._apply_redaction(line)
+        if self._use_colors:
+            if self._use_rich_markup:
+                color = self._RICH_COLORS.get(record.levelname)
+                if color:
+                    line = f"[{color}]{line}[/{color}]"
+            else:
+                color = self._ANSI_COLORS.get(record.levelname)
+                if color:
+                    line = f"{color}{line}\x1b[0m"
+        return line
 
 
 class FileFormatter(_RedactingFormatter):
@@ -212,7 +233,7 @@ class FileFormatter(_RedactingFormatter):
 class JsonLogFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         timestamp = _utc_iso_ms(record.created).replace("Z", "")
-        message = _redact_text(record.getMessage())
+        message = _redact_text(_relativize_paths(record.getMessage()))
         payload = {
             "timestamp": timestamp,
             "tz": "UTC",
@@ -230,7 +251,7 @@ class JsonLogFormatter(logging.Formatter):
             "message": message,
         }
         if record.exc_info:
-            payload["exception"] = self.formatException(record.exc_info)
+            payload["exception"] = _relativize_paths(self.formatException(record.exc_info))
         return json.dumps(payload, ensure_ascii=False)
 
 
@@ -318,7 +339,13 @@ class _DedupingTimedRotatingFileHandler(TimedRotatingFileHandler):
     def _write_record(self, record: logging.LogRecord) -> None:
         try:
             if self.shouldRollover(record):
-                self.doRollover()
+                try:
+                    self.doRollover()
+                except OSError as exc:
+                    if isinstance(exc, PermissionError) or getattr(exc, "winerror", None) == 32:
+                        self._recover_rollover()
+                    else:
+                        raise
             message = self.format(record)
             stream = self.stream
             if stream is None:
@@ -327,6 +354,15 @@ class _DedupingTimedRotatingFileHandler(TimedRotatingFileHandler):
             stream.flush()
         except Exception:
             self.handleError(record)
+
+    def _recover_rollover(self) -> None:
+        current_time = int(time.time())
+        self.rolloverAt = self.computeRollover(current_time)
+        if self.stream is None or getattr(self.stream, "closed", False):
+            try:
+                self.stream = self._open()
+            except Exception:
+                self.stream = None
 
 
 def _record_with_suffix(record: logging.LogRecord, suffix: str) -> logging.LogRecord:
@@ -510,7 +546,7 @@ def _build_console_handler(
         formatter = ConsoleFormatter(use_colors=is_tty, use_rich_markup=True)
     elif _find_spec("colorlog"):
         handler = logging.StreamHandler(stream)
-        formatter = _build_colorlog_formatter()
+        formatter = _build_colorlog_formatter(use_colors=is_tty)
     else:
         handler = logging.StreamHandler(stream)
         formatter = ConsoleFormatter(use_colors=is_tty, use_rich_markup=False)
@@ -522,24 +558,8 @@ def _build_console_handler(
     return handler
 
 
-def _build_colorlog_formatter() -> logging.Formatter:
-    colorlog = import_module("colorlog")
-
-    class _ColorlogFormatter(colorlog.ColoredFormatter):  # type: ignore[attr-defined]
-        def format(self, record: logging.LogRecord) -> str:
-            return _redact_text(super().format(record))
-
-    return _ColorlogFormatter(
-        "%(log_color)s%(asctime)s | %(levelname)-8s | %(module)s:%(funcName)s:%(lineno)d | %(message)s%(reset)s",
-        datefmt="%H:%M:%S",
-        log_colors={
-            "DEBUG": "cyan",
-            "INFO": "green",
-            "WARNING": "yellow",
-            "ERROR": "red",
-            "CRITICAL": "purple",
-        },
-    )
+def _build_colorlog_formatter(*, use_colors: bool) -> logging.Formatter:
+    return ConsoleFormatter(use_colors=use_colors, use_rich_markup=False)
 
 
 def _ensure_context_filter(handler: logging.Handler, service: str, environment: str) -> None:
@@ -759,7 +779,7 @@ def setup_logging(
             if console_handler.__class__.__module__.startswith("rich.logging"):
                 console_handler.setFormatter(ConsoleFormatter(use_colors=is_tty, use_rich_markup=True))
             elif _find_spec("colorlog") and console_handler.__class__.__module__.startswith("logging"):
-                console_handler.setFormatter(_build_colorlog_formatter())
+                console_handler.setFormatter(_build_colorlog_formatter(use_colors=is_tty))
             else:
                 console_handler.setFormatter(ConsoleFormatter(use_colors=is_tty, use_rich_markup=False))
             _ensure_context_filter(console_handler, service, environment)

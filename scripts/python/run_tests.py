@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
 
@@ -17,16 +18,26 @@ for candidate in (SRC_DIR, PROJECT_ROOT):
     if str(candidate) not in sys.path:
         sys.path.insert(0, str(candidate))
 
+os.environ.setdefault("CASINO_MINIMAL_TEST_LOG", "1")
+
 from casino_calendar.logging import app_logging  # noqa: E402
 from casino_calendar.logging import config as logging_config  # noqa: E402
 
 _PREFIX_RE = re.compile(
-    r"^(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z|\d{2}:\d{2}:\d{2}Z?|\d{4}-\d{2}-\d{2} "
-    r"\d{2}:\d{2}:\d{2}(?:\.\d{3})?) \| "
+    r"^(?:"
+    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"
+    r"|\d{2}:\d{2}:\d{2}Z?"
+    r"|\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{3})?"
+    r"|[\w\.]+:[\w<>-]+:\d+"
+    r") \| "
 )
 _EMBEDDED_LOG_RE = re.compile(
-    r"(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z|\d{2}:\d{2}:\d{2}Z?|\d{4}-\d{2}-\d{2} "
-    r"\d{2}:\d{2}:\d{2}(?:\.\d{3})?) \| (DBG|INF|WRN|ERR|CRT)\s+\|"
+    r"(?:"
+    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"
+    r"|\d{2}:\d{2}:\d{2}Z?"
+    r"|\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{3})?"
+    r") \| (DBG|INF|WRN|ERR|CRT)\s+\|"
+    r"|[\w\.]+:[\w<>-]+:\d+ \|"
 )
 _BANDIT_REPORT_PATH = PROJECT_ROOT / "logs" / "bandit_report.txt"
 _PYDOCSTYLE_REPORT_PATH = PROJECT_ROOT / "logs" / "pydocstyle_report.txt"
@@ -37,6 +48,14 @@ BANDIT_CONFIG_PATH = LINTING_CONFIG_DIR / "bandit.yaml"
 PYDOCSTYLE_CONFIG_PATH = LINTING_CONFIG_DIR / "pydocstyle.ini"
 APP_CODE_DIR = SRC_DIR / "casino_calendar"
 LINT_TARGETS = [str(APP_CODE_DIR), str(PROJECT_ROOT / "app.py"), str(PROJECT_ROOT / "wsgi.py")]
+
+
+def _display_path(path: Path, base: Path) -> str:
+    try:
+        rel = path.resolve().relative_to(base.resolve())
+    except ValueError:
+        return str(path)
+    return "." if rel == Path(".") else str(rel)
 
 
 class PrefixAwareFormatter(app_logging.FileFormatter):
@@ -63,11 +82,28 @@ class PrefixStrippingFormatter(app_logging.ConsoleFormatter):
             return ""
         if _PREFIX_RE.match(message):
             parts = message.split(" | ")
+            minimal_console = os.getenv("CASINO_MINIMAL_TEST_LOG", "").lower() not in (
+                "",
+                "0",
+                "false",
+                "off",
+                "no",
+            )
             if len(parts) >= 4:
                 has_pid = parts[2].strip().startswith("pid=")
                 location_index = 3 if has_pid else 2
                 location = parts[location_index].strip() if location_index < len(parts) else parts[-2].strip()
                 remainder = parts[-1].strip()
+                if minimal_console:
+                    return remainder or location
+                if remainder:
+                    return f"{location} | {remainder}"
+                return location
+            if len(parts) >= 2:
+                location = parts[0].strip()
+                remainder = " | ".join(parts[1:]).strip()
+                if minimal_console:
+                    return remainder or location
                 if remainder:
                     return f"{location} | {remainder}"
                 return location
@@ -97,6 +133,29 @@ def configure_logger() -> logging.Logger:
             handler.setFormatter(PrefixStrippingFormatter())
 
     return logger
+
+
+def _emit_process_line(
+    logger: logging.Logger,
+    step_key: str,
+    line: str,
+    suppressed: int,
+) -> int:
+    if step_key == "black":
+        line = line.encode("ascii", "ignore").decode("ascii")
+        line = " ".join(line.split())
+    if _EMBEDDED_LOG_RE.search(line):
+        return suppressed + 1
+    if (
+        "pytest" in step_key
+        and line.startswith("Test ")
+        and line.rstrip().endswith(
+            (" passed.", " failed.", " skipped.", " xfailed.", " xpassed."),
+        )
+    ):
+        return suppressed
+    logger.info(line)
+    return suppressed
 
 
 def run_step(logger: logging.Logger, step: Step, env: dict[str, str]) -> int:
@@ -132,6 +191,12 @@ def run_step(logger: logging.Logger, step: Step, env: dict[str, str]) -> int:
         total_issues = 0
         saw_metrics = False
         with _BANDIT_REPORT_PATH.open("w", encoding="utf-8", newline="\n") as report_file:
+            run_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            report_file.write("Casino Calendar Security Report (Bandit)\n")
+            report_file.write("=" * 48 + "\n")
+            report_file.write(f"Run time (UTC): {run_time}\n")
+            report_file.write(f"Project root: {PROJECT_ROOT}\n")
+            report_file.write(f"Targets: {', '.join(LINT_TARGETS)}\n\n")
             for line in process.stdout:
                 line = line.rstrip("\r\n")
                 report_file.write(f"{line}\n")
@@ -158,6 +223,12 @@ def run_step(logger: logging.Logger, step: Step, env: dict[str, str]) -> int:
         code_counts: dict[str, int] = {}
         total_issues = 0
         with _PYDOCSTYLE_REPORT_PATH.open("w", encoding="utf-8", newline="\n") as report_file:
+            run_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            report_file.write("Casino Calendar Docstring Report (pydocstyle)\n")
+            report_file.write("=" * 56 + "\n")
+            report_file.write(f"Run time (UTC): {run_time}\n")
+            report_file.write(f"Project root: {PROJECT_ROOT}\n")
+            report_file.write(f"Targets: {', '.join(LINT_TARGETS)}\n\n")
             for line in process.stdout:
                 line = line.rstrip("\r\n")
                 report_file.write(f"{line}\n")
@@ -174,15 +245,14 @@ def run_step(logger: logging.Logger, step: Step, env: dict[str, str]) -> int:
                     report_file.write(f"  {code}: {code_counts[code]}\n")
     else:
         suppressed = 0
+        step_key = step.label.lower()
         for line in process.stdout:
-            line = line.rstrip("\r\n")
-            if step.label == "black":
-                line = line.encode("ascii", "ignore").decode("ascii")
-                line = " ".join(line.split())
-            if _EMBEDDED_LOG_RE.search(line):
-                suppressed += 1
-                continue
-            logger.info(line)
+            line = line.replace("\x00", "")
+            for segment in line.split("\r"):
+                segment = segment.rstrip("\n")
+                if segment == "" and line.strip() != "":
+                    continue
+                suppressed = _emit_process_line(logger, step_key, segment, suppressed)
         if suppressed:
             logger.debug("Suppressed %d embedded log line(s) during %s.", suppressed, step.label)
 
@@ -256,10 +326,16 @@ def main() -> int:
     logger.info("===============================================")
     logger.info("Casino Calendar - Test Runner")
     logger.info("Started test run.")
-    logger.info("Log file: %s", logging_config.get_maintenance_log_path())
+    maintenance_log = logging_config.get_maintenance_log_path()
+    logger.info("Maintenance log: %s", _display_path(maintenance_log, PROJECT_ROOT))
+    batch_log = os.getenv("CC_LOG_FILE")
+    if batch_log:
+        logger.info("Batch log: %s", _display_path(Path(batch_log), PROJECT_ROOT))
     logger.info("===============================================")
-    logger.info("Python: %s", sys.executable)
-    logger.info("Working directory: %s", PROJECT_ROOT)
+    python_display = _display_path(Path(sys.executable), PROJECT_ROOT)
+    work_display = _display_path(PROJECT_ROOT, PROJECT_ROOT)
+    logger.info("Python: %s", python_display)
+    logger.info("Working directory: %s", work_display)
 
     env = os.environ.copy()
     _BANDIT_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -268,6 +344,7 @@ def main() -> int:
     env.setdefault("PYTHONNOUSERSITE", "1")
     env.setdefault("PYTHONIOENCODING", "utf-8")
     env.setdefault("PYTHONUTF8", "1")
+    env.setdefault("COLUMNS", "200")
 
     soft_failures: list[str] = []
 
@@ -359,11 +436,19 @@ def main() -> int:
     else:
         logger.warning("npm not found; skipping CSS lint.")
 
-    code = run_step(
-        logger,
-        Step("Run pytest", [sys.executable, "-m", "pytest", "--cov=casino_calendar", "-vv", "-s", "tests"]),
-        env,
-    )
+    pytest_command = [
+        sys.executable,
+        "-m",
+        "pytest",
+        "--cov=casino_calendar",
+        "-vv",
+        "-s",
+        "--color=no",
+        "-o",
+        "console_output_style=classic",
+        "tests",
+    ]
+    code = run_step(logger, Step("Run pytest", pytest_command), env)
     if code != 0:
         logger.error("===============================================")
         logger.error("Tests failed. Review the output above.")
