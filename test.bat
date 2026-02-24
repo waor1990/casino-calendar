@@ -8,13 +8,12 @@ set "CC_LOG_SOURCE=root/test.bat"
 call :CC_RESOLVE_LOG_FILE "%CC_ENV_PATH%" "ROOT_TEST_BAT_LOG_FILE" "logs\casino_calendar_batch_test.log"
 
 if defined CC_LOG_FILE (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%CC_ROOT_DIR%scripts\windows\tee_setup_output.ps1" -ScriptPath "%CC_ROOT_DIR%scripts\windows\test.bat" -LogFile "%CC_LOG_FILE%" -LogSource "%CC_LOG_SOURCE%"
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%CC_ROOT_DIR%scripts\windows\tee_setup_output.ps1" -ScriptPath "%CC_ROOT_DIR%scripts\windows\test.bat" -LogFile "%CC_LOG_FILE%" -LogSource "%CC_LOG_SOURCE%" -ProjectRoot "%CC_ROOT_DIR%"
 ) else (
     call "%CC_ROOT_DIR%scripts\windows\test.bat"
 )
 set "TEST_EXIT=%ERRORLEVEL%"
 if not "%TEST_EXIT%"=="0" (
-    call :CC_LOG ERROR Tests failed with exit code %TEST_EXIT%
     exit /b %TEST_EXIT%
 )
 exit /b 0

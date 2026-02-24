@@ -33,7 +33,7 @@ The development server binds to `0.0.0.0:8050`. The startup log shows `http://lo
 - `scripts\windows\cleanup_logs.bat` – Log rotation/cleanup helper
 - `scripts/shell/setup.sh` – Unix-like setup (Python + Node + Sass build). If `core.hooksPath` is set, pre-commit hooks are skipped; run `git config --unset-all core.hooksPath` to enable hooks.
 - `scripts/shell/test.sh` – Linters plus pytest wrapper
-- `test.bat` / `scripts\windows\test.bat` - Windows test runner (compile checks, linters, CSS lint, pytest); logs timestamped output to `logs\casino_calendar_batch_test_windows.log` (override with `WIN_TEST_BAT_LOG_FILE`), writes Bandit/Pydocstyle reports to `logs\bandit_report.txt` and `logs\pydocstyle_report.txt` (Bandit/Pydocstyle focus on `src\casino_calendar` plus `app.py`/`wsgi.py` via `config\linting\bandit.yaml` and `config\linting\pydocstyle.ini`)
+- `test.bat` / `scripts\windows\test.bat` - Windows test runner (compile checks, linters, CSS lint, pytest); logs timestamped output to `logs\casino_calendar_batch_test_windows.log` (override with `WIN_TEST_BAT_LOG_FILE`), emits per-step reports under `logs\test_reports` (Bandit/Pydocstyle still target `src\casino_calendar` plus `app.py`/`wsgi.py` via `config\linting\bandit.yaml` and `config\linting\pydocstyle.ini`), and reports which steps passed/failed even if some checks fail
 - `scripts/python/check_environment.py` - Validate Python/Node/npm versions (supports `--auto-fix` with Volta)
 - `scripts/python/verify_requirements.py` - Compare installed packages to `requirements.txt`
 
@@ -63,9 +63,14 @@ python app.py
 ## 📊 Environment Variables
 
 - `LOG_LEVEL` - Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-- `LOG_FILE` - Optional log file path
+- `LOG_DIR` - Directory for log output (default: `./logs`)
+- `LOG_FILE` - Optional log file path override (default: `LOG_DIR/app.log`)
+- `LOG_FILE_TZ` - File timestamp time zone (`UTC` default, or `LOCAL`)
+- `LOG_DEBUG_FILE` - Optional debug log override (set blank to disable)
+- `LOG_FILE_JSON` - Set `true` to emit JSON log lines to files
+- `LOG_CONSOLE_TZ` - Console time zone (`LOCAL` default, or `UTC`) (unused when console timestamps are hidden)
 - `*_BAT_LOG_FILE` - Batch script log destinations (see `.env.example` for defaults)
-- Batch script logs mirror console output and apply the standard `timestamp | level | source | message` format
+- Batch script logs use the `timestamp | level | source | message` format, even when console output omits timestamps
 - `DASH_HOST` - Bind address for the Dash server (default: `0.0.0.0`)
 - `DASH_PUBLIC_HOST` - Optional LAN address to advertise in startup logs (overrides auto-detect)
 
@@ -74,7 +79,17 @@ Example:
 ```cmd
 set LOG_LEVEL=DEBUG
 set LOG_FILE=app.log
+set LOG_FILE_JSON=true
 run.bat
+```
+
+Console output now omits timestamps and level codes; warnings/errors/critical logs are highlighted using console colors.
+
+File log example (local during tests):
+
+```log
+2025-03-01T12:00:00.123 | INF | run_tests:run_step:263 | pid=4242 tid=1400 | Step: pytest | svc=casino_calendar env=local req=- user=-
+2025-03-01T12:00:05.456 | INF | run_tests:run_step:385 | pid=4242 tid=1400 | Run pytest completed with exit code 0. | svc=casino_calendar env=local req=- user=-
 ```
 
 ## 🧪 Development

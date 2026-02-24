@@ -6,24 +6,25 @@ export PYTHONIOENCODING=utf-8
 
 set -e
 
-# Compile Python modules
-python -m compileall src
+# Compile Python modules (show each file being compiled for clarity)
+python -m compileall -v src
 
 # Run formatters and linter if installed
 if command -v black >/dev/null 2>&1; then
-    # Respect repository Black settings (via pyproject.toml)
-    black --check .
+    # Respect repository Black settings (via pyproject.toml) and show verbose output
+    black --check --verbose .
 fi
 if command -v isort >/dev/null 2>&1; then
-    # Use the project isort settings from pyproject.toml to align with Black
-    isort --check-only .
+    # Use the project isort settings from pyproject.toml to align with Black and be verbose
+    isort --check-only --verbose .
 fi
 if command -v flake8 >/dev/null 2>&1; then
     # Use the centralized flake8 config to avoid default 79 char limit and skip vendor dirs
-    flake8 --config .flake8 .
+    flake8 --config .flake8 --verbose .
 fi
 if command -v mypy >/dev/null 2>&1; then
-    mypy --config-file config/typing/mypy.ini .
+    # Keep typing checks verbose for clarity during CI/runs
+    mypy --config-file config/typing/mypy.ini -v
 fi
 if command -v bandit >/dev/null 2>&1; then
     bandit -c config/linting/bandit.yaml -f txt -r src/casino_calendar app.py wsgi.py

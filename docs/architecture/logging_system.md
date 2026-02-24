@@ -14,7 +14,7 @@ The Casino Calendar application implements a comprehensive logging system to fac
 
 ### 📊 Structured Output
 
-- Timestamp, log level, module name, and message
+- Structured file output with UTC timestamps by default (set `LOG_FILE_TZ=LOCAL` for local time) and level codes
 - Color-coded console output for better readability
 - Optional file output with rotation
 
@@ -36,8 +36,10 @@ The Casino Calendar application implements a comprehensive logging system to fac
 
 | Variable | Description | Default | Example |
 |----------|-------------|---------|---------|
+
 | `LOG_LEVEL` | Sets the minimum log level | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL` |
 | `LOG_FILE` | Optional file output path | None | `logs/casino_calendar.log` |
+| `LOG_FILE_TZ` | File timestamp time zone | `UTC` | `LOCAL` |
 | `MAINTENANCE_LOG_LEVEL` | Console level for maintenance scripts | `INFO` | `WARNING` |
 | `MAINTENANCE_LOG_FILE` | File path for maintenance log output | `logs/casino_calendar_maintenance.log` | `C:/logs/maintenance.log` |
 | `ARCHIVE_APP_LOG_ON_STARTUP` | Archive/copy main log before configuring handlers (`move`, `copy`, or `false`) | `false` | `move` |
@@ -110,18 +112,22 @@ LOG_FILE=logs/casino_calendar_dev.log
 ### Console Output (with colors)
 
 ```log
-2025-07-29 10:15:30 | INFO     | app                  | Casino Calendar application starting up
-2025-07-29 10:15:30 | DEBUG    | casino_calendar.dash_app.data.loader  | Loading event data from data/casino_events.csv
-2025-07-29 10:15:31 | INFO     | casino_calendar.dash_app.data.loader  | Event data loaded successfully in 0.234s
+app:startup:42 | Casino Calendar application starting up
+loader:load_event_data:25 | Loading event data from data/casino_events.csv
+loader:load_event_data:31 | Event data loaded successfully in 0.234s
 ```
+
+When console colors are enabled, levels map to: `DEBUG` (cyan), `INFO` (green), `WARNING` (yellow), `ERROR` (red), `CRITICAL` (magenta).
 
 ### File Output (no colors)
 
 ```log
-2025-07-29 10:15:30 | INFO     | app                  | Casino Calendar application starting up
-2025-07-29 10:15:30 | DEBUG    | casino_calendar.dash_app.data.loader  | Loading event data from data/casino_events.csv
-2025-07-29 10:15:31 | INFO     | casino_calendar.dash_app.data.loader  | Event data loaded successfully in 0.234s
+2025-07-29T10:15:30.123Z | INF | app:startup:42 | pid=4242 tid=1400 | Casino Calendar application starting up | svc=casino_calendar env=local req=- user=-
+2025-07-29T10:15:30.456Z | DBG | loader:load_event_data:25 | pid=4242 tid=1400 | Loading event data from data/casino_events.csv | svc=casino_calendar env=local req=- user=-
+2025-07-29T10:15:31.001Z | INF | loader:load_event_data:31 | pid=4242 tid=1400 | Event data loaded successfully in 0.234s | svc=casino_calendar env=local req=- user=-
 ```
+
+Set `LOG_FILE_TZ=LOCAL` to emit local timestamps without the trailing `Z`.
 
 ## Maintenance Logging
 
@@ -129,6 +135,7 @@ LOG_FILE=logs/casino_calendar_dev.log
 - Configure log level and destination via `MAINTENANCE_LOG_LEVEL`, `MAINTENANCE_LOG_FILE`, and `ARCHIVE_APP_LOG_ON_STARTUP` (use `move` to relocate or `copy` to duplicate on startup; default `false` leaves the active file intact).
 - Archived output is organised into monthly files (e.g. `casino_calendar_prod_2025-09.log`) plus a cumulative `<base>_all.log` file that deduplicates every message historically.
 - Set `CASINO_MINIMAL_TEST_LOG=1` (done automatically by the pytest configuration) to restrict test runs to the startup log entries only.
+- Test runs set `LOG_FILE_TZ=LOCAL` so file output uses local time during tests.
 - Examples:
 
 ```python

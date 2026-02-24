@@ -13,7 +13,7 @@ call :CC_LOG INFO ================================
 
 set "CC_SUPPRESS_SETUP_BANNER=1"
 if defined CC_LOG_FILE (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%CC_ROOT_DIR%scripts\windows\tee_setup_output.ps1" -ScriptPath "%CC_ROOT_DIR%scripts\windows\setup.bat" -LogFile "%CC_LOG_FILE%" -LogSource "%CC_LOG_SOURCE%"
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%CC_ROOT_DIR%scripts\windows\tee_setup_output.ps1" -ScriptPath "%CC_ROOT_DIR%scripts\windows\setup.bat" -LogFile "%CC_LOG_FILE%" -LogSource "%CC_LOG_SOURCE%" -ProjectRoot "%CC_ROOT_DIR%"
 ) else (
     cmd /c "%CC_ROOT_DIR%scripts\windows\setup.bat"
 )
