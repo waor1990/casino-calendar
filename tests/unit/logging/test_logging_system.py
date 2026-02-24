@@ -113,6 +113,7 @@ def test_file_format_and_rotation(tmp_path, monkeypatch):
     monkeypatch.setenv("LOG_FILE", str(log_file))
     monkeypatch.setenv("LOG_LEVEL", "INFO")
     monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+    monkeypatch.setenv("LOG_FILE_TZ", "LOCAL")
 
     logger = app_logging.setup_logging("test_file_format")
     logger.info("File format check")
@@ -121,7 +122,7 @@ def test_file_format_and_rotation(tmp_path, monkeypatch):
     file_handler.flush()
     content = log_file.read_text(encoding="utf-8")
     assert re.search(
-        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \| INF \| [\w\.]+:\w+:\d+ \| "
+        r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3} \| INF \| [\w\.]+:\w+:\d+ \| "
         r"pid=\d+ tid=\d+ \| .* \| svc=\S+ env=\S+ req=\S+ user=\S+$",
         content,
     )
@@ -162,9 +163,11 @@ def test_context_enrichment_with_adapter(tmp_path, monkeypatch):
 
 
 def test_env_toggles_log_dir_and_json(tmp_path, monkeypatch):
+    monkeypatch.delenv("LOG_FILE", raising=False)
     monkeypatch.setenv("LOG_DIR", str(tmp_path / "logs"))
     monkeypatch.setenv("LOG_FILE_JSON", "true")
     monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "0")
+    monkeypatch.setenv("LOG_FILE_TZ", "LOCAL")
 
     logger = app_logging.setup_logging("test_json")
     logger.info("json payload")
@@ -180,7 +183,7 @@ def test_env_toggles_log_dir_and_json(tmp_path, monkeypatch):
     payload = json.loads(line)
     assert payload["message"] == "json payload"
     assert payload["level"] == "INFO"
-    assert payload["tz"] == "UTC"
+    assert payload["tz"] == "LOCAL"
 
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
@@ -368,7 +371,7 @@ def test_setup_production_logger_archives_existing(tmp_path, monkeypatch):
     log_dir.mkdir()
     log_file = log_dir / "app.log"
     log_file.write_text(
-        "2025-09-01T10:00:00.000Z | INF | module:func:1 | pid=1 tid=1 | old log content | svc=app env=local req=- user=-\n",
+        "2025-09-01T10:00:00.000 | INF | module:func:1 | pid=1 tid=1 | old log content | svc=app env=local req=- user=-\n",
         encoding="utf-8",
     )
 

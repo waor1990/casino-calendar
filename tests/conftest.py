@@ -22,6 +22,7 @@ from casino_calendar.bootstrap import bootstrap_environment  # noqa: E402
 
 bootstrap_environment(PROJECT_ROOT)
 os.environ.setdefault("CASINO_MINIMAL_TEST_LOG", "1")
+os.environ.setdefault("LOG_FILE_TZ", "LOCAL")
 
 
 class _PytestConsoleFilter(logging.Filter):
@@ -57,6 +58,7 @@ def _minimal_app_logging(monkeypatch: pytest.MonkeyPatch) -> None:
     """Keep production logs lean during test executions."""
 
     monkeypatch.setenv("CASINO_MINIMAL_TEST_LOG", "1")
+    monkeypatch.setenv("LOG_FILE_TZ", "LOCAL")
 
 
 @pytest.fixture

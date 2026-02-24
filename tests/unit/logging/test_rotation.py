@@ -20,7 +20,7 @@ _write_lines_with_fallback = rotation._write_lines_with_fallback
 
 def _line(year: int, month: int, day: int, message: str) -> str:
     return (
-        f"{year:04d}-{month:02d}-{day:02d}T10:00:00.000Z | INF | "
+        f"{year:04d}-{month:02d}-{day:02d}T10:00:00.000 | INF | "
         f"test.module:test_func:1 | pid=1 tid=1 | {message} | svc=app env=local req=- user=-\n"
     )
 

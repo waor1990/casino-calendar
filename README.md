@@ -150,6 +150,7 @@ Environment variables:
 | `LOG_LEVEL` | Override default log level (default: `INFO`) |
 | `LOG_DIR` | Directory for log output (default: `./logs`) |
 | `LOG_FILE` | Override the primary log file path (default: `LOG_DIR/app.log`) |
+| `LOG_FILE_TZ` | File timestamp time zone (`UTC` default, or `LOCAL`) |
 | `LOG_DEBUG_FILE` | Optional debug log path (set blank to disable) |
 | `LOG_FILE_JSON` | Emit JSON log lines when set to `true` |
 | `LOG_CONSOLE_TZ` | Console time zone (`LOCAL` default, or `UTC`) (unused when console timestamps are hidden) |
@@ -158,7 +159,7 @@ Environment variables:
 | `MAINTENANCE_LOG_LEVEL` | Console log level for maintenance scripts |
 | `MAINTENANCE_LOG_FILE` | File destination for maintenance logs |
 
-Console logs are optimized for readability (`module:function:line | message`), with log severity indicated by color. File logs include richer context for auditability (`YYYY-MM-DDTHH:MM:SS.sssZ | LVL | module:function:line | pid=... tid=... | message | svc=... env=... req=... user=...`). File timestamps are always UTC with a `Z` suffix.
+Console logs are optimized for readability (`module:function:line | message`), with log severity indicated by color. File logs include richer context for auditability (`YYYY-MM-DDTHH:MM:SS.sssZ | LVL | module:function:line | pid=... tid=... | message | svc=... env=... req=... user=...`). File timestamps default to UTC with a `Z` suffix; set `LOG_FILE_TZ=LOCAL` to emit local time (tests do this automatically).
 
 Level codes are 3-letter abbreviations: `DBG`, `INF`, `WRN`, `ERR`, `CRT`.
 
@@ -166,12 +167,14 @@ Script output example (updated):
 
 ```log
 Step: pytest
+Run pytest completed with exit code 0.
 ```
 
-File log example (UTC, audit-friendly):
+File log example (local during tests):
 
 ```log
-2025-03-01T12:00:00.123Z | INF | run_tests:run_step:112 | pid=4242 tid=1400 | Step: pytest | svc=casino_calendar env=local req=- user=-
+2025-03-01T12:00:00.123 | INF | run_tests:run_step:263 | pid=4242 tid=1400 | Step: pytest | svc=casino_calendar env=local req=- user=-
+2025-03-01T12:00:05.456 | INF | run_tests:run_step:385 | pid=4242 tid=1400 | Run pytest completed with exit code 0. | svc=casino_calendar env=local req=- user=-
 ```
 
 Before (legacy console sample):

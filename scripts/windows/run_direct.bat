@@ -32,7 +32,7 @@ REM Build CSS if npm available
 where npm >nul 2>nul
 if %ERRORLEVEL% EQU 0 (
     echo Building CSS from SCSS...
-    npm run build:css
+    call npm run build:css
     if ERRORLEVEL 1 (
         echo WARNING: CSS build failed
         echo Continuing with existing CSS...

@@ -8,9 +8,9 @@ import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
-from typing import Callable
+from typing import Callable, TextIO
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SRC_DIR = PROJECT_ROOT / "src"
@@ -19,13 +19,14 @@ for candidate in (SRC_DIR, PROJECT_ROOT):
         sys.path.insert(0, str(candidate))
 
 os.environ.setdefault("CASINO_MINIMAL_TEST_LOG", "1")
+os.environ.setdefault("LOG_FILE_TZ", "LOCAL")
 
 from casino_calendar.logging import app_logging  # noqa: E402
 from casino_calendar.logging import config as logging_config  # noqa: E402
 
 _PREFIX_RE = re.compile(
     r"^(?:"
-    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"
+    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z?"
     r"|\d{2}:\d{2}:\d{2}Z?"
     r"|\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{3})?"
     r"|[\w\.]+:[\w<>-]+:\d+"
@@ -33,14 +34,15 @@ _PREFIX_RE = re.compile(
 )
 _EMBEDDED_LOG_RE = re.compile(
     r"(?:"
-    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"
+    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z?"
     r"|\d{2}:\d{2}:\d{2}Z?"
     r"|\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{3})?"
     r") \| (DBG|INF|WRN|ERR|CRT)\s+\|"
     r"|[\w\.]+:[\w<>-]+:\d+ \|"
 )
-_BANDIT_REPORT_PATH = PROJECT_ROOT / "logs" / "bandit_report.txt"
-_PYDOCSTYLE_REPORT_PATH = PROJECT_ROOT / "logs" / "pydocstyle_report.txt"
+_PYTEST_STATUS_RE = re.compile(r"\b(PASSED|FAILED|SKIPPED|XPASS|XFAIL)\b")
+_PYTEST_STATUS_ONLY_RE = re.compile(r"^(PASSED|FAILED|SKIPPED|XPASS|XFAIL)$")
+_PYTEST_SUMMARY_START_RE = re.compile(r"^(PASSED|FAILED|SKIPPED|XPASS|XFAIL|ERROR)\b")
 _BANDIT_SEVERITY_RE = re.compile(r"^\s*Severity:\s+(\w+)\s+Confidence:\s+(\w+)\s*$")
 _PYDOCSTYLE_CODE_RE = re.compile(r"\b(D\d{3})\b")
 LINTING_CONFIG_DIR = PROJECT_ROOT / "config" / "linting"
@@ -48,6 +50,43 @@ BANDIT_CONFIG_PATH = LINTING_CONFIG_DIR / "bandit.yaml"
 PYDOCSTYLE_CONFIG_PATH = LINTING_CONFIG_DIR / "pydocstyle.ini"
 APP_CODE_DIR = SRC_DIR / "casino_calendar"
 LINT_TARGETS = [str(APP_CODE_DIR), str(PROJECT_ROOT / "app.py"), str(PROJECT_ROOT / "wsgi.py")]
+TEST_REPORTS_DIR = PROJECT_ROOT / "logs" / "test_reports"
+_QUIET_STEPS = {
+    "pytest",
+    "bandit",
+    "pydocstyle",
+    "flake8",
+    "mypy",
+    "lint css",
+    "compile python modules",
+    "black",
+    "isort",
+}
+_STEP_LABEL_SANITIZER = re.compile(r"[^A-Za-z0-9-_]+")
+
+
+def _sanitize_step_label(label: str) -> str:
+    sanitized = _STEP_LABEL_SANITIZER.sub("_", label).strip("_")
+    return sanitized or "step"
+
+
+def _open_step_report(label: str, logger: logging.Logger) -> tuple[TextIO | None, Path | None]:
+    try:
+        TEST_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        file_name = f"{_sanitize_step_label(label)}_{timestamp}.txt"
+        file_path = TEST_REPORTS_DIR / file_name
+        writer = file_path.open("a", encoding="utf-8", newline="\n")
+        return writer, file_path
+    except OSError as exc:
+        logger.warning("Failed to open step report for %s: %s", label, exc)
+        return None, None
+
+
+def _write_step_report_line(writer: TextIO | None, line: str) -> None:
+    if not writer:
+        return
+    writer.write(line.rstrip("\r\n") + "\n")
 
 
 def _display_path(path: Path, base: Path) -> str:
@@ -75,6 +114,9 @@ class PrefixAwareFormatter(app_logging.FileFormatter):
 
 class PrefixStrippingFormatter(app_logging.ConsoleFormatter):
     """Formatter that removes timestamps/levels for console output."""
+
+    def __init__(self) -> None:
+        super().__init__(use_colors=False, use_rich_markup=False)
 
     def format(self, record: logging.LogRecord) -> str:
         message = record.getMessage()
@@ -154,8 +196,102 @@ def _emit_process_line(
         )
     ):
         return suppressed
-    logger.info(line)
+    if step_key not in _QUIET_STEPS:
+        logger.info(line)
     return suppressed
+
+
+def _emit_pytest_line(
+    logger: logging.Logger,
+    line: str,
+    suppressed: int,
+    pending: str | None,
+    last_emitted: str | None,
+    seen_results: set[str],
+    pending_coverage: str | None,
+    pending_summary: str | None,
+    quiet: bool = False,
+) -> tuple[int, str | None, str | None, str | None, str | None]:
+    raw_line = line.rstrip()
+    stripped = raw_line.strip()
+    if not stripped:
+        if pending_summary:
+            if pending_summary != last_emitted:
+                if not quiet:
+                    logger.info(pending_summary)
+                last_emitted = pending_summary
+            pending_summary = None
+        return suppressed, pending, last_emitted, pending_coverage, pending_summary
+    has_indent = raw_line.startswith((" ", "\t"))
+    line = raw_line.lstrip()
+    if pending_summary:
+        if has_indent:
+            pending_summary = f"{pending_summary} {line}"
+            return suppressed, pending, last_emitted, pending_coverage, pending_summary
+        if pending_summary != last_emitted:
+            if not quiet:
+                logger.info(pending_summary)
+            last_emitted = pending_summary
+        pending_summary = None
+    if pending_coverage:
+        if line == "Cover":
+            line = f"{pending_coverage} Cover"
+            pending_coverage = None
+        else:
+            if pending_coverage != last_emitted:
+                if not quiet:
+                    logger.info(pending_coverage)
+                last_emitted = pending_coverage
+            pending_coverage = None
+    if _EMBEDDED_LOG_RE.search(line):
+        return suppressed + 1, pending, last_emitted, pending_coverage, pending_summary
+    if line.startswith("Test ") and line.rstrip().endswith(
+        (" passed.", " failed.", " skipped.", " xfailed.", " xpassed."),
+    ):
+        return suppressed, pending, last_emitted, pending_coverage, pending_summary
+    if pending:
+        if line.startswith("tests/") and not _PYTEST_STATUS_RE.search(line):
+            if pending != last_emitted:
+                if not quiet:
+                    logger.info(pending)
+                last_emitted = pending
+            pending = line
+            return suppressed, pending, last_emitted, pending_coverage, pending_summary
+        if _PYTEST_STATUS_ONLY_RE.match(line) or _PYTEST_STATUS_RE.search(line):
+            line = f"{pending} {line}"
+            pending = None
+        else:
+            if pending != last_emitted:
+                if not quiet:
+                    logger.info(pending)
+                last_emitted = pending
+            pending = None
+    if "Pytest session finished" in line and not line.startswith("Pytest session finished"):
+        prefix, suffix = line.split("Pytest session finished", 1)
+        prefix = prefix.strip()
+        if prefix and prefix != last_emitted:
+            if not quiet:
+                logger.info(prefix)
+            last_emitted = prefix
+        line = f"Pytest session finished{suffix}"
+    if line.startswith("tests/") and not _PYTEST_STATUS_RE.search(line):
+        return suppressed, line, last_emitted, pending_coverage, pending_summary
+    if _PYTEST_STATUS_ONLY_RE.match(line):
+        return suppressed, pending, last_emitted, pending_coverage, pending_summary
+    if line.startswith("Name") and line.rstrip().endswith("Miss"):
+        return suppressed, pending, last_emitted, line, pending_summary
+    if line.startswith("tests/") and _PYTEST_STATUS_RE.search(line):
+        if line in seen_results:
+            return suppressed, pending, last_emitted, pending_coverage, pending_summary
+        seen_results.add(line)
+    if line == last_emitted:
+        return suppressed, pending, last_emitted, pending_coverage, pending_summary
+    if _PYTEST_SUMMARY_START_RE.match(line):
+        pending_summary = line
+        return suppressed, pending, last_emitted, pending_coverage, pending_summary
+    if not quiet:
+        logger.info(line)
+    return suppressed, pending, line, pending_coverage, pending_summary
 
 
 def run_step(logger: logging.Logger, step: Step, env: dict[str, str]) -> int:
@@ -165,41 +301,37 @@ def run_step(logger: logging.Logger, step: Step, env: dict[str, str]) -> int:
 
     logger.info("Step: %s", step.label)
     logger.debug("Running: %s", " ".join(step.command))
+    step_report_writer, step_report_path = _open_step_report(step.label, logger)
+    _write_step_report_line(step_report_writer, f"Step: {step.label}")
 
     try:
-        process = subprocess.Popen(
-            step.command,
-            cwd=str(PROJECT_ROOT),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            env=env,
-        )
-    except FileNotFoundError:
-        logger.exception("Failed to start %s (command not found).", step.label)
-        return 1
-    except Exception:
-        logger.exception("Failed to start %s.", step.label)
-        return 1
+        try:
+            process = subprocess.Popen(
+                step.command,
+                cwd=str(PROJECT_ROOT),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                env=env,
+            )
+        except FileNotFoundError:
+            logger.exception("Failed to start %s (command not found).", step.label)
+            return 1
+        except Exception:
+            logger.exception("Failed to start %s.", step.label)
+            return 1
 
-    assert process.stdout is not None
-    if step.label == "bandit":
-        severity_counts: dict[str, int] = {}
-        confidence_counts: dict[str, int] = {}
-        total_issues = 0
-        saw_metrics = False
-        with _BANDIT_REPORT_PATH.open("w", encoding="utf-8", newline="\n") as report_file:
-            run_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-            report_file.write("Casino Calendar Security Report (Bandit)\n")
-            report_file.write("=" * 48 + "\n")
-            report_file.write(f"Run time (UTC): {run_time}\n")
-            report_file.write(f"Project root: {PROJECT_ROOT}\n")
-            report_file.write(f"Targets: {', '.join(LINT_TARGETS)}\n\n")
+        assert process.stdout is not None
+        if step.label == "bandit":
+            severity_counts: dict[str, int] = {}
+            confidence_counts: dict[str, int] = {}
+            total_issues = 0
+            saw_metrics = False
             for line in process.stdout:
                 line = line.rstrip("\r\n")
-                report_file.write(f"{line}\n")
+                _write_step_report_line(step_report_writer, line)
                 if line.strip() == "Run metrics:":
                     saw_metrics = True
                 match = _BANDIT_SEVERITY_RE.match(line)
@@ -209,108 +341,152 @@ def run_step(logger: logging.Logger, step: Step, env: dict[str, str]) -> int:
                     confidence_counts[confidence] = confidence_counts.get(confidence, 0) + 1
                     total_issues += 1
             if not saw_metrics:
-                report_file.write("\nSummary:\n")
-                report_file.write(f"Total issues: {total_issues}\n")
+                _write_step_report_line(step_report_writer, "")
+                _write_step_report_line(step_report_writer, "Summary:")
+                _write_step_report_line(step_report_writer, f"Total issues: {total_issues}")
                 if severity_counts:
-                    report_file.write("By severity:\n")
+                    _write_step_report_line(step_report_writer, "By severity:")
                     for key in sorted(severity_counts):
-                        report_file.write(f"  {key}: {severity_counts[key]}\n")
+                        _write_step_report_line(step_report_writer, f"  {key}: {severity_counts[key]}")
                 if confidence_counts:
-                    report_file.write("By confidence:\n")
+                    _write_step_report_line(step_report_writer, "By confidence:")
                     for key in sorted(confidence_counts):
-                        report_file.write(f"  {key}: {confidence_counts[key]}\n")
-    elif step.label == "pydocstyle":
-        code_counts: dict[str, int] = {}
-        total_issues = 0
-        with _PYDOCSTYLE_REPORT_PATH.open("w", encoding="utf-8", newline="\n") as report_file:
-            run_time = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-            report_file.write("Casino Calendar Docstring Report (pydocstyle)\n")
-            report_file.write("=" * 56 + "\n")
-            report_file.write(f"Run time (UTC): {run_time}\n")
-            report_file.write(f"Project root: {PROJECT_ROOT}\n")
-            report_file.write(f"Targets: {', '.join(LINT_TARGETS)}\n\n")
+                        _write_step_report_line(step_report_writer, f"  {key}: {confidence_counts[key]}")
+        elif step.label == "pydocstyle":
+            code_counts: dict[str, int] = {}
+            total_issues = 0
             for line in process.stdout:
                 line = line.rstrip("\r\n")
-                report_file.write(f"{line}\n")
+                _write_step_report_line(step_report_writer, line)
                 match = _PYDOCSTYLE_CODE_RE.search(line)
                 if match:
                     code = match.group(1)
                     code_counts[code] = code_counts.get(code, 0) + 1
                     total_issues += 1
-            report_file.write("\nSummary:\n")
-            report_file.write(f"Total issues: {total_issues}\n")
+            _write_step_report_line(step_report_writer, "")
+            _write_step_report_line(step_report_writer, "Summary:")
+            _write_step_report_line(step_report_writer, f"Total issues: {total_issues}")
             if code_counts:
-                report_file.write("By code:\n")
+                _write_step_report_line(step_report_writer, "By code:")
                 for code in sorted(code_counts):
-                    report_file.write(f"  {code}: {code_counts[code]}\n")
-    else:
-        suppressed = 0
-        step_key = step.label.lower()
-        for line in process.stdout:
-            line = line.replace("\x00", "")
-            for segment in line.split("\r"):
-                segment = segment.rstrip("\n")
-                if segment == "" and line.strip() != "":
-                    continue
-                suppressed = _emit_process_line(logger, step_key, segment, suppressed)
-        if suppressed:
-            logger.debug("Suppressed %d embedded log line(s) during %s.", suppressed, step.label)
-
-    code = process.wait()
-    if step.label == "bandit":
-        if code == 0:
-            logger.info("Bandit report written to %s", _BANDIT_REPORT_PATH)
+                    _write_step_report_line(step_report_writer, f"  {code}: {code_counts[code]}")
         else:
-            logger.error("Bandit reported issues; see %s", _BANDIT_REPORT_PATH)
-    elif step.label == "pydocstyle":
-        if code == 0:
-            logger.info("Pydocstyle report written to %s", _PYDOCSTYLE_REPORT_PATH)
-        else:
-            logger.warning("Pydocstyle reported issues; see %s", _PYDOCSTYLE_REPORT_PATH)
-    return code
+            suppressed = 0
+            step_key = step.label.lower()
+            pending_pytest: str | None = None
+            last_emitted: str | None = None
+            pending_coverage: str | None = None
+            pending_summary: str | None = None
+            seen_pytest_results: set[str] = set()
+            for line in process.stdout:
+                line = line.replace("\x00", "")
+                if "\r" in line:
+                    line = line.split("\r")[-1]
+                line = line.rstrip("\n")
+                stripped_line = line.strip()
+                _write_step_report_line(step_report_writer, line)
+                if "pytest" in step_key:
+                    suppressed, pending_pytest, last_emitted, pending_coverage, pending_summary = _emit_pytest_line(
+                        logger,
+                        line,
+                        suppressed,
+                        pending_pytest,
+                        last_emitted,
+                        seen_pytest_results,
+                        pending_coverage,
+                        pending_summary,
+                        quiet=True,
+                    )
+                else:
+                    if not stripped_line:
+                        continue
+                    suppressed = _emit_process_line(logger, step_key, line, suppressed)
+            if pending_pytest:
+                if pending_pytest != last_emitted:
+                    logger.info(pending_pytest)
+                    last_emitted = pending_pytest
+            if pending_summary and pending_summary != last_emitted:
+                logger.info(pending_summary)
+                last_emitted = pending_summary
+            if pending_coverage and pending_coverage != last_emitted:
+                logger.info(pending_coverage)
+                last_emitted = pending_coverage
+            if suppressed:
+                logger.debug("Suppressed %d embedded log line(s) during %s.", suppressed, step.label)
+
+        code = process.wait()
+        _write_step_report_line(step_report_writer, f"{step.label} completed with exit code {code}.")
+        logger.info("%s completed with exit code %d.", step.label, code)
+        if step_report_path:
+            logger.info("%s output recorded at %s", step.label, step_report_path)
+        return code
+
+    finally:
+        if step_report_writer:
+            step_report_writer.close()
 
 
-def prompt_fix(logger: logging.Logger, label: str) -> bool:
-    if not sys.stdin.isatty():
-        logger.warning("Non-interactive session; skipping %s fix prompt.", label)
-        return False
-    try:
-        logger.info("%s reported formatting issues. Apply fixes now? [y/N]:", label)
-        response = input().strip().lower()
-    except EOFError:
-        logger.warning("No response received; skipping %s fixes.", label)
-        return False
-    accepted = response in {"y", "yes"}
-    logger.info("User response: %s", "yes" if accepted else "no")
-    return accepted
+def run_step_with_status(logger: logging.Logger, step: Step, env: dict[str, str]) -> str:
+    if step.available is not None and not step.available():
+        logger.warning("%s not installed; skipping.", step.label)
+        return "skipped"
+    code = run_step(logger, step, env)
+    if code == 0:
+        return "passed"
+    return "failed"
 
 
 def run_format_step(
     logger: logging.Logger,
     label: str,
     check_cmd: list[str],
-    fix_cmd: list[str],
     env: dict[str, str],
-    soft_failures: list[str],
-) -> None:
+) -> str:
     if not module_available(label):
         logger.warning("%s not installed; skipping.", label)
-        return
+        return "skipped"
 
     code = run_step(logger, Step(label, check_cmd), env)
     if code == 0:
-        return
+        return "passed"
 
-    logger.warning("%s reported formatting issues.", label)
-    if prompt_fix(logger, label):
-        fix_code = run_step(logger, Step(f"{label} (apply formatting)", fix_cmd), env)
-        if fix_code == 0:
-            return
-        logger.error("%s formatting failed; review the output above.", label)
-    else:
-        logger.warning("%s formatting issues left unmodified.", label)
+    logger.warning("%s reported formatting issues; skipping interactive fix prompt.", label)
+    logger.warning("%s formatting issues left unmodified.", label)
+    return "failed"
 
-    soft_failures.append(label)
+
+def record_step_status(
+    label: str,
+    status: str,
+    passed_steps: list[str],
+    failed_steps: list[str],
+    skipped_steps: list[str],
+) -> None:
+    if status == "passed":
+        passed_steps.append(label)
+    elif status == "failed":
+        failed_steps.append(label)
+    elif status == "skipped":
+        skipped_steps.append(label)
+
+
+def rotate_old_reports(logger: logging.Logger) -> None:
+    """Move reports older than today to dated subdirectories."""
+    today = datetime.now().strftime("%Y%m%d")
+    for file_path in TEST_REPORTS_DIR.glob("*.txt"):
+        try:
+            # Extract date from filename, e.g., Run_pytest_20260113-210149.txt -> 20260113
+            parts = file_path.stem.split("_")
+            if len(parts) >= 2 and len(parts[-1]) == 15 and parts[-1][8] == "-":
+                date_str = parts[-1][:8]
+                if date_str.isdigit() and date_str != today:
+                    dated_dir = TEST_REPORTS_DIR / date_str
+                    dated_dir.mkdir(exist_ok=True)
+                    new_path = dated_dir / file_path.name
+                    file_path.rename(new_path)
+                    logger.debug("Rotated %s to %s", file_path.name, dated_dir)
+        except (ValueError, OSError) as exc:
+            logger.warning("Failed to rotate report %s: %s", file_path, exc)
 
 
 def main() -> int:
@@ -338,40 +514,35 @@ def main() -> int:
     logger.info("Working directory: %s", work_display)
 
     env = os.environ.copy()
-    _BANDIT_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    _PYDOCSTYLE_REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     env.setdefault("PYTHONPATH", f"{PROJECT_ROOT / 'src'}{os.pathsep}{PROJECT_ROOT}")
     env.setdefault("PYTHONNOUSERSITE", "1")
     env.setdefault("PYTHONIOENCODING", "utf-8")
     env.setdefault("PYTHONUTF8", "1")
-    env.setdefault("COLUMNS", "200")
+    env.setdefault("LOG_FILE_TZ", "LOCAL")
+    env["COLUMNS"] = "240"
 
-    soft_failures: list[str] = []
+    passed_steps: list[str] = []
+    failed_steps: list[str] = []
+    skipped_steps: list[str] = []
 
     compile_step = Step("Compile Python modules", [sys.executable, "-m", "compileall", "src"])
-    code = run_step(logger, compile_step, env)
-    if code != 0:
-        logger.error("===============================================")
-        logger.error("Tests failed. Review the output above.")
-        logger.error("===============================================")
-        return code
+    status = run_step_with_status(logger, compile_step, env)
+    record_step_status(compile_step.label, status, passed_steps, failed_steps, skipped_steps)
 
-    run_format_step(
+    status = run_format_step(
         logger,
         "black",
-        [sys.executable, "-m", "black", "--check", "."],
-        [sys.executable, "-m", "black", "."],
+        [sys.executable, "-m", "black", "--check", "--diff", "--verbose", "."],
         env,
-        soft_failures,
     )
-    run_format_step(
+    record_step_status("black", status, passed_steps, failed_steps, skipped_steps)
+    status = run_format_step(
         logger,
         "isort",
-        [sys.executable, "-m", "isort", "--check-only", "."],
-        [sys.executable, "-m", "isort", "."],
+        [sys.executable, "-m", "isort", "--check-only", "--verbose", "."],
         env,
-        soft_failures,
     )
+    record_step_status("isort", status, passed_steps, failed_steps, skipped_steps)
 
     bandit_command = [
         sys.executable,
@@ -396,12 +567,22 @@ def main() -> int:
     steps = [
         Step(
             "flake8",
-            [sys.executable, "-m", "flake8", "--config", ".flake8", "."],
+            [sys.executable, "-m", "flake8", "--config", ".flake8", "--verbose", "."],
             available=lambda: module_available("flake8"),
         ),
         Step(
             "mypy",
-            [sys.executable, "-m", "mypy", "--config-file", "config/typing/mypy.ini", "."],
+            [
+                sys.executable,
+                "-m",
+                "mypy",
+                "--config-file",
+                "config/typing/mypy.ini",
+                "--show-error-codes",
+                "--error-summary",
+                "--verbose",
+                ".",
+            ],
             available=lambda: module_available("mypy"),
         ),
         Step(
@@ -413,28 +594,16 @@ def main() -> int:
     ]
 
     for step in steps:
-        code = run_step(logger, step, env)
-        if code != 0:
-            if step.label == "bandit":
-                soft_failures.append(step.label)
-                continue
-            if step.label == "pydocstyle":
-                continue
-            logger.error("===============================================")
-            logger.error("Tests failed. Review the output above.")
-            logger.error("===============================================")
-            return code
+        status = run_step_with_status(logger, step, env)
+        record_step_status(step.label, status, passed_steps, failed_steps, skipped_steps)
 
     npm_path = shutil.which("npm") or shutil.which("npm.cmd") or shutil.which("npm.exe")
     if npm_path:
-        code = run_step(logger, Step("Lint CSS", ["cmd", "/c", npm_path, "run", "lint:css"]), env)
-        if code != 0:
-            logger.error("===============================================")
-            logger.error("Tests failed. Review the output above.")
-            logger.error("===============================================")
-            return code
+        status = run_step_with_status(logger, Step("Lint CSS", ["cmd", "/c", npm_path, "run", "lint:css"]), env)
     else:
         logger.warning("npm not found; skipping CSS lint.")
+        status = "skipped"
+    record_step_status("Lint CSS", status, passed_steps, failed_steps, skipped_steps)
 
     pytest_command = [
         sys.executable,
@@ -448,25 +617,24 @@ def main() -> int:
         "console_output_style=classic",
         "tests",
     ]
-    code = run_step(logger, Step("Run pytest", pytest_command), env)
-    if code != 0:
-        logger.error("===============================================")
-        logger.error("Tests failed. Review the output above.")
-        logger.error("===============================================")
-        return code
+    status = run_step_with_status(logger, Step("Run pytest", pytest_command), env)
+    record_step_status("Run pytest", status, passed_steps, failed_steps, skipped_steps)
 
-    if soft_failures:
-        logger.warning("===============================================")
-        logger.warning(
-            "Tests completed with issues in: %s",
-            ", ".join(soft_failures),
-        )
-        logger.warning("===============================================")
+    logger.info("===============================================")
+    if failed_steps:
+        logger.error("Tests completed with failures.")
+    else:
+        logger.info("Tests completed successfully.")
+    if passed_steps:
+        logger.info("Passed: %s", ", ".join(passed_steps))
+    if failed_steps:
+        logger.error("Failed: %s", ", ".join(failed_steps))
+    if skipped_steps:
+        logger.warning("Skipped: %s", ", ".join(skipped_steps))
+    logger.info("===============================================")
+    rotate_old_reports(logger)
+    if failed_steps:
         return 1
-
-    logger.info("===============================================")
-    logger.info("Tests completed successfully.")
-    logger.info("===============================================")
     return 0
 
 

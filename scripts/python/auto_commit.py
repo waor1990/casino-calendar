@@ -8,7 +8,6 @@ following the project's Commitizen conventions.
 
 import argparse
 import os
-import re
 import subprocess
 from collections import Counter
 from pathlib import Path

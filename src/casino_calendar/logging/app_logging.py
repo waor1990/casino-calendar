@@ -57,7 +57,10 @@ _MINIMAL_LOG_PREFIXES = (
 )
 
 _MAINTENANCE_EMBEDDED_LOG_RE = re.compile(
-    r"(?:" r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z \| (DBG|INF|WRN|ERR|CRT)\s+\|" r"|[\w\.]+:[\w<>-]+:\d+ \|" r")"
+    r"(?:"
+    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z? \| (DBG|INF|WRN|ERR|CRT)\s+\|"
+    r"|[\w\.]+:[\w<>-]+:\d+ \|"
+    r")"
 )
 
 _REDACTION_PATTERN = re.compile(
@@ -151,6 +154,24 @@ def _utc_iso_ms(epoch_seconds: float | None = None) -> str:
     return timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
 
 
+def _local_iso_ms(epoch_seconds: float | None = None) -> str:
+    timestamp = _now_local() if epoch_seconds is None else datetime.fromtimestamp(epoch_seconds).astimezone()
+    if timestamp.tzinfo is None:
+        raise ValueError("Local timestamp must be timezone-aware")
+    return timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]
+
+
+def _file_time_mode() -> str:
+    mode = os.getenv("LOG_FILE_TZ", "UTC").upper()
+    return "LOCAL" if mode == "LOCAL" else "UTC"
+
+
+def _file_timestamp(record: logging.LogRecord) -> str:
+    if _file_time_mode() == "LOCAL":
+        return _local_iso_ms(record.created)
+    return _utc_iso_ms(record.created)
+
+
 def _console_timestamp(record: logging.LogRecord) -> str:
     mode = os.getenv("LOG_CONSOLE_TZ", "LOCAL").upper()
     if mode == "UTC":
@@ -213,7 +234,7 @@ class ConsoleFormatter(_RedactingFormatter):
 
 class FileFormatter(_RedactingFormatter):
     def format(self, record: logging.LogRecord) -> str:
-        timestamp = _utc_iso_ms(record.created)
+        timestamp = _file_timestamp(record)
         level = _level_code(record.levelno)
         location = _format_callsite(record)
         service = getattr(record, "service", "-")
@@ -232,11 +253,12 @@ class FileFormatter(_RedactingFormatter):
 
 class JsonLogFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
-        timestamp = _utc_iso_ms(record.created).replace("Z", "")
+        mode = _file_time_mode()
+        timestamp = _utc_iso_ms(record.created).replace("Z", "") if mode == "UTC" else _local_iso_ms(record.created)
         message = _redact_text(_relativize_paths(record.getMessage()))
         payload = {
             "timestamp": timestamp,
-            "tz": "UTC",
+            "tz": "UTC" if mode == "UTC" else "LOCAL",
             "level": record.levelname,
             "logger": record.name,
             "module": record.module,
