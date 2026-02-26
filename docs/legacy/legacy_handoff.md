@@ -66,7 +66,7 @@ Assets (Sass sources), data files, and automation scripts live alongside the pac
 - Add CI workflow to exercise `npm run lint:css` (check) and `npm run lint:css:fix` alongside Python linters.
 - Evaluate incremental data loading to reduce startup time on very large CSV files.
 
-Track additional ideas in [guides/TODO.md](TODO.md).
+Track additional ideas in [guides/TODO.md](../guides/TODO.md).
 
 ---
 

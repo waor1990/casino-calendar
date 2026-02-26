@@ -240,5 +240,5 @@ Issues and feature ideas are tracked in [`docs/guides/TODO.md`](docs/guides/TODO
 
 - [docs/architecture/project_structure.md](docs/architecture/project_structure.md)
 - [docs/architecture/logging_system.md](docs/architecture/logging_system.md)
-- [docs/guides/handoff.md](docs/guides/handoff.md)
+- [docs/README.md](docs/README.md)
 - [docs/operations/log_management.md](docs/operations/log_management.md)

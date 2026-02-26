@@ -25,14 +25,14 @@ This directory contains JavaScript utilities that support the Casino Calendar wo
 ### `cleanup-node-modules.mjs`
 
 - **Purpose**: Removes stale npm staging directories that trigger `npm warn cleanup` messages on Windows
-- **Platform**: Local development (Node.js 18+)
+- **Platform**: Local development (Node.js 22+)
 - **Usage**: `npm run clean:node-modules` or `node scripts/node/cleanup-node-modules.mjs`
 - **Notes**: Retries deletions that fail with `EPERM/EACCES` by resetting permissions, and runs automatically via npm's `preinstall` hook (including during `npm ci`), the Windows setup script, and the `npm run setup` workflow.
 
 ### `verify-package-json.mjs`
 
 - **Purpose**: Ensures `package.json` remains valid JSON and free of Git merge conflict markers before installations.
-- **Platform**: Local development (Node.js 18+)
+- **Platform**: Local development (Node.js 22+)
 - **Usage**: `npm run lint:package-json` or `node scripts/node/verify-package-json.mjs`
 - **Notes**: The Windows setup script runs this validator automatically and exits early with guidance if a merge conflict is detected.
 
@@ -41,7 +41,7 @@ This directory contains JavaScript utilities that support the Casino Calendar wo
 The iOS automation scripts integrate with the main Casino Calendar application by:
 
 - **Data Source**: Both iOS scripts work with `iCloud/CasinoEvents/casino_events.csv`
-- **Compatibility**: CSV format matches what the Dash app expects in `data/casino_events.csv`
+- **Compatibility**: CSV format matches what the Dash app expects in `data/raw/casino_events.csv`
 - **Workflow**: Complete data lifecycle from addition (`append-casino-event.mjs`) to cleanup (`trim-old-casino-events.mjs`)
 
 The `cleanup-node-modules.mjs` utility keeps the local `node_modules` tree tidy so that Windows developers can run `npm install` without cleanup warnings.

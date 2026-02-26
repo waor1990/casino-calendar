@@ -1,6 +1,6 @@
 # Project Organization Improvements Summary
 
-> **📋 Note**: This document provides historical context about organization improvements made to the project. For current project structure and file organization, see [project_structure.md](project_structure.md). The original "tools/" directory referenced below has since been folded into `scripts/windows/` with lightweight launchers in the project root.
+> **📋 Note**: This document provides historical context about organization improvements made to the project. For current project structure and file organization, see [project_structure.md](../architecture/project_structure.md). The original "tools/" directory referenced below has since been folded into `scripts/windows/` with lightweight launchers in the project root.
 
 ## Overview
 

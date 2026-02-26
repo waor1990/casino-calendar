@@ -6,7 +6,8 @@ Follow these project-wide conventions when working in this repository.
 
 - Python application code lives under `src/casino_calendar/`. Prefer package imports over ad-hoc filesystem access.
 - Dash entry points are `app.py` and `wsgi.py`; keep configuration changes centralized rather than duplicating settings.
-- Documentation lives in `docs/` with onboarding in `README.md` and `QUICKSTART.md`.
+- Dash runtime data currently loads from `data/raw/casino_events.csv` with lookup metadata under `data/lookups/`.
+- Documentation lives in `docs/` (index in `docs/README.md`) with onboarding in `README.md` and `QUICKSTART.md`.
 
 ## Development practices
 

@@ -67,8 +67,7 @@ This document outlines the Casino Calendar repository. The layout emphasises a c
 
 ### Documentation
 
-- `docs/README.md` – Documentation index.
-- `docs/guides/handoff.md` – Operational handoff notes and feature summary.
+- `docs/README.md` – Documentation index with links to current architecture and guides.
 - `docs/architecture/logging_system.md` – Logging architecture overview with environment variable reference.
 - `docs/legacy/` – Historical notes and archived automation scripts.
 
