@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Optional
 
 import pytest
+from _pytest.terminal import TerminalReporter
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = PROJECT_ROOT / "src"
@@ -27,7 +28,13 @@ os.environ.setdefault("LOG_FILE_TZ", "LOCAL")
 
 class _PytestConsoleFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
-        return getattr(record, "console", True)
+        if not getattr(record, "console", True):
+            return False
+
+        if record.name.startswith("casino_calendar.tests.pytest"):
+            return True
+
+        return False
 
 
 class _PytestConsoleFormatter(logging.Formatter):
@@ -51,6 +58,15 @@ def _setup_maintenance_logger():
 
 
 MAINTENANCE_LOGGER = _setup_maintenance_logger()
+
+
+def _write_terminal_line(config: pytest.Config, message: str) -> None:
+    """Write a readable line to the pytest terminal without truncation."""
+
+    reporter = config.pluginmanager.get_plugin("terminalreporter")
+    if isinstance(reporter, TerminalReporter):
+        reporter.write("\n", flush=True)
+        reporter.write_line(message)
 
 
 @pytest.fixture(autouse=True)
@@ -79,7 +95,8 @@ def offer_type() -> str:
 def pytest_sessionstart(session: pytest.Session) -> None:
     """Log the start of a pytest session."""
 
-    MAINTENANCE_LOGGER.info("Pytest session started.")
+    MAINTENANCE_LOGGER.info("Pytest session started.", extra={"console": False})
+    _write_terminal_line(session.config, "Pytest session started.")
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -92,7 +109,9 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     except ValueError:
         status_label = f"exit status {exitstatus}"
 
-    MAINTENANCE_LOGGER.info("Pytest session finished with %s.", status_label)
+    message = f"Pytest session finished with {status_label}."
+    MAINTENANCE_LOGGER.info(message, extra={"console": False})
+    _write_terminal_line(session.config, message)
 
 
 @pytest.hookimpl
@@ -130,4 +149,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config) -> None:  # ty
             parts.append(f"{len(items)} {label}")
     summary_body = ", ".join(parts) if parts else "no tests ran"
     duration = getattr(terminalreporter._session, "duration", 0.0)
-    MAINTENANCE_LOGGER.info("Pytest summary: %s in %.2fs.", summary_body, duration)
+    summary_message = f"Pytest summary: {summary_body} in {duration:.2f}s."
+    MAINTENANCE_LOGGER.info(summary_message, extra={"console": False})
+    terminalreporter.write("\n", flush=True)
+    terminalreporter.write_line(summary_message)
