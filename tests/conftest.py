@@ -69,6 +69,14 @@ def _write_terminal_line(config: pytest.Config, message: str) -> None:
         reporter.write_line(message)
 
 
+@pytest.hookimpl(tryfirst=True)
+def pytest_configure(config: pytest.Config) -> None:
+    """Prefer readable per-test terminal output over compact progress dots."""
+
+    if config.option.verbose < 1:
+        config.option.verbose = 1
+
+
 @pytest.fixture(autouse=True)
 def _minimal_app_logging(monkeypatch: pytest.MonkeyPatch) -> None:
     """Keep production logs lean during test executions."""
